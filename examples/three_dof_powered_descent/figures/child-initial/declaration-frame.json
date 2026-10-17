@@ -1,0 +1,1954 @@
+{
+  "schema_version": "rpnh/dashboard/v1",
+  "source": {
+    "mode": "initial_configured",
+    "task_label": "descent-child: archived registered declaration only",
+    "verified_head_ordinal": null
+  },
+  "net": {
+    "schema_version": "rpnh/net_view/v1",
+    "source": {
+      "mode": "initial_configured",
+      "task_label": "descent-child: archived registered declaration only",
+      "verified_head_ordinal": null
+    },
+    "summary": {
+      "node_count": 20,
+      "transition_count": 5,
+      "place_count": 15,
+      "resource_place_count": 0,
+      "edge_count": 52,
+      "resource_edge_count": 0
+    },
+    "nodes": [
+      {
+        "id": "team.control__design_to_implementation",
+        "label": "team.control__design_to_implementation",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "classification": "place",
+        "schema": "application/rpnh_agent_text/v1",
+        "schema_variants": [],
+        "channel": "control",
+        "capacity": null,
+        "token_kind": "data",
+        "colours": [],
+        "initial_tokens": [],
+        "reusable": false,
+        "resource_pools": [],
+        "logical_slots": []
+      },
+      {
+        "id": "team.control__design_to_report",
+        "label": "team.control__design_to_report",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "classification": "place",
+        "schema": "application/rpnh_agent_text/v1",
+        "schema_variants": [],
+        "channel": "control",
+        "capacity": null,
+        "token_kind": "data",
+        "colours": [],
+        "initial_tokens": [],
+        "reusable": false,
+        "resource_pools": [],
+        "logical_slots": []
+      },
+      {
+        "id": "team.control__design_to_review",
+        "label": "team.control__design_to_review",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "classification": "place",
+        "schema": "application/rpnh_agent_text/v1",
+        "schema_variants": [],
+        "channel": "control",
+        "capacity": null,
+        "token_kind": "data",
+        "colours": [],
+        "initial_tokens": [],
+        "reusable": false,
+        "resource_pools": [],
+        "logical_slots": []
+      },
+      {
+        "id": "team.control__implementation_to_report",
+        "label": "team.control__implementation_to_report",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "classification": "place",
+        "schema": "application/rpnh_agent_text/v1",
+        "schema_variants": [],
+        "channel": "control",
+        "capacity": null,
+        "token_kind": "data",
+        "colours": [],
+        "initial_tokens": [],
+        "reusable": false,
+        "resource_pools": [],
+        "logical_slots": []
+      },
+      {
+        "id": "team.control__implementation_to_review",
+        "label": "team.control__implementation_to_review",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "classification": "place",
+        "schema": "application/rpnh_agent_text/v1",
+        "schema_variants": [],
+        "channel": "control",
+        "capacity": null,
+        "token_kind": "data",
+        "colours": [],
+        "initial_tokens": [],
+        "reusable": false,
+        "resource_pools": [],
+        "logical_slots": []
+      },
+      {
+        "id": "team.control__implementation_to_validation",
+        "label": "team.control__implementation_to_validation",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "classification": "place",
+        "schema": "application/rpnh_agent_text/v1",
+        "schema_variants": [],
+        "channel": "control",
+        "capacity": null,
+        "token_kind": "data",
+        "colours": [],
+        "initial_tokens": [],
+        "reusable": false,
+        "resource_pools": [],
+        "logical_slots": []
+      },
+      {
+        "id": "team.control__review_to_report",
+        "label": "team.control__review_to_report",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "classification": "place",
+        "schema": "application/rpnh_agent_text/v1",
+        "schema_variants": [],
+        "channel": "control",
+        "capacity": null,
+        "token_kind": "data",
+        "colours": [],
+        "initial_tokens": [],
+        "reusable": false,
+        "resource_pools": [],
+        "logical_slots": []
+      },
+      {
+        "id": "team.control__validation_to_report",
+        "label": "team.control__validation_to_report",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "classification": "place",
+        "schema": "application/rpnh_agent_text/v1",
+        "schema_variants": [],
+        "channel": "control",
+        "capacity": null,
+        "token_kind": "data",
+        "colours": [],
+        "initial_tokens": [],
+        "reusable": false,
+        "resource_pools": [],
+        "logical_slots": []
+      },
+      {
+        "id": "team.control__validation_to_review",
+        "label": "team.control__validation_to_review",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "classification": "place",
+        "schema": "application/rpnh_agent_text/v1",
+        "schema_variants": [],
+        "channel": "control",
+        "capacity": null,
+        "token_kind": "data",
+        "colours": [],
+        "initial_tokens": [],
+        "reusable": false,
+        "resource_pools": [],
+        "logical_slots": []
+      },
+      {
+        "id": "team.data__engineering_review__review",
+        "label": "team.data__engineering_review__review",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "classification": "place",
+        "schema": "application/rpnh_agent_text/v1",
+        "schema_variants": [],
+        "channel": "data",
+        "capacity": null,
+        "token_kind": "data",
+        "colours": [],
+        "initial_tokens": [],
+        "reusable": false,
+        "resource_pools": [],
+        "logical_slots": []
+      },
+      {
+        "id": "team.data__final_report__result",
+        "label": "team.data__final_report__result",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "classification": "place",
+        "schema": "application/rpnh_agent_text/v1",
+        "schema_variants": [],
+        "channel": "data",
+        "capacity": null,
+        "token_kind": "data",
+        "colours": [],
+        "initial_tokens": [],
+        "reusable": false,
+        "resource_pools": [],
+        "logical_slots": []
+      },
+      {
+        "id": "team.data__guidance_design__design",
+        "label": "team.data__guidance_design__design",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "classification": "place",
+        "schema": "application/rpnh_agent_text/v1",
+        "schema_variants": [],
+        "channel": "data",
+        "capacity": null,
+        "token_kind": "data",
+        "colours": [],
+        "initial_tokens": [],
+        "reusable": false,
+        "resource_pools": [],
+        "logical_slots": []
+      },
+      {
+        "id": "team.data__implementation__implementation",
+        "label": "team.data__implementation__implementation",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "classification": "place",
+        "schema": "application/rpnh_agent_text/v1",
+        "schema_variants": [],
+        "channel": "data",
+        "capacity": null,
+        "token_kind": "data",
+        "colours": [],
+        "initial_tokens": [],
+        "reusable": false,
+        "resource_pools": [],
+        "logical_slots": []
+      },
+      {
+        "id": "team.data__numerical_validation__validation",
+        "label": "team.data__numerical_validation__validation",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "classification": "place",
+        "schema": "application/rpnh_agent_text/v1",
+        "schema_variants": [],
+        "channel": "data",
+        "capacity": null,
+        "token_kind": "data",
+        "colours": [],
+        "initial_tokens": [],
+        "reusable": false,
+        "resource_pools": [],
+        "logical_slots": []
+      },
+      {
+        "id": "team.engineering_review",
+        "label": "team.engineering_review",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "team.engineering_review",
+        "operation_id": "op_0",
+        "executor": "rpnh/default-agent/v1",
+        "executor_declaration": {
+          "contracts": {
+            "input_ports": null,
+            "output_ports": null,
+            "provider_request_schema": "registry_v1/logical_provider_request_recipe/v1",
+            "resource_read_contracts": [
+              {
+                "context_origins": [
+                  "petri_operation"
+                ],
+                "descriptor_equals": {},
+                "extension_equals": {},
+                "extension_key": null,
+                "metadata_equals": {},
+                "metadata_only": false,
+                "origin_kinds": [
+                  "provider_request"
+                ],
+                "require_producer_invocation": true,
+                "require_provenance_binding": true,
+                "single_derived_source_key": null
+              }
+            ],
+            "transport": "llm"
+          },
+          "identity": {
+            "implementation_id": "components.execute_default_operation",
+            "revision": "v1"
+          },
+          "key": "rpnh/default-agent/v1",
+          "kind": "executor"
+        },
+        "inputs": [
+          "team.input__engineering_review__design",
+          "team.input__engineering_review__implementation",
+          "team.input__engineering_review__validation"
+        ],
+        "outputs": [
+          "team.output__engineering_review__review",
+          "team.interrupt__engineering_review__engineering_review__design",
+          "team.interrupt__engineering_review__engineering_review__implementation",
+          "team.interrupt__engineering_review__engineering_review__validation"
+        ],
+        "outcomes": [
+          {
+            "name": "complete",
+            "products": [
+              {
+                "port": "team.output__engineering_review__review",
+                "minimum": 1,
+                "maximum": 1
+              }
+            ],
+            "effects": []
+          },
+          {
+            "name": "interrupted",
+            "products": [],
+            "effects": []
+          }
+        ],
+        "tools": [
+          "complete_interaction",
+          "delegate_leaf",
+          "query_environment_resources",
+          "query_registry_resources",
+          "read_action_output",
+          "read_file",
+          "request_resource",
+          "search_text",
+          "workspace",
+          "write_file"
+        ],
+        "config": {
+          "agent_loop_role": "actor",
+          "execution_profile_id": null,
+          "provider_attempt_limit": 3,
+          "resource_bounds": {
+            "max_llm_attempts": 12,
+            "max_tool_turns": 12
+          },
+          "semantic_node_id": "engineering_review",
+          "semantic_outcome_ids": [
+            "complete"
+          ],
+          "turn_budget_extension": 12
+        },
+        "request_port": "team.input__engineering_review__design",
+        "budget_binding": {
+          "bucket_id": "engineering_review",
+          "budget_scope": "engineering_review",
+          "finalization_scope": null
+        },
+        "count_guards": [],
+        "input_verdicts": []
+      },
+      {
+        "id": "team.final_report",
+        "label": "team.final_report",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "team.final_report",
+        "operation_id": "op_1",
+        "executor": "rpnh/default-agent/v1",
+        "executor_declaration": {
+          "contracts": {
+            "input_ports": null,
+            "output_ports": null,
+            "provider_request_schema": "registry_v1/logical_provider_request_recipe/v1",
+            "resource_read_contracts": [
+              {
+                "context_origins": [
+                  "petri_operation"
+                ],
+                "descriptor_equals": {},
+                "extension_equals": {},
+                "extension_key": null,
+                "metadata_equals": {},
+                "metadata_only": false,
+                "origin_kinds": [
+                  "provider_request"
+                ],
+                "require_producer_invocation": true,
+                "require_provenance_binding": true,
+                "single_derived_source_key": null
+              }
+            ],
+            "transport": "llm"
+          },
+          "identity": {
+            "implementation_id": "components.execute_default_operation",
+            "revision": "v1"
+          },
+          "key": "rpnh/default-agent/v1",
+          "kind": "executor"
+        },
+        "inputs": [
+          "team.input__final_report__design",
+          "team.input__final_report__implementation",
+          "team.input__final_report__review",
+          "team.input__final_report__validation"
+        ],
+        "outputs": [
+          "team.result",
+          "team.interrupt__final_report__final_report__design",
+          "team.interrupt__final_report__final_report__implementation",
+          "team.interrupt__final_report__final_report__review",
+          "team.interrupt__final_report__final_report__validation"
+        ],
+        "outcomes": [
+          {
+            "name": "complete",
+            "products": [
+              {
+                "port": "team.result",
+                "minimum": 1,
+                "maximum": 1
+              }
+            ],
+            "effects": []
+          },
+          {
+            "name": "interrupted",
+            "products": [],
+            "effects": []
+          }
+        ],
+        "tools": [
+          "complete_interaction",
+          "delegate_leaf",
+          "query_environment_resources",
+          "query_registry_resources",
+          "read_action_output",
+          "read_file",
+          "request_resource",
+          "search_text",
+          "workspace",
+          "write_file"
+        ],
+        "config": {
+          "agent_loop_role": "actor",
+          "execution_profile_id": null,
+          "provider_attempt_limit": 3,
+          "resource_bounds": {
+            "max_llm_attempts": 12,
+            "max_tool_turns": 12
+          },
+          "semantic_node_id": "final_report",
+          "semantic_outcome_ids": [
+            "complete"
+          ],
+          "turn_budget_extension": 12
+        },
+        "request_port": "team.input__final_report__design",
+        "budget_binding": {
+          "bucket_id": "final_report",
+          "budget_scope": "final_report",
+          "finalization_scope": null
+        },
+        "count_guards": [],
+        "input_verdicts": []
+      },
+      {
+        "id": "team.guidance_design",
+        "label": "team.guidance_design",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "team.guidance_design",
+        "operation_id": "op_2",
+        "executor": "rpnh/default-agent/v1",
+        "executor_declaration": {
+          "contracts": {
+            "input_ports": null,
+            "output_ports": null,
+            "provider_request_schema": "registry_v1/logical_provider_request_recipe/v1",
+            "resource_read_contracts": [
+              {
+                "context_origins": [
+                  "petri_operation"
+                ],
+                "descriptor_equals": {},
+                "extension_equals": {},
+                "extension_key": null,
+                "metadata_equals": {},
+                "metadata_only": false,
+                "origin_kinds": [
+                  "provider_request"
+                ],
+                "require_producer_invocation": true,
+                "require_provenance_binding": true,
+                "single_derived_source_key": null
+              }
+            ],
+            "transport": "llm"
+          },
+          "identity": {
+            "implementation_id": "components.execute_default_operation",
+            "revision": "v1"
+          },
+          "key": "rpnh/default-agent/v1",
+          "kind": "executor"
+        },
+        "inputs": [
+          "team.request"
+        ],
+        "outputs": [
+          "team.output__guidance_design__design",
+          "team.interrupt__guidance_design__guidance_design__request"
+        ],
+        "outcomes": [
+          {
+            "name": "complete",
+            "products": [
+              {
+                "port": "team.output__guidance_design__design",
+                "minimum": 1,
+                "maximum": 1
+              }
+            ],
+            "effects": []
+          },
+          {
+            "name": "interrupted",
+            "products": [],
+            "effects": []
+          }
+        ],
+        "tools": [
+          "complete_interaction",
+          "delegate_leaf",
+          "query_environment_resources",
+          "query_registry_resources",
+          "read_action_output",
+          "read_file",
+          "request_resource",
+          "search_text",
+          "workspace",
+          "write_file"
+        ],
+        "config": {
+          "agent_loop_role": "actor",
+          "execution_profile_id": null,
+          "provider_attempt_limit": 3,
+          "resource_bounds": {
+            "max_llm_attempts": 12,
+            "max_tool_turns": 12
+          },
+          "semantic_node_id": "guidance_design",
+          "semantic_outcome_ids": [
+            "complete"
+          ],
+          "turn_budget_extension": 12
+        },
+        "request_port": "team.request",
+        "budget_binding": {
+          "bucket_id": "guidance_design",
+          "budget_scope": "guidance_design",
+          "finalization_scope": null
+        },
+        "count_guards": [],
+        "input_verdicts": []
+      },
+      {
+        "id": "team.implementation",
+        "label": "team.implementation",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "team.implementation",
+        "operation_id": "op_3",
+        "executor": "rpnh/default-agent/v1",
+        "executor_declaration": {
+          "contracts": {
+            "input_ports": null,
+            "output_ports": null,
+            "provider_request_schema": "registry_v1/logical_provider_request_recipe/v1",
+            "resource_read_contracts": [
+              {
+                "context_origins": [
+                  "petri_operation"
+                ],
+                "descriptor_equals": {},
+                "extension_equals": {},
+                "extension_key": null,
+                "metadata_equals": {},
+                "metadata_only": false,
+                "origin_kinds": [
+                  "provider_request"
+                ],
+                "require_producer_invocation": true,
+                "require_provenance_binding": true,
+                "single_derived_source_key": null
+              }
+            ],
+            "transport": "llm"
+          },
+          "identity": {
+            "implementation_id": "components.execute_default_operation",
+            "revision": "v1"
+          },
+          "key": "rpnh/default-agent/v1",
+          "kind": "executor"
+        },
+        "inputs": [
+          "team.input__implementation__design"
+        ],
+        "outputs": [
+          "team.output__implementation__implementation",
+          "team.interrupt__implementation__implementation__design"
+        ],
+        "outcomes": [
+          {
+            "name": "complete",
+            "products": [
+              {
+                "port": "team.output__implementation__implementation",
+                "minimum": 1,
+                "maximum": 1
+              }
+            ],
+            "effects": []
+          },
+          {
+            "name": "interrupted",
+            "products": [],
+            "effects": []
+          }
+        ],
+        "tools": [
+          "complete_interaction",
+          "delegate_leaf",
+          "query_environment_resources",
+          "query_registry_resources",
+          "read_action_output",
+          "read_file",
+          "request_resource",
+          "search_text",
+          "workspace",
+          "write_file"
+        ],
+        "config": {
+          "agent_loop_role": "actor",
+          "execution_profile_id": null,
+          "provider_attempt_limit": 3,
+          "resource_bounds": {
+            "max_llm_attempts": 12,
+            "max_tool_turns": 12
+          },
+          "semantic_node_id": "implementation",
+          "semantic_outcome_ids": [
+            "complete"
+          ],
+          "turn_budget_extension": 12
+        },
+        "request_port": "team.input__implementation__design",
+        "budget_binding": {
+          "bucket_id": "implementation",
+          "budget_scope": "implementation",
+          "finalization_scope": null
+        },
+        "count_guards": [],
+        "input_verdicts": []
+      },
+      {
+        "id": "team.ingress__guidance_design__request",
+        "label": "team.ingress__guidance_design__request",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "classification": "place",
+        "schema": "application/rpnh_agent_text/v1",
+        "schema_variants": [],
+        "channel": "data",
+        "capacity": null,
+        "token_kind": "data",
+        "colours": [],
+        "initial_tokens": [],
+        "reusable": false,
+        "resource_pools": [],
+        "logical_slots": []
+      },
+      {
+        "id": "team.numerical_validation",
+        "label": "team.numerical_validation",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "team.numerical_validation",
+        "operation_id": "op_4",
+        "executor": "rpnh/default-agent/v1",
+        "executor_declaration": {
+          "contracts": {
+            "input_ports": null,
+            "output_ports": null,
+            "provider_request_schema": "registry_v1/logical_provider_request_recipe/v1",
+            "resource_read_contracts": [
+              {
+                "context_origins": [
+                  "petri_operation"
+                ],
+                "descriptor_equals": {},
+                "extension_equals": {},
+                "extension_key": null,
+                "metadata_equals": {},
+                "metadata_only": false,
+                "origin_kinds": [
+                  "provider_request"
+                ],
+                "require_producer_invocation": true,
+                "require_provenance_binding": true,
+                "single_derived_source_key": null
+              }
+            ],
+            "transport": "llm"
+          },
+          "identity": {
+            "implementation_id": "components.execute_default_operation",
+            "revision": "v1"
+          },
+          "key": "rpnh/default-agent/v1",
+          "kind": "executor"
+        },
+        "inputs": [
+          "team.input__numerical_validation__implementation"
+        ],
+        "outputs": [
+          "team.output__numerical_validation__validation",
+          "team.interrupt__numerical_validation__numerical_validation__implementation"
+        ],
+        "outcomes": [
+          {
+            "name": "complete",
+            "products": [
+              {
+                "port": "team.output__numerical_validation__validation",
+                "minimum": 1,
+                "maximum": 1
+              }
+            ],
+            "effects": []
+          },
+          {
+            "name": "interrupted",
+            "products": [],
+            "effects": []
+          }
+        ],
+        "tools": [
+          "complete_interaction",
+          "delegate_leaf",
+          "query_environment_resources",
+          "query_registry_resources",
+          "read_action_output",
+          "read_file",
+          "request_resource",
+          "search_text",
+          "workspace",
+          "write_file"
+        ],
+        "config": {
+          "agent_loop_role": "actor",
+          "execution_profile_id": null,
+          "provider_attempt_limit": 3,
+          "resource_bounds": {
+            "max_llm_attempts": 12,
+            "max_tool_turns": 12
+          },
+          "semantic_node_id": "numerical_validation",
+          "semantic_outcome_ids": [
+            "complete"
+          ],
+          "turn_budget_extension": 12
+        },
+        "request_port": "team.input__numerical_validation__implementation",
+        "budget_binding": {
+          "bucket_id": "numerical_validation",
+          "budget_scope": "numerical_validation",
+          "finalization_scope": null
+        },
+        "count_guards": [],
+        "input_verdicts": []
+      }
+    ],
+    "edges": [
+      {
+        "id": "edge:arc:team.control__design_to_implementation:team.implementation:consume:-:1",
+        "source": "team.control__design_to_implementation",
+        "target": "team.implementation",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.control__design_to_report:team.final_report:consume:-:1",
+        "source": "team.control__design_to_report",
+        "target": "team.final_report",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.control__design_to_review:team.engineering_review:consume:-:1",
+        "source": "team.control__design_to_review",
+        "target": "team.engineering_review",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.control__implementation_to_report:team.final_report:consume:-:1",
+        "source": "team.control__implementation_to_report",
+        "target": "team.final_report",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.control__implementation_to_review:team.engineering_review:consume:-:1",
+        "source": "team.control__implementation_to_review",
+        "target": "team.engineering_review",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.control__implementation_to_validation:team.numerical_validation:consume:-:1",
+        "source": "team.control__implementation_to_validation",
+        "target": "team.numerical_validation",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.control__review_to_report:team.final_report:consume:-:1",
+        "source": "team.control__review_to_report",
+        "target": "team.final_report",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.control__validation_to_report:team.final_report:consume:-:1",
+        "source": "team.control__validation_to_report",
+        "target": "team.final_report",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.control__validation_to_review:team.engineering_review:consume:-:1",
+        "source": "team.control__validation_to_review",
+        "target": "team.engineering_review",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.data__engineering_review__review:team.final_report:consume:-:1",
+        "source": "team.data__engineering_review__review",
+        "target": "team.final_report",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.data__guidance_design__design:team.engineering_review:consume:-:1",
+        "source": "team.data__guidance_design__design",
+        "target": "team.engineering_review",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.data__guidance_design__design:team.final_report:consume:-:1",
+        "source": "team.data__guidance_design__design",
+        "target": "team.final_report",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.data__guidance_design__design:team.implementation:consume:-:1",
+        "source": "team.data__guidance_design__design",
+        "target": "team.implementation",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.data__implementation__implementation:team.engineering_review:consume:-:1",
+        "source": "team.data__implementation__implementation",
+        "target": "team.engineering_review",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.data__implementation__implementation:team.final_report:consume:-:1",
+        "source": "team.data__implementation__implementation",
+        "target": "team.final_report",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.data__implementation__implementation:team.numerical_validation:consume:-:1",
+        "source": "team.data__implementation__implementation",
+        "target": "team.numerical_validation",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.data__numerical_validation__validation:team.engineering_review:consume:-:1",
+        "source": "team.data__numerical_validation__validation",
+        "target": "team.engineering_review",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.data__numerical_validation__validation:team.final_report:consume:-:1",
+        "source": "team.data__numerical_validation__validation",
+        "target": "team.final_report",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.engineering_review:team.control__design_to_review:produce:interrupted:1",
+        "source": "team.engineering_review",
+        "target": "team.control__design_to_review",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "interrupted",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "forward",
+        "forward_source": "team.control__design_to_review",
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.engineering_review:team.control__implementation_to_review:produce:interrupted:1",
+        "source": "team.engineering_review",
+        "target": "team.control__implementation_to_review",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "interrupted",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "forward",
+        "forward_source": "team.control__implementation_to_review",
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.engineering_review:team.control__review_to_report:produce:complete:1",
+        "source": "team.engineering_review",
+        "target": "team.control__review_to_report",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "control_only",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.engineering_review:team.control__validation_to_review:produce:interrupted:1",
+        "source": "team.engineering_review",
+        "target": "team.control__validation_to_review",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "interrupted",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "forward",
+        "forward_source": "team.control__validation_to_review",
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.engineering_review:team.data__engineering_review__review:produce:complete:1",
+        "source": "team.engineering_review",
+        "target": "team.data__engineering_review__review",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.engineering_review:team.data__guidance_design__design:produce:interrupted:1",
+        "source": "team.engineering_review",
+        "target": "team.data__guidance_design__design",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "interrupted",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "forward",
+        "forward_source": "team.data__guidance_design__design",
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.engineering_review:team.data__implementation__implementation:produce:interrupted:1",
+        "source": "team.engineering_review",
+        "target": "team.data__implementation__implementation",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "interrupted",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "forward",
+        "forward_source": "team.data__implementation__implementation",
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.engineering_review:team.data__numerical_validation__validation:produce:interrupted:1",
+        "source": "team.engineering_review",
+        "target": "team.data__numerical_validation__validation",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "interrupted",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "forward",
+        "forward_source": "team.data__numerical_validation__validation",
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.final_report:team.control__design_to_report:produce:interrupted:1",
+        "source": "team.final_report",
+        "target": "team.control__design_to_report",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "interrupted",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "forward",
+        "forward_source": "team.control__design_to_report",
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.final_report:team.control__implementation_to_report:produce:interrupted:1",
+        "source": "team.final_report",
+        "target": "team.control__implementation_to_report",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "interrupted",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "forward",
+        "forward_source": "team.control__implementation_to_report",
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.final_report:team.control__review_to_report:produce:interrupted:1",
+        "source": "team.final_report",
+        "target": "team.control__review_to_report",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "interrupted",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "forward",
+        "forward_source": "team.control__review_to_report",
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.final_report:team.control__validation_to_report:produce:interrupted:1",
+        "source": "team.final_report",
+        "target": "team.control__validation_to_report",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "interrupted",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "forward",
+        "forward_source": "team.control__validation_to_report",
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.final_report:team.data__engineering_review__review:produce:interrupted:1",
+        "source": "team.final_report",
+        "target": "team.data__engineering_review__review",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "interrupted",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "forward",
+        "forward_source": "team.data__engineering_review__review",
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.final_report:team.data__final_report__result:produce:complete:1",
+        "source": "team.final_report",
+        "target": "team.data__final_report__result",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.final_report:team.data__guidance_design__design:produce:interrupted:1",
+        "source": "team.final_report",
+        "target": "team.data__guidance_design__design",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "interrupted",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "forward",
+        "forward_source": "team.data__guidance_design__design",
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.final_report:team.data__implementation__implementation:produce:interrupted:1",
+        "source": "team.final_report",
+        "target": "team.data__implementation__implementation",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "interrupted",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "forward",
+        "forward_source": "team.data__implementation__implementation",
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.final_report:team.data__numerical_validation__validation:produce:interrupted:1",
+        "source": "team.final_report",
+        "target": "team.data__numerical_validation__validation",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "interrupted",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "forward",
+        "forward_source": "team.data__numerical_validation__validation",
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.guidance_design:team.control__design_to_implementation:produce:complete:1",
+        "source": "team.guidance_design",
+        "target": "team.control__design_to_implementation",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "control_only",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.guidance_design:team.control__design_to_report:produce:complete:1",
+        "source": "team.guidance_design",
+        "target": "team.control__design_to_report",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "control_only",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.guidance_design:team.control__design_to_review:produce:complete:1",
+        "source": "team.guidance_design",
+        "target": "team.control__design_to_review",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "control_only",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.guidance_design:team.data__guidance_design__design:produce:complete:1",
+        "source": "team.guidance_design",
+        "target": "team.data__guidance_design__design",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 3,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.guidance_design:team.ingress__guidance_design__request:produce:interrupted:1",
+        "source": "team.guidance_design",
+        "target": "team.ingress__guidance_design__request",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "interrupted",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "forward",
+        "forward_source": "team.ingress__guidance_design__request",
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.implementation:team.control__design_to_implementation:produce:interrupted:1",
+        "source": "team.implementation",
+        "target": "team.control__design_to_implementation",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "interrupted",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "forward",
+        "forward_source": "team.control__design_to_implementation",
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.implementation:team.control__implementation_to_report:produce:complete:1",
+        "source": "team.implementation",
+        "target": "team.control__implementation_to_report",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "control_only",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.implementation:team.control__implementation_to_review:produce:complete:1",
+        "source": "team.implementation",
+        "target": "team.control__implementation_to_review",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "control_only",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.implementation:team.control__implementation_to_validation:produce:complete:1",
+        "source": "team.implementation",
+        "target": "team.control__implementation_to_validation",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "control_only",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.implementation:team.data__guidance_design__design:produce:interrupted:1",
+        "source": "team.implementation",
+        "target": "team.data__guidance_design__design",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "interrupted",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "forward",
+        "forward_source": "team.data__guidance_design__design",
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.implementation:team.data__implementation__implementation:produce:complete:1",
+        "source": "team.implementation",
+        "target": "team.data__implementation__implementation",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 3,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.ingress__guidance_design__request:team.guidance_design:consume:-:1",
+        "source": "team.ingress__guidance_design__request",
+        "target": "team.guidance_design",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.numerical_validation:team.control__implementation_to_validation:produce:interrupted:1",
+        "source": "team.numerical_validation",
+        "target": "team.control__implementation_to_validation",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "interrupted",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "forward",
+        "forward_source": "team.control__implementation_to_validation",
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.numerical_validation:team.control__validation_to_report:produce:complete:1",
+        "source": "team.numerical_validation",
+        "target": "team.control__validation_to_report",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "control_only",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.numerical_validation:team.control__validation_to_review:produce:complete:1",
+        "source": "team.numerical_validation",
+        "target": "team.control__validation_to_review",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "control_only",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.numerical_validation:team.data__implementation__implementation:produce:interrupted:1",
+        "source": "team.numerical_validation",
+        "target": "team.data__implementation__implementation",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "interrupted",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "forward",
+        "forward_source": "team.data__implementation__implementation",
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.numerical_validation:team.data__numerical_validation__validation:produce:complete:1",
+        "source": "team.numerical_validation",
+        "target": "team.data__numerical_validation__validation",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 2,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      }
+    ]
+  },
+  "boundaries": {
+    "entry": [
+      {
+        "name": "request",
+        "port": "team.request",
+        "place": "team.ingress__guidance_design__request"
+      }
+    ],
+    "exit": [
+      {
+        "name": "result",
+        "port": "team.result",
+        "place": "team.data__final_report__result"
+      }
+    ],
+    "terminal_rules": [
+      {
+        "key": "rpnh/agent-task-terminal/v1",
+        "operation": "team.final_report",
+        "transition_ids": [
+          "team.final_report"
+        ],
+        "outcome": "complete",
+        "port": "team.result",
+        "place": "team.data__final_report__result"
+      }
+    ],
+    "terminal_evidence": "not_provided"
+  },
+  "transition_bindings": [],
+  "presentation": {
+    "title": null,
+    "description": null,
+    "nodes": {},
+    "topology_digest": "4a681d752d607904414e514ac765934e2284b280a4a45f69f932b692b9c65981",
+    "status": "default"
+  },
+  "position": {
+    "mode": "live",
+    "cursor": null,
+    "latest_head": null
+  },
+  "coverage": {
+    "history": "unsupported",
+    "firings": "not_provided",
+    "agent_nodes": "declared_llm_executor_only",
+    "terminal_evidence": "not_provided"
+  },
+  "change": {},
+  "agent_nodes": [
+    {
+      "transition_id": "team.engineering_review",
+      "source": "declared_llm_executor",
+      "semantic_group": {
+        "component": "team",
+        "semantic_node_id": "engineering_review"
+      },
+      "agent_ref": null,
+      "executable_binding_ref": null
+    },
+    {
+      "transition_id": "team.final_report",
+      "source": "declared_llm_executor",
+      "semantic_group": {
+        "component": "team",
+        "semantic_node_id": "final_report"
+      },
+      "agent_ref": null,
+      "executable_binding_ref": null
+    },
+    {
+      "transition_id": "team.guidance_design",
+      "source": "declared_llm_executor",
+      "semantic_group": {
+        "component": "team",
+        "semantic_node_id": "guidance_design"
+      },
+      "agent_ref": null,
+      "executable_binding_ref": null
+    },
+    {
+      "transition_id": "team.implementation",
+      "source": "declared_llm_executor",
+      "semantic_group": {
+        "component": "team",
+        "semantic_node_id": "implementation"
+      },
+      "agent_ref": null,
+      "executable_binding_ref": null
+    },
+    {
+      "transition_id": "team.numerical_validation",
+      "source": "declared_llm_executor",
+      "semantic_group": {
+        "component": "team",
+        "semantic_node_id": "numerical_validation"
+      },
+      "agent_ref": null,
+      "executable_binding_ref": null
+    }
+  ]
+}

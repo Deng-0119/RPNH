@@ -2,13 +2,13 @@
 
 [简体中文](README_ZH.md)
 
-## Official Viewer panorama
+## Official Viewer complete PN
 
-The original official Viewer capture shows the completed seven-operation merge. Detailed flow displays 18 nodes/18 edges from the full 25-node/25-arc PN, retaining the success, rejection and blocked branches. This is a recorded runtime capture.
+[![Complete initial-declaration PN: 25 nodes / 25 arcs](figures/initial-petri.png)](figures/initial-petri.png)
 
-[![Recorded merger: three readers, join, two encoders and finish](figures/recorded-run.png)](figures/recorded-run.png)
+The official Viewer shows all 25 nodes and 25 arcs of the real declaration, including unexecuted branches. This is an `initial_configured` static structure without runtime state. [Image and source provenance](figures/petri-provenance.json) records the exact input/compiler/Viewer versions. Original results and the [completed Detailed flow capture](figures/recorded-run.png) remain unchanged; that runtime supplies no state to this image.
 
-[Local Viewer and reading guide](#follow-a-real-conflict-through-the-viewer) · Click the panorama to open the original full-size image.
+[Click the PN for its original size; read-only Viewer details](#static-pn-viewer)
 
 This extends the existing deterministic `tool_pipeline` example with a real external task:
 [Terminal-Bench `multi-source-data-merger`](https://github.com/harbor-framework/terminal-bench-2/tree/2fd12b88aafdd04a52c298e3940bcb189f9766d6/multi-source-data-merger).
@@ -91,6 +91,31 @@ python -m pytest -q examples/tool_pipeline/multi_source/tests/test_multi_source.
 
 ## Actual completed Viewer capture
 
-The image is the actual default AF_UNIX run at Registry head **765**: seven settled operations, zero unsettled records, one final report token. Detailed flow shows 18 nodes/18 edges from the full 25-node/25-arc PN. The original image retains a technical checkpoint footer and observation time, not a local path or user identity map. It is not a static or initial declaration.
+The separately linked [completed Detailed flow capture](figures/recorded-run.png) shows the actual default AF_UNIX run at Registry head **765**: seven settled operations, zero unsettled records, one final report token. Detailed flow shows 18 nodes/18 edges from the full 25-node/25-arc PN. The original image retains a technical checkpoint footer and observation time, not a local path or user identity map. It is not a static or initial declaration.
 
 Browser navigation exercised all seven original operations, the final report token registration, and an original historical input token registration. Use the conflict guide above to join the saved decision for user 101/email to `merge_users.run`, the source-A reader and the original entry token. Viewer panels expose references and registration metadata; the artifacts/evidence carry the field values. Event head/count, writer epoch and main database metadata stayed unchanged across viewing. Normal WAL/SHM auxiliary state is recorded separately. The browser and temporary capture server were closed after inspection.
+
+<a id="static-pn-viewer"></a>
+
+### Read-only static PN Viewer
+
+Run from the source checkout root with a compatible RPNH environment. This reads the bundled static frame without opening a Registry or executing the task.
+
+```bash
+python - <<'PY'
+import json
+from pathlib import Path
+from cpn.frontend.server import serve_projection
+frame = json.loads(Path("examples/tool_pipeline/multi_source/figures/declaration-frame.json").read_text(encoding="utf-8"))
+class Snapshot:
+    def __call__(self):
+        return frame["net"]
+    def dashboard(self, cursor=None):
+        if cursor is not None:
+            raise ValueError("Static declaration has no execution history")
+        return frame
+serve_projection(Snapshot(), host="127.0.0.1", port=0, open_browser=False)
+PY
+```
+
+Open the printed localhost URL and choose **PetriNet → Fit to view**. Scroll to zoom, drag to pan, and select a node or arc for native details and full labels. Static declarations have no execution history. Stop the server with Ctrl+C.

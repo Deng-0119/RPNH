@@ -2,7 +2,7 @@
 
 English | [中文](README_ZH.md)
 
-[Quick start](#quick-start) · [Actual PN](#see-a-multi-agent-run) · [Examples](#example-catalog) ·
+[Quick start](#quick-start) · [Actual PN](#see-a-multi-agent-run) · [Examples](#example-catalog) · [Full example index](examples/README.md) ·
 [Frontends](#frontends-and-host-integrations) · [Documentation hub](docs/index.md) · [Contribute](CONTRIBUTING.md)
 
 RPNH is a provider-neutral agent execution framework for composing language
@@ -189,7 +189,9 @@ registered final result—not a picture or process exit—establish completion.
 
 ## Example catalog
 
-Choose one path first. The [complete source example index](examples/README.md) lists every example by behavior, figures and model requirements, including package reuse, native input, applied tasks and benchmarks.
+Start with one of the three recommended paths below, or browse [all source examples](#all-source-examples) directly. The [complete source example index](examples/README.md) adds figures, model requirements and run preparation.
+
+### Recommended starting points
 
 | What to try | Start with | Run preparation |
 |---|---|---|
@@ -197,11 +199,21 @@ Choose one path first. The [complete source example index](examples/README.md) l
 | Understand agent parallelism and handoffs | [Workflow patterns](examples/workflow_patterns/README.md) | Scripted by default; no model credentials |
 | Co-create and independently run a complete project | [Project collaboration](examples/project_collaboration/README.md) | Authorized live profile; controlled contributors |
 
+### All source examples
+
+These direct links cover all 24 entries in the full index, grouped by modeled object. Each page retains its own run requirements, figure provenance and result scope.
+
+- **Agent and role workflows:** [Project collaboration](examples/project_collaboration/README.md) · [Agent-network co-building](examples/user_collaboration/agent_cobuild/README.md) · [Hybrid summary](examples/hybrid_summary/README.md) · [Workflow patterns](examples/workflow_patterns/README.md) · [Task workspace](examples/task_workspace/README.md) · [Native net operations](examples/net_operations/README.md) · [JB steering packet](examples/jb_steering_packet/README.md) · [3-DOF powered descent](examples/three_dof_powered_descent/README.md) · [HarnessAudit Office](examples/harnessaudit_office/README.md) · [RRSI v0.6](examples/rrsi_v06/README.md) · [AutomationBench](examples/automationbench/README.md) · [ERP-Bench](examples/erp_bench/README.md) · [SlopCodeBench pilot](examples/slopcodebench/README.md).
+- **Tool, SDK and validation fixtures:** [Native plugin](examples/native_plugin/README.md) · [Package reuse](examples/package_reuse/README.md) · [Atomic tool pipeline](examples/tool_pipeline/README.md) · [SQL query validation](examples/query_validation/README.md) · [Multi-source data merge](examples/tool_pipeline/multi_source/README.md) · [Synthetic iteration](examples/rsi_workflows/README.md) · [Example evidence contract](examples/example_validation/README.md).
+- **Native input and authority fixtures:** [Mock refund approval](examples/approval_workflow/README.md) · [Controlled quote](examples/a2a_quote/README.md).
+- **Historical contribution and business evidence:** [Route mechanisms and results](examples/user_collaboration/README.md#historical-route-planning-mechanism-evidence) · [Native billing mechanism fixture](examples/user_collaboration/native_billing/README.md).
+
 Choose by modeled object: agent workflows describe task responsibilities and handoffs; domain algorithms and business systems are tools or external environments. ERP, 3-DOF, JB, HarnessAudit, AutomationBench, SlopCodeBench and RRSI remain genuine agent/role workflows. RRSI custom registered-host role PNs can have genuine agent bindings without using stock AgentLoop. Pure-tool pipelines, native-input gates, author principals and annotations do not become agents merely through Registry lineage.
 
-Execution-gallery pages identify the origin of their actual dashboard images.
-Benchmark examples supply scored records and viewer commands for newly
-generated runs; they do not claim an archived screenshot. The
+Each example page identifies whether its figures show an actual run or an initial
+declaration, with the corresponding provenance and evidence scope. A declaration
+view does not establish execution; consult each page for recorded results and
+Viewer commands for new runs. The
 [complete example guide](docs/guides/examples.md) records commands, expected
 results and evidence boundaries for calculation, document, serial, parallel,
 long-process and independent-task examples. The
@@ -210,6 +222,7 @@ long-process and independent-task examples. The
 A wheel built from this source candidate exports `native_plugin`,
 `hybrid_summary` (including its shared fixture and plugin), `compose_serial` and
 `package_reuse`, as well as the default provider-neutral `adapter_task`.
+Installed export entry points: [adapter_task](cpn/examples/adapter_task/README.md); [compose_serial](examples/net_operations/README.md) creates a definition without executing a workflow. These are named exports, not additional source-index entries.
 Follow [export and customization](docs/guides/examples.md#export-an-example-and-make-it-yours)
 or the complete [runnable v2 package tutorial](docs/guides/package-reuse-example.md).
 The older rc1 wheel contains only the adapter export. Exporting never configures

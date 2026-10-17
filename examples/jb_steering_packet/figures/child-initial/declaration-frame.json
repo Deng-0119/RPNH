@@ -1,0 +1,2163 @@
+{
+  "schema_version": "rpnh/dashboard/v1",
+  "source": {
+    "mode": "initial_configured",
+    "task_label": "jb-child: archived registered declaration only",
+    "verified_head_ordinal": null
+  },
+  "net": {
+    "schema_version": "rpnh/net_view/v1",
+    "source": {
+      "mode": "initial_configured",
+      "task_label": "jb-child: archived registered declaration only",
+      "verified_head_ordinal": null
+    },
+    "summary": {
+      "node_count": 24,
+      "transition_count": 7,
+      "place_count": 17,
+      "resource_place_count": 0,
+      "edge_count": 49,
+      "resource_edge_count": 0
+    },
+    "nodes": [
+      {
+        "id": "team.control__evidence_to_synthesis",
+        "label": "team.control__evidence_to_synthesis",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "classification": "place",
+        "schema": "application/rpnh_agent_text/v1",
+        "schema_variants": [],
+        "channel": "control",
+        "capacity": null,
+        "token_kind": "data",
+        "colours": [],
+        "initial_tokens": [],
+        "reusable": false,
+        "resource_pools": [],
+        "logical_slots": []
+      },
+      {
+        "id": "team.control__intake_to_evidence",
+        "label": "team.control__intake_to_evidence",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "classification": "place",
+        "schema": "application/rpnh_agent_text/v1",
+        "schema_variants": [],
+        "channel": "control",
+        "capacity": null,
+        "token_kind": "data",
+        "colours": [],
+        "initial_tokens": [],
+        "reusable": false,
+        "resource_pools": [],
+        "logical_slots": []
+      },
+      {
+        "id": "team.control__intake_to_workbook",
+        "label": "team.control__intake_to_workbook",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "classification": "place",
+        "schema": "application/rpnh_agent_text/v1",
+        "schema_variants": [],
+        "channel": "control",
+        "capacity": null,
+        "token_kind": "data",
+        "colours": [],
+        "initial_tokens": [],
+        "reusable": false,
+        "resource_pools": [],
+        "logical_slots": []
+      },
+      {
+        "id": "team.control__review_rework_to_synthesis",
+        "label": "team.control__review_rework_to_synthesis",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "classification": "place",
+        "schema": "application/rpnh_agent_text/v1",
+        "schema_variants": [],
+        "channel": "control",
+        "capacity": null,
+        "token_kind": "data",
+        "colours": [],
+        "initial_tokens": [],
+        "reusable": false,
+        "resource_pools": [],
+        "logical_slots": []
+      },
+      {
+        "id": "team.control__review_to_finalize",
+        "label": "team.control__review_to_finalize",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "classification": "place",
+        "schema": "application/rpnh_agent_text/v1",
+        "schema_variants": [],
+        "channel": "control",
+        "capacity": null,
+        "token_kind": "data",
+        "colours": [],
+        "initial_tokens": [],
+        "reusable": false,
+        "resource_pools": [],
+        "logical_slots": []
+      },
+      {
+        "id": "team.control__synthesis_to_review",
+        "label": "team.control__synthesis_to_review",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "classification": "place",
+        "schema": "application/rpnh_agent_text/v1",
+        "schema_variants": [],
+        "channel": "control",
+        "capacity": null,
+        "token_kind": "data",
+        "colours": [],
+        "initial_tokens": [],
+        "reusable": false,
+        "resource_pools": [],
+        "logical_slots": []
+      },
+      {
+        "id": "team.control__workbook_to_synthesis",
+        "label": "team.control__workbook_to_synthesis",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "classification": "place",
+        "schema": "application/rpnh_agent_text/v1",
+        "schema_variants": [],
+        "channel": "control",
+        "capacity": null,
+        "token_kind": "data",
+        "colours": [],
+        "initial_tokens": [],
+        "reusable": false,
+        "resource_pools": [],
+        "logical_slots": []
+      },
+      {
+        "id": "team.control__workflow_rework_permit",
+        "label": "team.control__workflow_rework_permit",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "classification": "place",
+        "schema": "application/rpnh_agent_text/v1",
+        "schema_variants": [],
+        "channel": "control",
+        "capacity": null,
+        "token_kind": "data",
+        "colours": [],
+        "initial_tokens": [],
+        "reusable": false,
+        "resource_pools": [],
+        "logical_slots": []
+      },
+      {
+        "id": "team.data__evidence__planning_evidence",
+        "label": "team.data__evidence__planning_evidence",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "classification": "place",
+        "schema": "application/rpnh_agent_text/v1",
+        "schema_variants": [],
+        "channel": "data",
+        "capacity": null,
+        "token_kind": "data",
+        "colours": [],
+        "initial_tokens": [],
+        "reusable": false,
+        "resource_pools": [],
+        "logical_slots": []
+      },
+      {
+        "id": "team.data__finalize__final_deliverable",
+        "label": "team.data__finalize__final_deliverable",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "classification": "place",
+        "schema": "application/rpnh_agent_text/v1",
+        "schema_variants": [],
+        "channel": "data",
+        "capacity": null,
+        "token_kind": "data",
+        "colours": [],
+        "initial_tokens": [],
+        "reusable": false,
+        "resource_pools": [],
+        "logical_slots": []
+      },
+      {
+        "id": "team.data__intake__study_spec",
+        "label": "team.data__intake__study_spec",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "classification": "place",
+        "schema": "application/rpnh_agent_text/v1",
+        "schema_variants": [],
+        "channel": "data",
+        "capacity": null,
+        "token_kind": "data",
+        "colours": [],
+        "initial_tokens": [],
+        "reusable": false,
+        "resource_pools": [],
+        "logical_slots": []
+      },
+      {
+        "id": "team.data__intake__workbook_spec",
+        "label": "team.data__intake__workbook_spec",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "classification": "place",
+        "schema": "application/rpnh_agent_text/v1",
+        "schema_variants": [],
+        "channel": "data",
+        "capacity": null,
+        "token_kind": "data",
+        "colours": [],
+        "initial_tokens": [],
+        "reusable": false,
+        "resource_pools": [],
+        "logical_slots": []
+      },
+      {
+        "id": "team.data__review__approved_packet",
+        "label": "team.data__review__approved_packet",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "classification": "place",
+        "schema": "application/rpnh_agent_text/v1",
+        "schema_variants": [],
+        "channel": "data",
+        "capacity": null,
+        "token_kind": "data",
+        "colours": [],
+        "initial_tokens": [],
+        "reusable": false,
+        "resource_pools": [],
+        "logical_slots": []
+      },
+      {
+        "id": "team.data__review__revision_request",
+        "label": "team.data__review__revision_request",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "classification": "place",
+        "schema": "application/rpnh_agent_text/v1",
+        "schema_variants": [],
+        "channel": "data",
+        "capacity": null,
+        "token_kind": "data",
+        "colours": [],
+        "initial_tokens": [],
+        "reusable": false,
+        "resource_pools": [],
+        "logical_slots": []
+      },
+      {
+        "id": "team.data__synthesis__draft_packet",
+        "label": "team.data__synthesis__draft_packet",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "classification": "place",
+        "schema": "application/rpnh_agent_text/v1",
+        "schema_variants": [],
+        "channel": "data",
+        "capacity": null,
+        "token_kind": "data",
+        "colours": [],
+        "initial_tokens": [],
+        "reusable": false,
+        "resource_pools": [],
+        "logical_slots": []
+      },
+      {
+        "id": "team.data__workbook_analysis__appendix_results",
+        "label": "team.data__workbook_analysis__appendix_results",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "classification": "place",
+        "schema": "application/rpnh_agent_text/v1",
+        "schema_variants": [],
+        "channel": "data",
+        "capacity": null,
+        "token_kind": "data",
+        "colours": [],
+        "initial_tokens": [],
+        "reusable": false,
+        "resource_pools": [],
+        "logical_slots": []
+      },
+      {
+        "id": "team.evidence",
+        "label": "team.evidence",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "team.evidence",
+        "operation_id": "op_0",
+        "executor": "rpnh/default-agent/v1",
+        "executor_declaration": {
+          "contracts": {
+            "input_ports": null,
+            "output_ports": null,
+            "provider_request_schema": "registry_v1/logical_provider_request_recipe/v1",
+            "resource_read_contracts": [
+              {
+                "context_origins": [
+                  "petri_operation"
+                ],
+                "descriptor_equals": {},
+                "extension_equals": {},
+                "extension_key": null,
+                "metadata_equals": {},
+                "metadata_only": false,
+                "origin_kinds": [
+                  "provider_request"
+                ],
+                "require_producer_invocation": true,
+                "require_provenance_binding": true,
+                "single_derived_source_key": null
+              }
+            ],
+            "transport": "llm"
+          },
+          "identity": {
+            "implementation_id": "components.execute_default_operation",
+            "revision": "v1"
+          },
+          "key": "rpnh/default-agent/v1",
+          "kind": "executor"
+        },
+        "inputs": [
+          "team.input__evidence__study_spec"
+        ],
+        "outputs": [
+          "team.output__evidence__planning_evidence",
+          "team.interrupt__evidence__evidence__study_spec"
+        ],
+        "outcomes": [
+          {
+            "name": "complete",
+            "products": [
+              {
+                "port": "team.output__evidence__planning_evidence",
+                "minimum": 1,
+                "maximum": 1
+              }
+            ],
+            "effects": []
+          },
+          {
+            "name": "interrupted",
+            "products": [],
+            "effects": []
+          }
+        ],
+        "tools": [
+          "complete_interaction",
+          "delegate_leaf",
+          "query_environment_resources",
+          "query_registry_resources",
+          "read_action_output",
+          "read_file",
+          "request_resource",
+          "search_text",
+          "workspace",
+          "write_file"
+        ],
+        "config": {
+          "agent_loop_role": "actor",
+          "execution_profile_id": null,
+          "provider_attempt_limit": 3,
+          "resource_bounds": {
+            "max_llm_attempts": 18,
+            "max_tool_turns": 18
+          },
+          "semantic_node_id": "evidence",
+          "semantic_outcome_ids": [
+            "complete"
+          ],
+          "turn_budget_extension": 18
+        },
+        "request_port": "team.input__evidence__study_spec",
+        "budget_binding": {
+          "bucket_id": "evidence",
+          "budget_scope": "evidence",
+          "finalization_scope": null
+        },
+        "count_guards": [],
+        "input_verdicts": []
+      },
+      {
+        "id": "team.finalize",
+        "label": "team.finalize",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "team.finalize",
+        "operation_id": "op_1",
+        "executor": "rpnh/default-agent/v1",
+        "executor_declaration": {
+          "contracts": {
+            "input_ports": null,
+            "output_ports": null,
+            "provider_request_schema": "registry_v1/logical_provider_request_recipe/v1",
+            "resource_read_contracts": [
+              {
+                "context_origins": [
+                  "petri_operation"
+                ],
+                "descriptor_equals": {},
+                "extension_equals": {},
+                "extension_key": null,
+                "metadata_equals": {},
+                "metadata_only": false,
+                "origin_kinds": [
+                  "provider_request"
+                ],
+                "require_producer_invocation": true,
+                "require_provenance_binding": true,
+                "single_derived_source_key": null
+              }
+            ],
+            "transport": "llm"
+          },
+          "identity": {
+            "implementation_id": "components.execute_default_operation",
+            "revision": "v1"
+          },
+          "key": "rpnh/default-agent/v1",
+          "kind": "executor"
+        },
+        "inputs": [
+          "team.input__finalize__approved_packet"
+        ],
+        "outputs": [
+          "team.result",
+          "team.interrupt__finalize__finalize__approved_packet"
+        ],
+        "outcomes": [
+          {
+            "name": "complete",
+            "products": [
+              {
+                "port": "team.result",
+                "minimum": 1,
+                "maximum": 1
+              }
+            ],
+            "effects": []
+          },
+          {
+            "name": "interrupted",
+            "products": [],
+            "effects": []
+          }
+        ],
+        "tools": [
+          "complete_interaction",
+          "delegate_leaf",
+          "query_environment_resources",
+          "query_registry_resources",
+          "read_action_output",
+          "read_file",
+          "request_resource",
+          "search_text",
+          "workspace",
+          "write_file"
+        ],
+        "config": {
+          "agent_loop_role": "actor",
+          "execution_profile_id": null,
+          "provider_attempt_limit": 3,
+          "resource_bounds": {
+            "max_llm_attempts": 18,
+            "max_tool_turns": 18
+          },
+          "semantic_node_id": "finalize",
+          "semantic_outcome_ids": [
+            "complete"
+          ],
+          "turn_budget_extension": 18
+        },
+        "request_port": "team.input__finalize__approved_packet",
+        "budget_binding": {
+          "bucket_id": "finalize",
+          "budget_scope": "finalize",
+          "finalization_scope": null
+        },
+        "count_guards": [],
+        "input_verdicts": []
+      },
+      {
+        "id": "team.ingress__intake__packet",
+        "label": "team.ingress__intake__packet",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "classification": "place",
+        "schema": "application/rpnh_agent_text/v1",
+        "schema_variants": [],
+        "channel": "data",
+        "capacity": null,
+        "token_kind": "data",
+        "colours": [],
+        "initial_tokens": [],
+        "reusable": false,
+        "resource_pools": [],
+        "logical_slots": []
+      },
+      {
+        "id": "team.intake",
+        "label": "team.intake",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "team.intake",
+        "operation_id": "op_2",
+        "executor": "rpnh/default-agent/v1",
+        "executor_declaration": {
+          "contracts": {
+            "input_ports": null,
+            "output_ports": null,
+            "provider_request_schema": "registry_v1/logical_provider_request_recipe/v1",
+            "resource_read_contracts": [
+              {
+                "context_origins": [
+                  "petri_operation"
+                ],
+                "descriptor_equals": {},
+                "extension_equals": {},
+                "extension_key": null,
+                "metadata_equals": {},
+                "metadata_only": false,
+                "origin_kinds": [
+                  "provider_request"
+                ],
+                "require_producer_invocation": true,
+                "require_provenance_binding": true,
+                "single_derived_source_key": null
+              }
+            ],
+            "transport": "llm"
+          },
+          "identity": {
+            "implementation_id": "components.execute_default_operation",
+            "revision": "v1"
+          },
+          "key": "rpnh/default-agent/v1",
+          "kind": "executor"
+        },
+        "inputs": [
+          "team.request"
+        ],
+        "outputs": [
+          "team.output__intake__study_spec",
+          "team.output__intake__workbook_spec",
+          "team.interrupt__intake__intake__packet"
+        ],
+        "outcomes": [
+          {
+            "name": "complete",
+            "products": [
+              {
+                "port": "team.output__intake__study_spec",
+                "minimum": 1,
+                "maximum": 1
+              },
+              {
+                "port": "team.output__intake__workbook_spec",
+                "minimum": 1,
+                "maximum": 1
+              }
+            ],
+            "effects": []
+          },
+          {
+            "name": "interrupted",
+            "products": [],
+            "effects": []
+          }
+        ],
+        "tools": [
+          "complete_interaction",
+          "delegate_leaf",
+          "query_environment_resources",
+          "query_registry_resources",
+          "read_action_output",
+          "read_file",
+          "request_resource",
+          "search_text",
+          "workspace",
+          "write_file"
+        ],
+        "config": {
+          "agent_loop_role": "actor",
+          "execution_profile_id": null,
+          "provider_attempt_limit": 3,
+          "resource_bounds": {
+            "max_llm_attempts": 18,
+            "max_tool_turns": 18
+          },
+          "semantic_node_id": "intake",
+          "semantic_outcome_ids": [
+            "complete"
+          ],
+          "turn_budget_extension": 18
+        },
+        "request_port": "team.request",
+        "budget_binding": {
+          "bucket_id": "intake",
+          "budget_scope": "intake",
+          "finalization_scope": null
+        },
+        "count_guards": [],
+        "input_verdicts": []
+      },
+      {
+        "id": "team.review",
+        "label": "team.review",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "team.review",
+        "operation_id": "op_3",
+        "executor": "rpnh/default-agent/v1",
+        "executor_declaration": {
+          "contracts": {
+            "input_ports": null,
+            "output_ports": null,
+            "provider_request_schema": "registry_v1/logical_provider_request_recipe/v1",
+            "resource_read_contracts": [
+              {
+                "context_origins": [
+                  "petri_operation"
+                ],
+                "descriptor_equals": {},
+                "extension_equals": {},
+                "extension_key": null,
+                "metadata_equals": {},
+                "metadata_only": false,
+                "origin_kinds": [
+                  "provider_request"
+                ],
+                "require_producer_invocation": true,
+                "require_provenance_binding": true,
+                "single_derived_source_key": null
+              }
+            ],
+            "transport": "llm"
+          },
+          "identity": {
+            "implementation_id": "components.execute_default_operation",
+            "revision": "v1"
+          },
+          "key": "rpnh/default-agent/v1",
+          "kind": "executor"
+        },
+        "inputs": [
+          "team.input__review__draft_packet"
+        ],
+        "outputs": [
+          "team.output__review__approved_packet",
+          "team.output__review__revision_request",
+          "team.interrupt__review__review__draft_packet"
+        ],
+        "outcomes": [
+          {
+            "name": "complete",
+            "products": [
+              {
+                "port": "team.output__review__approved_packet",
+                "minimum": 1,
+                "maximum": 1
+              }
+            ],
+            "effects": []
+          },
+          {
+            "name": "rework",
+            "products": [
+              {
+                "port": "team.output__review__revision_request",
+                "minimum": 1,
+                "maximum": 1
+              }
+            ],
+            "effects": []
+          },
+          {
+            "name": "interrupted",
+            "products": [],
+            "effects": []
+          }
+        ],
+        "tools": [
+          "complete_interaction",
+          "delegate_leaf",
+          "query_environment_resources",
+          "query_registry_resources",
+          "read_action_output",
+          "read_file",
+          "request_resource",
+          "search_text",
+          "workspace",
+          "write_file"
+        ],
+        "config": {
+          "agent_loop_role": "actor",
+          "execution_profile_id": null,
+          "provider_attempt_limit": 3,
+          "resource_bounds": {
+            "max_llm_attempts": 18,
+            "max_tool_turns": 18
+          },
+          "semantic_node_id": "review",
+          "semantic_outcome_ids": [
+            "complete",
+            "rework"
+          ],
+          "turn_budget_extension": 18
+        },
+        "request_port": "team.input__review__draft_packet",
+        "budget_binding": {
+          "bucket_id": "review",
+          "budget_scope": "review",
+          "finalization_scope": null
+        },
+        "count_guards": [],
+        "input_verdicts": []
+      },
+      {
+        "id": "team.synthesis",
+        "label": "team.synthesis",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "team.synthesis",
+        "operation_id": "op_4",
+        "executor": "rpnh/default-agent/v1",
+        "executor_declaration": {
+          "contracts": {
+            "input_ports": null,
+            "output_ports": null,
+            "provider_request_schema": "registry_v1/logical_provider_request_recipe/v1",
+            "resource_read_contracts": [
+              {
+                "context_origins": [
+                  "petri_operation"
+                ],
+                "descriptor_equals": {},
+                "extension_equals": {},
+                "extension_key": null,
+                "metadata_equals": {},
+                "metadata_only": false,
+                "origin_kinds": [
+                  "provider_request"
+                ],
+                "require_producer_invocation": true,
+                "require_provenance_binding": true,
+                "single_derived_source_key": null
+              }
+            ],
+            "transport": "llm"
+          },
+          "identity": {
+            "implementation_id": "components.execute_default_operation",
+            "revision": "v1"
+          },
+          "key": "rpnh/default-agent/v1",
+          "kind": "executor"
+        },
+        "inputs": [
+          "team.input__synthesis__appendix_results",
+          "team.input__synthesis__planning_evidence"
+        ],
+        "outputs": [
+          "team.output__synthesis__draft_packet",
+          "team.interrupt__synthesis__synthesis__appendix_results",
+          "team.interrupt__synthesis__synthesis__planning_evidence"
+        ],
+        "outcomes": [
+          {
+            "name": "complete",
+            "products": [
+              {
+                "port": "team.output__synthesis__draft_packet",
+                "minimum": 1,
+                "maximum": 1
+              }
+            ],
+            "effects": []
+          },
+          {
+            "name": "interrupted",
+            "products": [],
+            "effects": []
+          }
+        ],
+        "tools": [
+          "complete_interaction",
+          "delegate_leaf",
+          "query_environment_resources",
+          "query_registry_resources",
+          "read_action_output",
+          "read_file",
+          "request_resource",
+          "search_text",
+          "workspace",
+          "write_file"
+        ],
+        "config": {
+          "agent_loop_role": "actor",
+          "execution_profile_id": null,
+          "provider_attempt_limit": 3,
+          "resource_bounds": {
+            "max_llm_attempts": 18,
+            "max_tool_turns": 18
+          },
+          "semantic_node_id": "synthesis",
+          "semantic_outcome_ids": [
+            "complete"
+          ],
+          "turn_budget_extension": 18
+        },
+        "request_port": "team.input__synthesis__appendix_results",
+        "budget_binding": {
+          "bucket_id": "synthesis",
+          "budget_scope": "synthesis",
+          "finalization_scope": null
+        },
+        "count_guards": [],
+        "input_verdicts": []
+      },
+      {
+        "id": "team.synthesis__rework",
+        "label": "team.synthesis__rework",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "team.synthesis__rework",
+        "operation_id": "op_5",
+        "executor": "rpnh/default-agent/v1",
+        "executor_declaration": {
+          "contracts": {
+            "input_ports": null,
+            "output_ports": null,
+            "provider_request_schema": "registry_v1/logical_provider_request_recipe/v1",
+            "resource_read_contracts": [
+              {
+                "context_origins": [
+                  "petri_operation"
+                ],
+                "descriptor_equals": {},
+                "extension_equals": {},
+                "extension_key": null,
+                "metadata_equals": {},
+                "metadata_only": false,
+                "origin_kinds": [
+                  "provider_request"
+                ],
+                "require_producer_invocation": true,
+                "require_provenance_binding": true,
+                "single_derived_source_key": null
+              }
+            ],
+            "transport": "llm"
+          },
+          "identity": {
+            "implementation_id": "components.execute_default_operation",
+            "revision": "v1"
+          },
+          "key": "rpnh/default-agent/v1",
+          "kind": "executor"
+        },
+        "inputs": [
+          "team.input__synthesis__revision_request"
+        ],
+        "outputs": [
+          "team.output__synthesis__draft_packet",
+          "team.interrupt__synthesis__synthesis__rework__revision_request"
+        ],
+        "outcomes": [
+          {
+            "name": "complete",
+            "products": [
+              {
+                "port": "team.output__synthesis__draft_packet",
+                "minimum": 1,
+                "maximum": 1
+              }
+            ],
+            "effects": []
+          },
+          {
+            "name": "interrupted",
+            "products": [],
+            "effects": []
+          }
+        ],
+        "tools": [
+          "complete_interaction",
+          "delegate_leaf",
+          "query_environment_resources",
+          "query_registry_resources",
+          "read_action_output",
+          "read_file",
+          "request_resource",
+          "search_text",
+          "workspace",
+          "write_file"
+        ],
+        "config": {
+          "agent_loop_role": "actor",
+          "execution_profile_id": null,
+          "provider_attempt_limit": 3,
+          "resource_bounds": {
+            "max_llm_attempts": 18,
+            "max_tool_turns": 18
+          },
+          "semantic_node_id": "synthesis",
+          "semantic_outcome_ids": [
+            "complete"
+          ],
+          "turn_budget_extension": 18
+        },
+        "request_port": "team.input__synthesis__revision_request",
+        "budget_binding": {
+          "bucket_id": "rpnh:workflow:rework",
+          "budget_scope": "rpnh:workflow:rework",
+          "finalization_scope": null
+        },
+        "count_guards": [],
+        "input_verdicts": []
+      },
+      {
+        "id": "team.workbook_analysis",
+        "label": "team.workbook_analysis",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "team.workbook_analysis",
+        "operation_id": "op_6",
+        "executor": "rpnh/default-agent/v1",
+        "executor_declaration": {
+          "contracts": {
+            "input_ports": null,
+            "output_ports": null,
+            "provider_request_schema": "registry_v1/logical_provider_request_recipe/v1",
+            "resource_read_contracts": [
+              {
+                "context_origins": [
+                  "petri_operation"
+                ],
+                "descriptor_equals": {},
+                "extension_equals": {},
+                "extension_key": null,
+                "metadata_equals": {},
+                "metadata_only": false,
+                "origin_kinds": [
+                  "provider_request"
+                ],
+                "require_producer_invocation": true,
+                "require_provenance_binding": true,
+                "single_derived_source_key": null
+              }
+            ],
+            "transport": "llm"
+          },
+          "identity": {
+            "implementation_id": "components.execute_default_operation",
+            "revision": "v1"
+          },
+          "key": "rpnh/default-agent/v1",
+          "kind": "executor"
+        },
+        "inputs": [
+          "team.input__workbook_analysis__workbook_spec"
+        ],
+        "outputs": [
+          "team.output__workbook_analysis__appendix_results",
+          "team.interrupt__workbook_analysis__workbook_analysis__workbook_spec"
+        ],
+        "outcomes": [
+          {
+            "name": "complete",
+            "products": [
+              {
+                "port": "team.output__workbook_analysis__appendix_results",
+                "minimum": 1,
+                "maximum": 1
+              }
+            ],
+            "effects": []
+          },
+          {
+            "name": "interrupted",
+            "products": [],
+            "effects": []
+          }
+        ],
+        "tools": [
+          "complete_interaction",
+          "delegate_leaf",
+          "query_environment_resources",
+          "query_registry_resources",
+          "read_action_output",
+          "read_file",
+          "request_resource",
+          "search_text",
+          "workspace",
+          "write_file"
+        ],
+        "config": {
+          "agent_loop_role": "actor",
+          "execution_profile_id": null,
+          "provider_attempt_limit": 3,
+          "resource_bounds": {
+            "max_llm_attempts": 18,
+            "max_tool_turns": 18
+          },
+          "semantic_node_id": "workbook_analysis",
+          "semantic_outcome_ids": [
+            "complete"
+          ],
+          "turn_budget_extension": 18
+        },
+        "request_port": "team.input__workbook_analysis__workbook_spec",
+        "budget_binding": {
+          "bucket_id": "workbook_analysis",
+          "budget_scope": "workbook_analysis",
+          "finalization_scope": null
+        },
+        "count_guards": [],
+        "input_verdicts": []
+      }
+    ],
+    "edges": [
+      {
+        "id": "edge:arc:team.control__evidence_to_synthesis:team.synthesis:consume:-:1",
+        "source": "team.control__evidence_to_synthesis",
+        "target": "team.synthesis",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.control__intake_to_evidence:team.evidence:consume:-:1",
+        "source": "team.control__intake_to_evidence",
+        "target": "team.evidence",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.control__intake_to_workbook:team.workbook_analysis:consume:-:1",
+        "source": "team.control__intake_to_workbook",
+        "target": "team.workbook_analysis",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.control__review_rework_to_synthesis:team.synthesis__rework:consume:-:1",
+        "source": "team.control__review_rework_to_synthesis",
+        "target": "team.synthesis__rework",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.control__review_to_finalize:team.finalize:consume:-:1",
+        "source": "team.control__review_to_finalize",
+        "target": "team.finalize",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.control__synthesis_to_review:team.review:consume:-:1",
+        "source": "team.control__synthesis_to_review",
+        "target": "team.review",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.control__workbook_to_synthesis:team.synthesis:consume:-:1",
+        "source": "team.control__workbook_to_synthesis",
+        "target": "team.synthesis",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.control__workflow_rework_permit:team.synthesis__rework:consume:-:1",
+        "source": "team.control__workflow_rework_permit",
+        "target": "team.synthesis__rework",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.data__evidence__planning_evidence:team.synthesis:consume:-:1",
+        "source": "team.data__evidence__planning_evidence",
+        "target": "team.synthesis",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.data__intake__study_spec:team.evidence:consume:-:1",
+        "source": "team.data__intake__study_spec",
+        "target": "team.evidence",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.data__intake__workbook_spec:team.workbook_analysis:consume:-:1",
+        "source": "team.data__intake__workbook_spec",
+        "target": "team.workbook_analysis",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.data__review__approved_packet:team.finalize:consume:-:1",
+        "source": "team.data__review__approved_packet",
+        "target": "team.finalize",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.data__review__revision_request:team.synthesis__rework:consume:-:1",
+        "source": "team.data__review__revision_request",
+        "target": "team.synthesis__rework",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.data__synthesis__draft_packet:team.review:consume:-:1",
+        "source": "team.data__synthesis__draft_packet",
+        "target": "team.review",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.data__workbook_analysis__appendix_results:team.synthesis:consume:-:1",
+        "source": "team.data__workbook_analysis__appendix_results",
+        "target": "team.synthesis",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.evidence:team.control__evidence_to_synthesis:produce:complete:1",
+        "source": "team.evidence",
+        "target": "team.control__evidence_to_synthesis",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "control_only",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.evidence:team.control__intake_to_evidence:produce:interrupted:1",
+        "source": "team.evidence",
+        "target": "team.control__intake_to_evidence",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "interrupted",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "forward",
+        "forward_source": "team.control__intake_to_evidence",
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.evidence:team.data__evidence__planning_evidence:produce:complete:1",
+        "source": "team.evidence",
+        "target": "team.data__evidence__planning_evidence",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.evidence:team.data__intake__study_spec:produce:interrupted:1",
+        "source": "team.evidence",
+        "target": "team.data__intake__study_spec",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "interrupted",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "forward",
+        "forward_source": "team.data__intake__study_spec",
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.finalize:team.control__review_to_finalize:produce:interrupted:1",
+        "source": "team.finalize",
+        "target": "team.control__review_to_finalize",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "interrupted",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "forward",
+        "forward_source": "team.control__review_to_finalize",
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.finalize:team.data__finalize__final_deliverable:produce:complete:1",
+        "source": "team.finalize",
+        "target": "team.data__finalize__final_deliverable",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.finalize:team.data__review__approved_packet:produce:interrupted:1",
+        "source": "team.finalize",
+        "target": "team.data__review__approved_packet",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "interrupted",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "forward",
+        "forward_source": "team.data__review__approved_packet",
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.ingress__intake__packet:team.intake:consume:-:1",
+        "source": "team.ingress__intake__packet",
+        "target": "team.intake",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.intake:team.control__intake_to_evidence:produce:complete:1",
+        "source": "team.intake",
+        "target": "team.control__intake_to_evidence",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "control_only",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.intake:team.control__intake_to_workbook:produce:complete:1",
+        "source": "team.intake",
+        "target": "team.control__intake_to_workbook",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "control_only",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.intake:team.control__workflow_rework_permit:produce:complete:1",
+        "source": "team.intake",
+        "target": "team.control__workflow_rework_permit",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "control_only",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.intake:team.data__intake__study_spec:produce:complete:1",
+        "source": "team.intake",
+        "target": "team.data__intake__study_spec",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.intake:team.data__intake__workbook_spec:produce:complete:1",
+        "source": "team.intake",
+        "target": "team.data__intake__workbook_spec",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.intake:team.ingress__intake__packet:produce:interrupted:1",
+        "source": "team.intake",
+        "target": "team.ingress__intake__packet",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "interrupted",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "forward",
+        "forward_source": "team.ingress__intake__packet",
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.review:team.control__review_rework_to_synthesis:produce:rework:1",
+        "source": "team.review",
+        "target": "team.control__review_rework_to_synthesis",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "rework",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "control_only",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.review:team.control__review_to_finalize:produce:complete:1",
+        "source": "team.review",
+        "target": "team.control__review_to_finalize",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "control_only",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.review:team.control__synthesis_to_review:produce:interrupted:1",
+        "source": "team.review",
+        "target": "team.control__synthesis_to_review",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "interrupted",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "forward",
+        "forward_source": "team.control__synthesis_to_review",
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.review:team.data__review__approved_packet:produce:complete:1",
+        "source": "team.review",
+        "target": "team.data__review__approved_packet",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.review:team.data__review__revision_request:produce:rework:1",
+        "source": "team.review",
+        "target": "team.data__review__revision_request",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "rework",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.review:team.data__synthesis__draft_packet:produce:interrupted:1",
+        "source": "team.review",
+        "target": "team.data__synthesis__draft_packet",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "interrupted",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "forward",
+        "forward_source": "team.data__synthesis__draft_packet",
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.synthesis:team.control__evidence_to_synthesis:produce:interrupted:1",
+        "source": "team.synthesis",
+        "target": "team.control__evidence_to_synthesis",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "interrupted",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "forward",
+        "forward_source": "team.control__evidence_to_synthesis",
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.synthesis:team.control__synthesis_to_review:produce:complete:1",
+        "source": "team.synthesis",
+        "target": "team.control__synthesis_to_review",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "control_only",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.synthesis:team.control__workbook_to_synthesis:produce:interrupted:1",
+        "source": "team.synthesis",
+        "target": "team.control__workbook_to_synthesis",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "interrupted",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "forward",
+        "forward_source": "team.control__workbook_to_synthesis",
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.synthesis:team.data__evidence__planning_evidence:produce:interrupted:1",
+        "source": "team.synthesis",
+        "target": "team.data__evidence__planning_evidence",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "interrupted",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "forward",
+        "forward_source": "team.data__evidence__planning_evidence",
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.synthesis:team.data__synthesis__draft_packet:produce:complete:1",
+        "source": "team.synthesis",
+        "target": "team.data__synthesis__draft_packet",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.synthesis:team.data__workbook_analysis__appendix_results:produce:interrupted:1",
+        "source": "team.synthesis",
+        "target": "team.data__workbook_analysis__appendix_results",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "interrupted",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "forward",
+        "forward_source": "team.data__workbook_analysis__appendix_results",
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.synthesis__rework:team.control__review_rework_to_synthesis:produce:interrupted:1",
+        "source": "team.synthesis__rework",
+        "target": "team.control__review_rework_to_synthesis",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "interrupted",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "forward",
+        "forward_source": "team.control__review_rework_to_synthesis",
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.synthesis__rework:team.control__synthesis_to_review:produce:complete:1",
+        "source": "team.synthesis__rework",
+        "target": "team.control__synthesis_to_review",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "control_only",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.synthesis__rework:team.data__review__revision_request:produce:interrupted:1",
+        "source": "team.synthesis__rework",
+        "target": "team.data__review__revision_request",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "interrupted",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "forward",
+        "forward_source": "team.data__review__revision_request",
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.synthesis__rework:team.data__synthesis__draft_packet:produce:complete:1",
+        "source": "team.synthesis__rework",
+        "target": "team.data__synthesis__draft_packet",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.workbook_analysis:team.control__intake_to_workbook:produce:interrupted:1",
+        "source": "team.workbook_analysis",
+        "target": "team.control__intake_to_workbook",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "interrupted",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "forward",
+        "forward_source": "team.control__intake_to_workbook",
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.workbook_analysis:team.control__workbook_to_synthesis:produce:complete:1",
+        "source": "team.workbook_analysis",
+        "target": "team.control__workbook_to_synthesis",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "control_only",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.workbook_analysis:team.data__intake__workbook_spec:produce:interrupted:1",
+        "source": "team.workbook_analysis",
+        "target": "team.data__intake__workbook_spec",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "interrupted",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "forward",
+        "forward_source": "team.data__intake__workbook_spec",
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:team.workbook_analysis:team.data__workbook_analysis__appendix_results:produce:complete:1",
+        "source": "team.workbook_analysis",
+        "target": "team.data__workbook_analysis__appendix_results",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      }
+    ]
+  },
+  "boundaries": {
+    "entry": [
+      {
+        "name": "request",
+        "port": "team.request",
+        "place": "team.ingress__intake__packet"
+      }
+    ],
+    "exit": [
+      {
+        "name": "result",
+        "port": "team.result",
+        "place": "team.data__finalize__final_deliverable"
+      }
+    ],
+    "terminal_rules": [
+      {
+        "key": "rpnh/agent-task-terminal/v1",
+        "operation": "team.finalize",
+        "transition_ids": [
+          "team.finalize"
+        ],
+        "outcome": "complete",
+        "port": "team.result",
+        "place": "team.data__finalize__final_deliverable"
+      }
+    ],
+    "terminal_evidence": "not_provided"
+  },
+  "transition_bindings": [],
+  "presentation": {
+    "title": null,
+    "description": null,
+    "nodes": {},
+    "topology_digest": "8a554be7afc1f064ab968e44220757a03d6b2eb3895f38ec5116560c032d6b84",
+    "status": "default"
+  },
+  "position": {
+    "mode": "live",
+    "cursor": null,
+    "latest_head": null
+  },
+  "coverage": {
+    "history": "unsupported",
+    "firings": "not_provided",
+    "agent_nodes": "declared_llm_executor_only",
+    "terminal_evidence": "not_provided"
+  },
+  "change": {},
+  "agent_nodes": [
+    {
+      "transition_id": "team.evidence",
+      "source": "declared_llm_executor",
+      "semantic_group": {
+        "component": "team",
+        "semantic_node_id": "evidence"
+      },
+      "agent_ref": null,
+      "executable_binding_ref": null
+    },
+    {
+      "transition_id": "team.finalize",
+      "source": "declared_llm_executor",
+      "semantic_group": {
+        "component": "team",
+        "semantic_node_id": "finalize"
+      },
+      "agent_ref": null,
+      "executable_binding_ref": null
+    },
+    {
+      "transition_id": "team.intake",
+      "source": "declared_llm_executor",
+      "semantic_group": {
+        "component": "team",
+        "semantic_node_id": "intake"
+      },
+      "agent_ref": null,
+      "executable_binding_ref": null
+    },
+    {
+      "transition_id": "team.review",
+      "source": "declared_llm_executor",
+      "semantic_group": {
+        "component": "team",
+        "semantic_node_id": "review"
+      },
+      "agent_ref": null,
+      "executable_binding_ref": null
+    },
+    {
+      "transition_id": "team.synthesis",
+      "source": "declared_llm_executor",
+      "semantic_group": {
+        "component": "team",
+        "semantic_node_id": "synthesis"
+      },
+      "agent_ref": null,
+      "executable_binding_ref": null
+    },
+    {
+      "transition_id": "team.synthesis__rework",
+      "source": "declared_llm_executor",
+      "semantic_group": {
+        "component": "team",
+        "semantic_node_id": "synthesis"
+      },
+      "agent_ref": null,
+      "executable_binding_ref": null
+    },
+    {
+      "transition_id": "team.workbook_analysis",
+      "source": "declared_llm_executor",
+      "semantic_group": {
+        "component": "team",
+        "semantic_node_id": "workbook_analysis"
+      },
+      "agent_ref": null,
+      "executable_binding_ref": null
+    }
+  ]
+}

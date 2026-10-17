@@ -1,12 +1,12 @@
 # SQL 查询校验与来源追溯
 
-## 官方 Viewer 全景
+## 官方 Viewer 完整 PetriNet
 
-这张官方 Viewer 原图展示已完成 SQL 运行的 Detailed flow：inspect inputs、execute queries、compare results。显示的 8 节点流程是 11 节点／11 弧 PN 的简化视图，不是静态声明。
+[![SQL 初始声明 PetriNet：3 个转换、8 个库所、11 条弧](figures/initial-petri.png)](figures/initial-petri.png)
 
-[![SQL 保留运行：三个已结算操作与两个最终输出](figures/recorded-run.png)](figures/recorded-run.png)
+这张官方 Viewer 原图展示完整声明 PN：**11 个节点（3 个转换、8 个库所）、11 条弧**。来源为 `initial_configured` 声明，没有运行标记或检查点，不是完成态运行的 PetriNet 截图。[截图来源](figures/petri-provenance.json)记录保留的输入与 Viewer 版本。完成态 Detailed flow 保留在[运行记录](#本地完整收尾与真实运行图)中。
 
-[本地 Viewer 与读图说明](#官方-viewer) · 点击全景打开原始大图。
+[打开原始全景](figures/initial-petri.png) · [在只读 Viewer 中检查节点与弧](#static-pn-viewer)
 
 本例通过原有 Registry/PetriNet 记录真实 SQLite 读取、精确结果比较和最终 SQL 资源。
 附带的 [sol.sql](sol.sql) 仅依据固定任务说明、原始输入查询及哈希核验后的数据库独立推导，
@@ -124,8 +124,37 @@ Example 展示与成熟 harness 对照分开验收；展示来源不要求先跑
 
 ## 本地完整收尾与真实运行图
 
+[![SQL 完成态 Detailed flow：显示 8 个节点；原始 PetriNet 为 11 节点、11 弧](figures/recorded-run.png)](figures/recorded-run.png)
+
+这张独立运行截图使用 **Detailed flow**，折叠了三个交接库所，与上方完整声明 PetriNet 全景区分。
+
 独立冻结的 `sol.sql` 在一次 176.76 秒的 evaluator 窗口中通过**未修改上游的六项测试**。只由启动插件映射五个绝对路径，复用本地 Python/SQLite/pytest；原 `test.sh`、Docker 资源限额、CTRF 和 stock harness 均未运行。这是明确适配下的原验收结果，不是完整官方 dataset benchmark。参考内容未进入作者上下文，候选、数据库及验收器字节前后不变。原生不可变资源仍保留发布当时的 `original_verifier: not_run`；后续 evaluator 收据单列，不回写历史。
 
 图来自实际默认 AF_UNIX 完成态：Registry head **421**，三步已结算、零未结算、两个终态 token。原 Viewer 图片字节保留技术 checkpoint footer 和观察时间，无本机文件路径或用户身份映射；不是初始声明图。
 
 按上面的 Viewer 命令打开实际运行，选择 **PetriNet → compare_results.final_sql → Executions → 查看资源登记** 定位最终 SQL；选择 `execute_queries.run` 查看原执行，再将历史滑块移到首个检查点并选择输入库所，定位原输入 token 登记。实际浏览器已核验三步、报告与最终 SQL 登记以及历史输入登记。检查前后 event head/count、writer epoch 和主数据库元数据不变，正常 WAL/SHM 辅助状态另列。标准 Viewer 只展示引用和登记元数据，不展示数据库行或 payload 正文。本任务模型/provider 调用为 0。
+
+<a id="static-pn-viewer"></a>
+
+### 只读声明 PetriNet Viewer
+
+在兼容的 RPNH 环境中，从源码 checkout 根目录打开附带声明；不需要 Registry 或数据库，也不会调用模型或执行任务：
+
+```bash
+python - <<'PYTHON'
+import json
+from pathlib import Path
+from cpn.frontend.server import serve_projection
+frame = json.loads(Path("examples/query_validation/figures/declaration-frame.json").read_text(encoding="utf-8"))
+class Snapshot:
+    def __call__(self):
+        return frame["net"]
+    def dashboard(self, cursor=None):
+        if cursor is not None:
+            raise ValueError("Static declaration has no execution history")
+        return frame
+serve_projection(Snapshot(), host="127.0.0.1", port=0, open_browser=False)
+PYTHON
+```
+
+打开打印的本机地址，选择 **PetriNet → 适应视图（Fit to view）**。缩放、拖动并选中节点或弧，查看完整标签与原生详情。声明不含运行标记或执行历史；按 Ctrl+C 停止 Viewer。查看已有完成态运行时，使用单独的[运行 Viewer 命令](#官方-viewer)。

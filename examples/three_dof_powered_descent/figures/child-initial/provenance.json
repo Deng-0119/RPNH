@@ -1,0 +1,184 @@
+{
+  "schema_version": "rpnh/official_pn_capture_provenance/v1",
+  "target": "descent-child",
+  "source_mode": "initial_configured",
+  "view_mode": "petri",
+  "runtime_marking": null,
+  "run_checkpoint": null,
+  "historical_public_example_revision": "23f804be12daf8430dc73e502534a91d8c6856c3",
+  "current_public_viewer_revision": "b16ecce83ba603b3c15f1c770bce172d4f44f88e",
+  "viewer_source_verification": {
+    "working_bytes_equal_public_revision": true,
+    "sources": [
+      {
+        "path": "cpn/frontend/server.py",
+        "sha256": "f6a2dd7f3fb49d551fbe4fd28dcf4c50f49a211969a0c695458d02e793b52076",
+        "git_blob": "f144e70f6dd79f194614d04647e4f6fcb8f8299e"
+      },
+      {
+        "path": "cpn/frontend/dashboard.py",
+        "sha256": "dd085921d883b3895c5e55a3449c317d90d8f0e745726ff583cef21e2a0c1c1f",
+        "git_blob": "56de70fc7d48c4e9a3d5648d6b709af8180ef780"
+      },
+      {
+        "path": "cpn/rpnh/inspection.py",
+        "sha256": "cbb5bebeadd1c3ea5915f300732d8078bc3ed5a6c8caef027e96b60d9cd68f74",
+        "git_blob": "b18471e2f1d242427d7a3a48ff1b8421c9eb8fde"
+      },
+      {
+        "path": "cpn/rpnh/executable_net.py",
+        "sha256": "8842d3dadde43d0d325b6c01b3a829169452566e919619ef2bfed86bd3d68441",
+        "git_blob": "19337103808e2c71264fcdb609ddb056b4a6f88c"
+      },
+      {
+        "path": "cpn/rpnh/compiler.py",
+        "sha256": "ce1c82eb52b26fb57e17e1f10afb235b6f19e128f27c034974553bab44622215",
+        "git_blob": "26e7e1a390f3c5f72d527f87aeef2ddc1b1aba6f"
+      },
+      {
+        "path": "cpn/frontend/static/app.js",
+        "sha256": "b4389c2aa7d8555cb58e1c7dfd5d3e44ad8f37212308f22f558611fd7f7fcb5c",
+        "git_blob": "84b926c18475215a5e5d9540209fcfbb982ffce0"
+      },
+      {
+        "path": "cpn/frontend/static/style.css",
+        "sha256": "c28574ef8cdbeffb2684c6dd731802ba71138a72e7d82b5fb9c9837c09e2137a",
+        "git_blob": "65feb984a3cf8d4d32e82a0b167d503dfd769d3f"
+      },
+      {
+        "path": "cpn/frontend/static/assets/joint.js",
+        "sha256": "e1d9479e9dda82aa61b6efca7f883f8a80801988867bed2643d45df4146c0592",
+        "git_blob": "4858c9b2b9903e14debba92b4caac81797f8e1f7"
+      },
+      {
+        "path": "cpn/frontend/static/assets/elk-api.js",
+        "sha256": "ccca46175c05bbd280b5de6c9853103711e52c666a101f145b717e345363e24d",
+        "git_blob": "10c39e35fe7a5dc8d77810bf7c77c087f87c0d53"
+      },
+      {
+        "path": "cpn/frontend/static/assets/elk-worker.js",
+        "sha256": "e4f5c51c6f2fd564bb64e52e81c4a85a316ef2f24f8b90e1db5eb886c765b030",
+        "git_blob": "222acf852bd29216c1fe6cbd29968c3d7ec3bdeb"
+      }
+    ],
+    "served_assets_equal_source": [
+      {
+        "asset": "app.js",
+        "sha256": "b4389c2aa7d8555cb58e1c7dfd5d3e44ad8f37212308f22f558611fd7f7fcb5c",
+        "actual_get_status": 200
+      },
+      {
+        "asset": "style.css",
+        "sha256": "c28574ef8cdbeffb2684c6dd731802ba71138a72e7d82b5fb9c9837c09e2137a",
+        "actual_get_status": 200
+      },
+      {
+        "asset": "assets/joint.js",
+        "sha256": "e1d9479e9dda82aa61b6efca7f883f8a80801988867bed2643d45df4146c0592",
+        "actual_get_status": 200
+      },
+      {
+        "asset": "assets/elk-api.js",
+        "sha256": "ccca46175c05bbd280b5de6c9853103711e52c666a101f145b717e345363e24d",
+        "actual_get_status": 200
+      },
+      {
+        "asset": "assets/elk-worker.js",
+        "sha256": "e4f5c51c6f2fd564bb64e52e81c4a85a316ef2f24f8b90e1db5eb886c765b030",
+        "actual_get_status": 200
+      }
+    ]
+  },
+  "original_input": {
+    "ref": {
+      "logical_id": "resource:8059f13f5932594eb351f7cf9073c7f4",
+      "version_id": "resource_version:5b00e5bd5dbc5c1e87b4ca4754ad3dc4",
+      "entity_type": "resource_version/v1"
+    },
+    "bytes": 148634,
+    "sha256": "d4a6d10821dba38c5eb7f6c8bf050e3c2742d856b985fc0fa4fffb23f1c7ce9d",
+    "published_event_id": "event:a95e9cc902594ca08e2309dc44e20762",
+    "event_ordinal": 271,
+    "event_type": "object_version_published/v1",
+    "event_time_utc": "2026-09-28T12:53:46.918526+00:00",
+    "kind": "original Registry-registered rpnh/executable_net/v1 with embedded original module declaration"
+  },
+  "compiler_and_projection": {
+    "original_git_version": "NOT_ESTABLISHED",
+    "operation": "_load_compiled_net_offline(original_compiled_bytes); project_compiled_net(compiled, source.mode=initial_configured, marking=None)",
+    "recompiled": false
+  },
+  "frame": {
+    "path": "examples/three_dof_powered_descent/figures/child-initial/declaration-frame.json",
+    "sha256": "267643f80587404b13633711000b197e1aaa2d1fff96dc94ca5a31ba7099d70d",
+    "bytes": 63504
+  },
+  "image": {
+    "path": "examples/three_dof_powered_descent/assets/child-initial-petri.png",
+    "sha256": "7e1874400c55aff1687471a4a9ff79010e5016dfb565d11be43ec2d7266e5fda",
+    "bytes": 459510,
+    "width": 4200,
+    "height": 3000,
+    "device_scale_factor": 1,
+    "origin": "Unmodified Playwright screenshot of official RPNH Viewer in PetriNet mode",
+    "postprocessing": []
+  },
+  "counts": {
+    "node_count": 20,
+    "transition_count": 5,
+    "place_count": 15,
+    "resource_place_count": 0,
+    "edge_count": 52,
+    "resource_edge_count": 0
+  },
+  "capture_verification": {
+    "all_node_and_arc_ids_equal_frame": true,
+    "all_node_and_arc_geometry_within_canvas": true,
+    "node_detail_inspector_exercised": true,
+    "arc_detail_inspector_exercised": true,
+    "minimum_positive_node_text_height_px": 12.999755859375,
+    "hidden_zero_height_placeholder_note": "Original helper minimum includes hidden '-' placeholders; positive visible labels measured separately.",
+    "controls": "PetriNet, Fit to view, normal pan/zoom and node/arc selection",
+    "browser_configuration": "Existing normal WSL/Chromium route, chromiumSandbox=false with ABI3 Landlock restricting writes to task-owned profile/temp paths; initial native-sandbox capability failure preserved locally."
+  },
+  "privacy_transformations": [
+    {
+      "operation": "remove",
+      "json_pointer": "/net/nodes/14/config/node_synopsis",
+      "node_id": "team.engineering_review",
+      "reason": "Private original task instruction/prompt; raw value retained only in PRIVATE-raw-frame.json."
+    },
+    {
+      "operation": "remove",
+      "json_pointer": "/net/nodes/15/config/node_synopsis",
+      "node_id": "team.final_report",
+      "reason": "Private original task instruction/prompt; raw value retained only in PRIVATE-raw-frame.json."
+    },
+    {
+      "operation": "remove",
+      "json_pointer": "/net/nodes/16/config/node_synopsis",
+      "node_id": "team.guidance_design",
+      "reason": "Private original task instruction/prompt; raw value retained only in PRIVATE-raw-frame.json."
+    },
+    {
+      "operation": "remove",
+      "json_pointer": "/net/nodes/17/config/node_synopsis",
+      "node_id": "team.implementation",
+      "reason": "Private original task instruction/prompt; raw value retained only in PRIVATE-raw-frame.json."
+    },
+    {
+      "operation": "remove",
+      "json_pointer": "/net/nodes/19/config/node_synopsis",
+      "node_id": "team.numerical_validation",
+      "reason": "Private original task instruction/prompt; raw value retained only in PRIVATE-raw-frame.json."
+    }
+  ],
+  "limitations": [
+    "Original compiler Git version and historical Overview screenshot checkpoint are not established.",
+    "No historical runtime marking or completion state is inherited; archived WAL latest publication was not replayed or asserted."
+  ],
+  "new_business_runs": 0,
+  "new_model_provider_calls": 0,
+  "new_registry_writes": 0,
+  "detail_entry": "Use the bilingual example README static Viewer entry; zoom/pan/select nodes or arcs. No retained Registry, model, dataset or credential required."
+}

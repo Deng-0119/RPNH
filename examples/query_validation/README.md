@@ -1,12 +1,12 @@
 # SQL query validation and provenance
 
-## Official Viewer panorama
+## Official Viewer complete PetriNet
 
-This original official Viewer capture shows the completed SQL run in Detailed flow: inspect inputs, execute queries and compare results. The displayed 8-node flow is a simplification of the 11-node/11-arc PN; it is not a static declaration.
+[![SQL initial-declaration PetriNet: 3 transitions, 8 places and 11 arcs](figures/initial-petri.png)](figures/initial-petri.png)
 
-[![Recorded SQL workflow: three settled operations and two final outputs](figures/recorded-run.png)](figures/recorded-run.png)
+This original official Viewer capture shows the complete declared Petri net: **11 nodes (3 transitions and 8 places), 11 arcs**. It is an `initial_configured` declaration with no runtime marking or checkpoint, not a completed-run PetriNet capture. [Capture provenance](figures/petri-provenance.json) identifies the retained input and Viewer revision. The completed-run Detailed flow remains in [the run record](#completed-local-task-and-recorded-run).
 
-[Local Viewer and reading guide](#viewer) · Click the panorama to open the original full-size image.
+[Open the original panorama](figures/initial-petri.png) · [Inspect nodes and arcs in the read-only Viewer](#static-pn-viewer)
 
 This database example records actual SQLite reads, exact result comparison and a
 final SQL resource through the existing Registry/PetriNet. The bundled [sol.sql](sol.sql)
@@ -154,8 +154,37 @@ does not establish a harness speed or reliability advantage.
 
 ## Completed local task and recorded run
 
+[![Completed SQL run in Detailed flow: 8 displayed nodes; original PetriNet has 11 nodes and 11 arcs](figures/recorded-run.png)](figures/recorded-run.png)
+
+This separate runtime capture uses **Detailed flow**, which folds three handoff places. It is not the complete PetriNet panorama above.
+
 The independently frozen `sol.sql` passed all **six unchanged upstream tests** in one 176.76-second evaluator run. A narrow invocation plugin mapped five absolute paths; existing Python/SQLite/pytest replaced the upstream installation wrapper. The original `test.sh`, Docker limits, CTRF and stock harness were not run. This is an adapted verifier result, not a full official dataset benchmark. The evaluator reference stayed separate from the author, and the candidate/database/verifier bytes remained unchanged. Immutable native resources still say `original_verifier: not_run`, reflecting their pre-evaluation publication; the later evaluator receipt is separate.
 
 This is the actual native completed run: Registry head **421**, three settled operations, zero unsettled records, and two final tokens. The image preserves the original Viewer bytes, including a technical checkpoint footer and observation time; it contains no local filesystem path or user identity map. It is not the initial declaration frame.
 
 Using the Viewer command above, select **PetriNet → compare_results.final_sql → Executions → View registered resource** for the final SQL token. Select `execute_queries.run` for the recorded execution, then move the history slider to the first checkpoint and select an input place to inspect its original token registration. Browser checks exercised all three operations, the report and final-SQL registrations, and a historical input registration. The Registry event head, count, writer epoch and main database metadata were unchanged; normal WAL/SHM auxiliary state is reported separately. The stock Viewer shows references and registration metadata, not database rows or payload bodies. No task model/provider calls were made.
+
+<a id="static-pn-viewer"></a>
+
+### Read-only declaration PetriNet Viewer
+
+From the source checkout root with a compatible RPNH environment, open the bundled declaration without a Registry, database, model call or task execution:
+
+```bash
+python - <<'PYTHON'
+import json
+from pathlib import Path
+from cpn.frontend.server import serve_projection
+frame = json.loads(Path("examples/query_validation/figures/declaration-frame.json").read_text(encoding="utf-8"))
+class Snapshot:
+    def __call__(self):
+        return frame["net"]
+    def dashboard(self, cursor=None):
+        if cursor is not None:
+            raise ValueError("Static declaration has no execution history")
+        return frame
+serve_projection(Snapshot(), host="127.0.0.1", port=0, open_browser=False)
+PYTHON
+```
+
+Open the printed localhost URL and choose **PetriNet → Fit to view**. Zoom, pan and select nodes or arcs for full labels and native details. The declaration has no runtime marking or execution history. Stop the viewer with Ctrl+C. Use the separate [runtime Viewer command](#viewer) for an existing completed run.

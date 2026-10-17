@@ -1,0 +1,1439 @@
+{
+  "schema_version": "rpnh/dashboard/v1",
+  "source": {
+    "mode": "initial_configured",
+    "task_label": "merger: declaration only",
+    "verified_head_ordinal": null
+  },
+  "net": {
+    "schema_version": "rpnh/net_view/v1",
+    "source": {
+      "mode": "initial_configured",
+      "task_label": "merger: declaration only",
+      "verified_head_ordinal": null
+    },
+    "summary": {
+      "node_count": 25,
+      "transition_count": 7,
+      "place_count": 18,
+      "resource_place_count": 0,
+      "edge_count": 25,
+      "resource_edge_count": 0
+    },
+    "nodes": [
+      {
+        "id": "encode_conflicts.artifact",
+        "label": "encode_conflicts.artifact",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "classification": "place",
+        "schema": "application/tool_pipeline_multi_source_conflict_artifact/v1",
+        "schema_variants": [],
+        "channel": "data",
+        "capacity": null,
+        "token_kind": "data",
+        "colours": [],
+        "initial_tokens": [],
+        "reusable": false,
+        "resource_pools": [],
+        "logical_slots": []
+      },
+      {
+        "id": "encode_conflicts.conflicts",
+        "label": "encode_conflicts.conflicts",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "classification": "place",
+        "schema": "application/tool_pipeline_multi_source_conflicts/v1",
+        "schema_variants": [],
+        "channel": "data",
+        "capacity": null,
+        "token_kind": "data",
+        "colours": [],
+        "initial_tokens": [],
+        "reusable": false,
+        "resource_pools": [],
+        "logical_slots": []
+      },
+      {
+        "id": "encode_conflicts.run",
+        "label": "encode_conflicts.run",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "encode_conflicts.run",
+        "operation_id": "op_0",
+        "executor": "example/tool_pipeline/multi_source/execute_encode_conflicts/v1",
+        "executor_declaration": {
+          "kind": "executor",
+          "key": "example/tool_pipeline/multi_source/execute_encode_conflicts/v1",
+          "identity": {
+            "implementation_id": "tool_pipeline.multi_source.atomic_executor",
+            "revision": "v1",
+            "step": "encode_conflicts",
+            "source_sha256": "4e20aeac69b7032383e97d5bbe96a2792d305432bfd56409f39530bc8ac5fc36"
+          },
+          "contracts": {
+            "transport": "deterministic",
+            "input_ports": null,
+            "output_ports": null,
+            "config_schema": "application/operation_component_config/v1"
+          }
+        },
+        "inputs": [
+          "encode_conflicts.conflicts"
+        ],
+        "outputs": [
+          "encode_conflicts.artifact"
+        ],
+        "outcomes": [
+          {
+            "name": "complete",
+            "products": [
+              {
+                "port": "encode_conflicts.artifact",
+                "minimum": 1,
+                "maximum": 1
+              }
+            ],
+            "effects": []
+          }
+        ],
+        "tools": [
+          "example/tool_pipeline/multi_source/encode_conflicts/v1"
+        ],
+        "config": {},
+        "request_port": null,
+        "budget_binding": {
+          "bucket_id": "multi_source",
+          "budget_scope": "module",
+          "finalization_scope": null
+        },
+        "count_guards": [],
+        "input_verdicts": []
+      },
+      {
+        "id": "encode_parquet.artifact",
+        "label": "encode_parquet.artifact",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "classification": "place",
+        "schema": "application/tool_pipeline_multi_source_parquet_artifact/v1",
+        "schema_variants": [],
+        "channel": "data",
+        "capacity": null,
+        "token_kind": "data",
+        "colours": [],
+        "initial_tokens": [],
+        "reusable": false,
+        "resource_pools": [],
+        "logical_slots": []
+      },
+      {
+        "id": "encode_parquet.blocked",
+        "label": "encode_parquet.blocked",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "classification": "place",
+        "schema": "application/tool_pipeline_multi_source_blocked/v1",
+        "schema_variants": [],
+        "channel": "data",
+        "capacity": null,
+        "token_kind": "data",
+        "colours": [],
+        "initial_tokens": [],
+        "reusable": false,
+        "resource_pools": [],
+        "logical_slots": []
+      },
+      {
+        "id": "encode_parquet.merged",
+        "label": "encode_parquet.merged",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "classification": "place",
+        "schema": "application/tool_pipeline_multi_source_merged/v1",
+        "schema_variants": [],
+        "channel": "data",
+        "capacity": null,
+        "token_kind": "data",
+        "colours": [],
+        "initial_tokens": [],
+        "reusable": false,
+        "resource_pools": [],
+        "logical_slots": []
+      },
+      {
+        "id": "encode_parquet.run",
+        "label": "encode_parquet.run",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "encode_parquet.run",
+        "operation_id": "op_1",
+        "executor": "example/tool_pipeline/multi_source/execute_encode_parquet/v1",
+        "executor_declaration": {
+          "kind": "executor",
+          "key": "example/tool_pipeline/multi_source/execute_encode_parquet/v1",
+          "identity": {
+            "implementation_id": "tool_pipeline.multi_source.atomic_executor",
+            "revision": "v1",
+            "step": "encode_parquet",
+            "source_sha256": "4e20aeac69b7032383e97d5bbe96a2792d305432bfd56409f39530bc8ac5fc36"
+          },
+          "contracts": {
+            "transport": "deterministic",
+            "input_ports": null,
+            "output_ports": null,
+            "config_schema": "application/operation_component_config/v1"
+          }
+        },
+        "inputs": [
+          "encode_parquet.merged"
+        ],
+        "outputs": [
+          "encode_parquet.artifact",
+          "encode_parquet.blocked"
+        ],
+        "outcomes": [
+          {
+            "name": "complete",
+            "products": [
+              {
+                "port": "encode_parquet.artifact",
+                "minimum": 1,
+                "maximum": 1
+              }
+            ],
+            "effects": []
+          },
+          {
+            "name": "blocked",
+            "products": [
+              {
+                "port": "encode_parquet.blocked",
+                "minimum": 1,
+                "maximum": 1
+              }
+            ],
+            "effects": []
+          }
+        ],
+        "tools": [
+          "example/tool_pipeline/multi_source/encode_parquet/v1"
+        ],
+        "config": {},
+        "request_port": null,
+        "budget_binding": {
+          "bucket_id": "multi_source",
+          "budget_scope": "module",
+          "finalization_scope": null
+        },
+        "count_guards": [],
+        "input_verdicts": []
+      },
+      {
+        "id": "finish.final",
+        "label": "finish.final",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "classification": "place",
+        "schema": "application/tool_pipeline_multi_source_final/v1",
+        "schema_variants": [],
+        "channel": "data",
+        "capacity": null,
+        "token_kind": "data",
+        "colours": [],
+        "initial_tokens": [],
+        "reusable": false,
+        "resource_pools": [],
+        "logical_slots": []
+      },
+      {
+        "id": "finish.run",
+        "label": "finish.run",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "finish.run",
+        "operation_id": "op_2",
+        "executor": "example/tool_pipeline/multi_source/execute_finish/v1",
+        "executor_declaration": {
+          "kind": "executor",
+          "key": "example/tool_pipeline/multi_source/execute_finish/v1",
+          "identity": {
+            "implementation_id": "tool_pipeline.multi_source.atomic_executor",
+            "revision": "v1",
+            "step": "finish",
+            "source_sha256": "4e20aeac69b7032383e97d5bbe96a2792d305432bfd56409f39530bc8ac5fc36"
+          },
+          "contracts": {
+            "transport": "deterministic",
+            "input_ports": null,
+            "output_ports": null,
+            "config_schema": "application/operation_component_config/v1"
+          }
+        },
+        "inputs": [
+          "finish.parquet",
+          "finish.conflicts"
+        ],
+        "outputs": [
+          "finish.final"
+        ],
+        "outcomes": [
+          {
+            "name": "complete",
+            "products": [
+              {
+                "port": "finish.final",
+                "minimum": 1,
+                "maximum": 1
+              }
+            ],
+            "effects": []
+          }
+        ],
+        "tools": [
+          "example/tool_pipeline/multi_source/finish/v1"
+        ],
+        "config": {},
+        "request_port": null,
+        "budget_binding": {
+          "bucket_id": "multi_source",
+          "budget_scope": "module",
+          "finalization_scope": null
+        },
+        "count_guards": [],
+        "input_verdicts": []
+      },
+      {
+        "id": "merge_users.run",
+        "label": "merge_users.run",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "merge_users.run",
+        "operation_id": "op_3",
+        "executor": "example/tool_pipeline/multi_source/execute_merge_users/v1",
+        "executor_declaration": {
+          "kind": "executor",
+          "key": "example/tool_pipeline/multi_source/execute_merge_users/v1",
+          "identity": {
+            "implementation_id": "tool_pipeline.multi_source.atomic_executor",
+            "revision": "v1",
+            "step": "merge_users",
+            "source_sha256": "4e20aeac69b7032383e97d5bbe96a2792d305432bfd56409f39530bc8ac5fc36"
+          },
+          "contracts": {
+            "transport": "deterministic",
+            "input_ports": null,
+            "output_ports": null,
+            "config_schema": "application/operation_component_config/v1"
+          }
+        },
+        "inputs": [
+          "merge_users.source_a",
+          "merge_users.source_b",
+          "merge_users.source_c"
+        ],
+        "outputs": [
+          "merge_users.merged",
+          "merge_users.conflicts"
+        ],
+        "outcomes": [
+          {
+            "name": "complete",
+            "products": [
+              {
+                "port": "merge_users.merged",
+                "minimum": 1,
+                "maximum": 1
+              },
+              {
+                "port": "merge_users.conflicts",
+                "minimum": 1,
+                "maximum": 1
+              }
+            ],
+            "effects": []
+          }
+        ],
+        "tools": [
+          "example/tool_pipeline/multi_source/merge_users/v1"
+        ],
+        "config": {},
+        "request_port": null,
+        "budget_binding": {
+          "bucket_id": "multi_source",
+          "budget_scope": "module",
+          "finalization_scope": null
+        },
+        "count_guards": [],
+        "input_verdicts": []
+      },
+      {
+        "id": "merge_users.source_a",
+        "label": "merge_users.source_a",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "classification": "place",
+        "schema": "application/tool_pipeline_multi_source_source_a_parsed/v1",
+        "schema_variants": [],
+        "channel": "data",
+        "capacity": null,
+        "token_kind": "data",
+        "colours": [],
+        "initial_tokens": [],
+        "reusable": false,
+        "resource_pools": [],
+        "logical_slots": []
+      },
+      {
+        "id": "merge_users.source_b",
+        "label": "merge_users.source_b",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "classification": "place",
+        "schema": "application/tool_pipeline_multi_source_source_b_parsed/v1",
+        "schema_variants": [],
+        "channel": "data",
+        "capacity": null,
+        "token_kind": "data",
+        "colours": [],
+        "initial_tokens": [],
+        "reusable": false,
+        "resource_pools": [],
+        "logical_slots": []
+      },
+      {
+        "id": "merge_users.source_c",
+        "label": "merge_users.source_c",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "classification": "place",
+        "schema": "application/tool_pipeline_multi_source_source_c_parsed/v1",
+        "schema_variants": [],
+        "channel": "data",
+        "capacity": null,
+        "token_kind": "data",
+        "colours": [],
+        "initial_tokens": [],
+        "reusable": false,
+        "resource_pools": [],
+        "logical_slots": []
+      },
+      {
+        "id": "read_source_a.blocked",
+        "label": "read_source_a.blocked",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "classification": "place",
+        "schema": "application/tool_pipeline_multi_source_blocked/v1",
+        "schema_variants": [],
+        "channel": "data",
+        "capacity": null,
+        "token_kind": "data",
+        "colours": [],
+        "initial_tokens": [],
+        "reusable": false,
+        "resource_pools": [],
+        "logical_slots": []
+      },
+      {
+        "id": "read_source_a.rejected",
+        "label": "read_source_a.rejected",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "classification": "place",
+        "schema": "application/tool_pipeline_multi_source_rejected/v1",
+        "schema_variants": [],
+        "channel": "data",
+        "capacity": null,
+        "token_kind": "data",
+        "colours": [],
+        "initial_tokens": [],
+        "reusable": false,
+        "resource_pools": [],
+        "logical_slots": []
+      },
+      {
+        "id": "read_source_a.run",
+        "label": "read_source_a.run",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "read_source_a.run",
+        "operation_id": "op_4",
+        "executor": "example/tool_pipeline/multi_source/execute_read_source_a/v1",
+        "executor_declaration": {
+          "kind": "executor",
+          "key": "example/tool_pipeline/multi_source/execute_read_source_a/v1",
+          "identity": {
+            "implementation_id": "tool_pipeline.multi_source.atomic_executor",
+            "revision": "v1",
+            "step": "read_source_a",
+            "source_sha256": "4e20aeac69b7032383e97d5bbe96a2792d305432bfd56409f39530bc8ac5fc36"
+          },
+          "contracts": {
+            "transport": "deterministic",
+            "input_ports": null,
+            "output_ports": null,
+            "config_schema": "application/operation_component_config/v1"
+          }
+        },
+        "inputs": [
+          "read_source_a.source"
+        ],
+        "outputs": [
+          "read_source_a.parsed",
+          "read_source_a.blocked",
+          "read_source_a.rejected"
+        ],
+        "outcomes": [
+          {
+            "name": "complete",
+            "products": [
+              {
+                "port": "read_source_a.parsed",
+                "minimum": 1,
+                "maximum": 1
+              }
+            ],
+            "effects": []
+          },
+          {
+            "name": "blocked",
+            "products": [
+              {
+                "port": "read_source_a.blocked",
+                "minimum": 1,
+                "maximum": 1
+              }
+            ],
+            "effects": []
+          },
+          {
+            "name": "rejected",
+            "products": [
+              {
+                "port": "read_source_a.rejected",
+                "minimum": 1,
+                "maximum": 1
+              }
+            ],
+            "effects": []
+          }
+        ],
+        "tools": [
+          "example/tool_pipeline/multi_source/read_source_a/v1"
+        ],
+        "config": {},
+        "request_port": null,
+        "budget_binding": {
+          "bucket_id": "multi_source",
+          "budget_scope": "module",
+          "finalization_scope": null
+        },
+        "count_guards": [],
+        "input_verdicts": []
+      },
+      {
+        "id": "read_source_a.source",
+        "label": "read_source_a.source",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "classification": "place",
+        "schema": "application/tool_pipeline_multi_source_source_a_bytes/v1",
+        "schema_variants": [],
+        "channel": "data",
+        "capacity": null,
+        "token_kind": "data",
+        "colours": [],
+        "initial_tokens": [],
+        "reusable": false,
+        "resource_pools": [],
+        "logical_slots": []
+      },
+      {
+        "id": "read_source_b.blocked",
+        "label": "read_source_b.blocked",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "classification": "place",
+        "schema": "application/tool_pipeline_multi_source_blocked/v1",
+        "schema_variants": [],
+        "channel": "data",
+        "capacity": null,
+        "token_kind": "data",
+        "colours": [],
+        "initial_tokens": [],
+        "reusable": false,
+        "resource_pools": [],
+        "logical_slots": []
+      },
+      {
+        "id": "read_source_b.rejected",
+        "label": "read_source_b.rejected",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "classification": "place",
+        "schema": "application/tool_pipeline_multi_source_rejected/v1",
+        "schema_variants": [],
+        "channel": "data",
+        "capacity": null,
+        "token_kind": "data",
+        "colours": [],
+        "initial_tokens": [],
+        "reusable": false,
+        "resource_pools": [],
+        "logical_slots": []
+      },
+      {
+        "id": "read_source_b.run",
+        "label": "read_source_b.run",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "read_source_b.run",
+        "operation_id": "op_5",
+        "executor": "example/tool_pipeline/multi_source/execute_read_source_b/v1",
+        "executor_declaration": {
+          "kind": "executor",
+          "key": "example/tool_pipeline/multi_source/execute_read_source_b/v1",
+          "identity": {
+            "implementation_id": "tool_pipeline.multi_source.atomic_executor",
+            "revision": "v1",
+            "step": "read_source_b",
+            "source_sha256": "4e20aeac69b7032383e97d5bbe96a2792d305432bfd56409f39530bc8ac5fc36"
+          },
+          "contracts": {
+            "transport": "deterministic",
+            "input_ports": null,
+            "output_ports": null,
+            "config_schema": "application/operation_component_config/v1"
+          }
+        },
+        "inputs": [
+          "read_source_b.source"
+        ],
+        "outputs": [
+          "read_source_b.parsed",
+          "read_source_b.blocked",
+          "read_source_b.rejected"
+        ],
+        "outcomes": [
+          {
+            "name": "complete",
+            "products": [
+              {
+                "port": "read_source_b.parsed",
+                "minimum": 1,
+                "maximum": 1
+              }
+            ],
+            "effects": []
+          },
+          {
+            "name": "blocked",
+            "products": [
+              {
+                "port": "read_source_b.blocked",
+                "minimum": 1,
+                "maximum": 1
+              }
+            ],
+            "effects": []
+          },
+          {
+            "name": "rejected",
+            "products": [
+              {
+                "port": "read_source_b.rejected",
+                "minimum": 1,
+                "maximum": 1
+              }
+            ],
+            "effects": []
+          }
+        ],
+        "tools": [
+          "example/tool_pipeline/multi_source/read_source_b/v1"
+        ],
+        "config": {},
+        "request_port": null,
+        "budget_binding": {
+          "bucket_id": "multi_source",
+          "budget_scope": "module",
+          "finalization_scope": null
+        },
+        "count_guards": [],
+        "input_verdicts": []
+      },
+      {
+        "id": "read_source_b.source",
+        "label": "read_source_b.source",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "classification": "place",
+        "schema": "application/tool_pipeline_multi_source_source_b_bytes/v1",
+        "schema_variants": [],
+        "channel": "data",
+        "capacity": null,
+        "token_kind": "data",
+        "colours": [],
+        "initial_tokens": [],
+        "reusable": false,
+        "resource_pools": [],
+        "logical_slots": []
+      },
+      {
+        "id": "read_source_c.blocked",
+        "label": "read_source_c.blocked",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "classification": "place",
+        "schema": "application/tool_pipeline_multi_source_blocked/v1",
+        "schema_variants": [],
+        "channel": "data",
+        "capacity": null,
+        "token_kind": "data",
+        "colours": [],
+        "initial_tokens": [],
+        "reusable": false,
+        "resource_pools": [],
+        "logical_slots": []
+      },
+      {
+        "id": "read_source_c.rejected",
+        "label": "read_source_c.rejected",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "classification": "place",
+        "schema": "application/tool_pipeline_multi_source_rejected/v1",
+        "schema_variants": [],
+        "channel": "data",
+        "capacity": null,
+        "token_kind": "data",
+        "colours": [],
+        "initial_tokens": [],
+        "reusable": false,
+        "resource_pools": [],
+        "logical_slots": []
+      },
+      {
+        "id": "read_source_c.run",
+        "label": "read_source_c.run",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "read_source_c.run",
+        "operation_id": "op_6",
+        "executor": "example/tool_pipeline/multi_source/execute_read_source_c/v1",
+        "executor_declaration": {
+          "kind": "executor",
+          "key": "example/tool_pipeline/multi_source/execute_read_source_c/v1",
+          "identity": {
+            "implementation_id": "tool_pipeline.multi_source.atomic_executor",
+            "revision": "v1",
+            "step": "read_source_c",
+            "source_sha256": "4e20aeac69b7032383e97d5bbe96a2792d305432bfd56409f39530bc8ac5fc36"
+          },
+          "contracts": {
+            "transport": "deterministic",
+            "input_ports": null,
+            "output_ports": null,
+            "config_schema": "application/operation_component_config/v1"
+          }
+        },
+        "inputs": [
+          "read_source_c.source"
+        ],
+        "outputs": [
+          "read_source_c.parsed",
+          "read_source_c.blocked",
+          "read_source_c.rejected"
+        ],
+        "outcomes": [
+          {
+            "name": "complete",
+            "products": [
+              {
+                "port": "read_source_c.parsed",
+                "minimum": 1,
+                "maximum": 1
+              }
+            ],
+            "effects": []
+          },
+          {
+            "name": "blocked",
+            "products": [
+              {
+                "port": "read_source_c.blocked",
+                "minimum": 1,
+                "maximum": 1
+              }
+            ],
+            "effects": []
+          },
+          {
+            "name": "rejected",
+            "products": [
+              {
+                "port": "read_source_c.rejected",
+                "minimum": 1,
+                "maximum": 1
+              }
+            ],
+            "effects": []
+          }
+        ],
+        "tools": [
+          "example/tool_pipeline/multi_source/read_source_c/v1"
+        ],
+        "config": {},
+        "request_port": null,
+        "budget_binding": {
+          "bucket_id": "multi_source",
+          "budget_scope": "module",
+          "finalization_scope": null
+        },
+        "count_guards": [],
+        "input_verdicts": []
+      },
+      {
+        "id": "read_source_c.source",
+        "label": "read_source_c.source",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "classification": "place",
+        "schema": "application/tool_pipeline_multi_source_source_c_bytes/v1",
+        "schema_variants": [],
+        "channel": "data",
+        "capacity": null,
+        "token_kind": "data",
+        "colours": [],
+        "initial_tokens": [],
+        "reusable": false,
+        "resource_pools": [],
+        "logical_slots": []
+      }
+    ],
+    "edges": [
+      {
+        "id": "edge:arc:encode_conflicts.artifact:finish.run:consume:-:1",
+        "source": "encode_conflicts.artifact",
+        "target": "finish.run",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:encode_conflicts.conflicts:encode_conflicts.run:consume:-:1",
+        "source": "encode_conflicts.conflicts",
+        "target": "encode_conflicts.run",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:encode_conflicts.run:encode_conflicts.artifact:produce:complete:1",
+        "source": "encode_conflicts.run",
+        "target": "encode_conflicts.artifact",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:encode_parquet.artifact:finish.run:consume:-:1",
+        "source": "encode_parquet.artifact",
+        "target": "finish.run",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:encode_parquet.merged:encode_parquet.run:consume:-:1",
+        "source": "encode_parquet.merged",
+        "target": "encode_parquet.run",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:encode_parquet.run:encode_parquet.artifact:produce:complete:1",
+        "source": "encode_parquet.run",
+        "target": "encode_parquet.artifact",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:encode_parquet.run:encode_parquet.blocked:produce:blocked:1",
+        "source": "encode_parquet.run",
+        "target": "encode_parquet.blocked",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "blocked",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:finish.run:finish.final:produce:complete:1",
+        "source": "finish.run",
+        "target": "finish.final",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:merge_users.run:encode_conflicts.conflicts:produce:complete:1",
+        "source": "merge_users.run",
+        "target": "encode_conflicts.conflicts",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:merge_users.run:encode_parquet.merged:produce:complete:1",
+        "source": "merge_users.run",
+        "target": "encode_parquet.merged",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:merge_users.source_a:merge_users.run:consume:-:1",
+        "source": "merge_users.source_a",
+        "target": "merge_users.run",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:merge_users.source_b:merge_users.run:consume:-:1",
+        "source": "merge_users.source_b",
+        "target": "merge_users.run",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:merge_users.source_c:merge_users.run:consume:-:1",
+        "source": "merge_users.source_c",
+        "target": "merge_users.run",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:read_source_a.run:merge_users.source_a:produce:complete:1",
+        "source": "read_source_a.run",
+        "target": "merge_users.source_a",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:read_source_a.run:read_source_a.blocked:produce:blocked:1",
+        "source": "read_source_a.run",
+        "target": "read_source_a.blocked",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "blocked",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:read_source_a.run:read_source_a.rejected:produce:rejected:1",
+        "source": "read_source_a.run",
+        "target": "read_source_a.rejected",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "rejected",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:read_source_a.source:read_source_a.run:consume:-:1",
+        "source": "read_source_a.source",
+        "target": "read_source_a.run",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:read_source_b.run:merge_users.source_b:produce:complete:1",
+        "source": "read_source_b.run",
+        "target": "merge_users.source_b",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:read_source_b.run:read_source_b.blocked:produce:blocked:1",
+        "source": "read_source_b.run",
+        "target": "read_source_b.blocked",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "blocked",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:read_source_b.run:read_source_b.rejected:produce:rejected:1",
+        "source": "read_source_b.run",
+        "target": "read_source_b.rejected",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "rejected",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:read_source_b.source:read_source_b.run:consume:-:1",
+        "source": "read_source_b.source",
+        "target": "read_source_b.run",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:read_source_c.run:merge_users.source_c:produce:complete:1",
+        "source": "read_source_c.run",
+        "target": "merge_users.source_c",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:read_source_c.run:read_source_c.blocked:produce:blocked:1",
+        "source": "read_source_c.run",
+        "target": "read_source_c.blocked",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "blocked",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:read_source_c.run:read_source_c.rejected:produce:rejected:1",
+        "source": "read_source_c.run",
+        "target": "read_source_c.rejected",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "rejected",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      },
+      {
+        "id": "edge:arc:read_source_c.source:read_source_c.run:consume:-:1",
+        "source": "read_source_c.source",
+        "target": "read_source_c.run",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null,
+        "colour_expression": null,
+        "output_predicates": [],
+        "lease_claims": [],
+        "lease_claim_exclusions": [],
+        "lease_claim_set": null,
+        "effect_selector": null
+      }
+    ]
+  },
+  "boundaries": {
+    "entry": [
+      {
+        "name": "source_a",
+        "port": "read_source_a.source",
+        "place": "read_source_a.source"
+      },
+      {
+        "name": "source_b",
+        "port": "read_source_b.source",
+        "place": "read_source_b.source"
+      },
+      {
+        "name": "source_c",
+        "port": "read_source_c.source",
+        "place": "read_source_c.source"
+      }
+    ],
+    "exit": [
+      {
+        "name": "encode_parquet_blocked",
+        "port": "encode_parquet.blocked",
+        "place": "encode_parquet.blocked"
+      },
+      {
+        "name": "read_source_a_blocked",
+        "port": "read_source_a.blocked",
+        "place": "read_source_a.blocked"
+      },
+      {
+        "name": "read_source_a_rejected",
+        "port": "read_source_a.rejected",
+        "place": "read_source_a.rejected"
+      },
+      {
+        "name": "read_source_b_blocked",
+        "port": "read_source_b.blocked",
+        "place": "read_source_b.blocked"
+      },
+      {
+        "name": "read_source_b_rejected",
+        "port": "read_source_b.rejected",
+        "place": "read_source_b.rejected"
+      },
+      {
+        "name": "read_source_c_blocked",
+        "port": "read_source_c.blocked",
+        "place": "read_source_c.blocked"
+      },
+      {
+        "name": "read_source_c_rejected",
+        "port": "read_source_c.rejected",
+        "place": "read_source_c.rejected"
+      },
+      {
+        "name": "report",
+        "port": "finish.final",
+        "place": "finish.final"
+      }
+    ],
+    "terminal_rules": [
+      {
+        "key": "example/tool_pipeline/multi_source/terminal/v1",
+        "operation": "finish.run",
+        "transition_ids": [
+          "finish.run"
+        ],
+        "outcome": "complete",
+        "port": "finish.final",
+        "place": "finish.final"
+      }
+    ],
+    "terminal_evidence": "not_provided"
+  },
+  "transition_bindings": [],
+  "presentation": {
+    "title": null,
+    "description": null,
+    "nodes": {},
+    "topology_digest": "776ba98a4c32e49771727fc5e02ce265919397455f5fdf6f1b42791da843e0b3",
+    "status": "default"
+  },
+  "position": {
+    "mode": "live",
+    "cursor": null,
+    "latest_head": null
+  },
+  "coverage": {
+    "history": "unsupported",
+    "firings": "not_provided",
+    "agent_nodes": "declared_llm_executor_only",
+    "terminal_evidence": "not_provided"
+  },
+  "change": {},
+  "agent_nodes": []
+}
