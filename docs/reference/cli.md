@@ -50,7 +50,7 @@ rpnh [--execution PATH] [--save-default]
 | `--session-dir NEW_DIR` | Absent operational directory for a fresh session |
 | `--resume SESSION_DIR` | Reopen the original session root; mutually exclusive with `--session-dir` |
 | `--prompt TEXT` | Run one main-session turn and leave the input loop; can execute models/tools |
-| `--frontend ...` | Explicit flag overrides saved preference; default `auto` selects compatible Codex in an interactive terminal or Basic otherwise; OpenCode and DSH require an explicit flag or saved preference |
+| `--frontend ...` | Explicit flag overrides session memory/menu; interactive fresh starts show a menu, resume reuses the session's last frontend; explicit `auto` selects compatible Codex or Basic |
 
 A fresh session without `--execution` uses `RPNH_EXECUTION_CONFIG` or the saved
 default. Resume without it uses the session's persisted selection. `--prompt`
@@ -66,7 +66,11 @@ session lifecycle or switching writable frontends.
 
 | Command | Effect |
 |---|---|
-| `rpnh init` / `rpnh config setup` | Interactive model setup/selection; requires a terminal; writes local configuration |
+| `rpnh init` | Interactive model setup followed by frontend selection/setup |
+| `rpnh config setup` | Interactive model setup only |
+| `rpnh frontend` / `rpnh frontend setup [NAME]` | Choose/connect/install a frontend without calling a model |
+| `rpnh frontend list` | Read local frontend readiness without downloading |
+| `rpnh frontend switch NAME [--resume PATH]` | Configure a new-session preference, or reopen the same session in that interface |
 | `rpnh config add` | Interactive addition of a model |
 | `rpnh config init [--catalog PATH]` | Create an empty canonical catalog |
 | `rpnh config build [--catalog PATH] [--output-root DIR] [--check]` | Generate profiles; `--check` verifies existing generated state without writing it |
@@ -200,6 +204,7 @@ Codex/OpenCode slash-command registry:
 | `/task ID reopen CHECKPOINT [:: REASON]` | Append a generation from an exact selected cut; may execute models/tools |
 | `/status`, `/result`, `/net`, `/message`, `/stop`, `/resume` | Act on the selected child; `/resume` has separate main behavior |
 | Main `/resume`, main `/rollback` | Settle/continue a paused main turn; or return main conversation to its previous completed turn |
+| `/frontend [NAME]` | Release Basic ownership and reopen the same session in another frontend |
 | `/quit` | Exit the frontend without stopping independent tasks |
 
 Plain text goes to main or the selected single-agent; selected workflows need

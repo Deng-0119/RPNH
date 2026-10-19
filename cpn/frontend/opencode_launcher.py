@@ -12,6 +12,7 @@ import tempfile
 from typing import Mapping
 
 from cpn.rpnh.frontend_application import FrontendGateway, RegistryFrontendApplication
+from cpn.rpnh.frontend_config import read_frontend_preferences
 from .opencode_http import OpenCodeHTTPServer
 from .opencode_protocol import (
     DEFAULT_PROFILE, OPENCODE_VERSION, OpenCodeCompatibilityProfile,
@@ -58,7 +59,8 @@ def check_version(binary: str, env: Mapping[str, str], cwd: Path, *,
 def run_opencode_frontend(root: Path, execution: Path, *, resume: bool = False) -> int:
     if not sys.platform.startswith("linux"):
         raise RuntimeError("OpenCode frontend currently supports Linux/WSL2 only")
-    binary = shutil.which("opencode")
+    saved = read_frontend_preferences().opencode_binary
+    binary = shutil.which(str(saved) if saved is not None else "opencode")
     if binary is None:
         raise RuntimeError(f"Install the pinned OpenCode {OPENCODE_VERSION} client before using this frontend")
     binary = str(Path(binary).absolute())
@@ -70,7 +72,8 @@ def run_opencode_frontend(root: Path, execution: Path, *, resume: bool = False) 
         profile = DEFAULT_PROFILE
         check_version(binary, env, display, profile=profile)  # Before any owner.
         holder: list[OpenCodeProtocol] = []
-        gateway = FrontendGateway(lambda: RegistryFrontendApplication(root, execution, resume=resume),
+        gateway = FrontendGateway(lambda: RegistryFrontendApplication(
+            root, execution, resume=resume, frontend="opencode"),
                                   on_change=lambda: holder[0].notify() if holder else None)
         server = None
         try:

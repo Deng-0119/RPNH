@@ -36,9 +36,11 @@ rpnh --session-dir ./main-session
 `config_path().with_name(config_path().name + ".frontend.json")`；例如 `config.json`
 对应 `config.json.frontend.json`。源码路径保存为绝对路径；该配置命令不准备或验证 checkout。
 
-显式 `--frontend` 优先于保存的偏好；未设置时默认为 `auto`。`auto` 仍在交互终端选择
-兼容 Codex，否则使用 Basic，不自动选择 DSH。保存 `auto` 可恢复该行为。一次性
-`--prompt` 使用 Basic；显式 `--frontend dsh` 与 `--prompt` 组合在解析模型前拒绝。
+新交互 `rpnh` 会显示前端菜单，`rpnh --resume ROOT` 沿用该会话上次的前端。
+`rpnh frontend setup dsh` 会连接或安装官方 Web；退出原界面后，可用
+`rpnh frontend switch dsh --resume ROOT` 切换同一会话。显式 `--frontend` 优先，
+显式 `--frontend auto` 保留兼容 Codex／Basic 自动选择。一次性 `--prompt` 使用 Basic；
+显式 DSH 与 `--prompt` 组合在解析模型前拒绝。见[前端配置](frontends_ZH.md)。
 
 ## 共享会话与控制
 

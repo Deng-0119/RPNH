@@ -29,6 +29,8 @@ from cpn.rpnh.main_session import (
     render_main_decision,
 )
 from cpn.rpnh.provider_catalog import provider_manifest_path
+from cpn.rpnh.frontend_config import read_frontend_preferences
+from cpn.rpnh.session_frontend import remember_session_frontend
 from cpn.rpnh.session_access import (
     MainSessionOwnerLease,
     MainSessionSourceBinding,
@@ -449,8 +451,9 @@ class CodexAppServer:
                 state.active = self._active_from_snapshot(state, snapshot)
             if not state.preview and session.history:
                 state.preview = session.history[0][1][:200]
+            remember_session_frontend(record.root, "codex", lease=lease)
             self._threads[state.thread_id] = state
-        except Exception:
+        except BaseException:
             self.close()
             raise
 
@@ -933,7 +936,8 @@ class CodexAppServer:
             state.history_binding = MainSessionSourceBinding.capture(session)
             self._threads[thread_id] = state
             self._persist_thread(state)
-        except Exception:
+            remember_session_frontend(record.root, "codex", lease=lease)
+        except BaseException:
             if "thread_id" in locals():
                 self._threads.pop(thread_id, None)
             self.close()
@@ -1664,7 +1668,10 @@ def resolve_codex_binary(
         value: str | None = None, *, compatibility_profile: str | None = None,
 ) -> str:
     profile = _compatibility_profile(compatibility_profile)
-    selected = value or os.environ.get("RPNH_CODEX_BIN") or "codex"
+    selected = value or os.environ.get("RPNH_CODEX_BIN")
+    if not selected:
+        saved = read_frontend_preferences().codex_binary
+        selected = str(saved) if saved is not None else "codex"
     resolved = shutil.which(selected)
     if resolved is None:
         raise CodexCompatibilityError(

@@ -94,21 +94,20 @@ cd "$TEST_ROOT"
 |---|---|---|
 | 内置终端 | 批准的统一 Python 包 | `rpnh --frontend basic`；对话仍需选择模型 |
 | Codex 展示 | 统一包和精确 `codex-cli 0.163.0` | `rpnh --frontend codex`；兼容性绑定版本 |
-| OpenCode 展示 | 统一包和精确 OpenCode `1.19.3` | `rpnh --frontend opencode`；仅显式选择、仅 Linux/WSL2，且无 UI 指标 |
+| OpenCode 展示 | 统一包和精确 OpenCode `1.19.3` | `rpnh --frontend opencode`；仅 Linux/WSL2，且无 UI 指标 |
 | 插件、引导与案例 | 批准的统一 Python 包 | `rpnh plugins`、`rpnh init`、`rpnh doctor`、`rpnh examples`；本地检查和导出不调用模型 |
 | 官方 DSH Web | 统一包、固定 DSH `687f282`／`0.2.1-rc.2` 源码、Node `^22.19.0 \|\| >=24.0.0`、已安装的 pnpm 依赖和 31 个固定官方 Web 包 | `rpnh --frontend dsh`；Linux/WSL2，官方 UI 以原生控件操作唯一绑定的 RPNH MainSession |
 | 旧版 DSH headless host | 统一包、内含 `integrations/dsh`、固定源码及工具链 | `rpnh-dsh`；使用独立 root 的高级宿主，显式离线数值或配置文本模式 |
 | 共存 | 统一源码/wheel，加所需可选宿主 | 不要在同一环境覆盖安装多份同名 wheel |
 
-未保存偏好时，统一 main 使用 `auto`：交互终端中找到兼容 Codex `0.163.0` 就使用它，
-否则使用 Basic；非交互使用 Basic。显式 `--frontend basic|codex|opencode|dsh` 优先于
-保存偏好。前端偏好可独立于模型设置保存或查看：
+新交互 `rpnh` 显示前端菜单，`rpnh init` 在模型配置后继续前端配置。resume 使用
+该会话上次的前端，显式 `--frontend NAME` 可覆盖。setup 会连接可用客户端，或安装
+固定版本到 RPNH 管理目录。完整说明见[前端配置与切换](frontends_ZH.md)。配置不调用模型：
 
 ```bash
-rpnh config frontend dsh --dsh-source /absolute/path/to/deepseek-harness
-rpnh config frontend
-# 恢复自动选择：
-rpnh config frontend auto
+rpnh frontend setup dsh
+rpnh frontend list
+rpnh frontend switch opencode --resume ./my-session
 ```
 
 偏好文件位于模型配置旁，文件名为原文件名加 `.frontend.json`；`DSH_SOURCE` 优先于

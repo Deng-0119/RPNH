@@ -24,6 +24,7 @@ from cpn.rpnh.session_access import (
     inspect_main_session_root,
     stable_frontend_session_id,
 )
+from cpn.rpnh.session_frontend import SESSION_FRONTENDS, remember_session_frontend
 
 
 class FrontendError(RuntimeError):
@@ -74,11 +75,15 @@ class _Session:
 class RegistryFrontendApplication:
     """One presentation owner over one canonical MainSession."""
 
-    def __init__(self, root: Path, execution: Path, *, resume: bool = False) -> None:
+    def __init__(self, root: Path, execution: Path, *, resume: bool = False,
+                 frontend: str | None = None) -> None:
         from cpn.rpnh.main_session import MainSession
         from cpn.rpnh.provider_catalog import provider_manifest_path
         from cpn.rpnh.task_control import TaskControl
         from cpn.rpnh.user_config import discover_profiles, profile_for_path
+        if frontend is not None and frontend not in SESSION_FRONTENDS:
+            raise ValueError("frontend must be a concrete session frontend")
+        self.frontend = frontend
         requested_root = root.expanduser()
         self.root = requested_root.resolve()
         self.execution = execution.expanduser().resolve()
@@ -154,12 +159,15 @@ class RegistryFrontendApplication:
             session.task_control = self._observational_control(
                 session.child_path_root / "tasks")
             sid = stable_frontend_session_id(record)
-            self._sessions[sid] = _Session(
+            state = _Session(
                 session,
                 self._observational_control(
                     session.child_path_root / "main-turn-control"),
                 owner_lease=lease,
             )
+            if self.frontend is not None:
+                remember_session_frontend(record.root, self.frontend, lease=lease)
+            self._sessions[sid] = state
         except BaseException:
             lease.close()
             raise
@@ -314,12 +322,15 @@ class RegistryFrontendApplication:
                 self.root, profile.path, owner_root_reserved=True)
             record = inspect_main_session_root(self.root)
             sid = stable_frontend_session_id(record)
-            self._sessions[sid] = _Session(
+            state = _Session(
                 session,
                 self._observational_control(
                     session.child_path_root / "main-turn-control"),
                 owner_lease=lease,
             )
+            if self.frontend is not None:
+                remember_session_frontend(record.root, self.frontend, lease=lease)
+            self._sessions[sid] = state
             return sid
         except BaseException:
             if lease is not None:

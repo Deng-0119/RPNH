@@ -101,22 +101,22 @@ or a substitute for validating the user's own route.
 |---|---|---|
 | Built-in terminal | Approved unified Python package | `rpnh --frontend basic`; a selected model is still required for conversation |
 | Codex presentation | Unified package plus exactly `codex-cli 0.163.0` | `rpnh --frontend codex`; TUI compatibility is version-specific |
-| OpenCode presentation | Unified package plus exactly OpenCode `1.19.3` | `rpnh --frontend opencode`; explicit only, Linux/WSL2 only, and UI metrics are unavailable |
+| OpenCode presentation | Unified package plus exactly OpenCode `1.19.3` | `rpnh --frontend opencode`; Linux/WSL2 only, and UI metrics are unavailable |
 | Plugins, onboarding and examples | Approved unified Python package | `rpnh plugins`, `rpnh init`, `rpnh doctor`, and `rpnh examples`; local checks and export do not call a model |
 | Official DSH Web | Unified package, pinned DSH `687f282` / `0.2.1-rc.2` source, Node `^22.19.0 \|\| >=24.0.0`, installed pnpm dependencies and 31 pinned official Web packages | `rpnh --frontend dsh`; Linux/WSL2, official UI with native controls for one bound RPNH MainSession |
 | Legacy DSH headless host | Unified package, bundled `integrations/dsh`, pinned source and toolchain | `rpnh-dsh`; advanced separate-root host, explicit offline numeric or configured text mode |
 | Coexistence | One unified source/wheel with applicable optional hosts | Do not overlay multiple same-name wheels in one environment |
 
-With no saved preference, the unified main uses `auto`: in an interactive
-terminal it selects compatible Codex `0.163.0` when available, otherwise Basic;
-non-interactive use selects Basic. Explicit `--frontend basic|codex|opencode|dsh`
-overrides a saved preference. Save or inspect it independently of model setup:
+New interactive `rpnh` sessions show a frontend menu; `rpnh init` includes
+frontend setup after model setup. Resume uses that session's last frontend,
+while explicit `--frontend NAME` overrides it. Setup connects a ready client
+or installs its pinned package into RPNH's managed frontend directory. See
+[frontend setup and switching](frontends.md). Configure it without model calls:
 
 ```bash
-rpnh config frontend dsh --dsh-source /absolute/path/to/deepseek-harness
-rpnh config frontend
-# Restore automatic selection:
-rpnh config frontend auto
+rpnh frontend setup dsh
+rpnh frontend list
+rpnh frontend switch opencode --resume ./my-session
 ```
 
 Preferences are stored beside the model config as its filename plus

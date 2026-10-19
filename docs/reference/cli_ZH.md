@@ -44,7 +44,7 @@ rpnh [--execution PATH] [--save-default]
 | `--session-dir NEW_DIR` | 新会话使用尚不存在的操作目录 |
 | `--resume SESSION_DIR` | 重新打开原会话根目录；与 `--session-dir` 互斥 |
 | `--prompt TEXT` | 执行一次 main-session turn 后退出输入循环；可能执行模型和工具 |
-| `--frontend ...` | 显式参数优先于保存偏好；默认 `auto` 在交互终端选择兼容 Codex，否则用 Basic；OpenCode、DSH 需显式参数或保存偏好 |
+| `--frontend ...` | 显式参数优先于会话记录／菜单；新交互会话显示菜单，resume 沿用上次前端；显式 `auto` 选择兼容 Codex 或 Basic |
 
 新会话省略 `--execution` 时使用 `RPNH_EXECUTION_CONFIG` 或保存的默认值；恢复时省略则使用该会话的持久化选择。`--prompt` 使用 Basic；显式 OpenCode 或 DSH 与 `--prompt` 组合会在解析模型前被拒绝。客户端版本与支持平台见[安装](../guides/installation_ZH.md)及[适配器](../guides/adapters_ZH.md)，不要默认使用上游最新版。
 
@@ -54,7 +54,11 @@ rpnh [--execution PATH] [--save-default]
 
 | 命令 | 副作用 |
 |---|---|
-| `rpnh init` / `rpnh config setup` | 交互式模型设置/选择；需要终端，写本地配置 |
+| `rpnh init` | 交互配置模型后，继续选择／配置前端 |
+| `rpnh config setup` | 仅交互配置模型 |
+| `rpnh frontend` / `rpnh frontend setup [NAME]` | 选择、连接或安装前端，不调用模型 |
+| `rpnh frontend list` | 只读检查本地前端，不下载 |
+| `rpnh frontend switch NAME [--resume PATH]` | 设置新会话菜单首选项，或用该界面重开同一会话 |
 | `rpnh config add` | 交互式新增模型 |
 | `rpnh config init [--catalog PATH]` | 创建空的规范 catalog |
 | `rpnh config build [--catalog PATH] [--output-root DIR] [--check]` | 生成 profile；`--check` 仅验证已有生成状态，不改写 |
@@ -150,6 +154,7 @@ rpnh package resolve ZIP [--local-package ZIP ...] [--entry ENTRY_ID]
 | `/task ID reopen CHECKPOINT [:: REASON]` | 从所选精确切面追加执行代际；可能执行模型和工具 |
 | `/status`、`/result`、`/net`、`/message`、`/stop`、`/resume` | 操作当前子任务；`/resume` 对 main 有独立语义 |
 | main `/resume`、main `/rollback` | 结算或继续暂停的 main turn；或返回上一个完成的主会话 turn |
+| `/frontend [NAME]` | 释放 Basic 所有权，再用另一前端打开同一会话 |
 | `/quit` | 退出前端，不停止独立任务 |
 
 普通文本进入 main 或所选单 agent；所选 workflow 需要 `TARGET :: TEXT`。该 parser 没有短写 `/checkpoints`、`/reopen`，应使用 `/task ID ...`。stop 请求被接受不等于 checkpoint 完成。Resume、checkpoint reopen、rollback 的数据和副作用语义不同，按[恢复决策指南](../guides/checkpoint-recovery_ZH.md)与[未知副作用排障](../guides/troubleshooting_ZH.md)处理。

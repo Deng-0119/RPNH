@@ -272,6 +272,10 @@ The component milestone and official DSH Web checks have a separate
 
 | Entry | Purpose |
 |---|---|
+| `rpnh` | Choose a frontend for a new interactive session; first use connects or installs the selected client |
+| `rpnh --resume PATH` | Reopen the session using its last frontend |
+| `rpnh frontend` | Choose and configure a frontend without calling a model |
+| `rpnh frontend switch NAME --resume PATH` | Open the same session in another frontend after its current interface exits |
 | `rpnh --frontend basic` | Built-in terminal for the main session and independent task controls |
 | `rpnh --frontend codex` | Codex 0.163.0 presentation; see the [adapter guide](docs/guides/adapters.md) |
 | `rpnh --frontend opencode` | OpenCode 1.19.3 presentation; see the [OpenCode guide](docs/guides/opencode.md) |
@@ -290,15 +294,19 @@ handling a turn result exits with status 130 without a Python traceback,
 retaining session files and releasing the owner lease. Independently running
 child tasks keep running. During agent execution, the existing checkpoint
 pause still permits `/resume` or `/rollback`.
+Use `/frontend [NAME]` in Basic to hand the same session to another interface.
+See [frontend setup and switching](docs/guides/frontends.md) for automatic
+installation, first-use setup and scripted use.
 
 ```bash
-rpnh config frontend dsh --dsh-source /absolute/path/to/deepseek-harness
-rpnh config frontend
+rpnh frontend setup dsh
 rpnh --session-dir ./main-session
+rpnh --resume ./main-session
 ```
 
-The saved preference is independent of model setup; explicit `--frontend` wins.
-Without a saved preference, `auto` still chooses compatible Codex or Basic.
+The saved preference is independent of model setup and is the menu's initial
+choice. Interactive fresh sessions show the menu; resume uses session memory.
+Explicit `--frontend` wins; explicit `auto` chooses compatible Codex or Basic.
 `DSH_SOURCE` overrides the saved source path. DSH needs pinned source `687f282`
 (`0.2.1-rc.2`), Node `^22.19.0 || >=24.0.0` and installed pnpm dependencies.
 First launch downloads 31 official `0.2.1-rc.2` npm packages into

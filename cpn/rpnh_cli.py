@@ -37,7 +37,8 @@ def _parser() -> argparse.ArgumentParser:
         description="RPNH — an AI assistant for conversations and tasks",
         epilog=(
             "Start with `rpnh init`; check configuration with `rpnh doctor`. "
-            "Commands: `rpnh config {init|add|build|list|show|use|setup|doctor|frontend}` and "
+            "Choose or configure an interface with `rpnh frontend`; "
+            "commands: `rpnh config {init|add|build|list|show|use|setup|doctor|frontend}` and "
             "`rpnh net --run RUN_DIR` or `rpnh net --read-host-config FILE --view`; "
             "export installed examples with "
             "`rpnh examples export --output DIR`; inspect data-only packages with "
@@ -67,7 +68,8 @@ def _parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--frontend", choices=FRONTENDS, default=None,
-        help=("override the saved frontend preference (auto when unset); "
+        help=("choose a frontend explicitly; interactive fresh sessions show a menu, "
+              "and resume reuses the session's last frontend; "
               f"auto uses Codex {CODEX_FRONTEND_VERSION} when available, "
               f"otherwise basic; OpenCode {OPENCODE_VERSION} and DSH are explicit"),
     )
@@ -234,6 +236,68 @@ def _choose_frontend(requested: str | None) -> str:
               file=sys.stderr)
         return "basic"
     return "codex"
+
+
+def _startup_frontend(args: argparse.Namespace) -> str:
+    from cpn.rpnh.frontend_config import read_frontend_preferences
+    from cpn.rpnh.frontend_onboarding import choose_frontend
+    from cpn.rpnh.session_frontend import read_session_frontend
+
+    if args.prompt is not None:
+        return "basic"
+    requested = args.frontend
+    if requested is None and args.resume is not None:
+        requested = read_session_frontend(args.resume)
+    if requested is not None:
+        selected = _choose_frontend(requested)
+        if requested != "auto" and sys.stdin.isatty():
+            from cpn.rpnh.frontend_setup import frontend_status
+            if not frontend_status(selected)["available"]:
+                return choose_frontend(selected)
+        return selected
+    if sys.stdin.isatty():
+        return choose_frontend()
+    preference = read_frontend_preferences().frontend
+    if preference == "auto":
+        raise ValueError(
+            "No frontend selected. Run `rpnh frontend setup` in a terminal, "
+            "or select one explicitly with --frontend basic|codex|opencode|dsh.")
+    return _choose_frontend(preference)
+
+
+def _frontend_command(argv: Sequence[str]) -> int:
+    from cpn.rpnh.frontend_onboarding import FRONTEND_LABELS, choose_frontend
+    from cpn.rpnh.frontend_setup import frontend_status
+
+    parser = argparse.ArgumentParser(
+        prog="rpnh frontend", description="Choose, connect or switch RPNH frontends")
+    commands = parser.add_subparsers(dest="action")
+    commands.add_parser("list", help="show frontend readiness without installing")
+    setup = commands.add_parser("setup", help="connect or install a frontend")
+    setup.add_argument("frontend", nargs="?", choices=tuple(FRONTEND_LABELS))
+    setup.add_argument("--codex-bin", type=Path, dest="codex_binary")
+    setup.add_argument("--opencode-bin", type=Path, dest="opencode_binary")
+    setup.add_argument("--dsh-source", type=Path)
+    switch = commands.add_parser("switch", help="change the default or reopen a session in another frontend")
+    switch.add_argument("frontend", choices=tuple(FRONTEND_LABELS))
+    switch.add_argument("--resume", type=Path, metavar="SESSION_DIR")
+    options = parser.parse_args(argv)
+    if options.action == "list":
+        _print_json([frontend_status(name) for name in FRONTEND_LABELS])
+        return 0
+    if options.action == "switch" and options.resume is not None:
+        return main([
+            "--frontend", options.frontend, "--resume", str(options.resume)])
+    selected = getattr(options, "frontend", None)
+    if selected is None:
+        _require_setup_terminal()
+    bindings = {
+        key: getattr(options, key) for key in (
+            "codex_binary", "opencode_binary", "dsh_source")
+        if getattr(options, key, None) is not None}
+    selected = choose_frontend(selected, **bindings)
+    print(f"Frontend configured: {selected}. Start with: rpnh")
+    return 0
 
 
 def _net_parser() -> argparse.ArgumentParser:
@@ -408,6 +472,7 @@ def _task_command(
   /workflow PROMPT             ask the main-session Designer to launch a graph workflow
   /switch ID | /switch main    change the CLI focus without stopping any task
   /current                     show the current CLI focus
+  /frontend [NAME]              reopen this session in basic, codex, opencode or dsh
   /task ID status              inspect process and Registry projection
   /task ID result              read the registered terminal result
   /task ID net                 show PetriNet summary
@@ -624,6 +689,8 @@ def _run_basic_frontend(
             session = MainSession(
                 root, execution, owner_root_reserved=True)
 
+        from cpn.rpnh.session_frontend import remember_session_frontend
+        remember_session_frontend(root, "basic", lease=lease)
         print("RPNH — AI assistant")
         print(f"session: {session.root}")
         print("Type /help for task controls.")
@@ -647,6 +714,18 @@ def _run_basic_frontend(
             if line == "/quit":
                 return 0
             try:
+                if line == "/frontend" or line.startswith("/frontend "):
+                    from cpn.rpnh.frontend_onboarding import (
+                        FrontendSwitch, choose_frontend,
+                    )
+                    parts = shlex.split(line)
+                    if len(parts) > 2:
+                        raise ValueError("usage: /frontend [basic|codex|opencode|dsh]")
+                    selected = choose_frontend(parts[1] if len(parts) == 2 else None)
+                    if selected == "basic":
+                        print("This session is already using Basic.")
+                        continue
+                    raise FrontendSwitch(selected)
                 if not _task_command(session, line, frontend_state):
                     if frontend_state.selected_task_id is None:
                         _run_turn(session, line)
@@ -676,6 +755,15 @@ def main(argv: list[str] | None = None) -> int:
             print(f"rpnh package: error: {exc}", file=sys.stderr)
             return 2
     from cpn.rpnh.onboarding import SetupCancelled
+    if arguments and arguments[0] == "frontend":
+        try:
+            return _frontend_command(arguments[1:])
+        except (SetupCancelled, KeyboardInterrupt) as exc:
+            print(str(exc) or "Frontend setup cancelled.", file=sys.stderr)
+            return 130
+        except (OSError, RuntimeError, TypeError, ValueError) as exc:
+            print(f"rpnh frontend: error: {exc}", file=sys.stderr)
+            return 2
     if arguments and arguments[0] in {"init", "doctor"}:
         command = arguments[0]
         parser = argparse.ArgumentParser(
@@ -691,9 +779,11 @@ def main(argv: list[str] | None = None) -> int:
                 return _doctor(options.execution, as_json=options.json)
             _require_setup_terminal()
             interactive_setup()
+            from cpn.rpnh.frontend_onboarding import choose_frontend
+            choose_frontend()
             return 0
-        except SetupCancelled as exc:
-            print(str(exc), file=sys.stderr)
+        except (SetupCancelled, KeyboardInterrupt) as exc:
+            print(str(exc) or "Setup cancelled.", file=sys.stderr)
             return 130
         except (OSError, RuntimeError, TypeError, ValueError) as exc:
             print(f"rpnh {command}: error: {exc}", file=sys.stderr)
@@ -768,42 +858,39 @@ def main(argv: list[str] | None = None) -> int:
     except (OSError, RuntimeError, TypeError, ValueError) as exc:
         parser.error(str(exc))
     try:
-        frontend = "basic" if args.prompt is not None else _choose_frontend(args.frontend)
+        frontend = _startup_frontend(args)
+    except (SetupCancelled, KeyboardInterrupt) as exc:
+        print(str(exc) or "Frontend selection cancelled.", file=sys.stderr)
+        return 130
     except (OSError, RuntimeError, TypeError, ValueError) as exc:
         parser.error(str(exc))
     root = (args.resume or args.session_dir or (
         Path.cwd() / ".rpnh" / "sessions" / (
             "session-" + uuid4().hex[:12])))
-    if frontend == "dsh":
+    from cpn.rpnh.frontend_onboarding import FrontendSwitch
+    while True:
         try:
-            from cpn.frontend.dsh_launcher import run_dsh_frontend
-            return run_dsh_frontend(
-                root, execution, resume=args.resume is not None)
+            if frontend == "dsh":
+                from cpn.frontend.dsh_launcher import run_dsh_frontend
+                return run_dsh_frontend(root, execution, resume=args.resume is not None)
+            if frontend == "opencode":
+                from cpn.frontend.opencode_launcher import run_opencode_frontend
+                return run_opencode_frontend(root, execution, resume=args.resume is not None)
+            if frontend == "codex":
+                from cpn.frontend.codex_app_server import run_codex_frontend
+                return run_codex_frontend(root, execution, resume=args.resume is not None)
+            return _run_basic_frontend(args, root, execution)
+        except FrontendSwitch as switch:
+            frontend = switch.frontend
+            args.resume = root
+            args.prompt = None
+        except (SetupCancelled, KeyboardInterrupt) as exc:
+            print(
+                f"\n[RPNH interrupted; session files retained at {root}]",
+                file=sys.stderr)
+            return 130
         except (OSError, RuntimeError, TypeError, ValueError) as exc:
             parser.error(str(exc))
-    if frontend == "opencode":
-        try:
-            from cpn.frontend.opencode_launcher import run_opencode_frontend
-            return run_opencode_frontend(
-                root, execution, resume=args.resume is not None)
-        except (OSError, RuntimeError, TypeError, ValueError) as exc:
-            parser.error(str(exc))
-    if frontend == "codex":
-        try:
-            from cpn.frontend.codex_app_server import run_codex_frontend
-            return run_codex_frontend(
-                root, execution, resume=args.resume is not None)
-        except (OSError, RuntimeError, TypeError, ValueError) as exc:
-            parser.error(str(exc))
-    try:
-        return _run_basic_frontend(args, root, execution)
-    except KeyboardInterrupt:
-        print(
-            f"\n[RPNH interrupted; session files retained at {root}]",
-            file=sys.stderr)
-        return 130
-    except (OSError, RuntimeError, TypeError, ValueError) as exc:
-        parser.error(str(exc))
 
 
 if __name__ == "__main__":

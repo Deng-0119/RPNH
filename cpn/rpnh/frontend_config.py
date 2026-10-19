@@ -16,6 +16,8 @@ CONFIG_SCHEMA_VERSION = "rpnh/frontend_preferences/v1"
 class FrontendPreferences:
     frontend: str = "auto"
     dsh_source: Path | None = None
+    codex_binary: Path | None = None
+    opencode_binary: Path | None = None
 
 
 def preferences_path() -> Path:
@@ -31,9 +33,9 @@ def _frontend(value: object) -> str:
     return value
 
 
-def _source(value: object) -> Path:
+def _source(value: object, name: str = "dsh_source") -> Path:
     if not isinstance(value, str) or not value.strip():
-        raise ValueError("dsh_source must be a nonempty path string")
+        raise ValueError(f"{name} must be a nonempty path string")
     return Path(value).expanduser().resolve()
 
 
@@ -53,7 +55,8 @@ def read_frontend_preferences(path: Path | None = None) -> FrontendPreferences:
             f"RPNH frontend preferences contain invalid JSON: {destination}") from exc
     required = {"schema_version", "frontend"}
     if (not isinstance(document, dict)
-            or set(document) not in (required, required | {"dsh_source"})
+            or not required <= set(document)
+            or not set(document) <= required | {"dsh_source", "codex_binary", "opencode_binary"}
             or document["schema_version"] != CONFIG_SCHEMA_VERSION):
         raise ValueError(
             f"RPNH frontend preferences have an invalid schema: {destination}")
@@ -61,27 +64,38 @@ def read_frontend_preferences(path: Path | None = None) -> FrontendPreferences:
         frontend=_frontend(document["frontend"]),
         dsh_source=(_source(document["dsh_source"])
                     if "dsh_source" in document else None),
+        codex_binary=(_source(document["codex_binary"], "codex_binary")
+                      if "codex_binary" in document else None),
+        opencode_binary=(_source(document["opencode_binary"], "opencode_binary")
+                         if "opencode_binary" in document else None),
     )
 
 
 def save_frontend_preferences(
         frontend: str, *, dsh_source: Path | None = None,
+        codex_binary: Path | None = None, opencode_binary: Path | None = None,
         path: Path | None = None,
 ) -> FrontendPreferences:
     selected = _frontend(frontend)
-    if dsh_source is not None and not isinstance(dsh_source, Path):
-        raise ValueError("dsh_source must be a Path or None")
-    source = _source(str(dsh_source)) if dsh_source is not None else None
+    bindings = {"dsh_source": dsh_source, "codex_binary": codex_binary,
+                "opencode_binary": opencode_binary}
+    for name, value in bindings.items():
+        if value is not None and not isinstance(value, Path):
+            raise ValueError(f"{name} must be a Path or None")
     destination = (preferences_path() if path is None else path).expanduser().resolve()
     existing = read_frontend_preferences(destination)
-    preferences = FrontendPreferences(
-        selected, existing.dsh_source if dsh_source is None else source)
+    preferences = FrontendPreferences(selected, **{
+        name: getattr(existing, name) if value is None else _source(str(value), name)
+        for name, value in bindings.items()
+    })
     document = {
         "schema_version": CONFIG_SCHEMA_VERSION,
         "frontend": preferences.frontend,
     }
-    if preferences.dsh_source is not None:
-        document["dsh_source"] = str(preferences.dsh_source)
+    for name in bindings:
+        value = getattr(preferences, name)
+        if value is not None:
+            document[name] = str(value)
     destination.parent.mkdir(parents=True, exist_ok=True)
     temporary: Path | None = None
     try:

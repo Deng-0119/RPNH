@@ -15,6 +15,8 @@ metadata:
 
 # 文档导航
 
+前端选择、自动连接与沿用上次界面恢复：[前端指南](guides/frontends_ZH.md)。
+
 可选客户端版本与此前验证：[Codex、DSH 与 OpenCode — 2026-10-19](validation/frontends-20261019_ZH.md)。
 `rpnh --frontend dsh`、包准备、偏好保存及绑定 Python MainSession 的原生控制见
 [官方 DSH Web 指南](guides/dsh_ZH.md)；此前组件阶段与官方 Web E2E 结果单列于

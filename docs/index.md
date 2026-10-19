@@ -15,6 +15,8 @@ metadata:
 
 # Documentation
 
+Frontend selection, automatic connection and resume: [frontend guide](guides/frontends.md).
+
 [Repository home](../README.md) · [Examples](../examples/README.md) · [CLI](reference/cli.md) · [API](reference/api-index.md) · [Source map](guides/repository-layout.md)
 
 RPNH uses Registry and PetriNet together to declare, execute, inspect and reuse

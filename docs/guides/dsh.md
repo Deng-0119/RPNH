@@ -41,11 +41,13 @@ its selection. Preferences live beside the selected model configuration at
 `config.json` uses `config.json.frontend.json`. A supplied source path is saved
 as an absolute path; this command does not prepare or validate the checkout.
 
-An explicit `--frontend` wins over the saved preference, which defaults to
-`auto`. `auto` still chooses compatible Codex in an interactive terminal, or
-Basic otherwise; it never selects DSH automatically. Save `auto` to restore
-that behavior. One-shot `--prompt` uses Basic; explicit `--frontend dsh` with
-`--prompt` is rejected before model resolution.
+New interactive `rpnh` sessions show a frontend menu; `rpnh --resume ROOT`
+reuses that session's last frontend. Use `rpnh frontend setup dsh` to connect
+or install the official Web frontend, or `rpnh frontend switch dsh --resume ROOT`
+to reopen a session after its previous interface exits. Explicit `--frontend`
+wins; explicit `--frontend auto` retains compatible-Codex-or-Basic selection.
+One-shot `--prompt` uses Basic; explicit DSH plus `--prompt` is rejected before
+model resolution. See [frontend setup](frontends.md).
 
 ## Shared session and controls
 

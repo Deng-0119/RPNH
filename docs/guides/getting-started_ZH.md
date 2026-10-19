@@ -15,6 +15,8 @@ metadata:
 
 # 从这里开始：第一次 RPNH 运行
 
+新交互 `rpnh` 会显示前端菜单。`rpnh init` 配置模型并选择至少一种前端，`rpnh --resume PATH` 沿用上次界面；见[前端配置与切换](frontends_ZH.md)。
+
 [文档首页](../index_ZH.md) · [命令参考](../reference/cli_ZH.md) · [排障](troubleshooting_ZH.md)
 
 本路线从已安装发行包出发，运行一个小型注册工具、查看其 PetriNet，再按需进入模型驱动会话。命令供你在自己的环境执行。本页已按链接中的源码核对，不是一次新的安装、运行或 provider 测试记录。

@@ -49,6 +49,9 @@ def _mock_session_access(
     )
     monkeypatch.setattr(
         "cpn.rpnh.session_access.MainSessionOwnerLease", _Lease)
+    monkeypatch.setattr(
+        "cpn.rpnh.session_frontend.remember_session_frontend",
+        lambda *_args, **_kwargs: None)
 
 
 @pytest.mark.parametrize("state", ["committed", "interrupted", "paused", "terminal"])

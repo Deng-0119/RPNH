@@ -108,7 +108,7 @@ def run_dsh_frontend(
         node, entry = prepare_dsh_frontend(source, env)
         env["TSX_TSCONFIG_PATH"] = str(source / "rpnh-frontend/tsconfig.json")
         gateway = FrontendGateway(
-            lambda: RegistryFrontendApplication(root, execution, resume=resume))
+            lambda: RegistryFrontendApplication(root, execution, resume=resume, frontend="dsh"))
         try:
             rows = gateway.call("snapshot")
             sid = rows[0]["id"] if rows else gateway.call("create_session")

@@ -240,6 +240,10 @@ child Registry。Provider 提交状态未知时会被记录，而不是静默重
 
 | 入口 | 用途 |
 |---|---|
+| `rpnh` | 新交互会话选择前端；首次使用连接或安装所选客户端 |
+| `rpnh --resume PATH` | 使用该会话上次的前端恢复 |
+| `rpnh frontend` | 选择并配置前端，不调用模型 |
+| `rpnh frontend switch NAME --resume PATH` | 当前界面退出后，用其他前端打开同一会话 |
 | `rpnh --frontend basic` | 内置终端，提供主会话与独立任务控制 |
 | `rpnh --frontend codex` | Codex 0.163.0 展示前端；见[适配器指南](docs/guides/adapters_ZH.md) |
 | `rpnh --frontend opencode` | OpenCode 1.19.3 展示前端；见[OpenCode 指南](docs/guides/opencode_ZH.md) |
@@ -255,15 +259,18 @@ Basic 终端可用 `/quit` 或 EOF 退出。在提示符或处理回合结果时
 130 退出，不打印 Python traceback，保留会话文件并释放 owner lease；独立运行的
 子任务继续运行。Agent 执行期间仍按既有 checkpoint 暂停机制处理，可用 `/resume`
 或 `/rollback` 继续控制。
+Basic 内可用 `/frontend [NAME]` 将同一会话交给其他界面。
+自动安装、首次配置和脚本用法见[前端配置与切换](docs/guides/frontends_ZH.md)。
 
 ```bash
-rpnh config frontend dsh --dsh-source /absolute/path/to/deepseek-harness
-rpnh config frontend
+rpnh frontend setup dsh
 rpnh --session-dir ./main-session
+rpnh --resume ./main-session
 ```
 
-保存偏好与模型设置独立，显式 `--frontend` 优先。未保存偏好时，`auto` 仍选择兼容
-Codex 或 Basic。`DSH_SOURCE` 优先于保存的源码路径。DSH 要求固定源码 `687f282`
+保存偏好与模型设置独立，用作菜单初始选项；新交互会话显示菜单，resume 使用会话记录。
+显式 `--frontend` 优先，显式 `auto` 仍选择兼容 Codex 或 Basic。
+`DSH_SOURCE` 优先于保存的源码路径。DSH 要求固定源码 `687f282`
 （`0.2.1-rc.2`）、Node `^22.19.0 || >=24.0.0` 和已安装的 pnpm 依赖。首次启动从 npm
 下载精确 `0.2.1-rc.2` 的 31 个官方包到 `SOURCE/rpnh-frontend/node_modules`，完整缓存
 可离线复用。Setup 与资源预检在获取会话前完成。launcher 打印带认证的 loopback URL

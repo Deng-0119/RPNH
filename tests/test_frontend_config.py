@@ -190,3 +190,41 @@ def test_existing_model_selection_does_not_overwrite_preferences(tmp_path, monke
     user_config.save_selected_path(execution, directory=execution.parent)
     assert read_frontend_preferences() == expected
     assert user_config.read_selected_path() == execution
+
+
+def test_optional_binary_bindings_roundtrip_and_survive_frontend_changes(tmp_path):
+    path = tmp_path / "frontend.json"
+    codex, opencode = tmp_path / "codex", tmp_path / "opencode"
+    result = save_frontend_preferences("codex", codex_binary=codex, path=path)
+    assert result == FrontendPreferences("codex", codex_binary=codex)
+    assert read_frontend_preferences(path) == result
+    result = save_frontend_preferences("opencode", opencode_binary=opencode, path=path)
+    assert result.codex_binary == codex and result.opencode_binary == opencode
+    assert save_frontend_preferences("basic", path=path) == FrontendPreferences(
+        "basic", codex_binary=codex, opencode_binary=opencode)
+    assert json.loads(path.read_text()) == {
+        "schema_version": "rpnh/frontend_preferences/v1", "frontend": "basic",
+        "codex_binary": str(codex), "opencode_binary": str(opencode),
+    }
+
+
+@pytest.mark.parametrize("name", ["codex_binary", "opencode_binary"])
+@pytest.mark.parametrize("value", [None, 1, [], "", "   "])
+def test_invalid_optional_persisted_binary_binding_is_rejected(tmp_path, name, value):
+    path = tmp_path / "frontend.json"
+    original = json.dumps({"schema_version": "rpnh/frontend_preferences/v1",
+                           "frontend": "basic", name: value})
+    path.write_text(original)
+    with pytest.raises(ValueError, match=name):
+        read_frontend_preferences(path)
+    with pytest.raises(ValueError, match=name):
+        save_frontend_preferences("basic", path=path)
+    assert path.read_text() == original
+
+
+@pytest.mark.parametrize("name", ["codex_binary", "opencode_binary"])
+def test_invalid_binary_argument_does_not_write(tmp_path, name):
+    path = tmp_path / "frontend.json"
+    with pytest.raises(ValueError, match=name):
+        save_frontend_preferences("codex", **{name: "invalid"}, path=path)
+    assert not path.exists()

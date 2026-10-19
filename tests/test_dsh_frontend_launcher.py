@@ -8,6 +8,7 @@ import pytest
 from cpn.frontend import dsh_launcher
 from cpn.rpnh.frontend_config import save_frontend_preferences
 from cpn.rpnh.session_access import MainSessionOwnerLease, inspect_main_session_root
+from cpn.rpnh.session_frontend import read_session_frontend
 from test_main_session_registry import _write_execution_profile
 
 
@@ -71,10 +72,12 @@ def test_real_private_fds_share_and_release_the_direct_main_session(tmp_path, mo
     root = tmp_path / "session"
     _pipe_helper(tmp_path, monkeypatch)
     assert dsh_launcher.run_dsh_frontend(root, execution, source=tmp_path, open_browser=False) == 0
+    assert read_session_frontend(root) == "dsh"
     record = inspect_main_session_root(root)
     with MainSessionOwnerLease.acquire(record):
         pass
     assert dsh_launcher.run_dsh_frontend(root, execution, resume=True, source=tmp_path, open_browser=False) == 0
+    assert read_session_frontend(root) == "dsh"
     assert inspect_main_session_root(root) == record
 
 

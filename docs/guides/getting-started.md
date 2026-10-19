@@ -15,6 +15,8 @@ metadata:
 
 # Start here: your first RPNH run
 
+New interactive `rpnh` sessions now show a frontend menu. `rpnh init` configures a model and at least one selected frontend; `rpnh --resume PATH` reuses the last interface. See [frontend setup and switching](frontends.md).
+
 [Documentation home](../index.md) · [Command reference](../reference/cli.md) · [Troubleshooting](troubleshooting.md)
 
 This path goes from an installed package to a small registered tool run, its

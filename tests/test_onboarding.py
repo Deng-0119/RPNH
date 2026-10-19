@@ -209,7 +209,11 @@ def test_noninteractive_setup_fails_without_reading_stdin_or_writing(tmp_path, m
 def test_cli_init_runs_wizard_and_leaves_task_creation_to_launch(tmp_path, monkeypatch):
     monkeypatch.setattr(sys.stdin, "isatty", lambda: True)
     monkeypatch.setattr("builtins.input", answers(api_answers()))
+    frontends = []
+    monkeypatch.setattr("cpn.rpnh.frontend_onboarding.choose_frontend",
+                        lambda: frontends.append("chosen") or "basic")
     assert main(["init"]) == 0
+    assert frontends == ["chosen"]
     assert read_selected_path() is not None
     assert not (tmp_path / ".rpnh").exists()
 
