@@ -1,12 +1,12 @@
 ---
 name: rpnh-optional-adapters
-description: "Use versioned Codex presentation and the bounded managed DSH integration."
+description: "Use Codex and unified DSH presentation, or the advanced legacy DSH host."
 metadata:
   document-kind: how-to
   audience: operator-and-developer
   language: en
   counterpart: adapters_ZH.md
-  revision: "2026-10-19.1"
+  revision: "2026-10-19.2"
   status: source-reviewed
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -16,6 +16,7 @@ metadata:
 # Codex, DSH and coexistence
 
 ## Codex is presentation, not replacement authority
+
 The pinned stock client is `codex-cli 0.163.0`. Installing a newer client is not a compatibility test. The supported installation command for this pin is:
 
 ```bash
@@ -49,12 +50,48 @@ user-namespace environment must still support the selected Codex sandbox;
 otherwise the adapter fails before a terminal model response and retains its
 private failure audit.
 
-Codex receives the same direct MainSession root as Basic and OpenCode. Use
+Codex receives the same direct MainSession root as Basic, OpenCode and DSH Web. Use
 `--session-dir ROOT` once, then `--resume ROOT` from another frontend only after
 the current owner exits. Codex protocol thread IDs and `.frontends/codex.json`
 are rebuildable presentation metadata; the Registry transcript is authoritative.
 
-## Managed DSH prerequisites
+## DSH Web frontend
+
+Use the shared main session in a browser:
+
+```bash
+rpnh config frontend dsh --dsh-source /absolute/path/to/deepseek-harness
+rpnh --session-dir ./main-session
+# After exiting this frontend, reopen the same root in Basic:
+rpnh --frontend basic --resume ./main-session
+```
+
+An explicit `--frontend` overrides the saved preference; unset preferences use
+`auto`, which still selects only compatible Codex or Basic. `DSH_SOURCE`
+overrides the saved checkout. Preferences are independent of model configuration
+and can be saved before model setup. `rpnh --frontend dsh --prompt TEXT` is
+rejected before model resolution.
+
+The launcher prints a loopback URL and attempts to open a browser. This RPNH Web
+frontend uses native DSH chat/composer/theme widgets and AgentLoop/Session; it
+is not the full stock DSH Web shell or a TUI. The pinned upstream bundles no
+terminal TUI. Native DSH providers, tools and workspace filesystem are not
+loaded. The RPNH catalog, controls and Registry history are shared, with one
+writable owner. Viewing reopened history never continues work automatically;
+use `/rpnh-resume` or `/rpnh-rollback` explicitly. `Ctrl+C` exits the host and
+checkpoint-stops its owned main turn only.
+
+The launcher applies the factory seam and builds Web assets on every launch
+before acquiring MainSession. See the [DSH guide](dsh.md) for pinned source,
+Node/pnpm requirements and the separate
+[unified frontend validation](../validation/dsh-unified-20261019.md).
+
+## Legacy registered headless DSH host prerequisites
+
+`rpnh-dsh` retains separate `--root`/`--session-id` semantics. The following
+launcher, 68 MiB frame, 48-attempt budget and recovery details describe that
+advanced legacy host, not the unified MainSession frontend.
+
 This section applies only to a source tree or installed distribution containing `cpn/dsh` and `integrations/dsh`. The integration manifest pins upstream `deepseek-ai/deepseek-harness` revision `687f282e8625c6b8d11ff58211a90524be2e4317` (`0.2.1-rc.2`), checked on 2026-10-19. This source host was tested with Node 22.22.1 and pnpm 11.28.5; its engine range is `^22.19.0 || >=24.0.0`. The [DSH guide](dsh.md) distinguishes npm `latest` from `next` and this exact source integration.
 
 Obtain that exact upstream checkout and install its dependencies with the pinned package manager and frozen lockfile. Use a disposable dedicated checkout: preparation intentionally patches a checked upstream factory and copies the integration TypeScript files. Retain `UPSTREAM.json` and `UPSTREAM_LICENSE` when distributing the integration.
@@ -80,7 +117,8 @@ bash integrations/dsh/run.sh "$RPNH_PYTHON" "$DSH_SOURCE" --offline --help
 
 That interpreter must belong to the intended RPNH environment. The launcher passes its own `sys.executable` through the runner to the owner process. `--execution-path`, `--execution-profile` and `--python` are internal launcher-to-application fields, not a second user configuration interface. Invoke configured requests through `rpnh-dsh`, not by hand-building those fields.
 
-## Explicit offline conformance run
+## Legacy host: explicit offline conformance run
+
 This invokes the deterministic host and creates real private Registry data, but no external model. Use a fresh output directory:
 
 ```bash
@@ -93,7 +131,8 @@ rpnh-dsh "$DSH_SOURCE" \
 
 The exact offline route is `rpnh-offline/deterministic-v1`. It exposes `read_dataset` and `sum_values` and requires finite numeric input. This demonstration is not a general analytics agent. `--json` requests an upstream headless JSON event stream, not one JSON document. `--deny` exercises the declared request-denial path on a new run. Offline mode does not fall back to a saved provider.
 
-## Configured ordinary text
+## Legacy host: configured ordinary text
+
 The configured path is implemented, not an outstanding numeric-only limitation. Resolve an RPNH selection in this order: explicit `--execution`, `RPNH_EXECUTION_CONFIG`, then the saved selection. There is no interactive setup in this launcher, no implicit fallback to offline, and no automatic change of the saved default. Build/select the profile through the existing RPNH configuration interface first.
 
 ```bash
@@ -117,7 +156,7 @@ supply a numeric snapshot for text requests.
 
 The launcher sends a public profile summary. The configured child Registry records route/model attribution and configuration revision, not endpoint, credential binding or static header values. This is not a guarantee that task text or responses contain no sensitive information: preserve runtime data privately. The entire request/response frame is bounded at 68 MiB. The request, history and selected maximum response must pass the pre-dispatch bound; setting the response cap to 68 MiB alone does not guarantee that the enclosing frame fits. A general profile with a larger `max_response_bytes` remains valid for core RPNH but is not DSH-compatible. Build an explicit user-owned DSH profile for the same provider, credential route and exact model with enough frame headroom; do not silently rewrite the selected profile.
 
-New DSH sessions default to a 48-attempt module budget. The launcher accepts a
+New legacy host DSH sessions default to a 48-attempt module budget. The launcher accepts a
 positive `--attempt-budget` or the explicit value `unmetered`; the latter is
 intended for a known protocol such as the AutomationBench adapter that can
 legitimately exceed 48 model/tool turns. Resume keeps the persisted declaration
@@ -127,7 +166,8 @@ A rejection before Registry turn admission is now emitted as an explicit
 headless error and nonzero exit, rather than an empty final message. It still
 creates no provider call and must not be reported as a model failure.
 
-## History and explicit recovery
+## Legacy host: history and explicit recovery
+
 Record the returned session ID. History uses `--history --root DIR --session-id ID` without model selection or credentials; it constructs no model/tool effect host. The installed runner still needs its normal host environment and may prepare the checkout. History is read-only with respect to Registry authority, not a claim of no filesystem or process effects.
 
 Offline recovery uses `--offline --resume --root DIR --session-id ID`. Configured recovery requires `--execution ORIGINAL_SELECTION --resume --root DIR --session-id ID`; it must not silently take the current default. Neither mode accepts a new task, data-file or deny argument while recovering.
@@ -162,7 +202,8 @@ products, Success and terminal evidence settle through the sole owner. Do not
 run multiple owners against one Registry.
 
 Offline and fake-port tests establish adapter contracts, not live provider
-availability. No `rpnh --frontend dsh` switch exists; use the `rpnh-dsh`
-launcher described in the [DSH guide](dsh.md). See the
+availability. Use `rpnh --frontend dsh` for the shared-session Web frontend;
+`rpnh-dsh` remains the separate advanced headless host described in the
+[DSH guide](dsh.md). See the
 [extension reference](../reference/extensions-observation.md) for plugin and
 observer contracts.

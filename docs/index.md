@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: index_ZH.md
-  revision: "2026-10-19.1"
+  revision: "2026-10-19.2"
   status: source-reviewed
   basis: "current source; dated validation records retain their own scopes"
 ---
@@ -22,8 +22,11 @@ agent work. Start with one small run, then choose the guide for your next task.
 These pages describe the selected public source; dated results identify the
 older exact revisions they tested.
 
-Current optional client versions and validation:
+Optional client versions and earlier validation:
 [Codex, DSH and OpenCode — 2026-10-19](validation/frontends-20261019.md).
+Use the [DSH Web guide](guides/dsh.md) for `rpnh --frontend dsh`, saved frontend
+preferences and shared-session controls; actual unified DSH checks are tracked
+in a [separate record](validation/dsh-unified-20261019.md).
 
 ## New to RPNH?
 
@@ -45,7 +48,7 @@ For a conceptual introduction before running anything, read the
 | Install an approved source or wheel; choose a platform and artifact | [Installation and distribution scope](guides/installation.md) |
 | Set a provider, exact model and credentials environment | [Model setup](guides/models.md), [provider catalog fields](PROVIDER_MODEL_CONFIGURATION.md) |
 | Understand profile precedence, limits and runtime policy | [Configuration reference](guides/configuration.md) |
-| Choose Basic, Codex or another optional host | [Adapters and coexistence](guides/adapters.md), [OpenCode](guides/opencode.md), [DSH](guides/dsh.md) |
+| Choose Basic, Codex, OpenCode or DSH Web; save a frontend preference | [Adapters and coexistence](guides/adapters.md), [OpenCode](guides/opencode.md), [DSH](guides/dsh.md) |
 | Prepare a receiver for a dependency-complete package | [Package environments](guides/package-environments.md), [check/plan/prepare flow](environment-preparation.md) |
 
 ## Run, inspect and recover

@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: installation_ZH.md
-  revision: "2026-10-19.1"
+  revision: "2026-10-19.2"
   status: source-candidate-not-published
   basis: "unified main; host differences explicitly labelled"
 ---
@@ -103,10 +103,36 @@ or a substitute for validating the user's own route.
 | Codex presentation | Unified package plus exactly `codex-cli 0.163.0` | `rpnh --frontend codex`; TUI compatibility is version-specific |
 | OpenCode presentation | Unified package plus exactly OpenCode `1.19.3` | `rpnh --frontend opencode`; explicit only, Linux/WSL2 only, and UI metrics are unavailable |
 | Plugins, onboarding and examples | Approved unified Python package | `rpnh plugins`, `rpnh init`, `rpnh doctor`, and `rpnh examples`; local checks and export do not call a model |
-| Managed DSH | Unified package, bundled `integrations/dsh`, pinned upstream checkout and toolchain | `rpnh-dsh`; explicit offline numeric or shared configured text mode |
+| DSH Web frontend | Unified package, pinned DSH `687f282` / `0.2.1-rc.2` source, Node `^22.19.0 || >=24.0.0` and installed pnpm dependencies | `rpnh --frontend dsh`; Linux/WSL2, native DSH widgets in an RPNH Web frontend, not the full stock shell or a TUI |
+| Legacy DSH headless host | Unified package, bundled `integrations/dsh`, pinned source and toolchain | `rpnh-dsh`; advanced separate-root host, explicit offline numeric or configured text mode |
 | Coexistence | One unified source/wheel with applicable optional hosts | Do not overlay multiple same-name wheels in one environment |
 
-The unified main defaults to `auto`: in an interactive terminal it uses compatible Codex `0.163.0` when available, otherwise it uses the built-in terminal; non-interactive use selects the built-in terminal. Select `--frontend basic`, `codex`, or `opencode` explicitly when that surface is required. See [adapters](adapters.md), [OpenCode](opencode.md), or the DSH guide before using an optional host. The read-only Viewer and its packaged assets are part of this same unified distribution; it is not a separate execution backend.
+With no saved preference, the unified main uses `auto`: in an interactive
+terminal it selects compatible Codex `0.163.0` when available, otherwise Basic;
+non-interactive use selects Basic. Explicit `--frontend basic|codex|opencode|dsh`
+overrides a saved preference. Save or inspect it independently of model setup:
+
+```bash
+rpnh config frontend dsh --dsh-source /absolute/path/to/deepseek-harness
+rpnh config frontend
+# Restore automatic selection:
+rpnh config frontend auto
+```
+
+Preferences are stored beside the model config as its filename plus
+`.frontend.json`; `DSH_SOURCE` overrides the saved DSH path. Install pnpm
+`11.28.5` dependencies in the dedicated pinned checkout with
+`pnpm install --frozen-lockfile --ignore-scripts`. Launch applies the factory
+seam and rebuilds Web assets each time before acquiring MainSession, so the
+checkout must be writable. No prepared DSH checkout is bundled in the wheel.
+The launcher prints a loopback URL and attempts to open a browser.
+
+See [adapters](adapters.md), [OpenCode](opencode.md) and [DSH](dsh.md) for session
+sharing, prerequisites and limits. The separate
+[unified DSH record](../validation/dsh-unified-20261019.md) reports actual checks;
+these installation instructions do not establish live-provider, all-platform
+or wheel acceptance. The read-only Viewer and its packaged assets belong to
+the unified distribution and have their own inspection interface.
 
 ## Verification, update and removal
 Installation is successful only after the installed command, packaged schemas/config/static/example assets and the zero-model configuration flow work outside the checkout. A successful editable install or passing link check is insufficient. Viewer wheel validation requires the complete pinned vendor-file set and license files; an empty or self-reduced asset manifest cannot waive them. This documentation batch records wheel verification separately from its static-site checks.
@@ -116,4 +142,4 @@ For an update, checkpoint-stop affected tasks, retain a consistent private backu
 `python -m pip uninstall rpnh-harness` removes the distribution, not user catalogs, credentials held in the shell, or session/run data. Retain these deliberately. Do not delete active run directories. Roll back an environment using the prior approved artifact; that does not undo external effects or authorize opening an incompatible Registry.
 
 ## Source correspondence
-`pyproject.toml`; `cpn/rpnh_cli.py:_parser`; `cpn/rpnh/user_config.py`; adapter `integrations/dsh/run.sh`. Installation commands are instructions; the progress record identifies which were actually executed.
+`pyproject.toml`; `cpn/rpnh_cli.py:_parser`; `cpn/rpnh/user_config.py`; `cpn/rpnh/frontend_config.py`; `cpn/frontend/dsh_launcher.py`; legacy adapter `integrations/dsh/run.sh`. Installation commands are instructions; the progress record identifies which were actually executed.

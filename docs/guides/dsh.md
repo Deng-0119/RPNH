@@ -1,29 +1,94 @@
 ---
 name: rpnh-dsh-guide
-description: "Install and operate the optional DSH host adapter without duplicating RPNH authority."
+description: "Use the DSH Web frontend with one shared RPNH main session, or the advanced legacy host."
 metadata:
   document-kind: guide
   audience: operator-and-developer
   language: en
   counterpart: dsh_ZH.md
-  revision: "2026-10-19.1"
+  revision: "2026-10-19.2"
   status: source-reviewed-pre-release
 ---
 
 [English](dsh.md) | [中文](dsh_ZH.md)
 
-# DSH host adapter
+# DSH Web frontend and legacy host
 
-DSH is an optional presentation and tool host. RPNH remains responsible for
-the provider route, exact model, Registry records, PetriNet admission, managed
-tool grants and final-result accounting. The adapter does not maintain a
-second provider catalog or Registry writer.
+Use `rpnh --frontend dsh` to chat in a browser with the same RPNH main session
+as Basic, Codex and OpenCode. First configure a model through the usual RPNH
+setup and prepare the pinned DSH checkout described below. Then save your
+frontend preference:
 
-## Prepare the pinned host
+```bash
+rpnh config frontend dsh --dsh-source /absolute/path/to/deepseek-harness
+rpnh config frontend
+rpnh --session-dir ./main-session
+```
+
+For a single launch, use `rpnh --frontend dsh --session-dir ./main-session`
+with a fresh directory. `DSH_SOURCE` overrides the saved checkout path.
+The launcher prints a loopback URL and attempts to open it in your browser;
+open that URL manually if needed. `Ctrl+C` in the launcher terminal exits the
+host and requests a checkpoint stop only for its owned main turn. Independent
+child tasks keep their own lifecycles.
+
+## Save a frontend independently of models
+
+`rpnh config frontend [auto|basic|codex|opencode|dsh] [--dsh-source CHECKOUT]`
+shows or saves presentation preferences without resolving a model or changing
+its selection. Preferences live beside the selected model configuration at
+`config_path().with_name(config_path().name + ".frontend.json")`; for example,
+`config.json` uses `config.json.frontend.json`. A supplied source path is saved
+as an absolute path; this command does not prepare or validate the checkout.
+
+An explicit `--frontend` wins over the saved preference, which defaults to
+`auto`. `auto` still chooses compatible Codex in an interactive terminal, or
+Basic otherwise; it never selects DSH automatically. Save `auto` to restore
+that behavior. One-shot `--prompt` uses Basic; explicit `--frontend dsh` with
+`--prompt` is rejected before model resolution.
+
+## Shared session and controls
+
+Create a session with `--session-dir ROOT`; after its frontend exits, reopen
+that exact root with `rpnh --frontend dsh --resume ROOT` or another supported
+frontend. The shared owner lease permits only one writable owner. Registry
+history remains authoritative; DSH's Session is a display projection, not a
+second durable conversation.
+
+Reopening history does not execute or continue a paused turn. Use the Stop
+button for a checkpoint stop, then explicitly enter `/rpnh-resume` to continue
+or `/rpnh-rollback` to return main conversation to its previous completed turn.
+`/rpnh-help` lists the shared RPNH task controls, including `/rpnh-tasks`,
+`/rpnh-task`, `/rpnh-net`, `/rpnh-agent` and `/rpnh-workflow`. Launching or
+resuming work can call the selected model and tools. Model and reasoning-effort
+choices come from the shared RPNH catalog.
+
+## What the Web interface includes
+
+This is an RPNH Web frontend built with native DSH chat, composer and theme
+widgets plus DSH AgentLoop/Session. It is not the full stock DSH Web shell or
+a terminal TUI; this pinned upstream has no bundled terminal TUI. Native DSH
+providers, tools and workspace filesystem are not loaded. RPNH retains model
+routing, Registry ownership, workspace and managed execution authority.
+
+On every launch, the launcher checks the pinned source and installed
+dependencies, applies the existing factory seam, copies the frontend source,
+and rebuilds its Web assets (about one second in the prepared local setup)
+before acquiring MainSession. It writes to the checkout, so use a dedicated
+writable copy. Source preparation failures occur before session ownership.
+The [unified DSH validation record](../validation/dsh-unified-20261019.md)
+tracks the actual checked scope separately from the earlier
+[host/client compatibility record](../validation/frontends-20261019.md).
+Neither record implies live-provider, all-platform or wheel acceptance beyond
+its stated results.
+
+## Prepare the pinned source
 
 The integration targets the exact upstream revision declared in
 `integrations/dsh/UPSTREAM.json`. Preparation requires Node.js and pnpm and
-must be run against a separate upstream checkout:
+must be run against a separate upstream checkout. Install its pnpm dependencies
+before preparation (see the versions below). These optional legacy host checks
+do not launch or validate the Web frontend:
 
 ```bash
 RPNH_PYTHON=$(python -c 'import sys; print(sys.executable)')
@@ -54,7 +119,12 @@ provider acceptance test.
 Preparation checks the pinned revision and applies the narrow factory seam
 needed by the RPNH backend. It does not copy credentials into the repository.
 
-## Run offline
+## Legacy registered headless host: offline
+
+`rpnh-dsh` remains an advanced registered headless host with its own `--root`
+and `--session-id` semantics. It does not open the unified Web frontend or use
+the direct MainSession root. The following frame, budget and recovery details
+apply to this legacy host.
 
 ```bash
 rpnh-dsh /absolute/path/to/deepseek-harness \
@@ -65,7 +135,7 @@ rpnh-dsh /absolute/path/to/deepseek-harness \
 
 Offline mode validates host wiring without a provider call.
 
-## Use a configured route
+## Legacy host: configured route
 
 Build a user-owned provider profile with `rpnh config build`, then pass its
 absolute execution-selection path:
@@ -81,7 +151,7 @@ This command can make a real model call. Record the selected profile,
 provider, exact model and call budget before using it. RPNH never silently
 switches route or model.
 
-DSH applies a 68 MiB limit to the complete framed exchange, including history,
+The legacy host applies a 68 MiB limit to the complete framed exchange, including history,
 tool declarations, request content and the configured maximum response. A
 general profile whose response allowance alone consumes or exceeds that frame
 is rejected before model-attempt admission. Create an explicit user-owned DSH
@@ -89,7 +159,7 @@ profile that keeps the same provider route, credentials and exact model while
 declaring realistic response headroom. This is a host-specific budget, not a
 provider or model fallback.
 
-New sessions use a 48-attempt module budget by default. A positive
+New legacy host sessions use a 48-attempt module budget by default. A positive
 `--attempt-budget` selects a different explicit cap; `--attempt-budget
 unmetered` removes only that module-attempt cap for a workload whose protocol
 requires it. The selected value is persisted with the run. Resume uses that
@@ -106,7 +176,7 @@ operation's actual effect is in that list. The legacy selector-only
 plugin's own description and schema; it never implicitly grants external
 effects.
 
-## Recovery boundary
+## Legacy host: recovery boundary
 
 Current sessions use upstream V4 first-class tool messages. The codec retains
 read-only decoding of the older V3 and previously inspected V4 revisions.
@@ -128,9 +198,9 @@ immutable candidate held by a `map_ready` subordinate execution checkpoint;
 declared HOST effects remain excluded. This is Registry evidence recovery, not a
 DSH-specific retry path.
 
-## Limits
+## Platform and validation limits
 
-The pinned adapter is Linux/WSL2-only. Offline tests do not establish live
+Both launch paths currently support Linux/WSL2 only. Offline tests do not establish live
 provider availability, and a prepared upstream checkout is not bundled in the
 RPNH wheel. Admission and driver failures are surfaced as explicit non-zero
 errors; an empty final response is not successful completion.

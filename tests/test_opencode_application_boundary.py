@@ -351,6 +351,86 @@ def test_not_ready_abort_does_not_send_early_sigint(boundary):
     assert control.stops == 0
 
 
+def test_cold_resume_owns_terminal_reconciliation(boundary):
+    app, main, control, _ = boundary
+    app.submit(SID, "request", "explicit:one")
+    state = app._sessions[SID]
+    state.owned_main_turn_task_ids.clear()  # A newly opened frontend owns no runs.
+    state.failure = "reconciliation_required"
+    main.execution_state = "stopped_by_owner"
+
+    assert app.command(SID, "rpnh-resume", "", "resume")["status"] == "RESUME_STARTED"
+    assert state.failure is None
+    main.execution_state = "terminal"
+    control.returncode = 0
+    app.tick()
+
+    assert app.snapshot()[0]["turns"][0]["state"] == "committed"
+    assert state.owned_main_turn_task_ids == set()
+    assert control.starts == 1 and control.resumes == 1
+
+
+@pytest.mark.parametrize("shutdown", [False, True])
+def test_own_launch_can_stop_before_child_bootstrap_is_readable(boundary, shutdown):
+    from cpn.rpnh.registry.main_thread import MainThreadAuthorityError
+    app, main, control, _ = boundary
+    app.submit(SID, "request", "explicit:one")
+    original = main.active_turn_snapshot
+    def snapshot():
+        if main.execution_state == "running":
+            raise MainThreadAuthorityError("child Registry has no exact native run identity")
+        return original()
+    main.active_turn_snapshot = snapshot
+    control.checkpoint_on_stop = True
+    if shutdown:
+        app.shutdown(timeout=0.5)
+    else:
+        assert app.abort(SID)
+    assert control.stops == 1
+    assert main.execution_state == "stopped_by_owner"
+
+
+def test_incomplete_foreign_registry_does_not_allow_signalling_a_task(boundary):
+    from cpn.rpnh.registry.main_thread import MainThreadAuthorityError
+    app, main, control, _ = boundary
+    app.submit(SID, "request", "explicit:one")
+    app._sessions[SID].owned_main_turn_task_ids.clear()
+    def snapshot():
+        raise MainThreadAuthorityError("child Registry has no exact native run identity")
+    main.active_turn_snapshot = snapshot
+    with pytest.raises(MainThreadAuthorityError):
+        app.abort(SID)
+    assert control.stops == 0
+
+
+def test_cold_resume_is_checkpointed_on_frontend_exit(boundary):
+    app, main, control, _ = boundary
+    app.submit(SID, "request", "explicit:one")
+    app._sessions[SID].owned_main_turn_task_ids.clear()
+    main.execution_state = "stopped_by_owner"
+    main.task_control = NS(stop=lambda *_a, **_kw: pytest.fail("child stop must not be called"))
+    app.command(SID, "rpnh-resume", "", "resume")
+    control.checkpoint_on_stop = True
+
+    app.shutdown(timeout=0.5)
+
+    assert control.stops == 1
+    assert main.execution_state == "stopped_by_owner"
+
+
+@pytest.mark.parametrize("status", ["ALREADY_RUNNING", "ALREADY_TERMINAL"])
+def test_resume_without_new_launch_does_not_claim_ownership(boundary, status):
+    app, main, control, _ = boundary
+    app.submit(SID, "request", "explicit:one")
+    state = app._sessions[SID]
+    state.owned_main_turn_task_ids.clear()
+    main.execution_state = "stopped_by_owner"
+    control.resume = lambda _key: {"status": status}
+
+    assert app.command(SID, "rpnh-resume", "", "resume")["status"] == status
+    assert state.owned_main_turn_task_ids == set()
+
+
 def test_shutdown_checkpoints_main_turn_without_stopping_child_registry(boundary):
     app, main, control, _ = boundary
     child_control = NS(stop=lambda *_a, **_kw: pytest.fail("child stop must not be called"))

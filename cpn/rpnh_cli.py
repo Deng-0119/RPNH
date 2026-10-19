@@ -31,12 +31,13 @@ from cpn.rpnh.user_config import (
 def _parser() -> argparse.ArgumentParser:
     from cpn.frontend.codex_app_server import CODEX_FRONTEND_VERSION
     from cpn.frontend.opencode_protocol import OPENCODE_VERSION
+    from cpn.rpnh.frontend_config import FRONTENDS
     parser = argparse.ArgumentParser(
         prog="rpnh",
         description="RPNH — an AI assistant for conversations and tasks",
         epilog=(
             "Start with `rpnh init`; check configuration with `rpnh doctor`. "
-            "Commands: `rpnh config {init|add|build|list|show|use|setup|doctor}` and "
+            "Commands: `rpnh config {init|add|build|list|show|use|setup|doctor|frontend}` and "
             "`rpnh net --run RUN_DIR` or `rpnh net --read-host-config FILE --view`; "
             "export installed examples with "
             "`rpnh examples export --output DIR`; inspect data-only packages with "
@@ -65,9 +66,10 @@ def _parser() -> argparse.ArgumentParser:
         "--prompt", help="run one main-session turn and exit the input loop",
     )
     parser.add_argument(
-        "--frontend", choices=("auto", "codex", "basic", "opencode"), default="auto",
-        help=(f"auto uses compatible Codex {CODEX_FRONTEND_VERSION} when available, "
-              f"otherwise the built-in terminal; OpenCode {OPENCODE_VERSION} is explicit"),
+        "--frontend", choices=FRONTENDS, default=None,
+        help=("override the saved frontend preference (auto when unset); "
+              f"auto uses Codex {CODEX_FRONTEND_VERSION} when available, "
+              f"otherwise basic; OpenCode {OPENCODE_VERSION} and DSH are explicit"),
     )
     return parser
 
@@ -87,11 +89,17 @@ def _execution_path(explicit: Path | None, *, save_default: bool) -> Path:
 
 
 def _config_parser() -> argparse.ArgumentParser:
+    from cpn.rpnh.frontend_config import FRONTENDS
     parser = argparse.ArgumentParser(
         prog="rpnh config",
         description="RPNH-owned provider and exact-model configuration",
     )
     commands = parser.add_subparsers(dest="config_command", required=True)
+    frontend = commands.add_parser(
+        "frontend", help="show or save the default presentation frontend")
+    frontend.add_argument("preference", nargs="?", choices=FRONTENDS)
+    frontend.add_argument("--dsh-source", type=Path,
+                          help="prepared DSH source checkout for the DSH frontend")
     init = commands.add_parser(
         "init", help="create an empty catalog for manual/scripted configuration")
     init.add_argument("--catalog", type=Path)
@@ -121,6 +129,19 @@ def _config_parser() -> argparse.ArgumentParser:
 
 def _config_command(argv: Sequence[str]) -> int:
     args = _config_parser().parse_args(argv)
+    if args.config_command == "frontend":
+        from cpn.rpnh.frontend_config import (
+            read_frontend_preferences, save_frontend_preferences,
+        )
+        preference = read_frontend_preferences()
+        if args.preference is not None or args.dsh_source is not None:
+            preference = save_frontend_preferences(
+                args.preference or preference.frontend,
+                dsh_source=args.dsh_source)
+        _print_json({"frontend": preference.frontend,
+                     "dsh_source": (None if preference.dsh_source is None
+                                    else str(preference.dsh_source))})
+        return 0
     if args.config_command == "init":
         from cpn.rpnh.provider_setup import initialize_provider_catalog
         _print_json(initialize_provider_catalog(args.catalog))
@@ -197,7 +218,10 @@ def _doctor(execution: Path | None = None, *, as_json: bool = False) -> int:
     return 0 if report["ready"] else 1
 
 
-def _choose_frontend(requested: str) -> str:
+def _choose_frontend(requested: str | None) -> str:
+    if requested is None:
+        from cpn.rpnh.frontend_config import read_frontend_preferences
+        requested = read_frontend_preferences().frontend
     if requested != "auto":
         return requested
     if not sys.stdin.isatty():
@@ -704,6 +728,10 @@ def main(argv: list[str] | None = None) -> int:
             return 2
     parser = _parser()
     args = parser.parse_args(arguments)
+    if args.frontend in {"opencode", "dsh"} and args.prompt is not None:
+        parser.error(
+            f"{args.frontend} is an interactive frontend; use --frontend basic "
+            "for a one-shot prompt")
     try:
         if args.resume is not None:
             persisted_execution = (
@@ -742,14 +770,20 @@ def main(argv: list[str] | None = None) -> int:
         return 130
     except (OSError, RuntimeError, TypeError, ValueError) as exc:
         parser.error(str(exc))
-    if args.frontend == "opencode" and args.prompt is not None:
-        parser.error(
-            "OpenCode is an interactive attach frontend; use --frontend basic "
-            "for a one-shot prompt")
-    frontend = "basic" if args.prompt is not None else _choose_frontend(args.frontend)
+    try:
+        frontend = "basic" if args.prompt is not None else _choose_frontend(args.frontend)
+    except (OSError, RuntimeError, TypeError, ValueError) as exc:
+        parser.error(str(exc))
     root = (args.resume or args.session_dir or (
         Path.cwd() / ".rpnh" / "sessions" / (
             "session-" + uuid4().hex[:12])))
+    if frontend == "dsh":
+        try:
+            from cpn.frontend.dsh_launcher import run_dsh_frontend
+            return run_dsh_frontend(
+                root, execution, resume=args.resume is not None)
+        except (OSError, RuntimeError, TypeError, ValueError) as exc:
+            parser.error(str(exc))
     if frontend == "opencode":
         try:
             from cpn.frontend.opencode_launcher import run_opencode_frontend

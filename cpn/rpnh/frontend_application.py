@@ -72,7 +72,7 @@ class _Session:
 
 
 class RegistryFrontendApplication:
-    """One OpenCode presentation owner over one canonical MainSession."""
+    """One presentation owner over one canonical MainSession."""
 
     def __init__(self, root: Path, execution: Path, *, resume: bool = False) -> None:
         from cpn.rpnh.main_session import MainSession
@@ -296,7 +296,7 @@ class RegistryFrontendApplication:
         if self._sessions:
             raise FrontendError(
                 "session_exists",
-                "This OpenCode application is already bound to its one main session.")
+                "This frontend application is already bound to its one main session.")
         profile = self._profile(
             selection_id or self.default_selection,
             (self.default_reasoning_effort
@@ -556,15 +556,30 @@ class RegistryFrontendApplication:
                 elif snap.state in {"accepted", "pending_start", "running"} and (
                         not owned or handle.process.poll() is not None):
                     state.failure = "reconciliation_required"
+                elif snap.state == "stopped_by_owner" and owned:
+                    state.failure = None
             except Exception:
                 state.failure = "reconciliation_required"  # Never provider exception text.
 
     def abort(self, sid: str) -> bool:
+        from cpn.rpnh.registry.main_thread import MainThreadAuthorityError
         state = self._get(sid)
-        snap = state.session.active_turn_snapshot()
-        if snap is None or snap.state in {"terminal", "stopped_by_owner"}:
-            return True
-        handle = self._matching_handle(state.main_control, snap.attempt_path)
+        try:
+            snap = state.session.active_turn_snapshot()
+        except MainThreadAuthorityError:
+            # A launched child can have its database before bootstrap publishes
+            # the run identity. Stop only our exact live launch; do not treat
+            # incomplete Registry evidence as an execution or recovery result.
+            live = [state.main_control.get(task_id)
+                    for task_id in state.owned_main_turn_task_ids]
+            live = [handle for handle in live if handle.process.poll() is None]
+            if len(live) != 1:
+                raise
+            handle = live[0]
+        else:
+            if snap is None or snap.state in {"terminal", "stopped_by_owner"}:
+                return True
+            handle = self._matching_handle(state.main_control, snap.attempt_path)
         if handle is None:
             raise FrontendError("owner_unavailable", "No exact main-turn owner is available; no process was signalled.")
         # Coalesce retransmissions during this owner lifetime, but do not claim
@@ -766,16 +781,25 @@ class RegistryFrontendApplication:
             if handle is None:
                 raise FrontendError("owner_unavailable", "The paused main turn has no exact launch handle.")
             result = state.main_control.resume(handle.task_id)
-            state.stop_requested_for = None
+            if result.get("status") == "RESUME_STARTED":
+                state.owned_main_turn_task_ids.add(handle.task_id)
+                state.stop_requested_for = None
+                state.failure = None
             return result
         raise FrontendError("unsupported_command", "Unsupported RPNH command or arguments.", 400)
 
     def shutdown(self, *, timeout: float = 30.0) -> None:
         """Checkpoint-stop active main turns while leaving child tasks alone."""
+        from cpn.rpnh.registry.main_thread import MainThreadAuthorityError
         deadline = time.monotonic() + timeout
         pending: list[_Session] = []
-        for state in self._sessions.values():
-            snap = state.session.active_turn_snapshot()
+        for sid, state in self._sessions.items():
+            try:
+                snap = state.session.active_turn_snapshot()
+            except MainThreadAuthorityError:
+                self.abort(sid)
+                pending.append(state)
+                continue
             if snap is None:
                 continue
             handle = self._matching_handle(
@@ -802,7 +826,11 @@ class RegistryFrontendApplication:
             self.tick()
             remaining = []
             for state in pending:
-                snap = state.session.active_turn_snapshot()
+                try:
+                    snap = state.session.active_turn_snapshot()
+                except MainThreadAuthorityError:
+                    remaining.append(state)
+                    continue
                 if snap is None or snap.state == "stopped_by_owner":
                     continue
                 remaining.append(state)
@@ -861,12 +889,18 @@ class FrontendGateway:
             app = self._factory()
             self._changed(app)
             self._ready.set_result(None)
+            next_tick = time.monotonic() + self._interval
             while not self._closing.is_set():
-                try:
-                    item = self._requests.get(timeout=self._interval)
-                except queue.Empty:
+                # Observers may poll faster than the owner interval. Periodic
+                # reconciliation must not depend on an empty request queue.
+                if time.monotonic() >= next_tick:
                     app.tick()
                     self._changed(app)
+                    next_tick = time.monotonic() + self._interval
+                try:
+                    item = self._requests.get(
+                        timeout=max(0, next_tick - time.monotonic()))
+                except queue.Empty:
                     continue
                 if item is None:
                     break
@@ -879,6 +913,7 @@ class FrontendGateway:
                     # owner activity, not a side effect of a UI GET.
                     if name not in {"configuration", "snapshot"}:
                         app.tick()
+                        next_tick = time.monotonic() + self._interval
                     self._changed(app)
                 except FrontendError as exc:
                     result.set_exception(exc)

@@ -6,7 +6,7 @@ metadata:
   audience: user-and-developer
   language: en
   counterpart: CHANGELOG_ZH.md
-  revision: "2026-10-19.1"
+  revision: "2026-10-19.2"
   status: v0.1.0rc2-unreleased
 ---
 
@@ -15,6 +15,23 @@ metadata:
 # Changelog
 
 ## Unreleased
+
+- Added `rpnh --frontend dsh` and independent `rpnh config frontend` preferences
+  with `--dsh-source`. Explicit frontend flags override saved preferences; `auto`
+  retains Codex/Basic selection. Basic, Codex, OpenCode and DSH Web share the
+  direct MainSession root, history, owner lease and explicit checkpoint controls.
+  DSH prepares pinned `687f282` source and rebuilds assets before owner startup;
+  explicit DSH with `--prompt` is rejected before model resolution.
+- DSH presents an RPNH Web frontend using native chat/composer/theme widgets and
+  AgentLoop/Session, not the full stock Web shell or a TUI. Native providers,
+  tools and workspace filesystem are not loaded; the pinned upstream bundles no
+  terminal TUI. `rpnh-dsh` remains the advanced legacy headless host with its
+  original root, budget, frame and recovery contracts. See the
+  [guide](docs/guides/dsh.md) and separate
+  [unified validation record](docs/validation/dsh-unified-20261019.md) for actual
+  scope; this entry does not certify live providers, all platforms or wheels.
+
+- Fixed cold resumed-main-task ownership, periodic reconciliation under continuous observation, and startup checkpoint-stop while child Registry bootstrap is incomplete.
 
 - Updated optional frontend targets to Codex 0.163.0, OpenCode 1.19.3 and the
   DSH 0.2.1-rc.2 source host. Added the current Codex history profile, OpenCode

@@ -428,6 +428,22 @@ def test_gateway_serializes_application_and_closes_on_owner():
         gateway.call("snapshot")
 
 
+def test_continuous_observation_does_not_starve_owner_reconciliation():
+    import time
+    ticks = []
+    app = ApplicationDouble()
+    app.tick = lambda: ticks.append(threading.get_ident())
+    gateway = FrontendGateway(lambda: app, tick_interval=0.01)
+    try:
+        deadline = time.monotonic() + 0.15
+        while time.monotonic() < deadline:
+            gateway.call("snapshot")
+        assert ticks, "continuous snapshot traffic must not starve periodic owner work"
+        assert set(ticks) == {gateway._thread.ident}
+    finally:
+        gateway.close()
+
+
 def test_gets_do_not_trigger_reconciliation():
     holder = []
     gateway = FrontendGateway(lambda: (holder.append(ApplicationDouble()) or holder[0]), tick_interval=60)

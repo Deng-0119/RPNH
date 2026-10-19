@@ -1,12 +1,12 @@
 ---
 name: rpnh-optional-adapters
-description: "Use versioned Codex presentation and the bounded managed DSH integration."
+description: "Use Codex and unified DSH presentation, or the advanced legacy DSH host."
 metadata:
   document-kind: how-to
   audience: operator-and-developer
   language: zh-CN
   counterpart: adapters.md
-  revision: "2026-10-19.1"
+  revision: "2026-10-19.2"
   status: source-reviewed
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -16,6 +16,7 @@ metadata:
 # Codex、DSH 与共存
 
 ## Codex 是展示层，不替换权威
+
 固定客户端为 `codex-cli 0.163.0`，升级到新版本不等于通过兼容测试。该固定版本的安装命令：
 
 ```bash
@@ -44,12 +45,42 @@ subscription bridge 为每个 firing 创建临时私有 Codex home 与 runtime �
 user namespace 环境仍必须支持所选 Codex sandbox；否则 adapter 会在取得 terminal
 模型响应前失败，并保留私有失败审计。
 
-Codex 与 Basic、OpenCode 接收同一个直接 MainSession root。先用一次
+Codex 与 Basic、OpenCode、DSH Web 接收同一个直接 MainSession root。先用一次
 `--session-dir ROOT` 创建；当前 owner 退出后，另一个前端才可用 `--resume ROOT` 重开。
 Codex 协议 thread ID 与 `.frontends/codex.json` 都是可重建的展示 metadata，Registry
 会话历史才是权威。
 
-## 托管 DSH 前提
+## DSH Web 前端
+
+在浏览器中使用共享主会话：
+
+```bash
+rpnh config frontend dsh --dsh-source /absolute/path/to/deepseek-harness
+rpnh --session-dir ./main-session
+# 退出当前前端后，用 Basic 重开同一 root：
+rpnh --frontend basic --resume ./main-session
+```
+
+显式 `--frontend` 优先于保存偏好；未设置时使用 `auto`，仍只自动选择兼容 Codex 或
+Basic。`DSH_SOURCE` 优先于保存的 checkout 路径。前端偏好与模型配置独立，可在设置
+模型前保存。`rpnh --frontend dsh --prompt TEXT` 会在解析模型前拒绝。
+
+launcher 打印 loopback URL 并尝试打开浏览器。这是使用原生 DSH chat／composer／theme
+组件及 AgentLoop/Session 的 RPNH Web 前端，不是完整 stock DSH Web shell 或 TUI；
+该固定上游没有随包终端 TUI。不加载 DSH 原生 provider、工具或 workspace filesystem。
+RPNH catalog、控制与 Registry 历史均共享，仅允许一个可写 owner。重开历史不会自动
+继续工作，须显式使用 `/rpnh-resume` 或 `/rpnh-rollback`。`Ctrl+C` 退出宿主，仅对其
+持有的 main turn 请求 checkpoint stop。
+
+launcher 每次启动都应用 factory seam、构建 Web 资源，随后才获取 MainSession。
+固定源码及 Node／pnpm 前提见 [DSH 指南](dsh_ZH.md)，实际范围单列于
+[统一前端验证](../validation/dsh-unified-20261019_ZH.md)。
+
+## 旧版 registered headless DSH host 前提
+
+`rpnh-dsh` 保留独立 `--root`／`--session-id` 语义。以下 launcher、68 MiB frame、
+48 次 attempt 预算与恢复细节适用于该高级旧版宿主，不适用于统一 MainSession 前端。
+
 本节仅适用于包含 `cpn/dsh`、`integrations/dsh` 的源码树或安装发行包。清单固定 `deepseek-ai/deepseek-harness` 上游 `687f282e8625c6b8d11ff58211a90524be2e4317`（`0.2.1-rc.2`），于 2026-10-19 核对。该源码宿主实际使用 Node 22.22.1 与 pnpm 11.28.5 测试，engine 为 `^22.19.0 || >=24.0.0`。[DSH 指南](dsh_ZH.md)区分 npm `latest`、`next` 与此精确源码集成。
 
 取得精确上游 checkout，用固定包管理器和 frozen lockfile 安装依赖。使用独立可丢弃 checkout：prepare 会有意修补受检 factory，并复制 TypeScript 集成文件。分发集成时保留 `UPSTREAM.json`、`UPSTREAM_LICENSE`。
@@ -75,7 +106,8 @@ bash integrations/dsh/run.sh "$RPNH_PYTHON" "$DSH_SOURCE" --offline --help
 
 该解释器必须属于预期的 RPNH 环境。launcher 会把自身 `sys.executable` 经 runner 传给 owner 进程。`--execution-path`、`--execution-profile`、`--python` 是 launcher 到应用的内部字段，不是第二套用户配置接口。配置执行应通过 `rpnh-dsh`，不要手工拼接这些字段。
 
-## 显式离线一致性运行
+## 旧版宿主：显式离线一致性运行
+
 以下执行确定性宿主并生成真实私有 Registry 数据，但不调用外部模型。使用全新输出目录：
 
 ```bash
@@ -88,7 +120,8 @@ rpnh-dsh "$DSH_SOURCE" \
 
 精确离线路由为 `rpnh-offline/deterministic-v1`，暴露 `read_dataset`、`sum_values`，输入必须是有限数值数组。这是演示，不是通用分析 agent。`--json` 输出 upstream headless JSON 事件流，不是单个 JSON 对象。新运行的 `--deny` 可走声明的拒绝路径。离线模式不会回退到已保存 provider。
 
-## 普通配置文本
+## 旧版宿主：普通配置文本
+
 配置路径已经实现，不再是“仅能处理数字”的待完成项。RPNH selection 的解析顺序为：显式 `--execution`、`RPNH_EXECUTION_CONFIG`、已保存的选择。launcher 不交互初始化、不自动回退离线，也不自动改写默认选择。先通过既有 RPNH 配置入口构建并选择 profile。
 
 ```bash
@@ -109,14 +142,15 @@ rpnh-dsh "$DSH_SOURCE" --execution "$EXECUTION" \
 
 launcher 传递公开 profile 摘要。配置模式的子 Registry 记录 route/model 归属及配置修订，不记录 endpoint、credential binding 或静态 header 值。这不保证任务文本或响应中没有敏感内容，运行数据仍需私下保存。请求／响应整体 frame 上限为 68 MiB；当前请求、历史和所选最大响应需通过派发前上界检查，仅把响应上限设为 68 MiB 并不能保证外层 frame 装得下。`max_response_bytes` 更大的通用 profile 对 core RPNH 仍然有效，但与 DSH 不兼容；应为同一 provider、credential route 和 exact model 显式构建留有 frame 余量的用户自有 DSH profile，不能静默改写所选 profile。
 
-新 DSH session 的 module attempt 预算默认是 48。launcher 接受正整数
+旧版宿主新 DSH session 的 module attempt 预算默认是 48。launcher 接受正整数
 `--attempt-budget`，或显式值 `unmetered`；后者适用于 AutomationBench adapter 这类按已知
 协议可能合理超过 48 个模型／工具回合的工作负载。resume 保持已持久化声明，不接受新预算。
 
 Registry turn 准入前的拒绝现在会作为明确的 headless 错误和非零退出返回，不再表现为空
 final。它仍未产生 provider 调用，不能记作模型失败。
 
-## 历史与显式恢复
+## 旧版宿主：历史与显式恢复
+
 记录返回的 session ID。历史查询使用 `--history --root DIR --session-id ID`，不要求模型选择或凭据，不构造模型／工具效果宿主。已安装 runner 仍需要正常宿主环境，并可能准备 checkout。“Registry 权威只读”不等于没有文件系统或进程操作。
 
 离线恢复使用 `--offline --resume --root DIR --session-id ID`。配置恢复要求 `--execution ORIGINAL_SELECTION --resume --root DIR --session-id ID`，不能静默采用当前默认配置。两种恢复都不接收新 task、data-file 或 deny 参数。
@@ -142,6 +176,7 @@ provider factory、Registry authority 和 registered-host 边界。DSH observati
 完成 registered products、Success 与 terminal evidence 结算前仍是候选。不要让多个 owner
 同时写同一 Registry。
 
-离线与 fake-port 测试只能证明 adapter 契约，不能证明真实 provider 可用。CLI 没有
-`rpnh --frontend dsh`；请使用 [DSH 指南](dsh_ZH.md)说明的 `rpnh-dsh` launcher。
+离线与 fake-port 测试只能证明 adapter 契约，不能证明真实 provider 可用。
+共享会话 Web 前端使用 `rpnh --frontend dsh`；`rpnh-dsh` 仍是独立的高级 headless
+host，详见 [DSH 指南](dsh_ZH.md)。
 插件与 observer 契约参阅[扩展参考](../reference/extensions-observation_ZH.md)。

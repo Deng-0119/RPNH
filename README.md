@@ -265,23 +265,46 @@ workspace settlement, execution nets and workflow revision.
 
 ## Frontends and host integrations
 
-Current version selection and offline validation:
+Client version and earlier offline checks:
 [2026-10-19 frontend compatibility](docs/validation/frontends-20261019.md).
+Unified DSH checks have a separate
+[validation record](docs/validation/dsh-unified-20261019.md).
 
 | Entry | Purpose |
 |---|---|
 | `rpnh --frontend basic` | Built-in terminal for the main session and independent task controls |
 | `rpnh --frontend codex` | Codex 0.163.0 presentation; see the [adapter guide](docs/guides/adapters.md) |
 | `rpnh --frontend opencode` | OpenCode 1.19.3 presentation; see the [OpenCode guide](docs/guides/opencode.md) |
-| `rpnh-dsh` | Optional pinned DSH host integration; see the [DSH guide](docs/guides/dsh.md) |
+| `rpnh --frontend dsh` | RPNH Web frontend using native DSH widgets; see the [DSH guide](docs/guides/dsh.md) |
+| `rpnh-dsh` | Advanced legacy registered headless host with separate session roots; see the same guide |
 
-Basic, Codex and OpenCode are sequential presentations of one direct MainSession
-root. Create it with `--session-dir`; after the current frontend exits, reopen
-the exact path with `--resume` and another frontend. State is not copied into
-frontend-specific sessions, and the shared owner lease rejects concurrent
-writable presentations. DSH is a registered host integration with its own
-session surface. RPNH retains model selection and managed-execution authority in
-all cases.
+Basic, Codex, OpenCode and DSH Web present one direct MainSession root.
+Create it with `--session-dir`; after the current frontend exits, reopen the
+exact path with `--resume` and another frontend. The shared owner lease permits
+one writable presentation, with Registry history as the common record.
+Reopening history never automatically continues a paused turn; DSH Web exposes
+explicit `/rpnh-resume` and `/rpnh-rollback` controls.
+
+```bash
+rpnh config frontend dsh --dsh-source /absolute/path/to/deepseek-harness
+rpnh config frontend
+rpnh --session-dir ./main-session
+```
+
+The saved preference is independent of model setup; explicit `--frontend` wins.
+Without a saved preference, `auto` still chooses compatible Codex or Basic.
+`DSH_SOURCE` overrides the saved source path. DSH needs pinned source `687f282`
+(`0.2.1-rc.2`), Node `^22.19.0 || >=24.0.0` and installed pnpm dependencies.
+The launcher prepares and rebuilds its Web assets before acquiring the session,
+prints a loopback URL and attempts to open a browser. `Ctrl+C` exits the host
+and checkpoint-stops only its owned main turn. Explicit DSH with `--prompt` is
+rejected before model resolution.
+
+The DSH surface uses native chat/composer/theme widgets and AgentLoop/Session;
+it is an RPNH Web frontend, not the full stock DSH Web shell or a TUI. The pinned
+upstream has no bundled terminal TUI. It uses RPNH model controls and does not
+load native DSH providers, tools or workspace filesystem. Actual validation
+scope is stated in the separate record above.
 
 ## Project collaboration and result scope
 

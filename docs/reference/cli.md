@@ -6,9 +6,9 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: cli_ZH.md
-  revision: "2026-10-13.3"
+  revision: "2026-10-19.2"
   status: source-reviewed
-  basis: "public source b16ecce83ba603b3c15f1c770bce172d4f44f88e; not a new runtime validation"
+  basis: "current source for unified DSH and preferences; older source links retain their revision; not a new runtime validation"
 ---
 
 [English](cli.md) | [中文](cli_ZH.md)
@@ -28,7 +28,7 @@ below are placeholders, not literal task IDs or paths.
 |---|---|---|
 | `rpnh` | User sessions, configuration, examples, plugins, packages and Viewer | [Parser/dispatch](https://github.com/Deng-0119/RPNH/blob/b16ecce83ba603b3c15f1c770bce172d4f44f88e/cpn/rpnh_cli.py), [usage](../guides/usage.md) |
 | `rpnh-configure-providers` | Catalog/profile generation helper | [Entry declaration](https://github.com/Deng-0119/RPNH/blob/b16ecce83ba603b3c15f1c770bce172d4f44f88e/pyproject.toml), [model setup](../guides/models.md) |
-| `rpnh-dsh CHECKOUT ...` | Launch the bundled integration against its pinned DSH checkout | [Launcher](https://github.com/Deng-0119/RPNH/blob/b16ecce83ba603b3c15f1c770bce172d4f44f88e/cpn/dsh/launcher.py), [DSH](../guides/dsh.md) |
+| `rpnh-dsh CHECKOUT ...` | Launch the advanced legacy registered headless host; separate root/session semantics | [Launcher](https://github.com/Deng-0119/RPNH/blob/b16ecce83ba603b3c15f1c770bce172d4f44f88e/cpn/dsh/launcher.py), [DSH](../guides/dsh.md) |
 
 `python -m cpn` is a lower-level entry used by existing source examples and
 projection tooling; see its [parser](https://github.com/Deng-0119/RPNH/blob/b16ecce83ba603b3c15f1c770bce172d4f44f88e/cpn/cli.py). Prefer `rpnh` for
@@ -40,7 +40,7 @@ entry, described below; there is no `rpnh project` command in this source.
 ```text
 rpnh [--execution PATH] [--save-default]
      [--session-dir NEW_DIR | --resume SESSION_DIR]
-     [--prompt TEXT] [--frontend auto|basic|codex|opencode]
+     [--prompt TEXT] [--frontend auto|basic|codex|opencode|dsh]
 ```
 
 | Option | Meaning |
@@ -50,12 +50,12 @@ rpnh [--execution PATH] [--save-default]
 | `--session-dir NEW_DIR` | Absent operational directory for a fresh session |
 | `--resume SESSION_DIR` | Reopen the original session root; mutually exclusive with `--session-dir` |
 | `--prompt TEXT` | Run one main-session turn and leave the input loop; can execute models/tools |
-| `--frontend ...` | `auto` selects compatible Codex in an interactive terminal or falls back to Basic; OpenCode is explicit |
+| `--frontend ...` | Explicit flag overrides saved preference; default `auto` selects compatible Codex in an interactive terminal or Basic otherwise; OpenCode and DSH require an explicit flag or saved preference |
 
 A fresh session without `--execution` uses `RPNH_EXECUTION_CONFIG` or the saved
 default. Resume without it uses the session's persisted selection. `--prompt`
-uses Basic; explicit OpenCode plus `--prompt` is rejected. For required client
-versions and supported platforms, use [installation](../guides/installation.md)
+uses Basic; explicit OpenCode or DSH plus `--prompt` is rejected before model
+resolution. For required client versions and supported platforms, use [installation](../guides/installation.md)
 and [adapters](../guides/adapters.md), not the latest upstream client by default.
 
 Opening a session, submitting input, and explicitly continuing a paused turn
@@ -72,8 +72,15 @@ session lifecycle or switching writable frontends.
 | `rpnh config build [--catalog PATH] [--output-root DIR] [--check]` | Generate profiles; `--check` verifies existing generated state without writing it |
 | `rpnh config list` / `rpnh config show` | Read generated profiles / current selection |
 | `rpnh config use PROFILE_OR_PROVIDER [MODEL] [--effort EFFORT]` | Persist one declared profile or exact provider/model/effort selection |
+| `rpnh config frontend [auto\|basic\|codex\|opencode\|dsh] [--dsh-source CHECKOUT]` | Show or save the frontend preference independently of model setup; no provider call or model-selection change |
 | `rpnh doctor [--execution PATH] [--json]` | Offline local checks; no provider request |
 | `rpnh config doctor [--execution PATH] [--json]` | Same local doctor boundary |
+
+Frontend preferences are stored beside `config_path()` (selected by
+`RPNH_CONFIG`, or `~/.config/rpnh/config.json`): the file is named
+`config_path().name + ".frontend.json"`, for example `config.json.frontend.json`.
+`DSH_SOURCE` overrides a saved `--dsh-source`; saving a source normalizes its
+path but does not prepare or check it. No preference means `auto`.
 
 `doctor` returns 0 when locally ready and 1 when not ready; a ready result does
 not certify a live endpoint. Setup/parser errors are distinct from readiness.
@@ -201,6 +208,33 @@ parser: use `/task ID ...`. Stop acceptance is not a completed checkpoint.
 Resume, checkpoint reopen and rollback have different data/effect semantics;
 use the [recovery decision guide](../guides/checkpoint-recovery.md) and
 [unknown-effect handling](../guides/troubleshooting.md#stop-resume-and-unknown-effects).
+
+## DSH Web controls
+
+`rpnh --frontend dsh` opens an RPNH Web frontend built with native DSH
+chat/composer/theme widgets and AgentLoop/Session. It is not the full stock DSH
+Web shell or a TUI; the pinned upstream has no bundled terminal TUI. Use the
+printed loopback URL if automatic browser opening fails. `Ctrl+C` exits the
+host and checkpoint-stops only its owned main turn. Basic, Codex, OpenCode and
+DSH Web share `--session-dir`/`--resume`, Registry history and one writable owner.
+Reopening history does not automatically continue a paused turn.
+
+Enter these in the Web composer; `/rpnh-help` gives full arguments:
+
+| Control | Meaning |
+|---|---|
+| `/rpnh-help`, `/rpnh-tasks` | Shared help and linked task list |
+| `/rpnh-task ID ...`, `/rpnh-net` | Task operations and net inspection |
+| `/rpnh-agent TEXT`, `/rpnh-workflow TEXT` | Launch independent work; may execute models/tools |
+| `/rpnh-resume`, `/rpnh-rollback` | Explicitly continue a paused main turn or roll main conversation back to the previous completed turn |
+| `/rpnh-send UNIQUE_ID TEXT` | Submit an explicitly identified main input |
+
+The Stop button requests a checkpoint stop. Model/effort controls use the RPNH
+catalog; native DSH providers, tools and workspace filesystem are not loaded.
+See [DSH setup and limits](../guides/dsh.md) and the
+[unified validation record](../validation/dsh-unified-20261019.md).
+`rpnh-dsh` remains a separate advanced legacy headless host; its `--root`,
+`--session-id`, frame and attempt-budget options are documented in that guide.
 
 ## Controlled project HOST
 

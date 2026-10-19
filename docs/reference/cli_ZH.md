@@ -6,9 +6,9 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: cli.md
-  revision: "2026-10-13.3"
+  revision: "2026-10-19.2"
   status: source-reviewed
-  basis: "public source b16ecce83ba603b3c15f1c770bce172d4f44f88e; not a new runtime validation"
+  basis: "current source for unified DSH and preferences; older source links retain their revision; not a new runtime validation"
 ---
 
 [English](cli.md) | [中文](cli_ZH.md)
@@ -25,7 +25,7 @@ metadata:
 |---|---|---|
 | `rpnh` | 用户会话、配置、示例、插件、包与 Viewer | [Parser/dispatch](https://github.com/Deng-0119/RPNH/blob/b16ecce83ba603b3c15f1c770bce172d4f44f88e/cpn/rpnh_cli.py)、[使用](../guides/usage_ZH.md) |
 | `rpnh-configure-providers` | Catalog/profile 生成辅助入口 | [入口声明](https://github.com/Deng-0119/RPNH/blob/b16ecce83ba603b3c15f1c770bce172d4f44f88e/pyproject.toml)、[模型设置](../guides/models_ZH.md) |
-| `rpnh-dsh CHECKOUT ...` | 对固定 DSH checkout 启动随包集成 | [Launcher](https://github.com/Deng-0119/RPNH/blob/b16ecce83ba603b3c15f1c770bce172d4f44f88e/cpn/dsh/launcher.py)、[DSH](../guides/dsh_ZH.md) |
+| `rpnh-dsh CHECKOUT ...` | 启动高级旧版 registered headless host；使用独立 root／session 语义 | [Launcher](https://github.com/Deng-0119/RPNH/blob/b16ecce83ba603b3c15f1c770bce172d4f44f88e/cpn/dsh/launcher.py)、[DSH](../guides/dsh_ZH.md) |
 
 `python -m cpn` 是已有源码示例及投影工具使用的低层入口，见其 [parser](https://github.com/Deng-0119/RPNH/blob/b16ecce83ba603b3c15f1c770bce172d4f44f88e/cpn/cli.py)。普通用户会话优先使用 `rpnh`。项目协作使用下文独立的显式模块入口；当前源码没有 `rpnh project` 命令。
 
@@ -34,7 +34,7 @@ metadata:
 ```text
 rpnh [--execution PATH] [--save-default]
      [--session-dir NEW_DIR | --resume SESSION_DIR]
-     [--prompt TEXT] [--frontend auto|basic|codex|opencode]
+     [--prompt TEXT] [--frontend auto|basic|codex|opencode|dsh]
 ```
 
 | 选项 | 含义 |
@@ -44,9 +44,9 @@ rpnh [--execution PATH] [--save-default]
 | `--session-dir NEW_DIR` | 新会话使用尚不存在的操作目录 |
 | `--resume SESSION_DIR` | 重新打开原会话根目录；与 `--session-dir` 互斥 |
 | `--prompt TEXT` | 执行一次 main-session turn 后退出输入循环；可能执行模型和工具 |
-| `--frontend ...` | `auto` 在交互终端选择兼容 Codex，否则回退 Basic；OpenCode 必须显式选择 |
+| `--frontend ...` | 显式参数优先于保存偏好；默认 `auto` 在交互终端选择兼容 Codex，否则用 Basic；OpenCode、DSH 需显式参数或保存偏好 |
 
-新会话省略 `--execution` 时使用 `RPNH_EXECUTION_CONFIG` 或保存的默认值；恢复时省略则使用该会话的持久化选择。`--prompt` 使用 Basic；显式 OpenCode 与 `--prompt` 组合会被拒绝。客户端版本与支持平台见[安装](../guides/installation_ZH.md)及[适配器](../guides/adapters_ZH.md)，不要默认使用上游最新版。
+新会话省略 `--execution` 时使用 `RPNH_EXECUTION_CONFIG` 或保存的默认值；恢复时省略则使用该会话的持久化选择。`--prompt` 使用 Basic；显式 OpenCode 或 DSH 与 `--prompt` 组合会在解析模型前被拒绝。客户端版本与支持平台见[安装](../guides/installation_ZH.md)及[适配器](../guides/adapters_ZH.md)，不要默认使用上游最新版。
 
 打开会话、提交输入和显式继续暂停 turn 是不同操作。脚本化生命周期或切换可写前端前，请阅读[使用指南](../guides/usage_ZH.md)。
 
@@ -60,8 +60,14 @@ rpnh [--execution PATH] [--save-default]
 | `rpnh config build [--catalog PATH] [--output-root DIR] [--check]` | 生成 profile；`--check` 仅验证已有生成状态，不改写 |
 | `rpnh config list` / `rpnh config show` | 读取生成的 profile / 当前选择 |
 | `rpnh config use PROFILE_OR_PROVIDER [MODEL] [--effort EFFORT]` | 持久化已声明 profile 或精确 provider/model/effort 选择 |
+| `rpnh config frontend [auto\|basic\|codex\|opencode\|dsh] [--dsh-source CHECKOUT]` | 独立于模型设置查看或保存前端偏好；不调用 provider、不改变模型选择 |
 | `rpnh doctor [--execution PATH] [--json]` | 离线本地检查，不发送 provider 请求 |
 | `rpnh config doctor [--execution PATH] [--json]` | 相同的本地 doctor 边界 |
+
+前端偏好保存在 `config_path()` 旁（模型配置由 `RPNH_CONFIG` 选择，默认
+`~/.config/rpnh/config.json`），文件名为 `config_path().name + ".frontend.json"`，
+例如 `config.json.frontend.json`。`DSH_SOURCE` 优先于保存的 `--dsh-source`；保存源码
+路径只做路径归一化，不准备或检查 checkout。未保存偏好时使用 `auto`。
 
 `doctor` 本地 ready 时返回 0，否则返回 1；ready 不证明在线端点可用。配置/parser 错误与 readiness 分开理解。见[配置](../guides/configuration_ZH.md)、[模型](../guides/models_ZH.md)及[实现](https://github.com/Deng-0119/RPNH/blob/b16ecce83ba603b3c15f1c770bce172d4f44f88e/cpn/rpnh_cli.py)。
 
@@ -147,6 +153,29 @@ rpnh package resolve ZIP [--local-package ZIP ...] [--entry ENTRY_ID]
 | `/quit` | 退出前端，不停止独立任务 |
 
 普通文本进入 main 或所选单 agent；所选 workflow 需要 `TARGET :: TEXT`。该 parser 没有短写 `/checkpoints`、`/reopen`，应使用 `/task ID ...`。stop 请求被接受不等于 checkpoint 完成。Resume、checkpoint reopen、rollback 的数据和副作用语义不同，按[恢复决策指南](../guides/checkpoint-recovery_ZH.md)与[未知副作用排障](../guides/troubleshooting_ZH.md)处理。
+
+## DSH Web 控制
+
+`rpnh --frontend dsh` 打开采用原生 DSH chat／composer／theme 组件及 AgentLoop/Session
+的 RPNH Web 前端，不是完整 stock DSH Web shell 或 TUI；该固定上游没有随包终端 TUI。
+浏览器未自动打开时访问打印的 loopback URL。`Ctrl+C` 退出宿主，仅对其持有的 main turn
+请求 checkpoint stop。Basic、Codex、OpenCode 与 DSH Web 共用
+`--session-dir`／`--resume`、Registry 历史和唯一可写 owner。重开历史不会自动继续暂停 turn。
+
+在 Web 输入框内使用以下命令；完整参数见 `/rpnh-help`：
+
+| 控制 | 含义 |
+|---|---|
+| `/rpnh-help`、`/rpnh-tasks` | 共享帮助与关联任务列表 |
+| `/rpnh-task ID ...`、`/rpnh-net` | 任务操作与 net 检查 |
+| `/rpnh-agent TEXT`、`/rpnh-workflow TEXT` | 启动独立工作，可能执行模型与工具 |
+| `/rpnh-resume`、`/rpnh-rollback` | 显式继续暂停的 main turn，或将主对话回退到上一个已完成 turn |
+| `/rpnh-send UNIQUE_ID TEXT` | 提交具有显式身份的 main 输入 |
+
+Stop 按钮请求 checkpoint stop。模型／effort 控制来自 RPNH catalog；不加载 DSH 原生
+provider、工具或 workspace filesystem。参阅 [DSH 设置与边界](../guides/dsh_ZH.md)和
+[统一前端验证记录](../validation/dsh-unified-20261019_ZH.md)。`rpnh-dsh` 仍为独立的高级
+旧版 headless host，其 `--root`、`--session-id`、frame 与 attempt-budget 选项见该指南。
 
 ## 受控项目 HOST
 

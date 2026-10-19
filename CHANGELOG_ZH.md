@@ -6,7 +6,7 @@ metadata:
   audience: user-and-developer
   language: zh-CN
   counterpart: CHANGELOG.md
-  revision: "2026-10-19.1"
+  revision: "2026-10-19.2"
   status: v0.1.0rc2-unreleased
 ---
 
@@ -15,6 +15,20 @@ metadata:
 # 变更记录
 
 ## 未发布
+
+- 新增 `rpnh --frontend dsh` 及独立的 `rpnh config frontend` 偏好设置，支持
+  `--dsh-source`。显式前端参数优先于保存偏好，`auto` 保持 Codex／Basic 选择。
+  Basic、Codex、OpenCode 与 DSH Web 共用直接 MainSession root、历史、owner lease
+  和显式 checkpoint 控制。DSH 在启动 owner 前准备固定 `687f282` 源码并重建资源；
+  显式 DSH 与 `--prompt` 组合在解析模型前拒绝。
+- DSH 提供使用原生 chat／composer／theme 组件及 AgentLoop/Session 的 RPNH Web 前端，
+  不是完整 stock Web shell 或 TUI；不加载原生 provider、工具和 workspace filesystem，
+  该固定上游没有随包终端 TUI。`rpnh-dsh` 保留为高级旧版 headless host，原 root、预算、
+  frame 与恢复契约不变。实际范围见[指南](docs/guides/dsh_ZH.md)和单独的
+  [统一验证记录](docs/validation/dsh-unified-20261019_ZH.md)；本条不认证真实 provider、
+  全平台或 wheel。
+
+- 修复冷恢复主任务 ownership、持续状态读取下的周期结算，以及子 Registry 启动未完成时的 checkpoint 停止。
 
 - 更新可选前端到 Codex 0.163.0、OpenCode 1.19.3 与 DSH 0.2.1-rc.2 源码宿主，
   加入当前 Codex 历史 profile、OpenCode Console 发现与 DSH 当前消息 dialect。

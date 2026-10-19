@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: installation.md
-  revision: "2026-10-19.1"
+  revision: "2026-10-19.2"
   status: source-candidate-not-published
   basis: "unified main; host differences explicitly labelled"
 ---
@@ -96,10 +96,31 @@ cd "$TEST_ROOT"
 | Codex 展示 | 统一包和精确 `codex-cli 0.163.0` | `rpnh --frontend codex`；兼容性绑定版本 |
 | OpenCode 展示 | 统一包和精确 OpenCode `1.19.3` | `rpnh --frontend opencode`；仅显式选择、仅 Linux/WSL2，且无 UI 指标 |
 | 插件、引导与案例 | 批准的统一 Python 包 | `rpnh plugins`、`rpnh init`、`rpnh doctor`、`rpnh examples`；本地检查和导出不调用模型 |
-| 托管 DSH | 统一包、内含 `integrations/dsh`、固定上游及工具链 | `rpnh-dsh`；显式离线数值或共享配置文本模式 |
+| DSH Web 前端 | 统一包、固定 DSH `687f282`／`0.2.1-rc.2` 源码、Node `^22.19.0 || >=24.0.0` 和已安装的 pnpm 依赖 | `rpnh --frontend dsh`；Linux/WSL2，采用原生 DSH 组件的 RPNH Web 前端，不是完整 stock shell 或 TUI |
+| 旧版 DSH headless host | 统一包、内含 `integrations/dsh`、固定源码及工具链 | `rpnh-dsh`；使用独立 root 的高级宿主，显式离线数值或配置文本模式 |
 | 共存 | 统一源码/wheel，加所需可选宿主 | 不要在同一环境覆盖安装多份同名 wheel |
 
-统一 main 默认使用 `auto`：在交互式终端中，找到兼容的 Codex `0.163.0` 时使用它，否则使用内置终端；非交互式使用内置终端。需要特定界面时显式选择 `--frontend basic`、`codex` 或 `opencode`。使用可选宿主前阅读[适配指南](adapters_ZH.md)、[OpenCode](opencode_ZH.md)或 DSH 指南。只读 Viewer 及其打包资源属于同一统一发行包，但它不是另一套执行后端。
+未保存偏好时，统一 main 使用 `auto`：交互终端中找到兼容 Codex `0.163.0` 就使用它，
+否则使用 Basic；非交互使用 Basic。显式 `--frontend basic|codex|opencode|dsh` 优先于
+保存偏好。前端偏好可独立于模型设置保存或查看：
+
+```bash
+rpnh config frontend dsh --dsh-source /absolute/path/to/deepseek-harness
+rpnh config frontend
+# 恢复自动选择：
+rpnh config frontend auto
+```
+
+偏好文件位于模型配置旁，文件名为原文件名加 `.frontend.json`；`DSH_SOURCE` 优先于
+保存的 DSH 路径。在独立固定 checkout 中用 pnpm `11.28.5` 执行
+`pnpm install --frozen-lockfile --ignore-scripts` 安装依赖。每次启动均应用 factory seam、
+重新构建 Web 资源，随后才获取 MainSession，因此 checkout 必须可写。wheel 不含
+准备后的 DSH checkout。launcher 打印 loopback URL 并尝试打开浏览器。
+
+共享会话、前提与边界见[适配指南](adapters_ZH.md)、[OpenCode](opencode_ZH.md)和
+[DSH](dsh_ZH.md)。实际检查由单独的[DSH 统一前端记录](../validation/dsh-unified-20261019_ZH.md)
+报告；这些安装说明不证明真实 provider、全平台或 wheel 已验收。只读 Viewer 及其资源
+属于统一发行包，使用独立的检查入口。
 
 ## 验证、升级与卸载
 只有已安装命令、包内 schema/config/static/example 资源，以及源码目录外的零模型配置流程均通过，才可称安装验证通过。editable 安装成功或链接检查通过都不足以替代。Viewer wheel 校验要求完整的固定 vendor 文件集合及许可文件；空清单或自行缩减的 asset manifest 不能免除这些文件。本文档批次单独记录 wheel 验证和站点检查。
@@ -109,4 +130,4 @@ cd "$TEST_ROOT"
 `python -m pip uninstall rpnh-harness` 不删除用户 catalog、shell 凭据或会话/run 数据。请明确决定保留策略，不删除活跃运行目录。回退环境使用原批准产物，但不会撤销外部效果，也不代表可打开不兼容 Registry。
 
 ## 代码对应
-`pyproject.toml`、`cpn/rpnh_cli.py:_parser`、`cpn/rpnh/user_config.py`、适配中的 `integrations/dsh/run.sh`。教程命令不是执行证据，实际完成情况见进展记录。
+`pyproject.toml`、`cpn/rpnh_cli.py:_parser`、`cpn/rpnh/user_config.py`、`cpn/rpnh/frontend_config.py`、`cpn/frontend/dsh_launcher.py`、旧版适配的 `integrations/dsh/run.sh`。教程命令不是执行证据，实际完成情况见进展记录。
