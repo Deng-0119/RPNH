@@ -126,6 +126,14 @@ rpnh net --run "$RUN_DIR" --view --no-open
 rpnh --frontend basic
 ```
 
+Basic 启动时显示模型、工作目录与会话的欢迎面板，并提供清晰分隔的输入区与状态。
+直接输入消息即可对话；`/help` 显示基本命令：`/help`、`/clear`、`/status`、`/history`、
+`/frontend [NAME]`、`/resume`、`/rollback` 和 `/quit`（别名 `/exit`）。
+`/clear` 只清理显示；`/history` 显示最近 10 条已登记的对话消息。按 Up/Down 浏览本进程的
+输入历史，Tab 补全基本命令；行末加反斜杠可继续输入下一行。详见
+[Basic 终端指南](docs/guides/frontends_ZH.md#basic-终端)。
+
+需要独立任务时，用 `/help tasks` 查看现有高级控制。
 使用 `/agent` 创建独立任务，使用 `/workflow` 请 Designer 创建工作流，使用 `/tasks` 列出
 子任务。`/switch` 切换当前任务；`/task ID status` 与 `/task ID result` 查看状态和结果。
 `/task ID checkpoints` 列出已提交切面，`/task ID reopen CHECKPOINT [:: REASON]` 在同一
@@ -244,7 +252,7 @@ child Registry。Provider 提交状态未知时会被记录，而不是静默重
 | `rpnh --resume PATH` | 使用该会话上次的前端恢复 |
 | `rpnh frontend` | 选择并配置前端，不调用模型 |
 | `rpnh frontend switch NAME --resume PATH` | 当前界面退出后，用其他前端打开同一会话 |
-| `rpnh --frontend basic` | 内置终端，提供主会话与独立任务控制 |
+| `rpnh --frontend basic` | 内置轻量终端，支持输入编辑、历史与基本命令补全 |
 | `rpnh --frontend codex` | Codex 0.163.0 展示前端；见[适配器指南](docs/guides/adapters_ZH.md) |
 | `rpnh --frontend opencode` | OpenCode 1.19.3 展示前端；见[OpenCode 指南](docs/guides/opencode_ZH.md) |
 | `rpnh --frontend dsh` | 绑定 Python MainSession 的官方 DSH Web；见[DSH 指南](docs/guides/dsh_ZH.md) |
@@ -255,7 +263,7 @@ Basic、Codex、OpenCode 与 DSH Web 展示同一个直接 MainSession root。�
 共享 owner lease 仅允许一个可写展示，Registry 历史是共同记录。重开历史不会自动继续
 暂停 turn；DSH Web 通过原生 slash 菜单提供 `/rpnh-resume` 与 `/rpnh-rollback` 控制。
 
-Basic 终端可用 `/quit` 或 EOF 退出。在提示符或处理回合结果时按 `Ctrl+C`，以状态码
+Basic 终端可用 `/quit`（别名 `/exit`）或在空输入时按 `Ctrl+D`（EOF）退出。在提示符或处理回合结果时按 `Ctrl+C`，以状态码
 130 退出，不打印 Python traceback，保留会话文件并释放 owner lease；独立运行的
 子任务继续运行。Agent 执行期间仍按既有 checkpoint 暂停机制处理，可用 `/resume`
 或 `/rollback` 继续控制。

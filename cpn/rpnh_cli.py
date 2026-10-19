@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+from contextlib import nullcontext
 from dataclasses import dataclass
 import json
 from pathlib import Path
@@ -466,6 +467,10 @@ def _task_command(
         state: _BasicFrontendState | None = None,
 ) -> bool:
     if line == "/help":
+        from cpn.rpnh.basic_terminal import BasicTerminal
+        BasicTerminal(session.root, "").help()
+        return True
+    if line == "/help tasks":
         print("""Commands:
   /tasks                       list child task objects
   /agent PROMPT                launch one independent single-agent task
@@ -663,7 +668,11 @@ def _run_basic_frontend(
         inspect_main_session_root,
     )
 
+    from cpn.rpnh.basic_terminal import BasicTerminal
+
     lease = None
+    terminal = None
+    snapshot = None
     try:
         if args.resume is not None:
             descriptor = inspect_main_session_root(root)
@@ -691,29 +700,46 @@ def _run_basic_frontend(
 
         from cpn.rpnh.session_frontend import remember_session_frontend
         remember_session_frontend(root, "basic", lease=lease)
-        print("RPNH — AI assistant")
-        print(f"session: {session.root}")
-        print("Type /help for task controls.")
+        if args.prompt is not None:
+            print("RPNH — AI assistant")
+            print(f"session: {session.root}")
+            print("Type /help for task controls.")
+            return 0 if _run_turn(session, args.prompt) else 1
+        model = (profile_for_path(execution).model_condition
+                 if execution.is_file() else execution.stem)
+        terminal = BasicTerminal(session.root, model)
+        terminal.__enter__()
+        terminal.welcome()
         if (args.resume is not None and snapshot is not None
                 and snapshot.state == "terminal"):
             print(
                 "[RPNH main turn has terminal child evidence; use /resume "
                 "to commit it and any declared child launch]")
-        if args.prompt is not None:
-            return 0 if _run_turn(session, args.prompt) else 1
         frontend_state = _BasicFrontendState()
+        turn_state = snapshot.state if snapshot is not None else "ready"
         while True:
             try:
                 focus = frontend_state.selected_task_id or "main"
-                line = input(f"RPNH[{focus}] › ").strip()
+                line = terminal.read_message(focus=focus, turn_state=turn_state)
             except EOFError:
                 print()
                 return 0
             if not line:
                 continue
-            if line == "/quit":
+            if line in {"/quit", "/exit"}:
                 return 0
             try:
+                if line == "/clear":
+                    terminal.clear()
+                    continue
+                if line == "/history":
+                    terminal.history(session.history)
+                    continue
+                if line == "/status" and frontend_state.selected_task_id is None:
+                    snapshot = session.active_turn_snapshot()
+                    turn_state = snapshot.state if snapshot is not None else "ready"
+                    terminal.status(focus=focus, turn_state=turn_state)
+                    continue
                 if line == "/frontend" or line.startswith("/frontend "):
                     from cpn.rpnh.frontend_onboarding import (
                         FrontendSwitch, choose_frontend,
@@ -726,16 +752,30 @@ def _run_basic_frontend(
                         print("This session is already using Basic.")
                         continue
                     raise FrontendSwitch(selected)
-                if not _task_command(session, line, frontend_state):
-                    if frontend_state.selected_task_id is None:
-                        _run_turn(session, line)
-                    else:
-                        _route_selected_input(session, frontend_state, line)
+                working = (not line.startswith("/") or line == "/resume"
+                           or line.startswith(("/agent ", "/workflow ")))
+                with terminal.working() if working else nullcontext():
+                    if not _task_command(session, line, frontend_state):
+                        if line.startswith("/"):
+                            raise ValueError("unknown command; use /help")
+                        if frontend_state.selected_task_id is None:
+                            _run_turn(session, line)
+                        else:
+                            _route_selected_input(session, frontend_state, line)
+                if (not line.startswith("/")
+                        or line in {"/resume", "/rollback"}
+                        or line.startswith("/workflow ")):
+                    snapshot = session.active_turn_snapshot()
+                    turn_state = snapshot.state if snapshot is not None else "ready"
             except (OSError, RuntimeError, TypeError, ValueError) as exc:
                 print(f"error: {exc}", file=sys.stderr)
     finally:
-        if lease is not None:
-            lease.close()
+        try:
+            if terminal is not None:
+                terminal.__exit__(None, None, None)
+        finally:
+            if lease is not None:
+                lease.close()
 
 
 def main(argv: list[str] | None = None) -> int:

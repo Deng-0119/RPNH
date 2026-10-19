@@ -6,7 +6,7 @@ metadata:
   audience: user-and-developer
   language: zh-CN
   counterpart: CHANGELOG.md
-  revision: "2026-10-19.3"
+  revision: "2026-10-19.4"
   status: v0.1.0rc2-unreleased
 ---
 
@@ -15,6 +15,17 @@ metadata:
 # 变更记录
 
 ## 未发布
+
+- 新增无需额外 UI 依赖的 Basic 轻量终端界面：欢迎面板显示模型、工作目录与会话，
+  提供输入分隔线与状态、readline 编辑、本进程 Up/Down 输入历史、基本命令 Tab 补全，
+  以及行末反斜杠续行。默认 `/help` 仅列出 `/help`、`/clear`、`/status`、`/history`、
+  `/frontend [NAME]`、`/resume`、`/rollback` 和 `/quit`（别名 `/exit`）；原任务控制
+  保留在 `/help tasks`，不参与基本补全。`/clear` 只清理显示，`/history` 读取最近
+  10 条已登记消息，主会话 `/status` 只读会话／模型／焦点／回合状态；选中子任务时
+  保留原状态行为。`Ctrl+D` 发出 EOF，提示符 `Ctrl+C` 仍以 130 退出。
+  `--prompt`、重定向流与 dumb 终端保持纯文本，无 ANSI 提示符效果。
+  同会话前端切换、精确模型选择与恢复行为保持。见
+  [Basic 指南](docs/guides/frontends_ZH.md#basic-终端)。
 
 - 新增 `rpnh --frontend dsh` 及独立的 `rpnh config frontend` 偏好设置，支持
   `--dsh-source`。显式前端参数优先于保存偏好，`auto` 保持 Codex／Basic 选择。

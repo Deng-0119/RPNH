@@ -134,6 +134,16 @@ After building an authorized execution profile:
 rpnh --frontend basic
 ```
 
+Basic opens with a welcome panel showing the model, working directory and
+session, followed by a separated input area and status. Type a message to chat,
+or `/help` for the basic commands: `/help`, `/clear`, `/status`, `/history`,
+`/frontend [NAME]`, `/resume`, `/rollback` and `/quit` (alias `/exit`).
+`/clear` clears only the display; `/history` shows the last 10 registered
+conversation messages. Use Up/Down for input history within this process, Tab
+for basic command completion, and a trailing backslash to continue on another
+line. See the [Basic terminal guide](docs/guides/frontends.md#basic-terminal).
+
+For independent tasks, `/help tasks` shows the existing advanced controls.
 Use `/agent` for an independent task, `/workflow` to ask the Designer to create
 a workflow, and `/tasks` to list children. `/switch` changes the selected task;
 `/task ID status` and `/task ID result` inspect its state and output.
@@ -276,7 +286,7 @@ The component milestone and official DSH Web checks have a separate
 | `rpnh --resume PATH` | Reopen the session using its last frontend |
 | `rpnh frontend` | Choose and configure a frontend without calling a model |
 | `rpnh frontend switch NAME --resume PATH` | Open the same session in another frontend after its current interface exits |
-| `rpnh --frontend basic` | Built-in terminal for the main session and independent task controls |
+| `rpnh --frontend basic` | Lightweight built-in terminal with input editing, history and basic command completion |
 | `rpnh --frontend codex` | Codex 0.163.0 presentation; see the [adapter guide](docs/guides/adapters.md) |
 | `rpnh --frontend opencode` | OpenCode 1.19.3 presentation; see the [OpenCode guide](docs/guides/opencode.md) |
 | `rpnh --frontend dsh` | Official DSH Web bound to Python MainSession; see the [DSH guide](docs/guides/dsh.md) |
@@ -289,7 +299,7 @@ one writable presentation, with Registry history as the common record.
 Reopening history never automatically continues a paused turn; DSH Web exposes
 `/rpnh-resume` and `/rpnh-rollback` through the native slash menu.
 
-In Basic, `/quit` or EOF closes the terminal. `Ctrl+C` at the prompt or while
+In Basic, `/quit` (alias `/exit`) or `Ctrl+D` on an empty input (EOF) closes the terminal. `Ctrl+C` at the prompt or while
 handling a turn result exits with status 130 without a Python traceback,
 retaining session files and releasing the owner lease. Independently running
 child tasks keep running. During agent execution, the existing checkpoint

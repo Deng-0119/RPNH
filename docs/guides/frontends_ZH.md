@@ -6,9 +6,9 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: frontends.md
-  revision: "2026-10-19.4"
+  revision: "2026-10-19.5"
   status: source-reviewed
-  basis: "Frontend selection, setup and same-session handoff; validation recorded separately"
+  basis: "Frontend selection, setup, Basic terminal and same-session handoff; validation recorded separately"
 ---
 
 # 选择、配置与切换前端
@@ -47,6 +47,38 @@ rpnh frontend setup dsh --dsh-source /absolute/path/to/deepseek-harness
 前端配置与模型、凭据配置独立。把 Codex 界面换成 DSH 界面时，仍使用该会话原来的
 RPNH provider、精确模型、历史和已注册任务状态。
 
+## Basic 终端
+
+执行 `rpnh --frontend basic` 即可启动，无需添加 UI 依赖或单独安装客户端。交互终端的
+欢迎面板显示已配置模型、当前工作目录与会话；输入分隔线和状态使下一次输入与之前的
+输出清晰分开。
+
+Python `readline` 可用时，支持当前行编辑、Up/Down 浏览本进程输入历史，以及 Tab
+补全基本 slash 命令。此输入历史与已登记的对话历史独立，不跨进程保存。行末加
+反斜杠（`\`）可将同一条消息继续输入到下一行；最后一行不加反斜杠即可提交。
+
+`/help` 只显示以下基本命令：
+
+| 命令 | 作用 |
+|---|---|
+| `/help` | 显示基本帮助 |
+| `/clear` | 清理显示，不删除对话历史或重置会话 |
+| `/status` | 查看主会话身份、模型、焦点与回合状态；选中子任务时保留原有任务状态行为 |
+| `/history` | 显示最近至多 10 条已登记的对话消息 |
+| `/frontend [NAME]` | 选择或指定前端，继续使用同一会话 |
+| `/resume` | 显式恢复暂停的主回合或结算其终态结果；选中子任务时使用其既有恢复控制 |
+| `/rollback` | 将暂停的主回合退回上一个已完成回合 |
+| `/quit`（别名 `/exit`） | 退出 Basic |
+
+主会话焦点下的 `/status` 只读；`/clear` 不删除 Registry 记录，`/history` 不重放消息、
+不调用模型。`/help tasks` 列出现有高级控制，包括 `/agent`、`/workflow`、`/tasks`、
+`/switch` 和 `/task ID ...`；它们仍可使用，但不出现在默认帮助或基本命令补全中。
+任务示例见[使用指南](usage_ZH.md)。
+
+在空输入时按 `Ctrl+D` 发出 EOF 并退出。在提示符按 `Ctrl+C` 仍以状态码 130 退出。
+Agent 执行期间仍沿用既有 checkpoint 暂停行为和显式恢复／回退控制。切换前端不改变
+会话的模型或恢复语义。
+
 ## 恢复与切换
 
 ```bash
@@ -74,6 +106,7 @@ resume 使用该会话上次成功接管时的前端，不受新会话首选项�
 `rpnh --frontend NAME` 直接指定界面，不显示新会话菜单；交互终端中缺少该客户端时
 进入配置。脚本应先执行 `rpnh frontend setup NAME`，非交互启动不会自行下载或提问。
 
-`--prompt` 仍为 Basic 的一次性执行，不显示前端菜单。脚本未明确选择前端且没有已配置
-首选项时，会给出配置指引。显式 `--frontend auto` 保留原来的兼容 Codex／Basic 自动
+`--prompt` 仍为 Basic 的一次性执行，不显示前端菜单。一次性执行、输入／输出重定向和
+`TERM=dumb` 终端使用纯文本输出，不添加 ANSI 提示符效果、欢迎面板或交互输入装饰。
+脚本未明确选择前端且没有已配置首选项时，会给出配置指引。显式 `--frontend auto` 保留原来的兼容 Codex／Basic 自动
 选择；普通交互 `rpnh` 使用新菜单。

@@ -6,7 +6,7 @@ metadata:
   audience: user-and-developer
   language: en
   counterpart: CHANGELOG_ZH.md
-  revision: "2026-10-19.3"
+  revision: "2026-10-19.4"
   status: v0.1.0rc2-unreleased
 ---
 
@@ -15,6 +15,21 @@ metadata:
 # Changelog
 
 ## Unreleased
+
+- Added a lightweight Basic terminal UI with no extra UI dependencies: a welcome
+  panel with model, working directory and session, an input separator and status,
+  readline editing, in-process Up/Down input history, basic command Tab completion
+  and multiline input using a trailing backslash. Default `/help` lists only
+  `/help`, `/clear`, `/status`, `/history`, `/frontend [NAME]`, `/resume`,
+  `/rollback` and `/quit` (alias `/exit`); existing task controls remain under
+  `/help tasks` and are excluded from basic completion. `/clear` clears only
+  the display, `/history` reads the last 10 registered messages, and main-session
+  `/status` reads session/model/focus/turn state; selected-child status retains
+  its previous behavior. `Ctrl+D` signals EOF and prompt `Ctrl+C` still exits
+  with status 130. `--prompt`, redirected streams and dumb terminals retain
+  plain output without ANSI prompt effects. Same-session frontend switching,
+  exact-model selection and resume behavior are unchanged. See the
+  [Basic guide](docs/guides/frontends.md#basic-terminal).
 
 - Added `rpnh --frontend dsh` and independent `rpnh config frontend` preferences
   with `--dsh-source`. Explicit frontend flags override saved preferences; `auto`
