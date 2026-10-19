@@ -6,10 +6,10 @@ import { join, resolve } from 'node:path'
 import { spawn } from 'node:child_process'
 import { execFileSync } from 'node:child_process'
 import { SessionId } from '@deepseek-ai/dsh-session'
-import { ToolCallId, createUserMessage } from '@deepseek-ai/dsh-llm'
+import { ToolCallId, createUserMessage, createToolResultMessage } from '@deepseek-ai/dsh-llm'
 import { createApplication } from './app.ts'
 import { RegistryAgent } from './agent.ts'
-import { selectedModel, type BridgeConfig } from './bridge.ts'
+import { LIMIT, selectedModel, type BridgeConfig } from './bridge.ts'
 
 const options = { provider: 'rpnh-offline', model: 'deterministic-v1' }
 const python = execFileSync('sh', ['-c', 'command -v python3']).toString().trim()
@@ -65,8 +65,8 @@ describe('Registry-backed DSH integration', () => {
         { role: 'user', content: [{ type: 'text', text: 'sum these' }] },
         { role: 'assistant', content: [{ type: 'reasoning', text: 'I should delegate. ' }, { type: 'text', text: 'Calling it.' },
           { type: 'tool-call', id: 'call-1', name: 'managed_sum', arguments: '{"values":[2,3]}' }] },
-        { role: 'user', source: { kind: 'tool', callId: 'call-1' }, content: [{ type: 'tool-result', toolCallId: 'call-1', isError: false,
-          content: [{ type: 'text', text: '5' }] }] },
+        createToolResultMessage({ callId: ToolCallId('call-1'), isError: false,
+          content: [{ type: 'text', text: '5' }] }),
       ]
       const result = await f.invoke(f.frame('model_request', 'managed-round', f.argumentsFor(messages, registeredTools)), new AbortController().signal)
       expect(result).toEqual({ provider_request: { protocol: 'registered_llm/v1', tools: registeredTools, tool_choice: 'auto', placeholders: [], messages: [
@@ -76,8 +76,8 @@ describe('Registry-backed DSH integration', () => {
       ] } })
       const failedMessages = [
         { role: 'assistant', content: [{ type: 'tool-call', id: 'call-2', name: 'managed_sum', arguments: '{"values":[2,3]}' }] },
-        { role: 'user', source: { kind: 'tool', callId: 'call-2' }, content: [{ type: 'tool-result', toolCallId: 'call-2', isError: true,
-          content: [{ type: 'text', text: '{"error":"handler_failed"}' }] }] },
+        createToolResultMessage({ callId: ToolCallId('call-2'), isError: true,
+          content: [{ type: 'text', text: '{"error":"handler_failed"}' }] }),
       ]
       const failed = await f.invoke(f.frame('model_request', 'managed-error-round', f.argumentsFor(failedMessages, registeredTools)), new AbortController().signal)
       expect(failed).toEqual({ provider_request: { protocol: 'registered_llm/v1', tools: registeredTools, tool_choice: 'auto', placeholders: [], messages: [
@@ -103,10 +103,10 @@ describe('Registry-backed DSH integration', () => {
     try {
       const base = [{ role: 'assistant', content: [{ type: 'tool-call', id: 'call-1', name: 'managed_sum', arguments: '{}' }] }]
       await expect(f.invoke(f.frame('model_request', 'unmatched-result', f.argumentsFor([...base,
-        { role: 'user', source: { kind: 'tool', callId: 'other' }, content: [{ type: 'tool-result', toolCallId: 'other', isError: false, content: [{ type: 'text', text: '5' }] }] },
+        createToolResultMessage({ callId: ToolCallId('other'), isError: false, content: [{ type: 'text', text: '5' }] }),
       ], registeredTools)), new AbortController().signal)).rejects.toThrow('malformed or uncorrelated')
       await expect(f.invoke(f.frame('model_request', 'malformed-result', f.argumentsFor([...base,
-        { role: 'user', source: { kind: 'tool', callId: 'call-1' }, content: [{ type: 'tool-result', toolCallId: 'call-1', isError: false, content: [{ type: 'reasoning', text: '5' }] }] },
+        { role: 'tool', source: { kind: 'tool', callId: 'call-1' }, toolCallId: 'call-1', isError: false, content: [{ type: 'reasoning', text: '5' }] },
       ], registeredTools)), new AbortController().signal)).rejects.toThrow('malformed or uncorrelated')
     } finally { await f.cleanup() }
   })
@@ -166,7 +166,7 @@ describe('Registry-backed DSH integration', () => {
     await writeFile(selectionPath, JSON.stringify({
       schema_version: 'llm_execution_selection/v1', adapter_kind: 'local_process',
       model_condition: 'bounded-model', adapter_config_path: adapterPath,
-      timeout_seconds: 30, max_output_tokens: 64, max_response_bytes: 3 * 1024 * 1024,
+      timeout_seconds: 30, max_output_tokens: 64, max_response_bytes: LIMIT,
     }))
     const config: BridgeConfig = {
       root: join(root, 'sessions'), python, data: [], allowRequest: true, tools: [],
@@ -176,7 +176,7 @@ describe('Registry-backed DSH integration', () => {
         provider_display_name: 'Local test', model_condition: 'bounded-model',
         adapter_kind: 'local_process', transport_kind: 'subprocess',
         timeout_seconds: 30, max_output_tokens: 64,
-        max_response_bytes: 3 * 1024 * 1024,
+        max_response_bytes: LIMIT,
       } },
     }
     const ctx = await createApplication(config)

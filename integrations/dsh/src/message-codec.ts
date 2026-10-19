@@ -2,6 +2,7 @@
 import { isAbsolute } from 'node:path'
 export const LEGACY_DSH_REVISION = 'ddefc45fbc7f8e46dd73185e68295696d1297887'
 export const CANDIDATE_DSH_REVISION = '5badb15009ae1756c3afe0ae0cef1faafc290ccc'
+export const CURRENT_DSH_REVISION = '687f282e8625c6b8d11ff58211a90524be2e4317'
 export type DshDialect = 3 | 4
 export type JsonRecord = Record<string, any>
 export class DshCodecError extends Error {}
@@ -11,7 +12,7 @@ export const record = (value: unknown): value is JsonRecord =>
 const nonempty = (value: unknown): value is string => typeof value === 'string' && value.length > 0
 export function dialectForRevision(revision: unknown): DshDialect {
   if (revision === LEGACY_DSH_REVISION) return 3
-  if (revision === CANDIDATE_DSH_REVISION) return 4
+  if (revision === CANDIDATE_DSH_REVISION || revision === CURRENT_DSH_REVISION) return 4
   return fail('unsupported exact DSH revision')
 }
 export interface ToolResultValue {

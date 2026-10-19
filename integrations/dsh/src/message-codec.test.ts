@@ -2,7 +2,7 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { decodeToolResult, encodeToolResult, projectMessage, projectHeader, toolResultText,
-  LEGACY_DSH_REVISION as old, CANDIDATE_DSH_REVISION as latest } from './message-codec.ts'
+  LEGACY_DSH_REVISION as old, CANDIDATE_DSH_REVISION as latest, CURRENT_DSH_REVISION as current } from './message-codec.ts'
 import { projectHistory, projectTurnEvents, assertExecutionRevision } from './history-codec.ts'
 const fixture = JSON.parse(readFileSync(new URL('../fixtures/message-codec.v1.json', import.meta.url), 'utf8'))
 for (const entry of fixture.valid) {
@@ -150,4 +150,20 @@ test('header field constraints match both pinned upstream validators', () => {
   const valid = { ...header, cwd: '/fixture/workspace', delegationDepth: 0, parentSession: '', agentPreset: '' }
   assert.deepEqual(projectHeader(valid, old, old), valid)
   assert.equal(projectHeader(valid, old, latest).version, 4)
+})
+
+// The current host shares the V4 layout, but never inherits execution authority.
+test('current V4 host preserves tool identity and refuses historical execution', () => {
+  const message = fixture.valid[0].v4
+  assert.deepEqual(encodeToolResult(decodeToolResult(message, current), current), message)
+  assert.deepEqual(projectMessage(fixture.valid[0].v3, old, current), message)
+  assert.throws(() => decodeToolResult(fixture.valid[0].v3, current), /first-class/)
+  for (const revision of [old, latest]) {
+    assert.throws(() => assertExecutionRevision({ committed_history: [
+      { user_input: { upstream_revision: revision } },
+    ], active: null }, current), /cross-revision execution/)
+  }
+  assertExecutionRevision({ committed_history: [
+    { user_input: { upstream_revision: current } },
+  ], active: null }, current)
 })

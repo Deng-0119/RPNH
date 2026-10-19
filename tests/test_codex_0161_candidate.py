@@ -18,6 +18,7 @@ from test_codex_history import _append, _request, _walk
 
 CANDIDATE = "candidate-0.161.0"
 PINNED = "pinned-0.155.0"
+CURRENT = "pinned-0.163.0"
 
 
 @pytest.fixture
@@ -46,10 +47,10 @@ def test_manifest_is_single_exact_table_and_profiles_are_immutable(candidate, mo
     server, _, _, _ = candidate
     manifest = json.loads(Path(frontend.__file__).with_name("codex_compatibility.v1.json").read_text())
     table = manifest["compatibility_profiles"]
-    assert set(table["profiles"]) == {PINNED, CANDIDATE}
-    assert table["default"] == PINNED
-    assert frontend.CODEX_FRONTEND_VERSION == manifest["frontend"]["version"] == "0.155.0"
-    assert frontend.CODEX_CLI_VERSION_TEXT == "codex-cli 0.155.0"
+    assert set(table["profiles"]) == {PINNED, CANDIDATE, CURRENT}
+    assert table["default"] == CURRENT
+    assert frontend.CODEX_FRONTEND_VERSION == manifest["frontend"]["version"] == "0.163.0"
+    assert frontend.CODEX_CLI_VERSION_TEXT == "codex-cli 0.163.0"
     assert server.compatibility_profile is frontend._compatibility_profile(CANDIDATE)
     assert server.compatibility_profile.status == "CANDIDATE_NATIVE_CERTIFICATION_PENDING"
     with pytest.raises(FrozenInstanceError):
@@ -59,7 +60,7 @@ def test_manifest_is_single_exact_table_and_profiles_are_immutable(candidate, mo
     with pytest.raises(TypeError):
         frontend._CODEX_PROFILES["candidate-0.999.0"] = server.compatibility_profile
     monkeypatch.setenv("RPNH_CODEX_COMPATIBILITY_PROFILE", CANDIDATE)
-    assert frontend._compatibility_profile().version == "0.155.0"
+    assert frontend._compatibility_profile().version == "0.163.0"
 
 
 @pytest.mark.parametrize("bad", ["0.161.0", "candidate-0.162.0", "latest", "", True, [], {}, 161])
@@ -73,7 +74,8 @@ def test_unknown_selector_rejected_before_binary_or_state_access(tmp_path, monke
 
 
 @pytest.mark.parametrize("selector,reported,ok", [
-    (None, "codex-cli 0.155.0", True), (None, "codex-cli 0.161.0", False),
+    (None, "codex-cli 0.163.0", True), (None, "codex-cli 0.155.0", False),
+    (None, "codex-cli 0.161.0", False), (None, "codex-cli 0.164.0-alpha.3", False),
     (PINNED, "codex-cli 0.155.0", True), (CANDIDATE, "codex-cli 0.161.0", True),
     (CANDIDATE, "codex-cli 0.155.0", False), (CANDIDATE, "codex-cli 0.162.0", False),
     (CANDIDATE, "codex-cli 0.161.0-alpha", False), (CANDIDATE, "0.161.0", False),
@@ -93,7 +95,7 @@ def test_resolver_checks_only_selected_binary_exact_version(monkeypatch, selecto
     assert calls == [("which", "/requested/codex"), ("run", ["/selected/codex", "--version"])]
 
 
-@pytest.mark.parametrize("selector,version", [(None, "0.155.0"), (CANDIDATE, "0.161.0")])
+@pytest.mark.parametrize("selector,version", [(None, "0.163.0"), (PINNED, "0.155.0"), (CANDIDATE, "0.161.0")])
 def test_launcher_binds_verified_profile_before_transport(tmp_path, monkeypatch, selector, version):
     calls = []
     monkeypatch.setattr(frontend.shutil, "which", lambda _: "/selected/codex")
@@ -113,7 +115,8 @@ def test_launcher_binds_verified_profile_before_transport(tmp_path, monkeypatch,
 
 
 @pytest.mark.parametrize("selector,version,wrong", [(PINNED, "0.155.0", "0.161.0"),
-                                                    (CANDIDATE, "0.161.0", "0.155.0")])
+                                                    (CANDIDATE, "0.161.0", "0.155.0"),
+                                                    (CURRENT, "0.163.0", "0.161.0")])
 def test_initialize_exact_profile_and_failed_handshake_has_no_history(tmp_path, selector, version, wrong):
     execution = _local_profile(tmp_path / "profiles")
     original = MainSession(tmp_path / "session", execution, task_control=object())

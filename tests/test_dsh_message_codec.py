@@ -77,3 +77,21 @@ def test_typescript_python_shared_fixture_parity():
             value = decode_tool_result(entry[key], rev, require_identity=True)
             expected.append({'value': value, 'encoded': encode_tool_result(value, rev)})
     assert json.loads(completed.stdout) == expected
+
+
+def test_current_host_uses_v4_without_admitting_old_execution(tmp_path):
+    from cpn.dsh.backend import DshBackend, REVISION
+    from cpn.dsh.message_codec import CURRENT_DSH_REVISION, dialect_for_revision
+    from test_dsh_backend import request
+
+    assert REVISION == CURRENT_DSH_REVISION
+    assert dialect_for_revision(REVISION) == 4
+    message = FIXTURE['valid'][0]['v4']
+    assert encode_tool_result(decode_tool_result(message, REVISION), REVISION) == message
+    with pytest.raises(DshCodecError, match='first-class'):
+        decode_tool_result(FIXTURE['valid'][0]['v3'], REVISION)
+    host = DshBackend(tmp_path, 's1', lambda _: pytest.fail('old execution dispatched'), create=True)
+    turn = request()
+    turn['upstream_revision'] = OLD
+    with pytest.raises(ValueError, match='revision'):
+        host.turn(turn)

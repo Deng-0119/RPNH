@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: models.md
-  revision: "2026-09-30.1"
+  revision: "2026-10-19.1"
   status: source-reviewed-v0.1.0rc1
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -107,8 +107,8 @@ model 与 effort 的权威属于 basic harness 配置层，不属于任何前端
 Codex UI 协议要求默认 effort 非空。仅对未配置 effort 的模型，适配层展示
 wire 标记 `none`，回传时还原为同一 profile 的 canonical 空值；真正配置
 字符串 `none` 的模型仍保留该字符串。不会添加 provider 参数或目录值。
-Codex 支持版本仍固定为 0.155.0；对 0.161.0 的 schema 检查不代表原生
-客户端认证，也未修复另行处理的历史分页缺口。
+当前 Codex 固定版本为 0.163.0。新版 object item cursor 仍从同一份
+已提交 MainThreadRegistry 投影历史；验证范围见[本次前端验证](../validation/frontends-20261019_ZH.md)。
 
 ## 传输、恢复和外部效果
 catalog 对外暴露的协议是 `openai_chat_completions/v1`，不是所有宣称兼容的 API。另一种 `local_process` 必须声明 `argv`、`probe_argv`、`env`、`inherit_env`；`{model}` 替换保留所选模型。声明 effort 的本地模型还必须在正式 `argv` 中放置 `{reasoning_effort}`；构建器会为每个支持值生成不可变 execution variant。子进程及其 probe 仍可能调用付费模型，不能把“本地进程”等同“离线”。

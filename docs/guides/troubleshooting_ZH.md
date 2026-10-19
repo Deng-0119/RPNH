@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: troubleshooting.md
-  revision: "2026-09-29.3"
+  revision: "2026-10-19.1"
   status: source-reviewed-v0.1.0rc1
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -22,7 +22,7 @@ metadata:
 |---|---|---|
 | 找不到 rpnh 或导入错包 | 环境、entry point、源码目录外的 `cpn.__file__` | 新环境重装批准产物，不删除运行数据 |
 | init/doctor/plugins/examples/auto 不认识 | `rpnh` 与导入的 `cpn` 是否来自同一个当前统一安装 | 重装已审查 wheel／源码，不混用旧 executable 与当前 Python 模块 |
-| Codex 版本被拒绝 | 精确 `codex-cli 0.155.0` 与 binary 路径 | 使用固定版本或 basic，不改变模型 |
+| Codex 版本被拒绝 | 精确 `codex-cli 0.163.0` 与 binary 路径 | 使用固定版本或 basic，不改变模型 |
 | Codex resume 报告 `persisted_profile_unavailable` | 被省略 thread 原来记录的精确 profile 是否仍已安装且可选 | 恢复同一个用户自有 profile 后再 resume；RPNH 不会换模型，也不会改写该 thread Registry |
 | 无 profile、manifest 不一致 | catalog、execution 目录、清单、覆盖变量 | 备份 catalog 后重建，不单改派生文件 |
 | 缺凭据、ready false | 变量名及当前进程环境，不显示值 | 在 git 以外配置，离线重查，不默认探测 |

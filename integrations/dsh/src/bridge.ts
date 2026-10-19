@@ -1,7 +1,7 @@
 import { spawn, type ChildProcessWithoutNullStreams } from 'node:child_process'
 import { randomUUID } from 'node:crypto'
 import { Context, Service } from '@deepseek-ai/cordis'
-export const REVISION = 'ddefc45fbc7f8e46dd73185e68295696d1297887'
+export const REVISION = '687f282e8625c6b8d11ff58211a90524be2e4317'
 export const PROTOCOL = 'rpnh/dsh/v1'
 export const MANAGED_TOOL_RESULT_LIMIT = 16 * 1024 * 1024
 export const LIMIT = 4 * MANAGED_TOOL_RESULT_LIMIT + 4 * 1024 * 1024

@@ -259,6 +259,7 @@ class CodexAppServer:
         self._initialize_accepted_connections: set[int] = set()
         self._initialized_connections: set[int] = set()
         self._send_locks: dict[int, asyncio.Lock] = {}
+        self._detached_threads: set[tuple[int, str]] = set()
         self._background: set[asyncio.Task[None]] = set()
         self._lease: MainSessionOwnerLease | None = None
         try:
@@ -669,7 +670,16 @@ class CodexAppServer:
     async def _notify(
             self, websocket: Any, method: str, params: Mapping[str, Any],
     ) -> None:
-        await self._send(websocket, {"method": method, "params": params})
+        thread_id = params.get("threadId")
+        if thread_id is None and isinstance(params.get("thread"), Mapping):
+            thread_id = params["thread"].get("id")
+        key = id(websocket)
+        lock = self._send_locks.setdefault(key, asyncio.Lock())
+        async with lock:
+            if (key, thread_id) not in self._detached_threads:
+                await websocket.send(json.dumps(
+                    {"method": method, "params": params},
+                    ensure_ascii=False, separators=(",", ":")))
 
     def _thread(self, thread_id: object) -> ThreadState:
         if not isinstance(thread_id, str) or thread_id not in self._threads:
@@ -1414,6 +1424,11 @@ class CodexAppServer:
         if method == "account/read":
             await self._result(websocket, request_id, {
                 "account": None, "requiresOpenaiAuth": False})
+        elif method == "account/bedrock/checkGovCloudRequirements":
+            # The stock TUI checks this during startup even for non-Bedrock
+            # servers. Provider configuration and credentials belong to RPNH.
+            await self._result(websocket, request_id, {
+                "isGovCloud": False, "shouldWarn": False})
         elif method == "model/list":
             await self._result(websocket, request_id, {
                 "data": [
@@ -1483,6 +1498,7 @@ class CodexAppServer:
             await self._start_thread(websocket, request_id, params)
         elif method == "thread/resume":
             state = self._history_state(websocket, params.get("threadId"))
+            self._detached_threads.discard((id(websocket), state.thread_id))
             # Codex presentation reopen is not semantic paused-turn resume.
             # Preserve existing live reconnect tracking separately from the
             # pure fixed-cut history path below. Tracking may later reconcile.
@@ -1507,6 +1523,19 @@ class CodexAppServer:
                 "serviceTier": None,
                 "instructionSources": [],
             })
+        elif method == "thread/goal/get":
+            state = self._history_state(websocket, params.get("threadId"))
+            # Goals are disabled in the presentation client; RPNH tasks are
+            # not Codex backend goals. Cold resume still queries this field.
+            await self._history_result(websocket, request_id, state, {"goal": None})
+        elif method == "thread/unsubscribe":
+            state = self._history_state(websocket, params.get("threadId"))
+            key = (id(websocket), state.thread_id)
+            status = "notSubscribed" if key in self._detached_threads else "unsubscribed"
+            self._detached_threads.add(key)
+            # Detach only this client's notifications. The owner launcher
+            # retains responsibility for stopping/reconciling RPNH work.
+            await self._history_result(websocket, request_id, state, {"status": status})
         elif method == "thread/loaded/list":
             await self._result(websocket, request_id, {
                 "data": list(self._threads), "nextCursor": None})
@@ -1607,6 +1636,8 @@ class CodexAppServer:
             self._initialize_accepted_connections.discard(key)
             self._initialized_connections.discard(key)
             self._send_locks.pop(key, None)
+            self._detached_threads = {
+                entry for entry in self._detached_threads if entry[0] != key}
 
     async def stop_active_turns(self) -> None:
         for state in self._threads.values():

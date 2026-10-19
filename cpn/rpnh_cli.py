@@ -29,6 +29,8 @@ from cpn.rpnh.user_config import (
 
 
 def _parser() -> argparse.ArgumentParser:
+    from cpn.frontend.codex_app_server import CODEX_FRONTEND_VERSION
+    from cpn.frontend.opencode_protocol import OPENCODE_VERSION
     parser = argparse.ArgumentParser(
         prog="rpnh",
         description="RPNH — an AI assistant for conversations and tasks",
@@ -64,8 +66,8 @@ def _parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--frontend", choices=("auto", "codex", "basic", "opencode"), default="auto",
-        help=("auto uses compatible Codex 0.155.0 when available, "
-              "otherwise the built-in terminal; OpenCode 1.18.32 is explicit"),
+        help=(f"auto uses compatible Codex {CODEX_FRONTEND_VERSION} when available, "
+              f"otherwise the built-in terminal; OpenCode {OPENCODE_VERSION} is explicit"),
     )
     return parser
 
@@ -200,11 +202,11 @@ def _choose_frontend(requested: str) -> str:
         return requested
     if not sys.stdin.isatty():
         return "basic"
-    from cpn.frontend.codex_app_server import resolve_codex_binary
+    from cpn.frontend.codex_app_server import CODEX_FRONTEND_VERSION, resolve_codex_binary
     try:
         resolve_codex_binary()
     except (OSError, RuntimeError, ValueError):
-        print("Using the built-in terminal. Optional Codex 0.155.0 frontend is unavailable.",
+        print(f"Using the built-in terminal. Optional Codex {CODEX_FRONTEND_VERSION} frontend is unavailable.",
               file=sys.stderr)
         return "basic"
     return "codex"

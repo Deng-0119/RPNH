@@ -6,7 +6,7 @@ metadata:
   audience: user-and-developer
   language: zh-CN
   counterpart: CHANGELOG.md
-  revision: "2026-10-07.3"
+  revision: "2026-10-19.1"
   status: v0.1.0rc2-unreleased
 ---
 
@@ -15,6 +15,10 @@ metadata:
 # 变更记录
 
 ## 未发布
+
+- 更新可选前端到 Codex 0.163.0、OpenCode 1.19.3 与 DSH 0.2.1-rc.2 源码宿主，
+  加入当前 Codex 历史 profile、OpenCode Console 发现与 DSH 当前消息 dialect。
+  执行仍由 RPNH 管理，范围见[本次兼容记录](docs/validation/frontends-20261019_ZH.md)。
 
 - 新增显式选择的 managed 结果分页、pure／冲突域有界调度与隔离 Python 程序，复用同一 owner、权限、真实回执及运行额度。部分程序结果按实际状态回读；未知副作用保留 owner reconciliation。
 - 新增只读结果／请求证据、来源描述与无 listener 预检、inert 插件检查及可移植作者自检。比较字段过滤与 split／fusion 导航保留已有 graph renderer。

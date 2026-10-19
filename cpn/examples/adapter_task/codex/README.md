@@ -1,10 +1,13 @@
-# Codex 0.155.0 host
+# Codex 0.163.0 host
 
 English | [中文](README_ZH.md)
 
-Install exact `codex-cli 0.155.0`, then select one authorized profile. Starting
+Install exact `codex-cli 0.163.0`, then select one authorized profile. Starting
 the frontend sends no model request; submitting `task.txt` starts one logical
 main-session turn:
+
+The retained figure below comes from the earlier 0.155.0 acceptance run;
+current frontend validation is documented in `docs/validation/frontends-20261019.md`.
 
 This is the actual settled PetriNet from the checked Codex acceptance run. It
 shows the RPNH-owned execution layer behind the Codex presentation.

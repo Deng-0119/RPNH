@@ -189,7 +189,7 @@ def test_codex_0155_handshake_projects_only_rpnh_backend(
             "id": "initialize",
             "method": "initialize",
             "params": {
-                "clientInfo": {"name": "codex-tui", "version": "0.155.0"},
+                "clientInfo": {"name": "codex-tui", "version": "0.163.0"},
             },
         },
         {"method": "initialized"},
@@ -359,7 +359,7 @@ def test_codex_model_write_persists_the_rpnh_profile(
             "id": "initialize",
             "method": "initialize",
             "params": {
-                "clientInfo": {"name": "codex-tui", "version": "0.155.0"},
+                "clientInfo": {"name": "codex-tui", "version": "0.163.0"},
             },
         },
         {"method": "initialized"},
@@ -403,7 +403,7 @@ def test_codex_lists_selects_and_persists_model_scoped_reasoning_effort(
             "id": "initialize",
             "method": "initialize",
             "params": {
-                "clientInfo": {"name": "codex-tui", "version": "0.155.0"},
+                "clientInfo": {"name": "codex-tui", "version": "0.163.0"},
             },
         },
         {"method": "initialized"},
@@ -479,7 +479,7 @@ def test_codex_rejects_cached_effort_path_after_catalog_default_changes(
             "id": "initialize",
             "method": "initialize",
             "params": {
-                "clientInfo": {"name": "codex-tui", "version": "0.155.0"},
+                "clientInfo": {"name": "codex-tui", "version": "0.163.0"},
             },
         },
         {"method": "initialized"},
@@ -532,7 +532,7 @@ def test_codex_frontend_attachment_crud_cannot_fake_registered_inputs(
     server = CodexAppServer(tmp_path / "session", execution)
     socket = _FakeWebSocket([
         {"id": "initialize", "method": "initialize", "params": {
-            "clientInfo": {"name": "codex-tui", "version": "0.155.0"}}},
+            "clientInfo": {"name": "codex-tui", "version": "0.163.0"}}},
         {"method": "initialized"},
         *({"id": index, "method": "thread/attachment/" + action,
            "params": {"threadId": "unused", "attachmentType": "local-file",
@@ -686,7 +686,7 @@ def test_codex_resume_projection_starts_no_worker_or_reconciliation(
         "id": "initialize",
         "method": "initialize",
         "params": {
-            "clientInfo": {"name": "codex-tui", "version": "0.155.0"},
+            "clientInfo": {"name": "codex-tui", "version": "0.163.0"},
         },
     }, {
         "method": "initialized",
@@ -736,7 +736,7 @@ def test_codex_live_launch_cache_is_separate_from_paginated_history(
         "id": "initialize",
         "method": "initialize",
         "params": {
-            "clientInfo": {"name": "codex-tui", "version": "0.155.0"},
+            "clientInfo": {"name": "codex-tui", "version": "0.163.0"},
         },
     }, {
         "method": "initialized",
@@ -1432,14 +1432,14 @@ def test_codex_none_marker_does_not_become_an_unlisted_effort(tmp_path: Path) ->
     server.close()
 
 
-def test_codex_schema_candidate_does_not_expand_native_version_pin(tmp_path: Path) -> None:
+def test_codex_default_rejects_older_schema_candidate(tmp_path: Path) -> None:
     from cpn.frontend.codex_app_server import CODEX_FRONTEND_VERSION
 
-    assert CODEX_FRONTEND_VERSION == "0.155.0"
+    assert CODEX_FRONTEND_VERSION == "0.163.0"
     execution = _local_profile(tmp_path / "profiles")
     server = CodexAppServer(tmp_path / "session", execution)
     socket = _FakeWebSocket([])
-    with pytest.raises(ValueError, match="0.155.0 exactly"):
+    with pytest.raises(ValueError, match="0.163.0 exactly"):
         asyncio.run(server._handle_request(socket, "initialize", "initialize", {
             "clientInfo": {"name": "codex-tui", "version": "0.161.0"},
         }))

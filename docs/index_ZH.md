@@ -6,14 +6,16 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: index.md
-  revision: "2026-10-13.3"
+  revision: "2026-10-19.1"
   status: source-reviewed
-  basis: "public source b16ecce83ba603b3c15f1c770bce172d4f44f88e; not a new runtime validation"
+  basis: "current source; dated validation records retain their own scopes"
 ---
 
 [English](index.md) | [中文](index_ZH.md)
 
 # 文档导航
+
+当前可选客户端版本与验证范围：[Codex、DSH 与 OpenCode — 2026-10-19](validation/frontends-20261019_ZH.md)。
 
 [仓库首页](../README_ZH.md) · [示例](../examples/README_ZH.md) · [CLI](reference/cli_ZH.md) · [API](reference/api-index_ZH.md) · [源码地图](guides/repository-layout_ZH.md)
 

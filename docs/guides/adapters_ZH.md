@@ -6,8 +6,8 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: adapters.md
-  revision: "2026-10-11.1"
-  status: source-reviewed-v0.1.0rc1
+  revision: "2026-10-19.1"
+  status: source-reviewed
   basis: "core; adapter differences explicitly labelled"
 ---
 
@@ -16,12 +16,18 @@ metadata:
 # Codex、DSH 与共存
 
 ## Codex 是展示层，不替换权威
-固定客户端为 `codex-cli 0.155.0`，升级到新版本不等于通过兼容测试。该固定版本的安装命令：
+固定客户端为 `codex-cli 0.163.0`，升级到新版本不等于通过兼容测试。该固定版本的安装命令：
 
 ```bash
-npm install -g @openai/codex@0.155.0
+npm install -g @openai/codex@0.163.0
 codex --version
 ```
+
+若 `PATH` 上的 `codex` 是会附加后端参数的本地 wrapper，用
+`RPNH_CODEX_BIN` 指定原生 executable。Codex 0.163.0 明确拒绝同时使用
+`--add-dir` 与 `--remote`；额外 workspace root 由 RPNH server 管理。
+这个既有覆盖选项只选择客户端，不改变 provider。
+原生检查见[本次验证](../validation/frontends-20261019_ZH.md)。
 
 RPNH launcher 使用兼容服务和既有主会话权威。`rpnh --frontend codex` 启动会话，输入后可能执行模型，不是离线 smoke。RPNH 自己的任务控制用 `rpnh --frontend basic`。Codex model picker 是 RPNH 配置投影，不授权改写 Codex 供应商设置或静默换路由。可选 local-process subscription bridge 是独立供应商路径，选择 TUI 不自动选择它。
 
@@ -44,7 +50,7 @@ Codex 协议 thread ID 与 `.frontends/codex.json` 都是可重建的展示 meta
 会话历史才是权威。
 
 ## 托管 DSH 前提
-本节仅适用于包含 `cpn/dsh`、`integrations/dsh` 的源码树或安装发行包。清单固定 `deepseek-ai/deepseek-harness` 上游 `ddefc45fbc7f8e46dd73185e68295696d1297887`（`0.1.6-alpha.2`），历史记录测试 Node 24，engine 为 `^22.19.0 || >=24.0.0`，pnpm 为 `11.7.0`。这些是集成 pin，不是上游最新版本声明。
+本节仅适用于包含 `cpn/dsh`、`integrations/dsh` 的源码树或安装发行包。清单固定 `deepseek-ai/deepseek-harness` 上游 `687f282e8625c6b8d11ff58211a90524be2e4317`（`0.2.1-rc.2`），于 2026-10-19 核对。该源码宿主实际使用 Node 22.22.1 与 pnpm 11.28.5 测试，engine 为 `^22.19.0 || >=24.0.0`。[DSH 指南](dsh_ZH.md)区分 npm `latest`、`next` 与此精确源码集成。
 
 取得精确上游 checkout，用固定包管理器和 frozen lockfile 安装依赖。使用独立可丢弃 checkout：prepare 会有意修补受检 factory，并复制 TypeScript 集成文件。分发集成时保留 `UPSTREAM.json`、`UPSTREAM_LICENSE`。
 

@@ -6,9 +6,9 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: opencode.md
-  revision: "2026-10-08.1"
+  revision: "2026-10-19.1"
   status: locally-validated-integration-candidate
-  upstream-version: "1.18.32"
+  upstream-version: "1.19.3"
 ---
 
 # OpenCode 前端
@@ -19,11 +19,13 @@ metadata:
 
 执行路径为 `rpnh → OpenCode attach → 回环 HTTP/SSE → 前端中立 application service → 现有 MainSession/TaskControl → Registry/Petri net`。OpenCode 仅作终端展示，不是 RPNH 的执行后端。精确模型选择、provider 调用、资源、workspace、工具、独立任务、Designer 工作流、checkpoint 和终态证据仍由 RPNH 管理；不复制上游执行循环，也不启动 OpenCode server/provider/tool 后端。
 
-这仍是集成候选，不是已发布版本。本地验收已覆盖完整 harness checkout、真实 Registry 路径、源码目录外 wheel、固定版真实 TUI 连接无 provider 的应用替身，以及一次另行授权、经该 TUI 使用 exact model 的真实 turn。结果及内容层警告见[验证记录](examples-validation_ZH.md)。
+当前精确目标为 **opencode-ai 1.19.3**，即 **2026-10-19** 核对的 npm `latest` 与 GitHub 公开稳定 release。本轮在 WSL2 使用真实 Linux x64 客户端进行无真实 provider 验证；旧 wheel/provider 结果是历史记录，不代表新版已通过这些检查。见[本轮验证记录](../validation/opencode-20261019_ZH.md)。开发版 2.0.32 不属于当前稳定支持目标。
+
+稳定客户端同时使用既有 session/HTTP/SSE 和新版 `/api/*` 启动读取。RPNH 将同一组 profile、agent、命令投影为带 location 的目录响应；Console 组织、原生 integration、skill、reference 目录为空。这些读取不授予 OpenCode 模型、凭据、工具、workspace 或恢复权威。启动器仍只接受当前精确版本；旧 1.18.35 候选已退出支持集。
 
 ## 前置条件与入口
 
-支持 Linux/WSL2、Python 3.11+。需要完整 harness 源码、已配置的 RPNH execution profile，以及单独安装的可信 **OpenCode 1.18.32** 客户端。协议基线为 `anomalyco/opencode` 的 `545f51d26cc39a907d2867492d498d9607ea5fa4`（tag `v1.18.32`）。先检查 `opencode --version`。启动器拒绝其它版本字符串，不自动下载安装，不验证二进制来源，也不修改全局 OpenCode 配置。
+支持 Linux/WSL2、Python 3.11+。需要完整 harness 源码、已配置的 RPNH execution profile，以及单独安装的可信 **OpenCode 1.19.3** 客户端。协议基线为 `anomalyco/opencode` 的 `e3c4eb242585dcd77be1a867391b7c25fd47ce52`（tag `v1.19.3`）。先检查 `opencode --version`。启动器拒绝其它版本字符串，不自动下载安装，不验证二进制来源，也不修改全局 OpenCode 配置。
 
 ```bash
 python -m pip install .
@@ -58,7 +60,7 @@ resume、list 与历史投影都是观察操作：不会调用模型，不会提
 | --- | --- |
 | `/rpnh-help` | 查看支持的控制面。 |
 | `/rpnh-tasks` | 列出本会话的独立任务/工作流。 |
-| `/rpnh-task ID status\|result\|stop\|resume` | 精确访问一个已有子任务 owner；resume 续接其当前停止切面。 |
+| `/rpnh-task ID status\|result\|stop\|resume` | 精确访问一个已有子任务 owner；resume 从其最后有效的已提交 checkpoint 恢复。 |
 | `/rpnh-task ID checkpoints` | 列出该 child run 的精确已提交 checkpoint 版本。 |
 | `/rpnh-task ID reopen CHECKPOINT [:: REASON]` | 在同一 Registry／run 中把该精确切面重开为新代次，并可附带 owner 指引。 |
 | `/rpnh-task ID message TEXT` | 向一个子任务 owner 发送已登记的控制消息。 |
@@ -93,66 +95,36 @@ usage、cost 和 context 指标**不可用**。固定 DTO 必填数值使用零�
 
 服务限制为 32 个连接、8 个 SSE 连接、256 KiB 请求体、128 个排队应用请求和 4 MiB 响应/快照。慢客户端合并接收当前投影，不累积无限 delta 队列。大历史可能超出 v1 展示上限并明确报错。诊断只记录有界 route 形状和状态，不保存问题正文、请求头或任意 URL。未知结果、profile 漂移、缺失 owner 和不支持的请求都不能被解释为执行成功。
 
-## 显式候选认证（仅测试）
+## 显式原生离线检查
 
-生产仍固定 **1.18.32**。同一 manifest 另登记 **1.18.35**
-（`53d1eabb61e21162157817bf677da0a4ad3332e3`）为 `certification-only`，
-production 禁用，native G2/G3 为 `not-run`。没有产品 CLI、环境变量或配置候选开关。
-测试显式把同一 immutable profile 传给 binary probe 和 protocol；只参数化所声明的
-版本 metadata，DTO、执行、Registry、provider/model 权威和 Petri-net 投影保持不变。
-
-无需客户端、socket、PTY 或 provider 的 G1 检查：
-
-```bash
-python -m pytest -q tests/test_opencode_candidate_profiles.py
-```
-
-包内 schema 仍为人工核对的 1.18.32 source-extracted 子集，两 profile 共享 DTO 验证。
-其中 health response 含旧版本 const；候选测试独立断言候选精确版本，只将此版本 metadata
-绑定后做结构验证。不把它说成通过未变的旧 health const、官方 SDK 编译或 stock client 验收。
-
-仅在另行授权 native 执行、已有可信且未修改的 Linux binary 和预置测试依赖之后：
+保留既有测试文件名和 `--opencode-certify-*` 参数，当前只接受 **1.19.3** profile。产品没有版本覆盖开关。先单独取得可信 stock 客户端，传入实际 Linux ELF 可执行文件，而非伪造版本输出的 wrapper。测试使用隔离 HOME/XDG、config、display 和临时目录，不自动安装或登录。
 
 ```bash
 python -m pytest -q tests/test_opencode_candidate_native.py \
-  --opencode-certify-version=1.18.35 \
+  --opencode-certify-version=1.19.3 \
   --opencode-certify-binary=/absolute/path/to/opencode \
   --opencode-certify-lane=contract
-# 合成已提交 Registry 的只读 smoke 单独运行：
 python -m pytest -q tests/test_opencode_candidate_native.py \
-  --opencode-certify-version=1.18.35 \
+  --opencode-certify-version=1.19.3 \
   --opencode-certify-binary=/absolute/path/to/opencode \
   --opencode-certify-lane=registry-read
 ```
 
-这些是有限 smoke 场景，不是完整 G2/G3 认证。未显式选择时不运行候选 native 测试。
-缺参数、未知版本/平台、缺 binary/依赖、probe 不符或请求 lane 被过滤掉都会失败，不能 skip
-后默默全绿。入口不安装、不登录、不调用真实模型，也不接受用户 Registry 路径。
-本地 hash 与 version stdout 不足以证明官方发行物，须另记录 binary 来源。1.18.32 对照可将同一测试命令改为
-`--opencode-certify-version=1.18.32` 并提供对应 stock binary。两个精确版本均只在
-专用测试中选择，不改变既有 pinned PTY 测试、生产入口或默认 PATH/pin。
+contract lane 使用真实客户端完成启动、新建 session、`/rpnh-help`、一次普通 prompt 以及 SSE 答案展示；后端为 `ApplicationDouble`。Registry lane 用确定性 fake port 准备两个 committed turn，再经原 application owner 的 `--session` 和 `--continue` 冷连接读取历史，检查三种 PN 投影、稳定消息 ID、Registry 逻辑版本和 owner lease 排他/释放。准备调用与零新增效果的读取窗口分列。完整 PN 与 RPNH 投影逐结构对照；终端只检查有界可见文本，不宣称截图或完整视口验收。
 
-G2 使用原 HTTP/SSE protocol 和 `ApplicationDouble`。G3 准备阶段用既有 deterministic
-fake port 产生两个 committed turn，再对原 `FrontendGateway`/`RegistryFrontendApplication`
-读取路径测量零新增 fake-port/model/submit/spawn effects，准备调用单列。保留正常 gateway
-tick 和独占 owner lease 获取/释放。只读网核对用 `/rpnh-net` 和原 projection/filter；
-`/rpnh-tasks` 可能 reconcile links，不作为严格只读测点。Picker、强制 SSE 重连、长历史
-页边界尚未由这组 smoke 覆盖。Linux 与 WSL2 分别实测，不增加原生 Windows/macOS 支持。
-测试证据不自动更新 manifest 认证状态，也不提升默认 pin。
+未提供完整原生参数时不执行这两个 lane；未知版本、缺依赖、版本输出不符或请求 lane 被过滤都会明确失败。记录包/release 来源和真实 probe 输出；helper 不执行任务侧文件 hash 或 source-tree 准入审计。schema 是人工核对的 1.19.3 源码提取子集，不是上游 SDK 编译验证器。这里只是有限原生 smoke；真实 provider、原生工具/插件、picker 矩阵、强制 SSE 重连、长历史分页和活跃 worker 恢复未覆盖。
 
 ## 验证与代码定位
 
 ```bash
-python -m pytest -q tests/test_opencode*.py
-# 只能在完整 harness 源码中运行现有全量回归：
-python -m pytest -q
-# 使用已具备的依赖，在源码目录外构建并安装完整 wheel：
-WORK=$(mktemp -d)
-python tools/check_opencode_wheel.py --work-dir "$WORK/wheel"
+python -m pytest -q tests/test_opencode_frontend.py \
+  tests/test_opencode_current_protocol.py tests/test_opencode_candidate_profiles.py \
+  tests/test_opencode_candidate_gate_support.py tests/test_opencode_application_boundary.py \
+  tests/test_opencode_cli.py tests/test_opencode_registry_integration.py
 ```
 
-可选 PTY 测试需要实际安装固定客户端，连接的是测试用应用替身，不是真实 provider。它要求实际完成 bootstrap route、只读命令和一次 prompt 提交，并在测试临时目录保存首个失败的终端/route 证据；跳过不算通过。wheel 验证器拒绝仅含改动的目录，并使用 no-index/no-deps。
+可选 PTY 测试需要实际安装固定客户端，连接的是测试用应用替身，不是真实 provider。它要求实际完成 bootstrap route、只读命令和一次 prompt 提交，并在测试临时目录保存首个失败的终端/route 证据；跳过不算通过。
 
 `cpn/rpnh_cli.py` 负责选择入口；`cpn/rpnh/frontend_application.py` 负责中立应用 owner；`cpn/frontend/opencode_protocol.py` 负责固定 DTO 投影；`opencode_http.py` 负责有界 HTTP/SSE；`opencode_launcher.py` 隔离 attach；`opencode_compatibility.v1.json` 记录源码提取的 SDK 子集。不打包上游源码。
 
-fixture 是人工核对的子集，不是上游生成器产物，也不证明已经执行 upstream SDK/TUI。参考源码包括固定版本的 generated SDK types/client、TUI 的 `context/sync.tsx`、`context/project.tsx`、prompt 组件、attach 命令及 TUI/core 配置 flags。变更版本前应重新核对。非站点 `docs/validation/` 记录包含本轮实际结果和剩余验收条件。
+fixture 是人工核对的子集，不是上游生成器产物，也不证明已经执行 upstream SDK/TUI。参考源码包括固定版本的 generated SDK types/client、TUI 的 `context/sync.tsx`、`context/data.tsx`、`context/project.tsx`、prompt 组件、attach 命令及 TUI/core 配置 flags。变更版本前应重新核对。非站点 `docs/validation/` 记录包含本轮实际结果和剩余验收条件。

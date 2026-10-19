@@ -235,11 +235,13 @@ child Registry。Provider 提交状态未知时会被记录，而不是静默重
 
 ## 前端与宿主集成
 
+当前版本选择与离线验证见[2026-10-19 前端适配](docs/validation/frontends-20261019_ZH.md)。
+
 | 入口 | 用途 |
 |---|---|
 | `rpnh --frontend basic` | 内置终端，提供主会话与独立任务控制 |
-| `rpnh --frontend codex` | 固定版本的 Codex 展示前端；见[适配器指南](docs/guides/adapters_ZH.md) |
-| `rpnh --frontend opencode` | OpenCode 1.18.32 展示前端；见[OpenCode 指南](docs/guides/opencode_ZH.md) |
+| `rpnh --frontend codex` | Codex 0.163.0 展示前端；见[适配器指南](docs/guides/adapters_ZH.md) |
+| `rpnh --frontend opencode` | OpenCode 1.19.3 展示前端；见[OpenCode 指南](docs/guides/opencode_ZH.md) |
 | `rpnh-dsh` | 可选的固定版本 DSH 宿主集成；见[DSH 指南](docs/guides/dsh_ZH.md) |
 
 Basic、Codex 与 OpenCode 是同一个直接 MainSession root 的顺序展示入口。先用

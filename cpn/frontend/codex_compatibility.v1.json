@@ -3,8 +3,8 @@
   "status": "PINNED_PARTIAL_COMPATIBILITY",
   "frontend": {
     "package": "@openai/codex",
-    "version": "0.155.0",
-    "reported_cli_version": "codex-cli 0.155.0",
+    "version": "0.163.0",
+    "reported_cli_version": "codex-cli 0.163.0",
     "license": "Apache-2.0",
     "role": "terminal_experience_only"
   },
@@ -24,7 +24,7 @@
     ],
     "fixed_permission_profile": ":danger-full-access",
     "pinned_frontend_update_prompt": "disabled",
-    "stock_frontend_limit": "codex-cli 0.155.0 has no remote slash-command allowlist; fixed unsupported commands remain client-visible and are rejected without execution",
+    "stock_frontend_limit": "codex-cli 0.163.0 has no remote slash-command allowlist; fixed unsupported commands remain client-visible and are rejected without execution",
     "complete_filtering_requires": "an RPNH-patched Codex TUI",
     "permission_meaning": "Wire compatibility only. Registry grants, owner policy and runtime isolation remain authoritative."
   },
@@ -36,6 +36,7 @@
   "implemented_methods": [
     "initialize",
     "account/read",
+    "account/bedrock/checkGovCloudRequirements",
     "model/list",
     "configRequirements/read",
     "config/read",
@@ -48,6 +49,8 @@
     "permissionProfile/list",
     "thread/start",
     "thread/resume",
+    "thread/goal/get",
+    "thread/unsubscribe",
     "thread/loaded/list",
     "thread/list",
     "thread/read",
@@ -82,7 +85,8 @@
       "tests/test_codex_compat.py",
       "tests/test_frontend_boundary.py",
       "tests/test_codex_history.py",
-      "tests/test_codex_0161_candidate.py"
+      "tests/test_codex_0161_candidate.py",
+      "tests/test_codex_0163_current.py"
     ],
     "live_provider_calls": false
   },
@@ -110,9 +114,16 @@
     "native_client_certification": "separate version-pinned runtime gate"
   },
   "compatibility_profiles": {
-    "default": "pinned-0.155.0",
+    "default": "pinned-0.163.0",
     "selection": "Explicit local keyword only. No environment, version-range, initialize-selected or automatic candidate selection.",
     "profiles": {
+      "pinned-0.163.0": {
+        "version": "0.163.0",
+        "reported_cli_version": "codex-cli 0.163.0",
+        "object_item_cursor": true,
+        "explicit_history_defaults": true,
+        "status": "PINNED_PARTIAL_COMPATIBILITY"
+      },
       "pinned-0.155.0": {
         "version": "0.155.0",
         "reported_cli_version": "codex-cli 0.155.0",

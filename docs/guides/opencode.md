@@ -6,9 +6,9 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: opencode_ZH.md
-  revision: "2026-10-08.1"
+  revision: "2026-10-19.1"
   status: locally-validated-integration-candidate
-  upstream-version: "1.18.32"
+  upstream-version: "1.19.3"
 ---
 
 # OpenCode frontend
@@ -25,19 +25,26 @@ workspaces, tools, independent tasks, Designer workflows, checkpoints and termin
 proof. The compatibility layer neither imports upstream runtime code nor starts
 an OpenCode server/provider/tool loop.
 
-This remains an integration candidate rather than a published release. Local
-acceptance covers the complete harness checkout, real Registry paths, an
-out-of-source wheel, the pinned real TUI against a provider-free application
-double, and one separately authorized exact-model turn through that TUI. See the
-[validation record](examples-validation.md) for the result and its content-level
-warning.
+The current exact target is **opencode-ai 1.19.3**, the public npm `latest`
+and GitHub stable release checked on **2026-10-19**. This update is validated
+with that actual Linux x64 client on WSL2, without a real provider. Earlier
+wheel/provider results are historical and do not certify this client version.
+See the [current validation record](../validation/opencode-20261019.md).
+Development version 2.0.32 is not a supported stable target.
+
+The stable client mixes legacy session/HTTP/SSE requests with newer `/api/*`
+bootstrap reads. RPNH projects the same profiles, agent and commands into
+location-scoped catalog envelopes. Console organizations, native integrations,
+skills and references remain empty. These read APIs grant no OpenCode execution,
+credential, workspace or recovery authority. The launcher accepts only the exact
+current version; the old 1.18.35 certification candidate has been retired.
 
 ## Prerequisites and entry
 
 Use Linux/WSL2, Python 3.11+, a complete harness checkout, a configured RPNH
-execution profile, and a separately installed trusted **OpenCode 1.18.32** client.
+execution profile, and a separately installed trusted **OpenCode 1.19.3** client.
 The compatibility source is `anomalyco/opencode` commit
-`545f51d26cc39a907d2867492d498d9607ea5fa4` (tag `v1.18.32`). Check `opencode --version`.
+`e3c4eb242585dcd77be1a867391b7c25fd47ce52` (tag `v1.19.3`). Check `opencode --version`.
 The launcher rejects other version strings; it does not download/install the
 client, establish binary provenance, or modify global OpenCode settings.
 
@@ -171,75 +178,51 @@ retain bounded route shapes/statuses, not prompt bodies, headers or arbitrary
 URLs. Unknown outcomes, profile drift, missing owners and unsupported requests
 are explicit errors; none asserts successful execution.
 
-## Explicit candidate certification (test-only)
+## Explicit native offline checks
 
-Production remains pinned to **1.18.32**. The manifest additionally records
-**1.18.35** (`53d1eabb61e21162157817bf677da0a4ad3332e3`) as
-`certification-only`, with production disabled and native G2/G3 `not-run`.
-There is no product CLI, environment-variable or config switch for the candidate.
-The exact immutable profile is explicitly shared by the test's binary probe and
-protocol instance. It changes declared version metadata only; DTOs, execution,
-Registry, provider/model ownership and Petri-net projection are unchanged.
-
-Run the candidate's pure G1 checks without a client, socket, PTY or provider:
-
-```bash
-python -m pytest -q tests/test_opencode_candidate_profiles.py
-```
-
-The packaged schema remains the reviewed source-extracted subset for 1.18.32.
-Both profiles share its DTO checks. Its health response has an old-version
-constant: candidate tests separately check the exact candidate version and bind
-only that version metadata for structural validation. This is not an unchanged
-old health-constant pass, official SDK compilation or stock-client acceptance.
-
-Only after separately authorizing native execution, using an already obtained
-trusted, unmodified Linux binary and preinstalled test dependencies:
+The existing test filenames and `--opencode-certify-*` options are retained, but
+only the current **1.19.3** profile is accepted. There is no production version
+override. Obtain the trusted stock client separately and pass its actual Linux
+ELF executable, not a version-reporting wrapper. Tests use isolated HOME/XDG,
+config, display and temporary directories. They do not install or log in.
 
 ```bash
 python -m pytest -q tests/test_opencode_candidate_native.py \
-  --opencode-certify-version=1.18.35 \
+  --opencode-certify-version=1.19.3 \
   --opencode-certify-binary=/absolute/path/to/opencode \
   --opencode-certify-lane=contract
-# Run separately for the synthetic committed-Registry read smoke:
 python -m pytest -q tests/test_opencode_candidate_native.py \
-  --opencode-certify-version=1.18.35 \
+  --opencode-certify-version=1.19.3 \
   --opencode-certify-binary=/absolute/path/to/opencode \
   --opencode-certify-lane=registry-read
 ```
 
-These are limited smoke scenarios, not complete G2/G3 certification. Without
-explicit options the candidate native cases do not run. Partial options,
-unsupported versions/platforms, missing binaries/dependencies, wrong probe
-output or a deselected requested lane fail rather than silently passing a skip.
-The gates never install, log in, contact a real model or accept a user Registry
-path. Record binary provenance separately: a local hash and version output alone
-do not prove an official release artifact. For the production control, repeat either explicit smoke command with
-`--opencode-certify-version=1.18.32` and the corresponding stock binary. Both
-exact targets are test-only selections; this does not alter the legacy pinned
-PTY test or the production launcher.
+The contract lane exercises actual stock bootstrap, fresh session creation,
+`/rpnh-help`, one prompt, and an SSE-delivered fixture answer with
+`ApplicationDouble`. The Registry lane prepares two committed turns using the
+deterministic fake port, then uses the original application owner to read them
+through `--session` and `--continue`. It checks three PN projections, stable
+message IDs, logical Registry revisions and owner lease exclusion/release.
+Preparation calls are separate from the zero-effect read interval. Full PN
+payloads are checked against RPNH; terminal checks are bounded text observations,
+not screenshots or full-viewport assertions.
 
-G2 uses the original HTTP/SSE protocol and `ApplicationDouble`. G3 prepares two
-committed turns using the existing deterministic fake port, then measures the
-original `FrontendGateway`/`RegistryFrontendApplication` read path with zero new
-fake-port/model/submit/spawn effects. Preparation calls are reported separately.
-Normal gateway ticks and exclusive owner-lease acquire/release remain real.
-Read-only net checks use `/rpnh-net` and the existing projection/filter;
-`/rpnh-tasks` can reconcile links and is excluded from strict read-only measures.
-Picker coverage, forced SSE reconnect and long-history page boundaries remain
-uncovered by these smoke gates. Linux and WSL2 are separately measured targets;
-no native Windows or macOS support is added. Passing evidence never updates the
-manifest's certification state or promotes the default pin.
+Without all explicit native options these lanes do not run. Unknown versions,
+missing dependencies, wrong executable versions and deselected requested lanes
+fail explicitly. Record package/release provenance and actual probe output; the
+test helper performs no task-side file hashes or source-tree acceptance audit.
+The schema is a reviewed source-extracted subset of 1.19.3, not an upstream
+compiled SDK validator. These are limited native smoke checks, not all-feature
+certification. Live providers, native tools/plugins, picker matrices, forced SSE
+reconnect, long-history pagination and active-worker recovery remain outside them.
 
 ## Verification and implementation map
 
 ```bash
-python -m pytest -q tests/test_opencode*.py
-# Full existing tests, only from the complete harness checkout:
-python -m pytest -q
-# Full wheel, installed outside the source tree, using already available dependencies:
-WORK=$(mktemp -d)
-python tools/check_opencode_wheel.py --work-dir "$WORK/wheel"
+python -m pytest -q tests/test_opencode_frontend.py \
+  tests/test_opencode_current_protocol.py tests/test_opencode_candidate_profiles.py \
+  tests/test_opencode_candidate_gate_support.py tests/test_opencode_application_boundary.py \
+  tests/test_opencode_cli.py tests/test_opencode_registry_integration.py
 ```
 
 The optional PTY test runs only with an installed fixed-version client and uses
@@ -247,7 +230,6 @@ an in-process fake application, never a real provider. It requires actual
 bootstrap routes, a read-only command and one prompt submission, and saves
 first-failure terminal/route evidence in the test's temporary directory. Do not
 convert its skip into PASS.
-The wheel verifier refuses changes-only sources and uses no-index/no-deps.
 
 `cpn/rpnh_cli.py` selects the frontend; `cpn/rpnh/frontend_application.py`
 provides neutral application ownership; `cpn/frontend/opencode_protocol.py`
@@ -257,7 +239,7 @@ the source-extracted SDK subset. No upstream source checkout is bundled.
 
 The fixture is a reviewed subset, not upstream generator output or evidence that
 the upstream SDK/TUI was executed. Source references are the pinned generated
-SDK types/client, TUI `context/sync.tsx`, `context/project.tsx`, prompt component,
+SDK types/client, TUI `context/sync.tsx`, `context/data.tsx`, `context/project.tsx`, prompt component,
 attach command and TUI/core configuration flags. Review them again before changing
 the version pin. The non-site `docs/validation/` record contains actual local
 results and remaining gates.

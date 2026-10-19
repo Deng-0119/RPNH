@@ -6,6 +6,8 @@ from collections.abc import Mapping
 LEGACY_DSH_REVISION = 'ddefc45fbc7f8e46dd73185e68295696d1297887'
 CANDIDATE_DSH_REVISION = '5badb15009ae1756c3afe0ae0cef1faafc290ccc'
 
+CURRENT_DSH_REVISION = '687f282e8625c6b8d11ff58211a90524be2e4317'
+
 
 class DshCodecError(ValueError):
     """A selected message does not satisfy its explicitly named dialect."""
@@ -14,7 +16,7 @@ class DshCodecError(ValueError):
 def dialect_for_revision(revision):
     if revision == LEGACY_DSH_REVISION:
         return 3
-    if revision == CANDIDATE_DSH_REVISION:
+    if revision in (CANDIDATE_DSH_REVISION, CURRENT_DSH_REVISION):
         return 4
     raise DshCodecError('unsupported exact DSH revision')
 

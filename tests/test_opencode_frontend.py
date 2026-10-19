@@ -451,8 +451,8 @@ def test_environment_strips_provider_and_global_settings(tmp_path):
     assert source["OPENCODE_CONFIG"] == "/private/config"
 
 
-@pytest.mark.parametrize("stdout,code,success", [("1.18.32\n", 0, True), ("opencode 1.18.32\n", 0, True),
-    ("1.18.33\n", 0, False), ("1.18.32+modified", 0, False), ("1.18.32", 1, False)])
+@pytest.mark.parametrize("stdout,code,success", [("1.19.3\n", 0, True), ("opencode 1.19.3\n", 0, True),
+    ("1.18.33\n", 0, False), ("1.19.3+modified", 0, False), ("1.19.3", 1, False)])
 def test_exact_version_probe(tmp_path, monkeypatch, stdout, code, success):
     monkeypatch.setattr(subprocess, "run", lambda *a, **k: NS(stdout=stdout, returncode=code))
     if success:

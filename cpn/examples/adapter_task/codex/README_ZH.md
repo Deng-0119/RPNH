@@ -1,9 +1,12 @@
-# Codex 0.155.0 宿主
+# Codex 0.163.0 宿主
 
 [English](README.md) | 中文
 
-安装精确的 `codex-cli 0.155.0`，并选择一个已授权 profile。启动前端本身不会调用模型；
+安装精确的 `codex-cli 0.163.0`，并选择一个已授权 profile。启动前端本身不会调用模型；
 提交 `task.txt` 会启动一个逻辑主会话 turn：
+
+下图保留自早期 0.155.0 验收运行；当前前端验证另见
+`docs/validation/frontends-20261019_ZH.md`，不将旧图计作新版实验。
 
 下图是 Codex 验收运行已结算后的实际 PetriNet，展示 Codex 展示层背后由 RPNH 管理的执行层。
 

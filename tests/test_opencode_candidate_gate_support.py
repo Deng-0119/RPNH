@@ -50,7 +50,7 @@ def configured(**options):
 
 
 def explicit_config():
-    return configured(version="1.18.35", binary="/not-executed/opencode", lane="contract")
+    return configured(version="1.19.3", binary="/not-executed/opencode", lane="contract")
 
 
 def report_hook(item, report, exc=None):
@@ -62,8 +62,8 @@ def report_hook(item, report, exc=None):
 
 
 @pytest.mark.parametrize("options", [
-    {"version": "1.18.35"}, {"binary": "/opencode"}, {"lane": "contract"},
-    {"version": "1.18.35", "binary": "/opencode"},
+    {"version": "1.19.3"}, {"binary": "/opencode"}, {"lane": "contract"},
+    {"version": "1.19.3", "binary": "/opencode"},
     {"version": "", "binary": "/opencode", "lane": "contract"},
 ])
 def test_partial_options_are_blocked(options):
@@ -138,7 +138,7 @@ def test_only_passed_call_marks_requested_scenario_completed():
 def test_successful_call_without_terminal_evidence_is_not_a_pass(tmp_path):
     config = explicit_config()
     item = Item(config, "contract")
-    run = CandidateRun(tmp_path, "1.18.35", "/not-executed/opencode", "contract")
+    run = CandidateRun(tmp_path, "1.19.3", "/not-executed/opencode", "contract")
     run.evidence["status"] = "running"
     item.funcargs["opencode_candidate"] = run
     report = NS(skipped=False, failed=False, passed=True, when="call", outcome="passed")
@@ -151,7 +151,7 @@ def test_successful_call_without_terminal_evidence_is_not_a_pass(tmp_path):
 def test_failed_call_phase_evidence_is_terminal_and_sanitized(tmp_path):
     config = explicit_config()
     item = Item(config, "contract")
-    run = CandidateRun(tmp_path, "1.18.35", "/not-executed/opencode", "contract")
+    run = CandidateRun(tmp_path, "1.19.3", "/not-executed/opencode", "contract")
     run.evidence["status"] = "running"
     run.evidence["stage"] = "fake-call-phase"
     password = "session-password-example"
@@ -176,7 +176,7 @@ def test_late_failure_or_skip_overwrites_already_written_pass(tmp_path, phase, s
     config = explicit_config()
     config._opencode_candidate_completed = True
     item = Item(config, "contract")
-    run = CandidateRun(tmp_path, "1.18.35", "/not-executed/opencode", "contract")
+    run = CandidateRun(tmp_path, "1.19.3", "/not-executed/opencode", "contract")
     run.evidence["status"] = "passed-limited-smoke"
     run.evidence["stage"] = "fake-late-report"
     run.write_evidence()
@@ -223,7 +223,7 @@ def test_missing_preinstalled_dependency_blocks_before_any_execution(tmp_path, m
     monkeypatch.setattr("opencode_candidate_support.subprocess.Popen", forbidden)
     monkeypatch.setattr("opencode_candidate_support.importlib.import_module", dependency)
     monkeypatch.setattr("opencode_candidate_support.sys.platform", "linux")
-    run = CandidateRun(tmp_path, "1.18.35", "/not-executed/opencode", "contract")
+    run = CandidateRun(tmp_path, "1.19.3", "/not-executed/opencode", "contract")
     with pytest.raises(RuntimeError, match="BLOCKED.*numpy"):
         run.prepare()
     assert run.evidence["status"] == "blocked"
@@ -258,19 +258,19 @@ def test_only_exact_registered_gate_versions(version):
 
 def test_gate_control_does_not_become_certification_candidate():
     from cpn.frontend.opencode_protocol import DEFAULT_PROFILE
-    assert select_profile("1.18.32") is DEFAULT_PROFILE
-    assert select_profile("1.18.35").certification_only is True
+    assert select_profile("1.19.3") is DEFAULT_PROFILE
+    assert select_profile("1.19.3").certification_only is False
 
 
 @pytest.mark.parametrize("raw", [b"1.18.32", b"1.18.35-beta", b"opencode\n1.18.35",
                                  b"1.18.35\nextra", b"\xff1.18.35", b"x" * 4097])
 def test_stored_probe_rejects_forged_or_ambiguous_output(raw):
-    assert not valid_probe_stdout(raw, "1.18.35")
+    assert not valid_probe_stdout(raw, "1.19.3")
 
 
-@pytest.mark.parametrize("raw", [b"1.18.35\n", b"opencode 1.18.35\n", b"opencode\t1.18.35"])
+@pytest.mark.parametrize("raw", [b"1.19.3\n", b"opencode 1.19.3\n", b"opencode\t1.19.3"])
 def test_stored_probe_accepts_only_exact_single_line_version(raw):
-    assert valid_probe_stdout(raw, "1.18.35")
+    assert valid_probe_stdout(raw, "1.19.3")
 
 
 def test_effect_guard_and_diagnostic_terminal_text_are_pure():

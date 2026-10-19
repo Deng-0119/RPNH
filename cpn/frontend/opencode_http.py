@@ -73,7 +73,9 @@ class _Server(ThreadingHTTPServer):
                  "/path", "/project/current", "/project/rpnh/directories", "/global/event", "/global/health",
                  "/global/config", "/agent", "/command", "/lsp", "/mcp", "/formatter", "/vcs", "/permission", "/question",
                  "/experimental/workspace", "/experimental/workspace/status", "/experimental/resource",
-                 "/experimental/capabilities", "/experimental/console"}
+                 "/experimental/capabilities", "/experimental/console",
+                 "/api/location", "/api/agent", "/api/provider", "/api/model",
+                 "/api/command", "/api/integration", "/api/skill", "/api/reference"}
         session_route = re.fullmatch(r"/session/:session(?:/(?:message|prompt_async|abort|command|todo|diff|children))?", path)
         route = path if path in known or session_route else "unsupported"
         with self.diagnostic_lock:

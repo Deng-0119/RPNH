@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: troubleshooting_ZH.md
-  revision: "2026-09-29.3"
+  revision: "2026-10-19.1"
   status: source-reviewed-v0.1.0rc1
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -22,7 +22,7 @@ Record the distribution/source revision, frontend, exact profile identity, comma
 |---|---|---|
 | `rpnh` missing or wrong package imported | Active environment, installed entry point, `cpn.__file__` outside checkout | Reinstall the approved artifact in a clean environment; do not delete run data |
 | `init`, `doctor`, `plugins`, `examples`, or frontend `auto` unrecognized | Whether `rpnh` and imported `cpn` come from the same current unified installation | Reinstall the reviewed wheel/source; do not mix an older executable with current Python modules |
-| Codex version rejection | Exactly `codex-cli 0.155.0`, correct binary | Use the pinned client or explicit basic; this does not change the selected model |
+| Codex version rejection | Exactly `codex-cli 0.163.0`, correct binary | Use the pinned client or explicit basic; this does not change the selected model |
 | Codex resume reports `persisted_profile_unavailable` | The exact profile recorded by the omitted thread is still installed and selectable | Restore that exact user-owned profile, then resume again; RPNH does not switch models and does not rewrite the thread Registry |
 | No profile / manifest mismatch | Catalog, execution directory, generated manifest, overrides | Back up catalog and regenerate; do not hand-edit execution files independently |
 | Missing credential variable / `ready` false | Variable name and current process environment, not secret value | Set the approved variable outside version control, recheck offline; no probe yet |

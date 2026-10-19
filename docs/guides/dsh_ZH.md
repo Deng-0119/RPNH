@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: dsh.md
-  revision: "2026-10-03.1"
+  revision: "2026-10-19.1"
   status: source-reviewed-pre-release
 ---
 
@@ -28,6 +28,22 @@ RPNH_PYTHON=$(python -c 'import sys; print(sys.executable)')
 bash integrations/dsh/prepare.sh "$RPNH_PYTHON" /absolute/path/to/deepseek-harness
 bash integrations/dsh/verify.sh /absolute/path/to/deepseek-harness
 ```
+
+当前宿主为上游 `687f282e8625c6b8d11ff58211a90524be2e4317`
+（2026-10-17），root 为 `@deepseek-ai/dsh-root@0.2.1-rc.2`，CLI 为
+`@deepseek-ai/dsh@0.2.1-rc.2`，使用 pnpm `11.28.5`。2026-10-19 核对
+[官方 npm 元数据](https://registry.npmjs.org/@deepseek-ai%2fdsh)：
+`latest=0.2.0-rc.2`、`next=0.2.1-rc.2`、`alpha=0.2.1-alpha.5`。
+默认 npm 安装与最新已发布预发布版本因此不同。
+[该源码提交](https://github.com/deepseek-ai/deepseek-harness/commit/687f282e8625c6b8d11ff58211a90524be2e4317)
+是源码集成目标；仅下载 CLI 包并不提供打补丁后的 factory。本次核对 GitHub 无 latest release。
+
+要求 Node `^22.19.0 || >=24.0.0`（本次验证使用 `22.22.1`）。准备前先在
+checkout 内执行 `pnpm install --frozen-lockfile --ignore-scripts`。共享工作区运行
+验证时应指定隔离的 HOME、cache 和临时目录。`RPNH_DSH_RESULTS` 可指定验证输出
+目录，默认位于上游 checkout 的 `rpnh-results`。验证实际加载上游 AgentLoop factory、
+Session、LlmRuntime、ToolRuntime 与 headless runner，响应由本地确定性替身提供。
+这是源码宿主验证，不代表 desktop/browser UI 或远程 provider 已验收。
 
 准备脚本核验固定 revision，并应用 RPNH backend 所需的窄 factory seam；它不会把凭据
 复制进仓库。
@@ -76,6 +92,11 @@ catalog 和绝对路径 `--managed-bindings` 文档。该文档使用
 schema；它不会隐式放开外部 effect。
 
 ## 恢复边界
+
+当前会话使用上游 V4 独立 tool 消息。codec 保留旧 V3 与此前已检查 V4 revision
+的只读解码。执行及恢复要求原始精确 revision；升级宿主不会迁移、改写版本标识或
+重开旧会话执行。旧会话须保留原受支持宿主。workspace 与 checkpoint 的唯一权威
+仍为 RPNH。
 
 宿主可以重新连接持久化的 RPNH 状态，但不能自行判断未确认的物理 provider 提交是否完成。
 除非共享 provider adapter 能够 reconciliation，否则该 attempt 保持

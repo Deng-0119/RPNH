@@ -6,9 +6,9 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: index_ZH.md
-  revision: "2026-10-13.3"
+  revision: "2026-10-19.1"
   status: source-reviewed
-  basis: "public source b16ecce83ba603b3c15f1c770bce172d4f44f88e; not a new runtime validation"
+  basis: "current source; dated validation records retain their own scopes"
 ---
 
 [English](index.md) | [中文](index_ZH.md)
@@ -21,6 +21,9 @@ RPNH uses Registry and PetriNet together to declare, execute, inspect and reuse
 agent work. Start with one small run, then choose the guide for your next task.
 These pages describe the selected public source; dated results identify the
 older exact revisions they tested.
+
+Current optional client versions and validation:
+[Codex, DSH and OpenCode — 2026-10-19](validation/frontends-20261019.md).
 
 ## New to RPNH?
 

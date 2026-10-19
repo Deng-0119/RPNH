@@ -265,11 +265,14 @@ workspace settlement, execution nets and workflow revision.
 
 ## Frontends and host integrations
 
+Current version selection and offline validation:
+[2026-10-19 frontend compatibility](docs/validation/frontends-20261019.md).
+
 | Entry | Purpose |
 |---|---|
 | `rpnh --frontend basic` | Built-in terminal for the main session and independent task controls |
-| `rpnh --frontend codex` | Pinned Codex presentation; see the [adapter guide](docs/guides/adapters.md) |
-| `rpnh --frontend opencode` | OpenCode 1.18.32 presentation; see the [OpenCode guide](docs/guides/opencode.md) |
+| `rpnh --frontend codex` | Codex 0.163.0 presentation; see the [adapter guide](docs/guides/adapters.md) |
+| `rpnh --frontend opencode` | OpenCode 1.19.3 presentation; see the [OpenCode guide](docs/guides/opencode.md) |
 | `rpnh-dsh` | Optional pinned DSH host integration; see the [DSH guide](docs/guides/dsh.md) |
 
 Basic, Codex and OpenCode are sequential presentations of one direct MainSession

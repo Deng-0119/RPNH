@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: installation_ZH.md
-  revision: "2026-10-07.1"
+  revision: "2026-10-19.1"
   status: source-candidate-not-published
   basis: "unified main; host differences explicitly labelled"
 ---
@@ -100,13 +100,13 @@ or a substitute for validating the user's own route.
 | Surface | What must be present | Entry and current limitation |
 |---|---|---|
 | Built-in terminal | Approved unified Python package | `rpnh --frontend basic`; a selected model is still required for conversation |
-| Codex presentation | Unified package plus exactly `codex-cli 0.155.0` | `rpnh --frontend codex`; TUI compatibility is version-specific |
-| OpenCode presentation | Unified package plus exactly OpenCode `1.18.32` | `rpnh --frontend opencode`; explicit only, Linux/WSL2 only, and UI metrics are unavailable |
+| Codex presentation | Unified package plus exactly `codex-cli 0.163.0` | `rpnh --frontend codex`; TUI compatibility is version-specific |
+| OpenCode presentation | Unified package plus exactly OpenCode `1.19.3` | `rpnh --frontend opencode`; explicit only, Linux/WSL2 only, and UI metrics are unavailable |
 | Plugins, onboarding and examples | Approved unified Python package | `rpnh plugins`, `rpnh init`, `rpnh doctor`, and `rpnh examples`; local checks and export do not call a model |
 | Managed DSH | Unified package, bundled `integrations/dsh`, pinned upstream checkout and toolchain | `rpnh-dsh`; explicit offline numeric or shared configured text mode |
 | Coexistence | One unified source/wheel with applicable optional hosts | Do not overlay multiple same-name wheels in one environment |
 
-The unified main defaults to `auto`: in an interactive terminal it uses compatible Codex `0.155.0` when available, otherwise it uses the built-in terminal; non-interactive use selects the built-in terminal. Select `--frontend basic`, `codex`, or `opencode` explicitly when that surface is required. See [adapters](adapters.md), [OpenCode](opencode.md), or the DSH guide before using an optional host. The read-only Viewer and its packaged assets are part of this same unified distribution; it is not a separate execution backend.
+The unified main defaults to `auto`: in an interactive terminal it uses compatible Codex `0.163.0` when available, otherwise it uses the built-in terminal; non-interactive use selects the built-in terminal. Select `--frontend basic`, `codex`, or `opencode` explicitly when that surface is required. See [adapters](adapters.md), [OpenCode](opencode.md), or the DSH guide before using an optional host. The read-only Viewer and its packaged assets are part of this same unified distribution; it is not a separate execution backend.
 
 ## Verification, update and removal
 Installation is successful only after the installed command, packaged schemas/config/static/example assets and the zero-model configuration flow work outside the checkout. A successful editable install or passing link check is insufficient. Viewer wheel validation requires the complete pinned vendor-file set and license files; an empty or self-reduced asset manifest cannot waive them. This documentation batch records wheel verification separately from its static-site checks.

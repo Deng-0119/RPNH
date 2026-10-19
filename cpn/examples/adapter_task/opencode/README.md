@@ -1,10 +1,13 @@
-# OpenCode 1.18.32 host
+# OpenCode 1.19.3 host
 
 English | [中文](README_ZH.md)
 
-Install exact OpenCode 1.18.32 and select one authorized profile. Starting the
+Install exact OpenCode 1.19.3 and select one authorized profile. Starting the
 frontend sends no model request; submitting `task.txt` starts one logical
 main-session turn:
+
+The retained figure below comes from the earlier 1.18.32 acceptance run;
+current frontend validation is documented in `docs/validation/frontends-20261019.md`.
 
 This is the actual settled PetriNet from the successful replacement acceptance
 run. It shows the RPNH-owned execution layer behind the OpenCode presentation,

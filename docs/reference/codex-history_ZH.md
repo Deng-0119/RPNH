@@ -1,12 +1,12 @@
 ---
 name: rpnh-codex-history
-description: "Codex 0.155 owner 会话固定 cut 历史投影。"
+description: "Codex 0.163 owner 会话固定 cut 历史投影。"
 metadata:
   document-kind: reference
   audience: trusted-host-developer
   language: zh-CN
   counterpart: codex-history.md
-  revision: "2026-10-08.1"
+  revision: "2026-10-19.1"
   status: partial-frontend-compatibility
 ---
 
@@ -14,9 +14,10 @@ metadata:
 
 # Codex owner 历史
 
-支持版本仍为 **Codex 0.155.0**。thread/turns/list 与 thread/items/list 从 basic
+当前版本为 **Codex 0.163.0**。thread/turns/list 与 thread/items/list 从 basic
 主会话同一个 MainThreadRegistry 分页；state.turns 仅保留原 live reconciliation
-缓存职责，不作为历史 authority。0.161 官方 schema 仅用于研究，不构成运行认证或换 pin。
+缓存职责，不作为历史 authority。旧 0.155 和 0.161 profile 保留显式测试入口，
+普通 launcher 选择 0.163.0。范围见[本次验证](../validation/frontends-20261019_ZH.md)。
 
 ## 原有 owner 权限边界
 
@@ -85,6 +86,6 @@ stock Rust客户端实际以UUID解析threadId，JSON schema却只标string。Co
 turn/item ID复用live命名空间与真实native ordinal，保留failed/interrupted序号间隙；
 terminal notification与cold items的ID一致，不按committed列表重排。
 
-0.161新增exclusive的object item anchor（{type:"item",itemId:...}）、可选item毫秒时间戳
-与resume可选字段。当前0.155 adapter拒绝新版输入形状。真实stock0.155 cold resume仍是
-单独native gate；纯JSON/Registry测试不能证明transport/TUI已通过。
+当前 0.163 profile 支持 0.161 引入的 exclusive object item anchor
+（{type:"item",itemId:...}）、可选 item 毫秒时间戳和显式 resume 默认字段。
+旧 0.155 profile 仍拒绝新版输入形状。原生客户端检查与纯 JSON/Registry 检查分开报告。

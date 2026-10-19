@@ -26,7 +26,7 @@ def request(session='s1', request_id='q1', allow=True, tools=None):
             'route':{'provider':'rpnh-offline','model':'deterministic-v1'},
             'messages':[{'role':'user','id':request_id,'source':{'kind':'user'},'content':[{'type':'text','text':'sum'}]}],
             'policy':{'allow_request':allow,'tools':['read_dataset','sum_values'] if tools is None else tools},
-            'data':[2,3,7], 'header':{'id':session,'version':3,'createdAt':0,'isSeeded':False}}
+            'data':[2,3,7], 'header':{'id':session,'version':4,'createdAt':0,'isSeeded':False}}
 
 
 class PhysicalCounter:
@@ -46,8 +46,8 @@ class PhysicalCounter:
             call=args['call']; value=args['data'] if call['name']=='read_dataset' else sum(call['arguments']['values'])
             content=[{'type':'text','text':json.dumps(value)}]
             v={'value':value,'isError':False,'content':content,
-               'message':{'id':f"result-{call['id']}",'role':'user','source':{'kind':'tool','callId':call['id']},
-                          'content':[{'type':'tool-result','toolCallId':call['id'],'content':content,'isError':False}]}}
+               'message':{'id':f"result-{call['id']}",'role':'tool','source':{'kind':'tool','callId':call['id']},
+                          'toolCallId':call['id'],'content':content,'isError':False}}
         return {'ticket':ticket,'value':v}
 
 
@@ -337,7 +337,7 @@ class ManagedConfiguredEffect:
                         }]
                     messages.append(value)
                 elif message.get('source', {}).get('kind') == 'tool':
-                    result = message['content'][0]
+                    result = message
                     assert pending is not None
                     messages.append({
                         'role': 'tool', 'tool_call_id': pending['id'],
@@ -1045,16 +1045,14 @@ def test_configured_managed_tool_future_frame_is_denied_before_worker(
             }],
         }
         result = {
-            'id': 'result-call-double', 'role': 'user',
+            'id': 'result-call-double', 'role': 'tool',
             'source': {'kind': 'tool', 'callId': 'call-double'},
+            'toolCallId': 'call-double',
             'content': [{
-                'type': 'tool-result', 'toolCallId': 'call-double',
-                'content': [{
-                    'type': 'text',
-                    'text': '\\' * MAX_MANAGED_TOOL_RESULT_BYTES,
-                }],
-                'isError': False,
+                'type': 'text',
+                'text': '\\' * MAX_MANAGED_TOOL_RESULT_BYTES,
             }],
+            'isError': False,
         }
         if not backend._configured_frame_budget_fits(
                 route=route, messages=[*messages, assistant, result],

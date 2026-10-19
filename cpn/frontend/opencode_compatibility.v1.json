@@ -3,38 +3,20 @@
     "status": "source-extracted-subset-not-upstream-generator-output",
     "upstream": {
         "repository": "anomalyco/opencode",
-        "commit": "545f51d26cc39a907d2867492d498d9607ea5fa4",
-        "package_version": "1.18.32",
+        "commit": "e3c4eb242585dcd77be1a867391b7c25fd47ce52",
+        "package_version": "1.19.3",
         "paths": [
             "packages/sdk/js/src/v2/gen/types.gen.ts",
             "packages/sdk/js/src/v2/gen/sdk.gen.ts",
             "packages/tui/src/context/sync.tsx",
             "packages/tui/src/context/project.tsx",
-            "packages/tui/src/component/prompt/index.tsx"
+            "packages/tui/src/component/prompt/index.tsx",
+            "packages/opencode/src/cli/cmd/attach.ts",
+            "packages/tui/src/context/data.tsx",
+            "packages/sdk/js/src/v2/gen/client/utils.gen.ts"
         ]
     },
-    "certification_candidates": [
-        {
-            "package_version": "1.18.35",
-            "commit": "53d1eabb61e21162157817bf677da0a4ad3332e3",
-            "status": "certification-only",
-            "production_enabled": false,
-            "contract_source_commit": "545f51d26cc39a907d2867492d498d9607ea5fa4",
-            "shared_contract_evidence": {
-                "kind": "complete-git-subtree-blob-equality",
-                "scope": "packages/sdk/js/src/",
-                "files_compared": 39,
-                "identical_blobs": 39,
-                "default_tree_url": "https://github.com/anomalyco/opencode/tree/545f51d26cc39a907d2867492d498d9607ea5fa4/packages/sdk/js/src",
-                "candidate_tree_url": "https://github.com/anomalyco/opencode/tree/53d1eabb61e21162157817bf677da0a4ad3332e3/packages/sdk/js/src",
-                "sdk_gen_blob": "a2bcd4252c6d8a185469dcda23a8cccc819218f0",
-                "types_gen_blob": "f06c20cc413e95c79f397a34d8d9d3e8871b6ab4",
-                "limits": "Source equality only; not compiled SDK validation or native certification."
-            },
-            "native_g2": "not-run",
-            "native_g3": "not-run"
-        }
-    ],
+    "certification_candidates": [],
     "permission": "unavailable",
     "attachments": "unavailable",
     "catalog": "all selectable RPNH profiles; exact provider/model remains RPNH-owned",
@@ -559,6 +541,333 @@
                 "info",
                 "parts"
             ]
+        },
+        "LocationInfo": {
+            "type": "object",
+            "properties": {
+                "directory": {
+                    "type": "string"
+                },
+                "project": {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "string"
+                        },
+                        "directory": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "id",
+                        "directory"
+                    ]
+                }
+            },
+            "required": [
+                "directory",
+                "project"
+            ]
+        },
+        "ProviderRequest": {
+            "type": "object",
+            "properties": {
+                "headers": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "body": {
+                    "type": "object"
+                }
+            },
+            "required": [
+                "headers",
+                "body"
+            ]
+        },
+        "NativeApi": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "const": "native"
+                },
+                "settings": {
+                    "type": "object"
+                }
+            },
+            "required": [
+                "type",
+                "settings"
+            ]
+        },
+        "ModelRef": {
+            "type": "object",
+            "properties": {
+                "providerID": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "variant": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "providerID",
+                "id"
+            ]
+        },
+        "AgentV2Info": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "model": {
+                    "$ref": "#/$defs/ModelRef"
+                },
+                "request": {
+                    "$ref": "#/$defs/ProviderRequest"
+                },
+                "mode": {
+                    "enum": [
+                        "subagent",
+                        "primary",
+                        "all"
+                    ]
+                },
+                "hidden": {
+                    "type": "boolean"
+                },
+                "permissions": {
+                    "type": "array",
+                    "items": {
+                        "type": "object"
+                    }
+                }
+            },
+            "required": [
+                "id",
+                "request",
+                "mode",
+                "hidden",
+                "permissions"
+            ]
+        },
+        "ProviderV2Info": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "api": {
+                    "$ref": "#/$defs/NativeApi"
+                },
+                "request": {
+                    "$ref": "#/$defs/ProviderRequest"
+                }
+            },
+            "required": [
+                "id",
+                "name",
+                "api",
+                "request"
+            ]
+        },
+        "ModelV2Info": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "providerID": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "api": {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "string"
+                        },
+                        "type": {
+                            "const": "native"
+                        },
+                        "settings": {
+                            "type": "object"
+                        }
+                    },
+                    "required": [
+                        "id",
+                        "type",
+                        "settings"
+                    ]
+                },
+                "capabilities": {
+                    "type": "object",
+                    "properties": {
+                        "tools": {
+                            "type": "boolean"
+                        },
+                        "input": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "output": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "required": [
+                        "tools",
+                        "input",
+                        "output"
+                    ]
+                },
+                "request": {
+                    "$ref": "#/$defs/ProviderRequest"
+                },
+                "variants": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "headers": {
+                                "type": "object"
+                            },
+                            "body": {
+                                "type": "object"
+                            }
+                        },
+                        "required": [
+                            "id",
+                            "headers",
+                            "body"
+                        ]
+                    }
+                },
+                "time": {
+                    "type": "object",
+                    "properties": {
+                        "released": {
+                            "type": "number"
+                        }
+                    },
+                    "required": [
+                        "released"
+                    ]
+                },
+                "cost": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "input": {
+                                "type": "number"
+                            },
+                            "output": {
+                                "type": "number"
+                            },
+                            "cache": {
+                                "type": "object",
+                                "properties": {
+                                    "read": {
+                                        "type": "number"
+                                    },
+                                    "write": {
+                                        "type": "number"
+                                    }
+                                },
+                                "required": [
+                                    "read",
+                                    "write"
+                                ]
+                            }
+                        },
+                        "required": [
+                            "input",
+                            "output",
+                            "cache"
+                        ]
+                    }
+                },
+                "status": {
+                    "enum": [
+                        "alpha",
+                        "beta",
+                        "deprecated",
+                        "active"
+                    ]
+                },
+                "enabled": {
+                    "type": "boolean"
+                },
+                "limit": {
+                    "type": "object",
+                    "properties": {
+                        "context": {
+                            "type": "number"
+                        },
+                        "output": {
+                            "type": "number"
+                        }
+                    },
+                    "required": [
+                        "context",
+                        "output"
+                    ]
+                }
+            },
+            "required": [
+                "id",
+                "providerID",
+                "name",
+                "api",
+                "capabilities",
+                "request",
+                "variants",
+                "time",
+                "cost",
+                "status",
+                "enabled",
+                "limit"
+            ]
+        },
+        "CommandV2Info": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "template": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "agent": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "name",
+                "template"
+            ]
         }
     },
     "responses": {
@@ -749,12 +1058,159 @@
                     "const": true
                 },
                 "version": {
-                    "const": "1.18.32"
+                    "const": "1.19.3"
                 }
             },
             "required": [
                 "healthy",
                 "version"
+            ]
+        },
+        "/experimental/console": {
+            "type": "object",
+            "properties": {
+                "consoleManagedProviders": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "switchableOrgCount": {
+                    "type": "number"
+                }
+            },
+            "required": [
+                "consoleManagedProviders",
+                "switchableOrgCount"
+            ]
+        },
+        "/api/location": {
+            "$ref": "#/$defs/LocationInfo"
+        },
+        "/api/agent": {
+            "type": "object",
+            "properties": {
+                "location": {
+                    "$ref": "#/$defs/LocationInfo"
+                },
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/AgentV2Info"
+                    }
+                }
+            },
+            "required": [
+                "location",
+                "data"
+            ]
+        },
+        "/api/provider": {
+            "type": "object",
+            "properties": {
+                "location": {
+                    "$ref": "#/$defs/LocationInfo"
+                },
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/ProviderV2Info"
+                    }
+                }
+            },
+            "required": [
+                "location",
+                "data"
+            ]
+        },
+        "/api/model": {
+            "type": "object",
+            "properties": {
+                "location": {
+                    "$ref": "#/$defs/LocationInfo"
+                },
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/ModelV2Info"
+                    }
+                }
+            },
+            "required": [
+                "location",
+                "data"
+            ]
+        },
+        "/api/command": {
+            "type": "object",
+            "properties": {
+                "location": {
+                    "$ref": "#/$defs/LocationInfo"
+                },
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/CommandV2Info"
+                    }
+                }
+            },
+            "required": [
+                "location",
+                "data"
+            ]
+        },
+        "/api/integration": {
+            "type": "object",
+            "properties": {
+                "location": {
+                    "$ref": "#/$defs/LocationInfo"
+                },
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "type": "object"
+                    }
+                }
+            },
+            "required": [
+                "location",
+                "data"
+            ]
+        },
+        "/api/skill": {
+            "type": "object",
+            "properties": {
+                "location": {
+                    "$ref": "#/$defs/LocationInfo"
+                },
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "type": "object"
+                    }
+                }
+            },
+            "required": [
+                "location",
+                "data"
+            ]
+        },
+        "/api/reference": {
+            "type": "object",
+            "properties": {
+                "location": {
+                    "$ref": "#/$defs/LocationInfo"
+                },
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "type": "object"
+                    }
+                }
+            },
+            "required": [
+                "location",
+                "data"
             ]
         }
     },

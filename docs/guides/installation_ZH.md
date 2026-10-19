@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: installation.md
-  revision: "2026-10-07.1"
+  revision: "2026-10-19.1"
   status: source-candidate-not-published
   basis: "unified main; host differences explicitly labelled"
 ---
@@ -93,13 +93,13 @@ cd "$TEST_ROOT"
 | 范围 | 必需内容 | 入口和当前边界 |
 |---|---|---|
 | 内置终端 | 批准的统一 Python 包 | `rpnh --frontend basic`；对话仍需选择模型 |
-| Codex 展示 | 统一包和精确 `codex-cli 0.155.0` | `rpnh --frontend codex`；兼容性绑定版本 |
-| OpenCode 展示 | 统一包和精确 OpenCode `1.18.32` | `rpnh --frontend opencode`；仅显式选择、仅 Linux/WSL2，且无 UI 指标 |
+| Codex 展示 | 统一包和精确 `codex-cli 0.163.0` | `rpnh --frontend codex`；兼容性绑定版本 |
+| OpenCode 展示 | 统一包和精确 OpenCode `1.19.3` | `rpnh --frontend opencode`；仅显式选择、仅 Linux/WSL2，且无 UI 指标 |
 | 插件、引导与案例 | 批准的统一 Python 包 | `rpnh plugins`、`rpnh init`、`rpnh doctor`、`rpnh examples`；本地检查和导出不调用模型 |
 | 托管 DSH | 统一包、内含 `integrations/dsh`、固定上游及工具链 | `rpnh-dsh`；显式离线数值或共享配置文本模式 |
 | 共存 | 统一源码/wheel，加所需可选宿主 | 不要在同一环境覆盖安装多份同名 wheel |
 
-统一 main 默认使用 `auto`：在交互式终端中，找到兼容的 Codex `0.155.0` 时使用它，否则使用内置终端；非交互式使用内置终端。需要特定界面时显式选择 `--frontend basic`、`codex` 或 `opencode`。使用可选宿主前阅读[适配指南](adapters_ZH.md)、[OpenCode](opencode_ZH.md)或 DSH 指南。只读 Viewer 及其打包资源属于同一统一发行包，但它不是另一套执行后端。
+统一 main 默认使用 `auto`：在交互式终端中，找到兼容的 Codex `0.163.0` 时使用它，否则使用内置终端；非交互式使用内置终端。需要特定界面时显式选择 `--frontend basic`、`codex` 或 `opencode`。使用可选宿主前阅读[适配指南](adapters_ZH.md)、[OpenCode](opencode_ZH.md)或 DSH 指南。只读 Viewer 及其打包资源属于同一统一发行包，但它不是另一套执行后端。
 
 ## 验证、升级与卸载
 只有已安装命令、包内 schema/config/static/example 资源，以及源码目录外的零模型配置流程均通过，才可称安装验证通过。editable 安装成功或链接检查通过都不足以替代。Viewer wheel 校验要求完整的固定 vendor 文件集合及许可文件；空清单或自行缩减的 asset manifest 不能免除这些文件。本文档批次单独记录 wheel 验证和站点检查。

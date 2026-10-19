@@ -463,6 +463,16 @@ class OpenCodeProtocol:
         directory = query.get("directory", [unquote(headers.get("x-opencode-directory", self.directory))])[0]
         if workspace or directory not in {"", self.directory}:
             raise FrontendError("unsupported_location", "This attach is scoped to its isolated display directory.", 400)
+        if path.startswith("/api/"):
+            # The 1.19.3 SDK serializes LocationQuery with deepObject keys.
+            # It must not select another workspace through the new read APIs.
+            location_keys = {key for key in query if key.startswith("location")}
+            if location_keys - {"location[directory]", "location[workspace]"}:
+                raise FrontendError("unsupported_location", "Unsupported location query.", 400)
+            if (query.get("location[workspace]", [""])[0]
+                    or query.get("location[directory]", [self.directory])[0]
+                    not in {"", self.directory}):
+                raise FrontendError("unsupported_location", "This attach is scoped to its isolated display directory.", 400)
         if method == "GET":
             return self._get_route(path, query)
         if method != "POST":
@@ -573,7 +583,49 @@ class OpenCodeProtocol:
             raise FrontendError("ambiguous_identity", "messageID and Idempotency-Key must agree.", 400)
         return message_id if message_id is not None else header_id
 
+    def _catalog_v2(self, path: str) -> Reply:
+        """1.19.3 DataProvider catalog envelopes; no native runtime authority."""
+        location = {"directory": self.directory,
+                    "project": {"id": "rpnh", "directory": self.directory}}
+        if path == "/api/location":
+            return Reply(200, location)
+        data: list[dict[str, Any]] = []
+        if path == "/api/agent":
+            data = [{"id": "rpnh", "mode": "primary", "hidden": False,
+                     "description": "RPNH-owned execution; OpenCode is presentation only",
+                     "model": {"providerID": "rpnh", "id": self.default_selection},
+                     "request": {"headers": {}, "body": {}}, "permissions": []}]
+        elif path == "/api/provider":
+            data = [{"id": "rpnh", "name": "RPNH profiles",
+                     "api": {"type": "native", "settings": {}},
+                     "request": {"headers": {}, "body": {}}}]
+        elif path == "/api/model":
+            for selection, profile in self.profiles.items():
+                request: dict[str, Any] = {"headers": {}, "body": {}}
+                if profile["default_reasoning_effort"] is not None:
+                    request["variant"] = profile["default_reasoning_effort"]
+                data.append({
+                    "id": selection, "providerID": "rpnh",
+                    "name": f"{profile['model']} ({profile['provider_name']})",
+                    "api": {"id": selection, "type": "native", "settings": {}},
+                    "capabilities": {"tools": False, "input": ["text"], "output": ["text"]},
+                    "request": request,
+                    "variants": [{"id": effort, "headers": {}, "body": {}}
+                                 for effort in profile["supported_reasoning_efforts"]],
+                    "time": {"released": 0}, "cost": [], "status": "active",
+                    "enabled": profile["ready"], "limit": {"context": 0, "output": 0},
+                })
+        elif path == "/api/command":
+            data = [{"name": name, "description": description,
+                     "template": "$ARGUMENTS", "agent": "rpnh"}
+                    for name, description in COMMANDS.items()]
+        # Integration/auth, native skill and resource intake remain unavailable.
+        return Reply(200, {"location": location, "data": data})
+
     def _get_route(self, path: str, query: Mapping[str, list[str]]) -> Reply:
+        if path in {"/api/location", "/api/agent", "/api/provider", "/api/model",
+                    "/api/command", "/api/integration", "/api/skill", "/api/reference"}:
+            return self._catalog_v2(path)
         provider = self._provider()
         defaults = {"rpnh": self.default_selection}
         if path in {"/lsp", "/formatter", "/permission", "/question", "/experimental/workspace", "/experimental/workspace/status"}:
@@ -584,6 +636,10 @@ class OpenCodeProtocol:
             return Reply(200)  # The HTTP transport handles this as SSE.
         if path in {"/global/health", "/health"}:
             return Reply(200, {"healthy": True, "version": self.profile.version})
+        if path == "/experimental/console":
+            # 1.19.3 bootstraps Console metadata. RPNH has no OpenCode-managed
+            # accounts or organizations; account mutations remain unsupported.
+            return Reply(200, {"consoleManagedProviders": [], "switchableOrgCount": 0})
         if path == "/experimental/capabilities":
             return Reply(200, {"backgroundSubagents": False})
         if path == "/path":

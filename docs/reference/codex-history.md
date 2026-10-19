@@ -1,12 +1,12 @@
 ---
 name: rpnh-codex-history
-description: "Owner-bound Codex 0.155 fixed-cut history projection."
+description: "Owner-bound Codex 0.163 fixed-cut history projection."
 metadata:
   document-kind: reference
   audience: trusted-host-developer
   language: en
   counterpart: codex-history_ZH.md
-  revision: "2026-10-08.1"
+  revision: "2026-10-19.1"
   status: partial-frontend-compatibility
 ---
 
@@ -14,11 +14,12 @@ metadata:
 
 # Codex owner history
 
-The supported client remains **Codex 0.155.0**. `thread/turns/list` and
+The current client is **Codex 0.163.0**. `thread/turns/list` and
 `thread/items/list` page the same native MainThreadRegistry authority used by
 the basic main session. `state.turns` is only a live reconciliation cache and
-is not a persisted-history source. Schema fixtures from 0.161.0 are research
-evidence, not certification or permission to change the runtime pin.
+is not a persisted-history source. The exact older 0.155 and 0.161 profiles
+remain explicitly selectable for their existing tests; the normal launcher
+selects 0.163.0. See the [dated validation](../validation/frontends-20261019.md).
 
 ## Existing owner boundary
 
@@ -116,7 +117,7 @@ Turn/item IDs use the existing live namespace and real native ordinal,
 including failed/interrupted gaps. Terminal notifications and cold items
 therefore share IDs rather than reindexing committed turns.
 
-0.161 adds an exclusive object item anchor (`{type: "item", itemId: ...}`),
-optional item timestamps and optional resume fields. The 0.155 adapter rejects
-that newer input shape. Real stock 0.155 cold-resume testing remains a separate
-native gate; pure JSON/Registry tests cannot certify transport or TUI behavior.
+The current 0.163 profile supports the exclusive object item anchor
+(`{type: "item", itemId: ...}`), optional item timestamps and explicit resume
+defaults introduced in 0.161. The legacy 0.155 profile rejects that newer input
+shape. Native client checks and pure JSON/Registry checks are reported separately.

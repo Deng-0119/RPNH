@@ -6,7 +6,7 @@ metadata:
   audience: user-and-developer
   language: en
   counterpart: CHANGELOG_ZH.md
-  revision: "2026-10-07.3"
+  revision: "2026-10-19.1"
   status: v0.1.0rc2-unreleased
 ---
 
@@ -15,6 +15,11 @@ metadata:
 # Changelog
 
 ## Unreleased
+
+- Updated optional frontend targets to Codex 0.163.0, OpenCode 1.19.3 and the
+  DSH 0.2.1-rc.2 source host. Added the current Codex history profile, OpenCode
+  Console discovery and the DSH current message dialect. RPNH retains execution
+  authority; see the dated [compatibility record](docs/validation/frontends-20261019.md).
 
 - Added explicitly selected managed result paging, bounded pure/conflict-domain
   tool scheduling and isolated Python programs using the same owner, permissions,

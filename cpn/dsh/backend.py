@@ -53,7 +53,7 @@ from cpn.rpnh.registry.schema_catalog import SchemaCatalog, canonical_json
 from cpn.rpnh.resource_access import ResourceReadContract
 from cpn.rpnh.run import OwnerInput, start_run, resume_run
 
-REVISION = 'ddefc45fbc7f8e46dd73185e68295696d1297887'
+REVISION = '687f282e8625c6b8d11ff58211a90524be2e4317'
 PROTOCOL = 'rpnh/dsh/v1'
 ENVELOPE = 'application/rpnh_dsh_envelope/v1'
 ENVELOPE_V2 = 'application/rpnh_dsh_envelope/v2'

@@ -1,4 +1,4 @@
-"""Pure G1 checks for explicit, certification-only OpenCode profiles.
+"""Pure checks for the current exact stable OpenCode profile.
 
 These are Python projection tests with ApplicationDouble/LocalGateway and mocked
 version-process results. They open no socket, PTY, native client, or model port.
@@ -34,8 +34,8 @@ from test_opencode_frontend import (
     ApplicationDouble, LocalGateway, MODEL, MODEL_TWO, SID, prompt,
 )
 
-DEFAULT_VERSION = "1.18.32"
-DEFAULT_COMMIT = "545f51d26cc39a907d2867492d498d9607ea5fa4"
+DEFAULT_VERSION = "1.19.3"
+DEFAULT_COMMIT = "e3c4eb242585dcd77be1a867391b7c25fd47ce52"
 CANDIDATE_VERSION = "1.18.35"
 CANDIDATE_COMMIT = "53d1eabb61e21162157817bf677da0a4ad3332e3"
 EFFECTS = {"create_session", "submit", "command", "abort"}
@@ -65,7 +65,7 @@ def no_native_effects(monkeypatch):
             monkeypatch.setattr(os, name, forbidden_boundary)
 
 
-@pytest.fixture(params=[None, CANDIDATE_VERSION], ids=["production", "candidate"])
+@pytest.fixture(params=[None], ids=["production"])
 def profile(request):
     return get_opencode_profile(certification_version=request.param)
 
@@ -81,7 +81,7 @@ def context(tmp_path, profile):
         protocol.close()
 
 
-def test_manifest_is_authoritative_and_default_pin_is_unchanged():
+def test_manifest_records_current_stable_only():
     manifest = _manifest()
     assert manifest["status"] == "source-extracted-subset-not-upstream-generator-output"
     assert get_opencode_profile() is DEFAULT_PROFILE
@@ -93,19 +93,9 @@ def test_manifest_is_authoritative_and_default_pin_is_unchanged():
     assert launcher.OPENCODE_VERSION == DEFAULT_VERSION
     assert inspect.signature(launcher.check_version).parameters["profile"].default is DEFAULT_PROFILE
     assert inspect.signature(OpenCodeProtocol).parameters["profile"].default is DEFAULT_PROFILE
-    candidates = manifest["certification_candidates"]
-    assert len(candidates) == 1
-    candidate = candidates[0]
-    assert candidate["package_version"] == CANDIDATE_VERSION
-    assert candidate["commit"] == CANDIDATE_COMMIT
-    assert candidate["status"] == "certification-only"
-    assert candidate["production_enabled"] is False
-    assert candidate["contract_source_commit"] == DEFAULT_COMMIT
-    assert candidate["native_g2"] == candidate["native_g3"] == "not-run"
-    assert candidate["shared_contract_evidence"]
-    selected = get_opencode_profile(certification_version=CANDIDATE_VERSION)
-    assert selected == OpenCodeCompatibilityProfile(CANDIDATE_VERSION, CANDIDATE_COMMIT, True)
-    assert require_opencode_profile(selected) is selected
+    assert manifest["certification_candidates"] == []
+    with pytest.raises(ValueError):
+        get_opencode_profile(certification_version=CANDIDATE_VERSION)
 
 
 def test_profile_is_frozen_and_protocol_binding_is_read_only(context, profile):
@@ -312,9 +302,9 @@ def test_non_linux_platform_rejected_before_probe_and_owner(tmp_path, monkeypatc
         launcher.run_opencode_frontend(tmp_path / "root", tmp_path / "execution.json")
 
 
-def test_default_and_candidate_instances_are_isolated_without_global_mutation(tmp_path):
+def test_default_instances_are_isolated_without_global_mutation(tmp_path):
     before = (protocol_module.OPENCODE_VERSION, protocol_module.OPENCODE_COMMIT, launcher.OPENCODE_VERSION)
-    selected = get_opencode_profile(certification_version=CANDIDATE_VERSION)
+    selected = get_opencode_profile()
     default = OpenCodeProtocol(LocalGateway(ApplicationDouble()), str(tmp_path / "default"))
     candidate = OpenCodeProtocol(LocalGateway(ApplicationDouble()), str(tmp_path / "candidate"), profile=selected)
     for instance, expected in [(default, DEFAULT_PROFILE), (candidate, selected)]:
@@ -333,7 +323,7 @@ def test_default_and_candidate_instances_are_isolated_without_global_mutation(tm
     default.close()
 
 
-def test_shared_source_extracted_subset_validates_both_profile_projections(context, profile):
+def test_source_extracted_subset_validates_current_projection(context, profile):
     app, protocol = context
     manifest = _manifest()
     assert manifest["status"] == "source-extracted-subset-not-upstream-generator-output"

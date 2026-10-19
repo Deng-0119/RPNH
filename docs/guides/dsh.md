@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: dsh_ZH.md
-  revision: "2026-10-03.1"
+  revision: "2026-10-19.1"
   status: source-reviewed-pre-release
 ---
 
@@ -30,6 +30,26 @@ RPNH_PYTHON=$(python -c 'import sys; print(sys.executable)')
 bash integrations/dsh/prepare.sh "$RPNH_PYTHON" /absolute/path/to/deepseek-harness
 bash integrations/dsh/verify.sh /absolute/path/to/deepseek-harness
 ```
+
+The current host is upstream `687f282e8625c6b8d11ff58211a90524be2e4317`
+(2026-10-17), root `@deepseek-ai/dsh-root@0.2.1-rc.2` and CLI
+`@deepseek-ai/dsh@0.2.1-rc.2`, using pnpm `11.28.5`. On 2026-10-19,
+[official npm metadata](https://registry.npmjs.org/@deepseek-ai%2fdsh)
+reported `latest=0.2.0-rc.2`, `next=0.2.1-rc.2` and
+`alpha=0.2.1-alpha.5`. Thus a default npm install and the newest published
+prerelease select different versions. The [source commit](https://github.com/deepseek-ai/deepseek-harness/commit/687f282e8625c6b8d11ff58211a90524be2e4317)
+is the source integration target; a downloaded CLI package alone does not
+provide the patched factory. GitHub has no latest release for this check.
+
+Use Node `^22.19.0 || >=24.0.0` (tested here with `22.22.1`). Install the
+checkout's dependencies with `pnpm install --frozen-lockfile --ignore-scripts`
+before preparation. Select an isolated HOME, cache and temporary directory
+when running verification in a shared workspace. `RPNH_DSH_RESULTS` overrides
+the verification output directory; its default is `rpnh-results` inside the
+upstream checkout. Verification runs the actual upstream AgentLoop factory,
+Session, LlmRuntime, ToolRuntime and headless runner with deterministic local
+responses. This is a source-host check, not a desktop/browser UI or remote
+provider acceptance test.
 
 Preparation checks the pinned revision and applies the narrow factory seam
 needed by the RPNH backend. It does not copy credentials into the repository.
@@ -87,6 +107,13 @@ plugin's own description and schema; it never implicitly grants external
 effects.
 
 ## Recovery boundary
+
+Current sessions use upstream V4 first-class tool messages. The codec retains
+read-only decoding of the older V3 and previously inspected V4 revisions.
+Execution and resume require the original exact revision; updating the host
+does not migrate, relabel or reopen older sessions for execution. Preserve the
+original supported host for those sessions. RPNH remains the sole workspace
+and checkpoint authority.
 
 The host may reconnect to durable RPNH state, but it cannot infer whether an
 unacknowledged physical provider submission completed. Such an attempt remains

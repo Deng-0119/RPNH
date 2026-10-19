@@ -352,14 +352,14 @@ def test_ids_match_live_namespace_without_compacting_failed_ordinals(owner):
         assert turn["items"][1]["id"] == _ui_id(state.thread_id, ordinal, "active-agent")
 
 
-def test_schema_0161_anchor_is_not_0155_and_pin_stays_fixed():
+def test_schema_0161_anchor_is_not_0155_and_current_pin_is_exact():
     root = Path(__file__).parent / "fixtures" / "codex"
     document = {"threadId": "t", "turnId": "turn", "cursor": {"type": "item", "itemId": "i"}}
     for version, valid in (("0.155.0", False), ("0.161.0", True)):
         validator = Draft7Validator(json.loads((root / version / "ThreadItemsListParams.json").read_text()))
         assert validator.is_valid(document) is valid
     from cpn.frontend.codex_app_server import CODEX_FRONTEND_VERSION
-    assert CODEX_FRONTEND_VERSION == "0.155.0"
+    assert CODEX_FRONTEND_VERSION == "0.163.0"
 
 
 def test_large_legal_body_has_no_implicit_four_mib_cap(owner, monkeypatch):

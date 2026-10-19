@@ -384,7 +384,7 @@ def test_dsh_run_propagates_explicit_python_interpreter(tmp_path: Path) -> None:
     )
     fake_python.chmod(0o755)
     (fake_bin / "git").write_text(
-        "#!/bin/sh\nprintf '%s\\n' ddefc45fbc7f8e46dd73185e68295696d1297887\n",
+        "#!/bin/sh\nprintf '%s\\n' 687f282e8625c6b8d11ff58211a90524be2e4317\n",
         encoding="utf-8",
     )
     (fake_bin / "node").write_text(

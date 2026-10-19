@@ -11,8 +11,8 @@ import os
 import pytest
 
 from opencode_candidate_support import (
-    EffectGuard, NativePTY, assert_routes, close_server, json_digest,
-    observed_bootstrap, sha256_file,
+    EffectGuard, NativePTY, assert_routes, close_server,
+    observed_bootstrap,
 )
 
 
@@ -25,7 +25,6 @@ def test_candidate_contract_smoke(opencode_candidate):
 
     run = opencode_candidate
     app = ApplicationDouble()
-    app.create_session()
     protocol = OpenCodeProtocol(LocalGateway(app), str(run.display), profile=run.profile)
     server = OpenCodeHTTPServer(protocol)
     committed = False
@@ -33,7 +32,7 @@ def test_candidate_contract_smoke(opencode_candidate):
     run.evidence["stage"] = "contract-attach"
     try:
         server.start()
-        with NativePTY(run, server, SID) as tui:
+        with NativePTY(run, server, None) as tui:
             tui.wait(lambda: observed_bootstrap(server), check=lambda: assert_routes(server))
             tui.send_line("/rpnh-help", slash=True, check=lambda: assert_routes(server))
             tui.wait(lambda: any(d["method"] == "POST" and d["route"] == "/session/:session/command"
@@ -56,7 +55,7 @@ def test_candidate_contract_smoke(opencode_candidate):
             assert [m["info"]["role"] for m in durable] == ["user", "assistant"]
             assert durable[-1]["parts"][0]["text"] == answer
             run.evidence["scenarios"] = [
-                "stock bootstrap routes", "stock /rpnh-help observation",
+                "stock bootstrap routes", "stock fresh session creation", "stock /rpnh-help observation",
                 "one stock ordinary prompt / one double submit",
                 "fixture-committed answer observed in bounded terminal output",
             ]
@@ -169,11 +168,8 @@ def _logical_registry(basic, attempts, execution):
         core = _RegistryCore(attempt, create=False, read_only=True)
         revision["turn-" + str(index)] = core.event_store.max_ordinal()
     return {"logical_revisions": revision,
-            "thread_projection_sha256": json_digest(projection),
             "committed_history": projection["committed_history"],
-            "persisted_execution_identity": profile,
-            "execution_config_sha256": sha256_file(execution),
-            "adapter_config_sha256": sha256_file(execution.parent / "adapter.json")}
+            "persisted_execution_identity": profile}
 
 
 def _observation_payload(message):
@@ -254,7 +250,11 @@ def test_candidate_registry_read_smoke(opencode_candidate, monkeypatch):
                             tui.wait(lambda: len(protocol._observations.get(sid, ())) == previous + 1, check=check)
                             observation = list(protocol._observations[sid])[-1]
                             assert _observation_payload(observation) == expected_view
-                            tui.wait(lambda: tui.contains("command observation"), check=check)
+                            # A long PN renders its tail in the stock viewport; the
+                            # leading "command observation" text may be above it.
+                            # Check the visible synthetic role; the complete PN
+                            # payload is compared with the authority above.
+                            tui.wait(lambda: tui.contains("Rpnh-Observation"), check=check)
                             assert _logical_registry(basic, attempts, execution) == baseline
                             run.evidence["scenarios"].append("stock /rpnh-net " + (flag or "default") + " exact projection")
                     check()

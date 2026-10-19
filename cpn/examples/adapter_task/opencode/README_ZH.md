@@ -1,9 +1,12 @@
-# OpenCode 1.18.32 宿主
+# OpenCode 1.19.3 宿主
 
 [English](README.md) | 中文
 
-安装精确的 OpenCode 1.18.32，并选择一个已授权 profile。启动前端本身不会调用模型；
+安装精确的 OpenCode 1.19.3，并选择一个已授权 profile。启动前端本身不会调用模型；
 提交 `task.txt` 会启动一个逻辑主会话 turn：
+
+下图保留自早期 1.18.32 验收运行；当前前端验证另见
+`docs/validation/frontends-20261019_ZH.md`，不将旧图计作新版实验。
 
 下图来自成功 replacement 验收运行已结算后的实际 PetriNet，展示 OpenCode 展示层背后由
 RPNH 管理的执行层；此时保守的 pending 状态已经完成 reconciliation。

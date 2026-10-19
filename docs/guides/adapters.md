@@ -6,8 +6,8 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: adapters_ZH.md
-  revision: "2026-10-11.1"
-  status: source-reviewed-v0.1.0rc1
+  revision: "2026-10-19.1"
+  status: source-reviewed
   basis: "core; adapter differences explicitly labelled"
 ---
 
@@ -16,12 +16,18 @@ metadata:
 # Codex, DSH and coexistence
 
 ## Codex is presentation, not replacement authority
-The pinned stock client is `codex-cli 0.155.0`. Installing a newer client is not a compatibility test. The supported installation command for this pin is:
+The pinned stock client is `codex-cli 0.163.0`. Installing a newer client is not a compatibility test. The supported installation command for this pin is:
 
 ```bash
-npm install -g @openai/codex@0.155.0
+npm install -g @openai/codex@0.163.0
 codex --version
 ```
+
+Set `RPNH_CODEX_BIN` to the stock executable if `codex` on `PATH` is a
+local wrapper that adds backend options. In particular, Codex 0.163.0 rejects
+`--add-dir` with `--remote`; additional workspace roots belong to the RPNH
+server. The binary override selects the client only and does not change the
+provider. See the [dated native checks](../validation/frontends-20261019.md).
 
 The RPNH launcher uses its compatibility server and existing main-session authority. `rpnh --frontend codex` begins a session and may execute models after input; it is not an offline smoke command. Use `rpnh --frontend basic` for the documented RPNH-specific controls. A Codex model picker is an RPNH configuration projection, not permission to rewrite Codex provider settings or select a different route silently. The optional local-process subscription bridge is a separate provider path, not implied by choosing the TUI.
 
@@ -49,7 +55,7 @@ the current owner exits. Codex protocol thread IDs and `.frontends/codex.json`
 are rebuildable presentation metadata; the Registry transcript is authoritative.
 
 ## Managed DSH prerequisites
-This section applies only to a source tree or installed distribution containing `cpn/dsh` and `integrations/dsh`. The integration manifest pins upstream `deepseek-ai/deepseek-harness` revision `ddefc45fbc7f8e46dd73185e68295696d1297887` (`0.1.6-alpha.2`). It records Node 24 as previously tested, engine range `^22.19.0 || >=24.0.0`, and pnpm `11.7.0`. These are integration pins, not claims about the latest upstream release.
+This section applies only to a source tree or installed distribution containing `cpn/dsh` and `integrations/dsh`. The integration manifest pins upstream `deepseek-ai/deepseek-harness` revision `687f282e8625c6b8d11ff58211a90524be2e4317` (`0.2.1-rc.2`), checked on 2026-10-19. This source host was tested with Node 22.22.1 and pnpm 11.28.5; its engine range is `^22.19.0 || >=24.0.0`. The [DSH guide](dsh.md) distinguishes npm `latest` from `next` and this exact source integration.
 
 Obtain that exact upstream checkout and install its dependencies with the pinned package manager and frozen lockfile. Use a disposable dedicated checkout: preparation intentionally patches a checked upstream factory and copies the integration TypeScript files. Retain `UPSTREAM.json` and `UPSTREAM_LICENSE` when distributing the integration.
 
