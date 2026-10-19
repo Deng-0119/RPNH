@@ -285,6 +285,12 @@ one writable presentation, with Registry history as the common record.
 Reopening history never automatically continues a paused turn; DSH Web exposes
 `/rpnh-resume` and `/rpnh-rollback` through the native slash menu.
 
+In Basic, `/quit` or EOF closes the terminal. `Ctrl+C` at the prompt or while
+handling a turn result exits with status 130 without a Python traceback,
+retaining session files and releasing the owner lease. Independently running
+child tasks keep running. During agent execution, the existing checkpoint
+pause still permits `/resume` or `/rollback`.
+
 ```bash
 rpnh config frontend dsh --dsh-source /absolute/path/to/deepseek-harness
 rpnh config frontend

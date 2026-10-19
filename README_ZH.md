@@ -251,6 +251,11 @@ Basic、Codex、OpenCode 与 DSH Web 展示同一个直接 MainSession root。�
 共享 owner lease 仅允许一个可写展示，Registry 历史是共同记录。重开历史不会自动继续
 暂停 turn；DSH Web 通过原生 slash 菜单提供 `/rpnh-resume` 与 `/rpnh-rollback` 控制。
 
+Basic 终端可用 `/quit` 或 EOF 退出。在提示符或处理回合结果时按 `Ctrl+C`，以状态码
+130 退出，不打印 Python traceback，保留会话文件并释放 owner lease；独立运行的
+子任务继续运行。Agent 执行期间仍按既有 checkpoint 暂停机制处理，可用 `/resume`
+或 `/rollback` 继续控制。
+
 ```bash
 rpnh config frontend dsh --dsh-source /absolute/path/to/deepseek-harness
 rpnh config frontend

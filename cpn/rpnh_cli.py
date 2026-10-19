@@ -642,9 +642,6 @@ def _run_basic_frontend(
             except EOFError:
                 print()
                 return 0
-            except KeyboardInterrupt:
-                print("\nUse /quit to leave; active child tasks are not stopped.")
-                continue
             if not line:
                 continue
             if line == "/quit":
@@ -800,6 +797,11 @@ def main(argv: list[str] | None = None) -> int:
             parser.error(str(exc))
     try:
         return _run_basic_frontend(args, root, execution)
+    except KeyboardInterrupt:
+        print(
+            f"\n[RPNH interrupted; session files retained at {root}]",
+            file=sys.stderr)
+        return 130
     except (OSError, RuntimeError, TypeError, ValueError) as exc:
         parser.error(str(exc))
 
