@@ -267,7 +267,7 @@ workspace settlement, execution nets and workflow revision.
 
 Client version and earlier offline checks:
 [2026-10-19 frontend compatibility](docs/validation/frontends-20261019.md).
-Unified DSH checks have a separate
+The component milestone and official DSH Web checks have a separate
 [validation record](docs/validation/dsh-unified-20261019.md).
 
 | Entry | Purpose |
@@ -275,7 +275,7 @@ Unified DSH checks have a separate
 | `rpnh --frontend basic` | Built-in terminal for the main session and independent task controls |
 | `rpnh --frontend codex` | Codex 0.163.0 presentation; see the [adapter guide](docs/guides/adapters.md) |
 | `rpnh --frontend opencode` | OpenCode 1.19.3 presentation; see the [OpenCode guide](docs/guides/opencode.md) |
-| `rpnh --frontend dsh` | RPNH Web frontend using native DSH widgets; see the [DSH guide](docs/guides/dsh.md) |
+| `rpnh --frontend dsh` | Official DSH Web bound to Python MainSession; see the [DSH guide](docs/guides/dsh.md) |
 | `rpnh-dsh` | Advanced legacy registered headless host with separate session roots; see the same guide |
 
 Basic, Codex, OpenCode and DSH Web present one direct MainSession root.
@@ -283,7 +283,7 @@ Create it with `--session-dir`; after the current frontend exits, reopen the
 exact path with `--resume` and another frontend. The shared owner lease permits
 one writable presentation, with Registry history as the common record.
 Reopening history never automatically continues a paused turn; DSH Web exposes
-explicit `/rpnh-resume` and `/rpnh-rollback` controls.
+`/rpnh-resume` and `/rpnh-rollback` through the native slash menu.
 
 ```bash
 rpnh config frontend dsh --dsh-source /absolute/path/to/deepseek-harness
@@ -295,16 +295,21 @@ The saved preference is independent of model setup; explicit `--frontend` wins.
 Without a saved preference, `auto` still chooses compatible Codex or Basic.
 `DSH_SOURCE` overrides the saved source path. DSH needs pinned source `687f282`
 (`0.2.1-rc.2`), Node `^22.19.0 || >=24.0.0` and installed pnpm dependencies.
-The launcher prepares and rebuilds its Web assets before acquiring the session,
-prints a loopback URL and attempts to open a browser. `Ctrl+C` exits the host
-and checkpoint-stops only its owned main turn. Explicit DSH with `--prompt` is
-rejected before model resolution.
+First launch downloads 31 official `0.2.1-rc.2` npm packages into
+`SOURCE/rpnh-frontend/node_modules`; complete cached packages can be reused
+offline. Setup and asset preflight finish before acquiring the session. The
+launcher prints an authenticated loopback URL and attempts to open a browser.
+`Ctrl+C` exits the host and checkpoint-stops only its owned main turn. Explicit
+DSH with `--prompt` is rejected before model resolution.
 
-The DSH surface uses native chat/composer/theme widgets and AgentLoop/Session;
-it is an RPNH Web frontend, not the full stock DSH Web shell or a TUI. The pinned
-upstream has no bundled terminal TUI. It uses RPNH model controls and does not
-load native DSH providers, tools or workspace filesystem. Actual validation
-scope is stated in the separate record above.
+Official DSH index/client plugins and Web transport connect through a typed
+Remote BFF to Python's shared MainSession, replacing the component-composed
+`e9fa433` milestone. The official UI remains unchanged. Supported scope is one
+bound session with text, native model/effort selectors and native slash-menu
+RPNH controls. Native uploads, arbitrary sessions, workspace editing and native DSH local
+tool execution are unsupported. Stock DSH AgentLoop, LLM, tools and persistence
+runtimes are not loaded; no terminal TUI is bundled. Official Web results are
+recorded separately from the component milestone in the validation record above.
 
 ## Project collaboration and result scope
 

@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: index.md
-  revision: "2026-10-19.2"
+  revision: "2026-10-19.3"
   status: source-reviewed
   basis: "current source; dated validation records retain their own scopes"
 ---
@@ -16,8 +16,9 @@ metadata:
 # 文档导航
 
 可选客户端版本与此前验证：[Codex、DSH 与 OpenCode — 2026-10-19](validation/frontends-20261019_ZH.md)。
-`rpnh --frontend dsh`、前端偏好保存及共享会话控制见 [DSH Web 指南](guides/dsh_ZH.md)；
-统一 DSH 的实际检查单列于[新记录](validation/dsh-unified-20261019_ZH.md)。
+`rpnh --frontend dsh`、包准备、偏好保存及绑定 Python MainSession 的原生控制见
+[官方 DSH Web 指南](guides/dsh_ZH.md)；此前组件阶段与官方 Web E2E 结果单列于
+[新记录](validation/dsh-unified-20261019_ZH.md)。
 
 [仓库首页](../README_ZH.md) · [示例](../examples/README_ZH.md) · [CLI](reference/cli_ZH.md) · [API](reference/api-index_ZH.md) · [源码地图](guides/repository-layout_ZH.md)
 
@@ -38,7 +39,7 @@ RPNH 以 Registry 和 PetriNet 共同声明、执行、检查和复用 agent 工
 | 安装认可的源码或 wheel；选择平台与产物 | [安装及发行范围](guides/installation_ZH.md) |
 | 设置 provider、精确模型及凭据环境变量 | [模型设置](guides/models_ZH.md)、[provider catalog 字段](PROVIDER_MODEL_CONFIGURATION_ZH.md) |
 | 理解 profile 优先级、限制和 runtime policy | [配置参考](guides/configuration_ZH.md) |
-| 选择 Basic、Codex、OpenCode 或 DSH Web；保存前端偏好 | [适配器及共存](guides/adapters_ZH.md)、[OpenCode](guides/opencode_ZH.md)、[DSH](guides/dsh_ZH.md) |
+| 选择 Basic、Codex、OpenCode 或官方 DSH Web；保存前端偏好 | [适配器及共存](guides/adapters_ZH.md)、[OpenCode](guides/opencode_ZH.md)、[DSH](guides/dsh_ZH.md) |
 | 为依赖完整的包准备接收端 | [包环境](guides/package-environments_ZH.md)、[检查/计划/准备流程](environment-preparation_ZH.md) |
 
 ## 运行、检查与恢复

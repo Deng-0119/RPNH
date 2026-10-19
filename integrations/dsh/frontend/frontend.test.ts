@@ -5,7 +5,6 @@ import { spawn } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
 import { resolve } from 'node:path'
 import { request as httpRequest } from 'node:http'
-import { createFrontendApplication } from './agent.ts'
 import { startDshFrontend, checkFrontendAssets } from './frontend.ts'
 import { PipeRpc, PROTOCOL, MAX_FRAME_BYTES } from './rpc.ts'
 import type { Initialization, RpcPort, SessionRow, Turn } from './rpc.ts'
@@ -45,7 +44,8 @@ export class ScriptedPort implements RpcPort {
       return { stopped: true } as T
     }
     if (method === 'command') {
-      if (params.name === 'rpnh-rollback') this.row.turns.pop()
+      // MainSession rollback retains lineage and closes the pending turn.
+      if (params.name === 'rpnh-rollback') this.row.turns.at(-1)!.state = 'interrupted'
       if (params.name === 'rpnh-resume') this.row.turns.at(-1)!.state = 'accepted'
       return { text: 'RPNH command accepted' } as T
     }
@@ -85,66 +85,215 @@ test('history projects any frontend and keeps active/paused turns open', () => {
   assert.equal(events.filter(event => event.type === 'assistant/message').length, 1)
   assert.equal(events.filter(event => event.type === 'turn/end').length, 1)
 })
-test('native factory loads existing history read-only and follows the actual ordinal', async () => {
-  const port = new ScriptedPort(); const app = await createFrontendApplication(port)
-  try {
-    assert.deepEqual(port.calls.map(call => call.method), ['initialize'])
-    assert.equal(app.ctx.agents.get(app.machine.id), app.machine)
-    assert.equal(app.ctx.sessions.get(app.machine.id), app.machine.session)
-    assert.equal(app.ctx.get('sessionPersistence'), undefined)
-    const result = await app.machine.submit('new prompt', 'stable-request')
-    assert.equal(result.ordinal, 2)
-    await app.machine.whenIdle()
-    assert.equal(app.machine.row.turns.at(-1)!.state, 'committed')
-    assert.equal(app.machine.session.snapshotEvents().filter(event => event.type === 'assistant/message').length, 2)
-    assert.equal(port.calls.filter(call => call.method === 'submit').length, 1)
-    assert.equal(port.calls.filter(call => call.method === 'snapshot').length, 3)
-  } finally { await app.close() }
-})
-test('native cancellation reaches RPC and paused initialization never resumes', async () => {
-  const port = new ScriptedPort(); port.autoComplete = false; port.row.turns.push(turn(2, 'stopped_by_owner'))
-  const app = await createFrontendApplication(port)
-  try {
-    await app.machine.refresh(); await app.machine.whenIdle()
-    assert.equal(port.calls.some(call => ['submit', 'command', 'abort'].includes(call.method)), false)
-    await port.request('command', { name: 'rpnh-rollback', arguments: '', requestId: 'explicit-rollback' })
-    await app.rebuild()
-    await app.machine.submit('stop prompt', 'stop-request')
-    app.machine.cancel({ kind: 'user' }); await app.machine.whenIdle()
-    assert.equal(app.machine.row.turns.at(-1)!.state, 'stopped_by_owner')
-    assert.equal(port.calls.filter(call => call.method === 'abort').length, 1)
-  } finally { await app.close() }
-})
-test('real loopback Web serves official assets and bound API, rejects foreign authority, closes on EOF', async () => {
-  await checkFrontendAssets()
+
+test('official BFF reads bound history without execution and maintains one presentation cursor', async () => {
   const port = new ScriptedPort(); const frontend = await startDshFrontend(port)
   try {
-    const page = await (await fetch(frontend.url)).text()
-    assert.match(page, /DSH · RPNH MainSession/)
-    const token = page.match(/name="rpnh-token" content="([^"]+)"/)![1]
-    const headers = { 'x-rpnh-token': token!, 'Content-Type': 'application/json' }
-    const snapshot = await (await fetch(frontend.url + 'api/snapshot', { headers })).json()
-    assert.equal(snapshot.session.id, 'bound-main-session')
-    assert.deepEqual(snapshot.capabilities.tools, [])
-    assert.equal((await fetch(frontend.url + 'api/snapshot')).status, 403)
-    const invalid = await fetch(frontend.url + 'api/submit', { method: 'POST', headers,
-      body: JSON.stringify({ text: 'do not run', requestId: 'x', sessionId: 'other' }) })
-    assert.equal(invalid.status, 400)
-    assert.equal(port.calls.some(call => call.method === 'submit'), false)
-    const valid = await fetch(frontend.url + 'api/submit', { method: 'POST', headers,
-      body: JSON.stringify({ text: 'web prompt', requestId: 'stable-web' }) })
-    assert.equal(valid.status, 200)
-    await frontend.app.machine.whenIdle()
-    assert.equal(frontend.app.machine.row.turns.at(-1)!.answer!.reply, 'Native result: web prompt')
-    const command = await fetch(frontend.url + 'api/command', { method: 'POST', headers,
-      body: JSON.stringify({ name: 'rpnh-rollback', arguments: '', requestId: 'rollback' }) })
-    assert.equal(command.status, 200)
-    assert.equal(frontend.app.machine.session.snapshotEvents().filter(event => event.type === 'user/message').length, 1)
-    port.close(); await frontend.close()
-    await assert.rejects(fetch(frontend.url))
+    const handlers = frontend.view.handlers()
+    const listing = await handlers.session!.list!({})
+    assert.equal(listing.items.length, 1)
+    assert.equal(listing.items[0].sessionId, port.row.id)
+    assert.equal(port.calls.some(call => ['submit', 'abort', 'command'].includes(call.method)), false)
+    assert.throws(() => handlers.session!.projections!({ sessionId: 'foreign' }), /bound/)
+    const before = frontend.view.cursor
+    handlers.session!.selectModel!({ sessionId: port.row.id, provider: 'rpnh', model: profile.selection })
+    assert.ok(frontend.view.cursor > before)
+    assert.equal(handlers.session!.projections!({ sessionId: port.row.id }).asOfSeq, frontend.view.cursor)
+    assert.equal(port.calls.some(call => ['submit', 'command'].includes(call.method)), false)
+    await assert.rejects(handlers.session!.prompt!({ sessionId: port.row.id, mode: 'queue',
+      requestId: 'not-a-turn', content: [{ type: 'text', text: '/rpnh-resume' }] }), /slash-command/)
+    assert.throws(() => handlers.session!.selectModel!({ sessionId: port.row.id, provider: 'rpnh', model: 'unknown' }), /available/)
+    assert.equal(frontend.ctx.get('agentLoop'), undefined)
+    assert.equal(frontend.ctx.get('llm'), undefined)
+    assert.equal(frontend.ctx.get('tools'), undefined)
+    assert.equal(frontend.ctx.get('sessionPersistence'), undefined)
   } finally { await frontend.close() }
 })
 
+test('official BFF rejects a second session and reports initial and changed public errors', async () => {
+  const port = new ScriptedPort(); port.autoComplete = false
+  port.row.error = { code: 'reconciliation_required', message: 'Inspect the RPNH checkpoint.' }
+  port.row.turns.push(turn(2, 'stopped_by_owner'))
+  const frontend = await startDshFrontend(port)
+  const errors: string[] = []
+  const off = frontend.ctx.on('api-session/error', (_id, message) => errors.push(message))
+  const abort = new AbortController()
+  const stream = frontend.view.handlers().session!.follow!({ sessionId: port.row.id }, abort.signal)
+  try {
+    assert.throws(() => frontend.view.handlers().session!.create!({}), /bound|new session/i)
+    await stream.next()
+    const next = stream.next()
+    await new Promise(done => setImmediate(done))
+    assert.ok(errors.some(error => error.includes('reconciliation_required')))
+    assert.ok(errors.some(error => error.includes('/rpnh-resume')))
+    port.row.error = { code: 'reconciliation_required', message: 'Checkpoint status changed.' }
+    await frontend.view.refresh()
+    assert.ok(errors.some(error => error.includes('Checkpoint status changed.')))
+    assert.equal(port.calls.some(call => ['submit', 'command', 'abort'].includes(call.method)), false)
+    abort.abort(); await next
+  } finally { abort.abort(); off(); await frontend.close() }
+})
+
+function rawHttp(url: string, headers: Record<string, string>, body?: string): Promise<{ status: number; text: string }> {
+  return new Promise((done, reject) => {
+    const request = httpRequest(url, { method: body === undefined ? 'GET' : 'POST', headers }, response => {
+      let text = ''; response.setEncoding('utf8'); response.on('data', chunk => { text += chunk })
+      response.on('end', () => done({ status: response.statusCode!, text })); response.on('error', reject)
+    }); request.on('error', reject); request.end(body)
+  })
+}
+test('official native connection rejects foreign Host and Origin before mutations', async () => {
+  const port = new ScriptedPort(); const frontend = await startDshFrontend(port)
+  try {
+    await checkFrontendAssets()
+    const foreign = await rawHttp(frontend.url, { Host: 'foreign.invalid' })
+    assert.equal(foreign.status, 403)
+    assert.ok(!foreign.text.includes('__DSH_BOOT__'))
+    const api = new URL('/api', frontend.url).href
+    assert.equal((await rawHttp(api, { Origin: 'http://foreign.invalid', 'Content-Type': 'application/json' }, '{}')).status, 403)
+    assert.equal(port.calls.some(call => ['submit', 'abort', 'command'].includes(call.method)), false)
+  } finally { await frontend.close() }
+})
+
+async function browserFor(frontend: Awaited<ReturnType<typeof startDshFrontend>>) {
+  const { chromium } = await import(new URL('../apps/web/node_modules/playwright/index.mjs', import.meta.url).href)
+  return await chromium.launch({ executablePath: process.env.RPNH_DSH_BROWSER, headless: true,
+    args: ['--no-sandbox', '--disable-dev-shm-usage'] }).catch(async (error: unknown) => { await frontend.close(); throw error })
+}
+test('official stock shell auto-opens history and handles native input, stop, resume, commands and EOF', {
+  skip: !process.env.RPNH_DSH_BROWSER, timeout: 45000,
+}, async () => {
+  const port = new ScriptedPort(); const frontend = await startDshFrontend(port)
+  const browser = await browserFor(frontend)
+  let page
+  const errors: string[] = []
+  try {
+    page = await browser.newPage({ viewport: { width: 1280, height: 900 }, locale: 'en-US' })
+    page.setDefaultTimeout(7000)
+    page.on('pageerror', (error: Error) => { errors.push(String(error)); console.error('PAGE_ERROR', error) })
+    page.on('console', (message: { type(): string; text(): string }) => { if (message.type() === 'error') console.error('BROWSER_ERROR', message.text().slice(0, 600)) })
+    await page.goto(frontend.url)
+    await page.getByText('Answer 1', { exact: true }).waitFor()
+    assert.equal(port.calls.some(call => ['submit', 'command'].includes(call.method)), false)
+    const native = await page.evaluate(() => ({ mode: (window as any).__ModuleLoader__.mode,
+      plugins: (window as any).__DSH_BOOT__.entries.map((row: any) => row.id) }))
+    assert.equal(native.mode, 'live')
+    assert.ok(native.plugins.includes('@deepseek-ai/dsh-client-ui-chat'))
+    const input = page.getByRole('textbox', { name: /^Message or run a task/ })
+    await input.fill('official browser 中文'); await input.press('Enter')
+    await page.getByText('Native result: official browser 中文', { exact: true }).waitFor()
+    assert.equal(port.calls.filter(call => call.method === 'submit').length, 1)
+    port.autoComplete = false
+    await input.fill('interrupt official'); await input.press('Enter')
+    await page.getByRole('button', { name: 'Stop generating', exact: true }).click()
+    await page.getByText(/Paused at the RPNH checkpoint/).waitFor()
+    await page.reload()
+    await page.getByText('Native result: official browser 中文', { exact: true }).waitFor()
+    await page.getByText(/Paused at the RPNH checkpoint/).waitFor()
+    assert.equal(port.calls.filter(call => call.method === 'command').length, 0)
+    port.autoComplete = true
+    await page.getByRole('textbox', { name: /^Message or run a task/ }).fill('/rpnh-resume')
+    await page.getByRole('textbox', { name: /^Message or run a task/ }).press('Enter')
+    await page.getByText('Native result: interrupt official', { exact: true }).waitFor()
+    await page.getByText(/Paused at the RPNH checkpoint/).waitFor({ state: 'hidden' })
+    assert.equal(port.calls.filter(call => call.method === 'submit').length, 2)
+    assert.equal(port.calls.filter(call => call.method === 'command').length, 1)
+    assert.deepEqual(errors, [])
+    const promptCall = port.calls.find(call => call.method === 'submit')!
+    assert.equal(typeof promptCall.params.requestId, 'string')
+    if (process.env.RPNH_DSH_SCREENSHOT) await page.screenshot({ path: process.env.RPNH_DSH_SCREENSHOT, fullPage: true })
+    port.close(); await frontend.close()
+    await assert.rejects(fetch(new URL('/', frontend.url)))
+  } finally {
+    if (page && process.env.RPNH_DSH_SCREENSHOT) {
+      await page.screenshot({ path: process.env.RPNH_DSH_SCREENSHOT + '.end.png', fullPage: true })
+      console.log('FINAL_PAGE_TEXT', (await page.locator('body').innerText()).slice(-3500))
+    }
+    await browser.close(); await frontend.close()
+  }
+})
+test('official native rollback retains interrupted history without a submit and permits the next input', {
+  skip: !process.env.RPNH_DSH_BROWSER, timeout: 30000,
+}, async () => {
+  const port = new ScriptedPort(); port.autoComplete = false
+  const frontend = await startDshFrontend(port); const browser = await browserFor(frontend)
+  const errors: string[] = []
+  try {
+    const page = await browser.newPage({ locale: 'en-US' }); page.setDefaultTimeout(7000)
+    page.on('pageerror', (error: Error) => errors.push(String(error)))
+    page.on('console', (message: { type(): string; text(): string }) => {
+      if (message.type() === 'error') errors.push(message.text())
+    })
+    await page.goto(frontend.url)
+    await page.getByText('Answer 1', { exact: true }).waitFor()
+    const input = page.getByRole('textbox', { name: /^Message or run a task/ })
+    await input.fill('rollback pending prompt'); await input.press('Enter')
+    await page.getByRole('button', { name: 'Stop generating', exact: true }).click()
+    await page.getByText(/Paused at the RPNH checkpoint/).waitFor()
+    const before = frontend.view.cursor
+    await input.fill('/rpnh-rollback'); await input.press('Enter')
+    for (let attempt = 0; attempt < 100 && !port.calls.some(call => call.method === 'command'); attempt++) {
+      await new Promise(done => setTimeout(done, 25))
+    }
+    assert.equal(port.row.turns.at(-1)?.state, 'interrupted')
+    assert.equal(port.row.turns.length, 2)
+    await page.getByText(/Paused at the RPNH checkpoint/).waitFor({ state: 'hidden' })
+    await page.getByText('Answer 1', { exact: true }).waitFor()
+    await page.getByText('rollback pending prompt', { exact: true }).waitFor()
+    assert.equal(await page.getByText(/The DSH process exited before this turn finished/).count(), 0)
+    await frontend.view.refresh(); await frontend.view.refresh()
+    assert.ok(frontend.view.cursor > before)
+    assert.equal(port.calls.filter(call => call.method === 'submit').length, 1)
+    assert.deepEqual(port.calls.filter(call => call.method === 'command').map(call => call.params.name), ['rpnh-rollback'])
+    port.autoComplete = true
+    await input.fill('after official rollback'); await input.press('Enter')
+    await page.getByText('Native result: after official rollback', { exact: true }).waitFor()
+    assert.equal(port.calls.filter(call => call.method === 'submit').length, 2)
+    assert.equal(port.row.turns[1]!.state, 'interrupted')
+    assert.equal(port.row.turns[1]!.answer, null)
+    assert.equal(port.row.turns.at(-1)?.state, 'committed')
+    assert.deepEqual(errors, [])
+    if (process.env.RPNH_DSH_SCREENSHOT) await page.screenshot({ path: process.env.RPNH_DSH_SCREENSHOT + '.rollback.png', fullPage: true })
+  } finally { await browser.close(); await frontend.close() }
+})
+test('official native model selector switches A/high to B/no-effort and retains it across polling', {
+  skip: !process.env.RPNH_DSH_BROWSER, timeout: 30000,
+}, async () => {
+  const modelA = { ...profile, selection: 'rpnh:A', model: 'A', reasoning_effort: 'high',
+    supported_reasoning_efforts: ['low', 'high'], default_reasoning_effort: 'high' }
+  const modelB = { ...profile, selection: 'rpnh:B', model: 'B' }
+  class Models extends ScriptedPort {
+    override async request<T>(method: string, params: Record<string, unknown> = {}): Promise<T> {
+      const result = await super.request<T>(method, params)
+      if (method === 'initialize') (result as Initialization).configuration.profiles = [modelA, modelB]
+      return result
+    }
+  }
+  const port = new Models(); port.row.model = modelA
+  const frontend = await startDshFrontend(port); const browser = await browserFor(frontend)
+  try {
+    const page = await browser.newPage({ locale: 'en-US' }); page.setDefaultTimeout(7000)
+    page.on('pageerror', (error: Error) => console.error('PAGE_ERROR', error))
+    await page.goto(frontend.url)
+    await page.getByText('Answer 1', { exact: true }).waitFor()
+    await page.getByRole('button', { name: /^Select model/ }).click()
+    console.log('MODEL_MENU', (await page.locator('body').innerText()).slice(-1500))
+    await page.getByRole('menuitem', { name: /^Model/ }).click()
+    await page.getByRole('menuitemradio', { name: 'Offline / B', exact: true }).click()
+    await page.getByRole('button', { name: /^Select model, current Offline \/ B$/ }).waitFor()
+    const reads = port.calls.filter(call => call.method === 'snapshot').length
+    for (let attempt = 0; attempt < 100 && port.calls.filter(call => call.method === 'snapshot').length < reads + 2; attempt++) {
+      await new Promise(done => setTimeout(done, 25))
+    }
+    assert.ok(port.calls.filter(call => call.method === 'snapshot').length >= reads + 2)
+    await page.getByRole('textbox', { name: /^Message or run a task/ }).fill('selected native B')
+    await page.getByRole('textbox', { name: /^Message or run a task/ }).press('Enter')
+    await page.getByText('Native result: selected native B', { exact: true }).waitFor()
+    const submission = port.calls.find(call => call.method === 'submit')!
+    assert.equal(submission.params.selectionId, modelB.selection)
+    assert.equal(Object.hasOwn(submission.params, 'reasoningEffort'), false)
+  } finally { await browser.close(); await frontend.close() }
+})
 test('actual CLI uses inherited FD3/FD4 and exits after owner EOF', async () => {
   const port = new ScriptedPort()
   const child = spawn(process.execPath, ['--import', 'tsx', fileURLToPath(new URL('./frontend.ts', import.meta.url)),
@@ -172,161 +321,16 @@ test('actual CLI uses inherited FD3/FD4 and exits after owner EOF', async () => 
       const timeout = setTimeout(() => reject(new Error(`CLI startup timeout: ${stderr}`)), 15000)
       child.stdout!.on('data', chunk => {
         stdout += chunk
-        const match = stdout.match(/http:\/\/127\.0\.0\.1:\d+\//)
+        const match = stdout.match(/http:\/\/127\.0\.0\.1:\d+\/\S*/)
         if (match) { clearTimeout(timeout); done(match[0]) }
       })
       child.once('exit', code => { clearTimeout(timeout); reject(new Error(`CLI exited ${code}: ${stderr}`)) })
     })
     assert.match(stdout, /bound-main-session/)
-    assert.deepEqual(port.calls.map(call => call.method), ['initialize'])
-    assert.equal((await fetch(url)).status, 200)
+    assert.equal(port.calls.some(call => ['submit', 'abort', 'command'].includes(call.method)), false)
+    assert.equal((await fetch(url, { redirect: 'manual' })).status, 303)
     writer.end()
     assert.equal(await exited, 0, stderr)
     await assert.rejects(fetch(url))
-  } finally { if (child.exitCode === null) child.kill('SIGTERM') }
-})
-
-test('real browser uses official composer and chat widgets for input/history/stop/explicit commands', {
-  skip: !process.env.RPNH_DSH_BROWSER, timeout: 30000,
-}, async () => {
-  const { chromium } = await import('../apps/web/node_modules/playwright/index.mjs')
-  const port = new ScriptedPort(); const frontend = await startDshFrontend(port)
-  const browser = await chromium.launch({ executablePath: process.env.RPNH_DSH_BROWSER, headless: true,
-    args: ['--no-sandbox', '--disable-dev-shm-usage'] }).catch(async error => { await frontend.close(); throw error })
-  const errors: string[] = []
-  try {
-    const page = await browser.newPage({ viewport: { width: 1200, height: 900 } })
-    page.setDefaultTimeout(5000)
-    page.on('pageerror', error => { errors.push(String(error)); console.error('Browser error:', error) })
-    page.on('console', message => { if (message.type() === 'error') console.error('Browser console:', message.text().slice(0, 400)) })
-    page.on('requestfailed', request => console.error('Browser request failed:', request.url(), request.failure()))
-    await page.goto(frontend.url)
-    await page.getByText('Cross frontend prompt 1', { exact: true }).waitFor()
-    await page.getByText('Answer 1', { exact: true }).waitFor()
-    assert.equal(port.calls.some(call => call.method === 'submit'), false)
-    const input = page.getByRole('textbox', { name: 'Message' })
-    await input.fill('browser prompt 中文'); await page.getByRole('button', { name: 'Send', exact: true }).click()
-    await page.getByText('Native result: browser prompt 中文', { exact: true }).waitFor()
-    port.autoComplete = false
-    await input.fill('interrupt me'); await input.press('Enter')
-    await page.getByText('interrupt me', { exact: true }).waitFor()
-    await page.getByRole('button', { name: 'Stop', exact: true }).click()
-    await page.getByText('Paused at the RPNH checkpoint. Use /rpnh-resume or /rpnh-rollback.', { exact: true }).waitFor()
-    await page.reload()
-    await page.getByText('Paused at the RPNH checkpoint. Use /rpnh-resume or /rpnh-rollback.', { exact: true }).waitFor()
-    assert.equal(port.calls.some(call => call.method === 'command'), false)
-    port.autoComplete = true
-    await input.fill('/rpnh-resume'); await input.press('Enter')
-    await page.getByText('Native result: interrupt me', { exact: true }).waitFor()
-    assert.equal(port.calls.filter(call => call.method === 'submit').length, 2)
-    assert.equal(port.calls.filter(call => call.method === 'command').length, 1)
-    if (process.env.RPNH_DSH_SCREENSHOT) await page.screenshot({ path: process.env.RPNH_DSH_SCREENSHOT, fullPage: true })
-    assert.deepEqual(errors, [])
-    port.close(); await frontend.close()
-    await page.getByText(/Disconnected:/).waitFor()
-    assert.equal(await page.getByRole('button', { name: 'Send', exact: true }).isDisabled(), true)
-  } finally { await browser.close(); await frontend.close() }
-})
-
-function rawHttp(url: string, headers: Record<string, string>, body?: string): Promise<{ status: number; text: string }> {
-  return new Promise((resolveResponse, reject) => {
-    const request = httpRequest(url, { method: body === undefined ? 'GET' : 'POST', headers }, response => {
-      let text = ''
-      response.setEncoding('utf8')
-      response.on('data', chunk => { text += chunk })
-      response.on('end', () => resolveResponse({ status: response.statusCode!, text }))
-      response.on('error', reject)
-    })
-    request.on('error', reject)
-    request.end(body)
-  })
-}
-
-test('release blocker: foreign Host cannot obtain a page token or call RPC', async () => {
-  const port = new ScriptedPort(); const frontend = await startDshFrontend(port)
-  try {
-    const page = await (await fetch(frontend.url)).text()
-    const token = page.match(/name="rpnh-token" content="([^"]+)"/)![1]!
-    const before = port.calls.length
-    const responses = []
-    for (const host of ['foreign.invalid', 'localhost:' + new URL(frontend.url).port, '127.0.0.1:1']) {
-      responses.push(await rawHttp(frontend.url, { Host: host }))
-      responses.push(await rawHttp(frontend.url + 'api/abort', {
-        Host: host, 'x-rpnh-token': token, 'Content-Type': 'application/json',
-      }, '{}'))
-    }
-    assert.deepEqual(responses.map(response => response.status), [403, 403, 403, 403, 403, 403])
-    assert.ok(responses.every(response => !response.text.includes(token) && !response.text.includes('rpnh-token')))
-    assert.equal(port.calls.length, before, 'rejected Host requests must not reach RPC')
-  } finally { await frontend.close() }
-})
-
-test('release blocker: foreign Origin cannot read or mutate via a valid local token', async () => {
-  const port = new ScriptedPort(); const frontend = await startDshFrontend(port)
-  try {
-    const page = await (await fetch(frontend.url)).text()
-    const token = page.match(/name="rpnh-token" content="([^"]+)"/)![1]!
-    const headers = { 'x-rpnh-token': token, 'Content-Type': 'application/json' }
-    const before = port.calls.length
-    const responses = []
-    for (const origin of ['http://foreign.invalid', 'null', 'http://127.0.0.1:1', frontend.url.replace('http:', 'https:').slice(0, -1)]) {
-      responses.push(await rawHttp(frontend.url + 'api/snapshot', { ...headers, Origin: origin }))
-      responses.push(await rawHttp(frontend.url + 'api/abort', { ...headers, Origin: origin }, '{}'))
-    }
-    assert.deepEqual(responses.map(response => response.status), Array(8).fill(403))
-    assert.equal(port.calls.length, before, 'rejected Origin requests must not reach RPC')
-    const sameOrigin = { ...headers, Origin: new URL(frontend.url).origin }
-    assert.equal((await rawHttp(frontend.url + 'api/snapshot', sameOrigin)).status, 200)
-    assert.equal((await rawHttp(frontend.url + 'api/abort', sameOrigin, '{}')).status, 200)
-    assert.equal(port.calls.length, before + 2)
-  } finally { await frontend.close() }
-})
-
-test('release blocker: browser keeps model B without effort across polls after model A high', {
-  skip: !process.env.RPNH_DSH_BROWSER, timeout: 30000,
-}, async () => {
-  const { chromium } = await import('../apps/web/node_modules/playwright/index.mjs')
-  const modelA = { ...profile, selection: 'rpnh:A', model: 'A', reasoning_effort: 'high',
-    supported_reasoning_efforts: ['low', 'high'], default_reasoning_effort: 'high' }
-  const modelB = { ...profile, selection: 'rpnh:B', model: 'B' }
-  class ModelPort extends ScriptedPort {
-    override async request<T>(method: string, params: Record<string, unknown> = {}): Promise<T> {
-      const result = await super.request<T>(method, params)
-      if (method !== 'initialize') return result
-      const initial = result as Initialization
-      initial.configuration = { default_selection: modelA.selection, default_reasoning_effort: 'high', profiles: [modelA, modelB] }
-      return initial as T
-    }
-  }
-  const port = new ModelPort(); port.row.model = modelA
-  const frontend = await startDshFrontend(port)
-  const browser = await chromium.launch({ executablePath: process.env.RPNH_DSH_BROWSER, headless: true,
-    args: ['--no-sandbox', '--disable-dev-shm-usage'] }).catch(async error => { await frontend.close(); throw error })
-  try {
-    const page = await browser.newPage()
-    page.setDefaultTimeout(5000)
-    await page.goto(frontend.url)
-    const model = page.getByRole('combobox', { name: 'Model', exact: true })
-    const reasoning = page.getByRole('combobox', { name: 'Reasoning', exact: true })
-    await reasoning.waitFor()
-    assert.equal(await reasoning.inputValue(), 'high')
-    await model.selectOption(modelB.selection)
-    const before = port.calls.filter(call => call.method === 'snapshot').length
-    for (let index = 0; index < 2; index++) {
-      const response = await page.waitForResponse(response => response.url().endsWith('/api/snapshot'))
-      await response.finished()
-    }
-    await page.evaluate(() => new Promise<void>(resolveFrame => requestAnimationFrame(() => resolveFrame())))
-    assert.ok(port.calls.filter(call => call.method === 'snapshot').length >= before + 2)
-    assert.equal(await model.inputValue(), modelB.selection)
-    assert.equal(await reasoning.count(), 0)
-    await page.getByRole('textbox', { name: 'Message' }).fill('model B no effort')
-    await page.getByRole('button', { name: 'Send', exact: true }).click()
-    await page.getByText('Native result: model B no effort', { exact: true }).waitFor()
-    const submits = port.calls.filter(call => call.method === 'submit')
-    assert.equal(submits.length, 1)
-    assert.equal(submits[0]!.params.selectionId, modelB.selection)
-    assert.equal(Object.hasOwn(submits[0]!.params, 'reasoningEffort'), false,
-      `model B must omit effort; actual submit: ${JSON.stringify(submits[0]!.params)}`)
-  } finally { await browser.close(); await frontend.close() }
+  } finally { if (!(writer as any).destroyed) writer.end(); if (child.exitCode === null) child.kill('SIGTERM') }
 })

@@ -1,20 +1,20 @@
 ---
 name: rpnh-dsh-guide
-description: "使用共享 RPNH 主会话的 DSH Web 前端，或高级旧版宿主。"
+description: "使用绑定 RPNH 主会话的官方 DSH Web，或高级旧版宿主。"
 metadata:
   document-kind: guide
   audience: operator-and-developer
   language: zh-CN
   counterpart: dsh.md
-  revision: "2026-10-19.2"
+  revision: "2026-10-19.3"
   status: source-reviewed-pre-release
 ---
 
 [English](dsh.md) | [中文](dsh_ZH.md)
 
-# DSH Web 前端与旧版宿主
+# 官方 DSH Web 与旧版宿主
 
-用 `rpnh --frontend dsh` 在浏览器中对话，与 Basic、Codex 和 OpenCode 共用同一个
+用 `rpnh --frontend dsh` 打开官方 DSH Web，与 Basic、Codex 和 OpenCode 共用同一个
 RPNH 主会话。先通过常规 RPNH 设置配置模型，并按下文准备固定版本 DSH checkout，
 再保存前端偏好：
 
@@ -44,34 +44,60 @@ rpnh --session-dir ./main-session
 
 用 `--session-dir ROOT` 创建会话；当前前端退出后，以
 `rpnh --frontend dsh --resume ROOT` 或另一个受支持前端重开完全相同的 root。
-共享 owner lease 仅允许一个可写 owner。Registry 历史仍是权威；DSH Session 是展示
-投影，不保存第二份持久化对话。
+共享 owner lease 仅允许一个可写 owner，Registry 历史仍是权威。Web 的 session 与
+workspace 列表仅展示 launcher 绑定的 MainSession 及其上下文，不提供任意 DSH 会话或
+可编辑 workspace。
 
-重新查看历史不会执行或继续暂停的 turn。用 Stop 按钮请求 checkpoint stop，再显式输入
-`/rpnh-resume` 继续，或 `/rpnh-rollback` 将主对话回退到上一个已完成 turn。
+重新查看历史不会执行或继续暂停 turn。用原生 Stop 控制请求 checkpoint stop，再从原生
+slash 菜单选择 `/rpnh-resume` 继续，或 `/rpnh-rollback` 回退主对话到上一个已完成 turn。
 `/rpnh-help` 列出共享 RPNH 任务控制，包括 `/rpnh-tasks`、`/rpnh-task`、`/rpnh-net`、
-`/rpnh-agent` 和 `/rpnh-workflow`。启动或恢复工作可能调用所选模型与工具。
-模型及 reasoning effort 选项来自共享 RPNH catalog。
+`/rpnh-agent` 和 `/rpnh-workflow`；请使用菜单及其参数输入，不把命令作为普通文本提交。
+启动或恢复工作可能经 Python 调用所选模型与工具。原生模型与 reasoning effort 选择器
+展示共享 RPNH catalog。
 
 ## Web 界面的实际范围
 
-这是采用原生 DSH chat、composer、theme 组件及 DSH AgentLoop/Session 的 RPNH Web
-前端，不是完整 stock DSH Web shell，也不是终端 TUI；该固定上游没有随包终端 TUI。
-不加载 DSH 原生 provider、工具和 workspace filesystem。模型路由、Registry owner、
-workspace 与受管执行仍由 RPNH 管理。
+launcher 通过 DSH 原生 Web transport 提供官方 `index.html` 和 client plugins。
+Typed Remote BFF 将官方浏览器契约接入 Python 共享 MainSession；生成的绑定代码打开该
+会话，不修改官方 UI。这替代了 `e9fa433` 已发布的组件拼装 Web 阶段。
 
-每次启动先检查固定源码及已安装依赖，应用既有 factory seam、复制前端源码并重新构建
-Web 资源（本地已准备环境约一秒），随后才获取 MainSession。该过程会写入 checkout，
-请使用独立可写副本；源码准备失败发生在取得会话写入权之前。
-[DSH 统一前端验证记录](../validation/dsh-unified-20261019_ZH.md)单独记录实际验证范围，
-不改写此前的[宿主／客户端兼容记录](../validation/frontends-20261019_ZH.md)。
-两份记录均不能超出各自结果，推称真实 provider、全平台或 wheel 已验收。
+支持文本输入、原生模型／effort 选择，以及原生 slash 菜单中的 RPNH 控制。只支持绑定的
+MainSession；不支持原生文件上传、任意创建会话、workspace 编辑或 DSH 原生本机工具执行。
+官方 client plugin 的存在不代表已开放相应后端能力。不加载 stock DSH AgentLoop、LLM、
+工具和 persistence runtime；执行、Registry 历史、workspace 与恢复仍由 Python RPNH
+负责。该固定上游没有随包终端 TUI。
+
+[DSH 统一前端验证记录](../validation/dsh-unified-20261019_ZH.md)区分此前组件阶段与官方
+Web 检查。官方 Web 验收以其独立结果为准；组件阶段不能证明本路径、真实 provider、
+全部 stock DSH 能力、全平台或 wheel 已验收。
 
 ## 准备固定版本源码
 
-集成目标是 `integrations/dsh/UPSTREAM.json` 声明的精确上游 revision。准备过程需要
-Node.js 与 pnpm，并在独立的上游 checkout 中执行。准备前先安装 pnpm 依赖
-（版本见下文）。以下可选的旧版宿主检查不会启动或验证 Web 前端：
+使用 `integrations/dsh/UPSTREAM.json` 固定的独立可写 checkout：上游
+`687f282e8625c6b8d11ff58211a90524be2e4317`（2026-10-17），root 为
+`@deepseek-ai/dsh-root@0.2.1-rc.2`，CLI 为 `@deepseek-ai/dsh@0.2.1-rc.2`。
+要求 Node `^22.19.0 || >=24.0.0`（此前宿主检查使用 `22.22.1`）与 pnpm `11.28.5`。
+启动前先在 checkout 中执行 `pnpm install --frozen-lockfile --ignore-scripts` 安装依赖。
+
+首次启动从 npm 下载精确 `0.2.1-rc.2` 的 31 个官方包，缓存到
+`SOURCE/rpnh-frontend/node_modules`。完整缓存可无网络复用；缺失或不完整的包需要下载。
+准备和资源预检均在获取 MainSession 写入权之前完成，因此下载或预检失败不会取得
+会话 owner。
+
+Setup 生成 `rpnh-frontend/official.json`、`tsconfig.json`、typed Remote descriptor 副本
+和 `generated/bound-client`，将官方 UI 接入绑定会话；不重建或修改官方 Web UI，不修补
+旧版 AgentLoop factory，也不启动模型调用。后续启动需继续保留可写 checkout 和缓存。
+RPNH wheel 不包含准备后的 checkout 或下载的官方包。
+
+2026-10-19 核对的[官方 npm 元数据](https://registry.npmjs.org/@deepseek-ai%2fdsh)为
+`latest=0.2.0-rc.2`、`next=0.2.1-rc.2`、`alpha=0.2.1-alpha.5`，当时默认 npm 安装与
+最新已发布预发布版本不同。这里使用精确的
+[源码提交](https://github.com/deepseek-ai/deepseek-harness/commit/687f282e8625c6b8d11ff58211a90524be2e4317)
+和固定 Web 包，不使用默认 CLI 安装；该次核对时 GitHub 无 latest release。
+
+## 旧版 headless host 准备
+
+以下可选检查仅适用于 `rpnh-dsh`，不验证官方 Web：
 
 ```bash
 RPNH_PYTHON=$(python -c 'import sys; print(sys.executable)')
@@ -79,24 +105,12 @@ bash integrations/dsh/prepare.sh "$RPNH_PYTHON" /absolute/path/to/deepseek-harne
 bash integrations/dsh/verify.sh /absolute/path/to/deepseek-harness
 ```
 
-当前宿主为上游 `687f282e8625c6b8d11ff58211a90524be2e4317`
-（2026-10-17），root 为 `@deepseek-ai/dsh-root@0.2.1-rc.2`，CLI 为
-`@deepseek-ai/dsh@0.2.1-rc.2`，使用 pnpm `11.28.5`。2026-10-19 核对
-[官方 npm 元数据](https://registry.npmjs.org/@deepseek-ai%2fdsh)：
-`latest=0.2.0-rc.2`、`next=0.2.1-rc.2`、`alpha=0.2.1-alpha.5`。
-默认 npm 安装与最新已发布预发布版本因此不同。
-[该源码提交](https://github.com/deepseek-ai/deepseek-harness/commit/687f282e8625c6b8d11ff58211a90524be2e4317)
-是源码集成目标；仅下载 CLI 包并不提供打补丁后的 factory。本次核对 GitHub 无 latest release。
-
-要求 Node `^22.19.0 || >=24.0.0`（本次验证使用 `22.22.1`）。准备前先在
-checkout 内执行 `pnpm install --frozen-lockfile --ignore-scripts`。共享工作区运行
-验证时应指定隔离的 HOME、cache 和临时目录。`RPNH_DSH_RESULTS` 可指定验证输出
-目录，默认位于上游 checkout 的 `rpnh-results`。验证实际加载上游 AgentLoop factory、
-Session、LlmRuntime、ToolRuntime 与 headless runner，响应由本地确定性替身提供。
-这是源码宿主验证，不代表 desktop/browser UI 或远程 provider 已验收。
-
-准备脚本核验固定 revision，并应用 RPNH backend 所需的窄 factory seam；它不会把凭据
-复制进仓库。
+旧版 prepare 核验固定 revision 并应用窄 AgentLoop factory seam；仅 CLI 包不提供该
+patched factory。它不会把凭据复制进仓库。共享工作区运行验证时应指定隔离的 HOME、
+cache 和临时目录。`RPNH_DSH_RESULTS` 可指定输出目录，默认是上游 checkout 中的
+`rpnh-results`。验证加载真实上游 AgentLoop factory、Session、LlmRuntime、ToolRuntime
+及 headless runner，响应由本地确定性替身提供。这是源码宿主检查，不是官方 Web 或
+真实 provider 验收。
 
 ## 旧版 registered headless host：离线运行
 

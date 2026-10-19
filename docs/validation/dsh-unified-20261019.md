@@ -1,83 +1,126 @@
 ---
 name: rpnh-dsh-unified-validation
-description: "Unified DSH frontend selection, shared MainSession and offline validation."
+description: "Offline validation of the official DSH Web UI, frontend selection and shared MainSession."
 metadata:
   document-kind: validation
   audience: operator-and-developer
   language: en
   counterpart: dsh-unified-20261019_ZH.md
-  revision: "2026-10-19.1"
+  revision: "2026-10-19.2"
   status: offline-validated
 ---
 
 [English](dsh-unified-20261019.md) | [中文](dsh-unified-20261019_ZH.md)
 
-# Unified DSH frontend — 2026-10-19
+# Official DSH Web and unified frontend validation — 2026-10-19
 
-`rpnh --frontend dsh` selects a Web presentation built from native DSH chat,
-composer and theme components, with DSH AgentLoop/Session lifecycle objects.
-It connects to the same direct RPNH MainSession as Basic, Codex and OpenCode.
-It is not the complete upstream Web shell. The pinned upstream does not bundle
-a terminal TUI.
+`rpnh --frontend dsh` uses the published official Web index, native client plugins,
+Web/Connection/Typert transports and module loader. A bound RPNH Remote BFF maps
+those UI contracts to the Python MainSession shared with Basic, Codex and OpenCode.
+The official browser assets are unchanged; a small RPNH client extension opens the
+launcher-bound session.
 
-The target is DSH source `687f282e8625c6b8d11ff58211a90524be2e4317`,
-`0.2.1-rc.2`, on Linux/WSL2 with Node `22.22.1`. The earlier
-[frontend compatibility record](frontends-20261019.md) documents the previous
-headless DSH host and other clients; this record adds the unified presentation.
+The pinned target is DSH source `687f282e8625c6b8d11ff58211a90524be2e4317`, npm
+assets `0.2.1-rc.2`, Linux/WSL2 and Node `22.22.1`. This version does not bundle a
+terminal TUI. [Earlier frontend validation](frontends-20261019.md) retains its
+Codex, OpenCode and legacy headless scope.
 
-## Behavior
+## Behavior and execution authority
 
-- `rpnh config frontend dsh --dsh-source CHECKOUT` saves a frontend preference
-  independently of provider/model configuration. Explicit `--frontend` wins;
-  `auto` retains its Codex-or-Basic behavior. `DSH_SOURCE` overrides a saved source.
-- Startup validates the pinned source and dependencies, compiles the browser
-  presentation, and checks assets before acquiring a MainSession owner lease.
-- The native host uses two inherited private pipes. Python owns the selected
-  provider, Registry writes, tools and recovery. Native DSH provider adapters,
-  tools, filesystem plugins and persistent session storage are not mounted.
-- History is projected from the bound MainSession. Reopening does not submit a
-  prompt or resume a paused turn. `/rpnh-resume` and `/rpnh-rollback` use the
-  shared application controls. Closing the host checkpoint-stops only main
-  turns launched or explicitly resumed by that frontend owner.
-- The existing `rpnh-dsh` registered headless host remains available with its
-  own existing session format and recovery contracts.
+- `rpnh config frontend dsh --dsh-source CHECKOUT` saves a preference independently
+  of provider/model configuration. An explicit `--frontend` wins; `auto` retains
+  Codex/Basic selection. `DSH_SOURCE` takes precedence over the saved source path.
+- Before taking the MainSession owner lease, the launcher checks the source pin,
+  Node and dependencies, prepares 31 pinned official packages, generates Loader
+  configuration and checks entry points. Missing packages download on first use;
+  complete cached packages work offline. Checks detect missing startup JS/CSS or
+  client entries; failed downloads retain the previous managed package.
+- Native Web uses a loopback listener and official connection authentication. The
+  host connects to Python through inherited private pipes. RPNH owns Registry
+  writes, provider calls, tools, stopping and recovery. Stock AgentLoop, LLM, tools
+  and session persistence are not loaded. There is one durable session authority;
+  transient UI events serve presentation.
+- History retains Registry timestamps. Unknown historical models stay unknown
+  rather than being attributed to the current profile. Native model and effort
+  selectors use available RPNH profiles; switching to a model without effort
+  support does not revive the previous effort.
+- The adapter supports bound-session text, native model selection and the RPNH
+  slash menu. It explicitly rejects creation of another native session. File
+  uploads, arbitrary workspace editing and native tool execution are outside this
+  adapter's scope.
+- Cold opening neither submits a prompt nor resumes a paused turn. Stop requests
+  a real checkpoint stop. `/rpnh-resume` and `/rpnh-rollback` use shared controls
+  through the native command menu. Closing stops only a main task started or
+  explicitly resumed by this frontend and waits for its checkpoint; it does not
+  acquire ownership of existing running or terminal tasks.
+- The legacy `rpnh-dsh` headless entry keeps its session format and recovery contract.
 
-## Checks and observed fixes
+## Official UI validation in this follow-up
 
 | Window | Result and scope |
 |---|---|
-| Python selection, CLI, launcher, private RPC and application boundary | 159 passed in 82.53 s; includes real Registry history/owner/reopen checks and local inherited-pipe child processes. |
-| Native DSH and actual Chromium | Final 11 passed in 8.56 s, including the earlier eight lifecycle/HTTP/FD/input/history/stop/resume cases and three release regressions. MainSession RPC in this window is scripted. |
-| Periodic owner scheduling | Before fix: one regression failed under continuous observation. After fix: three gateway checks passed, including GET observation behavior and owner-thread scheduling. |
-| Built wheel | Build, separate target install, packaged frontend modules, installed help and saved frontend configuration passed. This is not a full installed-wheel suite. |
-| Production launcher / real Registry / browser | Five phases passed: fresh answer; cold history and startup stop; cold checkpoint explicit resume and commit; checkpoint on exit; cold open remains paused. Two deterministic local provider calls; stop, exit and observation added none. Five explicit terminal SIGINT exits returned 130. |
-| Bootstrap stop and close boundary | 27 checks passed (22 application, 5 launcher); final related window: 10 passed. Windows overlap and are not summed. |
+| Python preferences, CLI, launcher and official assets | 54 passed in 3.80 s, including missing-entry repair, versioned reuse, failed-download retention, inherited pipes and owner lifecycle. |
+| Official Web and actual Chromium | 15 passed in 9.96 s, zero skipped: native history, new input, stop, cold reopening, resume command, A/high to B/no-effort selection, Host/Origin, private FDs and EOF. Python RPC is scripted in this window. |
+| Production launcher / real Registry / official browser | Five phases passed: fresh commit, cold history and startup stop, cold checkpoint resume and commit, shutdown pause, and cold paused reopening. Local fixture calls were `0→1→1→2→2→2`; five explicit SIGINT exits returned 130. Logical turn/attempt directory and Registry input/answer were checked. Stop covers startup before provider dispatch. |
+| Wheel and documentation | Build, isolated target installation, official modules/JSON, installed help and frontend preferences passed; 16 documents, 624 local targets and 46 Bash fences passed. This is not the full installed test suite. |
 
-Final review also reproduced missing Host/Origin checks and stale reasoning effort after switching from a reasoning model to a model without that setting. Three regressions failed before correction. The server now checks the exact loopback Host before serving the token, checks a supplied API Origin, and initializes UI model/effort once so polling preserves the user selection. All eleven native tests then passed.
+Additional real rollback validation passed: native `/rpnh-rollback` retains the
+logical turn and attempt directory, records Registry state `interrupted`, and adds
+no provider call. The next input was also admitted, checkpoint-stopped and rolled
+back. The composer remains available and both committed answers remain. The
+five-stage run ended with turn three genuinely paused; after the extra controls,
+the retained session has two committed and two interrupted turns with no active
+turn. Child Registries and checkpoints remain. All official-stage attempts total
+three local fixture submissions: two in the passing run and one fresh commit
+before attempt two's selector failure. Remote provider/model calls remain zero.
 
-Independent review found that a cold explicit resume did not register the newly
-launched main task as owned by the frontend. Two regressions failed before the
-fix. Ownership is now added only after `RESUME_STARTED`; existing running or
-terminal tasks are not newly claimed. Application boundary checks passed.
+The first prototype loaded modules and a renderer only; it was not a UI pass.
+Later prototypes rendered the official sidebar, chat and composer. Formal browser
+checks exposed missing step events: cold history rendered, while a newly completed
+answer had no body. The presentation projection now supplies native step/start
+and step/end. Native command lookup provider registration was also corrected to
+the official contract; initial failures are retained. Regressions cover silent
+false success from New Session and dropped public session errors: creation is
+explicitly rejected, and native errors are emitted on opening and changes, with
+the checkpoint notice preserved.
 
-Production browser testing also confirmed a startup window in which a database exists before its run identity is committed. Stop can now use the one live main-task handle registered by this frontend, then wait for an actual checkpoint. Registry validation is unchanged; foreign tasks cannot be signalled through this path. Original failure and diagnostic evidence are retained. BrokenPipeError observed while closing an exited Node peer is handled by the existing transport-error path.
+Real rollback also exposed a presentation mismatch: native DSH `interrupted`
+means an orphaned turn after an unexpected exit, whereas this RPNH state comes
+from owner rollback. Only the displayed ending now maps to `aborted/user`; Registry
+state is preserved and paused turns remain open. The before-fix failure, original
+false crash text and passing regression are retained. The old scripted fixture
+incorrectly removed a turn; it now retains the interrupted lineage. No rebaseline
+was added for that fixture error.
 
-Production browser testing also exposed owner scheduling that depended on an
-idle request queue. Continuous DSH observations could prevent terminal evidence
-from being committed. Owner reconciliation now follows a monotonic deadline;
-read methods remain observation methods.
+Independent review closed two asset/history issues: a missing startup JS file no
+longer qualifies for cache reuse, and unknown historical model evidence is not
+assigned to the current profile. Before-fix failures and passing checks are kept.
+The nine-file implementation type window had zero owned diagnostics and 109
+upstream diagnostics; only rollback regressions and the display mapping followed.
+The complete upstream TypeScript graph is not a passing window. No real remote provider/model calls were made. This report does not certify
+all DSH capabilities, live providers, every platform or later revisions.
 
-Initial failures are retained: a Chromium socket path exceeded its platform
-limit; the composer lacked native editor behavior registration; font loading
-needed the correct CSP; and the first local provider fixture emitted
-noncanonical JSON, which the adapter correctly rejected. The fixture was fixed
-without changing protocol validation. The subsequent real Registry run reached
-terminal evidence and exposed the scheduling defect above.
+## Published component stage and inherited fixes
 
-The integration build passed and the checked host files had no remaining type
-diagnostics. Whole-graph TypeScript checking still fails on upstream vendor
-sources; it is not reported as a pass. No remote provider/model was called.
-This record does not certify the complete stock Web application, live providers,
-all platforms, or later upstream revisions.
+The earlier published stage used DSH chat/composer/theme components and native
+AgentLoop/Session without the complete official Web shell. Its five-stage real
+Registry acceptance and final 11 native tests remain historical evidence; they
+do not substitute for the official UI window above. Python 159, startup-stop/
+launcher 27 and final ownership 10 windows retain their scopes and overlap; do
+not add their counts.
 
-See the [DSH guide](../guides/dsh.md) for setup and operation.
+Inherited fixes register frontend ownership only after `RESUME_STARTED`, schedule
+owner reconciliation by a monotonic deadline even under continuous reads, and
+handle startup stop before native run identity is committed using only the
+unique live main-task handle already owned by this frontend. Stop still waits
+for real checkpoint evidence. BrokenPipe on normal child closure enters existing
+transport error handling. Registry authority is unchanged; process exit does not
+stand in for a checkpoint or completion. The first local fixture's noncanonical
+JSON was correctly rejected; only fixture serialization was corrected.
+
+The first two official end-to-end failures were driver selectors: empty and
+existing sessions use different placeholders, and the sidebar, breadcrumb and
+message repeat the prompt text. Original evidence is retained; only the local
+driver was corrected. Neither attempt counts as a complete pass.
+
+See the [DSH guide](../guides/dsh.md) for setup and controls.

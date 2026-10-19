@@ -1,20 +1,20 @@
 ---
 name: rpnh-dsh-guide
-description: "Use the DSH Web frontend with one shared RPNH main session, or the advanced legacy host."
+description: "Use official DSH Web with a bound RPNH main session, or the advanced legacy host."
 metadata:
   document-kind: guide
   audience: operator-and-developer
   language: en
   counterpart: dsh_ZH.md
-  revision: "2026-10-19.2"
+  revision: "2026-10-19.3"
   status: source-reviewed-pre-release
 ---
 
 [English](dsh.md) | [中文](dsh_ZH.md)
 
-# DSH Web frontend and legacy host
+# Official DSH Web and legacy host
 
-Use `rpnh --frontend dsh` to chat in a browser with the same RPNH main session
+Use `rpnh --frontend dsh` to open official DSH Web with the same RPNH main session
 as Basic, Codex and OpenCode. First configure a model through the usual RPNH
 setup and prepare the pinned DSH checkout described below. Then save your
 frontend preference:
@@ -52,43 +52,75 @@ that behavior. One-shot `--prompt` uses Basic; explicit `--frontend dsh` with
 Create a session with `--session-dir ROOT`; after its frontend exits, reopen
 that exact root with `rpnh --frontend dsh --resume ROOT` or another supported
 frontend. The shared owner lease permits only one writable owner. Registry
-history remains authoritative; DSH's Session is a display projection, not a
-second durable conversation.
+history remains authoritative. The Web session and workspace lists expose only
+the launcher-bound MainSession and its display context, not arbitrary DSH
+sessions or editable workspaces.
 
-Reopening history does not execute or continue a paused turn. Use the Stop
-button for a checkpoint stop, then explicitly enter `/rpnh-resume` to continue
-or `/rpnh-rollback` to return main conversation to its previous completed turn.
-`/rpnh-help` lists the shared RPNH task controls, including `/rpnh-tasks`,
-`/rpnh-task`, `/rpnh-net`, `/rpnh-agent` and `/rpnh-workflow`. Launching or
-resuming work can call the selected model and tools. Model and reasoning-effort
-choices come from the shared RPNH catalog.
+Reopening history does not execute or continue a paused turn. Use the native
+Stop control for a checkpoint stop. In the native slash-command menu, select
+`/rpnh-resume` to continue or `/rpnh-rollback` to return main conversation to its
+previous completed turn. `/rpnh-help` lists the shared RPNH task controls,
+including `/rpnh-tasks`, `/rpnh-task`, `/rpnh-net`, `/rpnh-agent` and
+`/rpnh-workflow`; use the menu and its argument input rather than submitting
+commands as ordinary text. Launching or resuming work can call the selected
+model and tools through Python. The native model and reasoning-effort selectors
+show the shared RPNH catalog.
 
 ## What the Web interface includes
 
-This is an RPNH Web frontend built with native DSH chat, composer and theme
-widgets plus DSH AgentLoop/Session. It is not the full stock DSH Web shell or
-a terminal TUI; this pinned upstream has no bundled terminal TUI. Native DSH
-providers, tools and workspace filesystem are not loaded. RPNH retains model
-routing, Registry ownership, workspace and managed execution authority.
+The launcher serves the official DSH `index.html` and client plugins through
+DSH's native Web transport. A typed Remote BFF implements the official browser
+contracts over Python's shared MainSession; generated binding code opens that
+session without editing the official UI. This replaces the component-composed
+Web milestone published at `e9fa433`.
 
-On every launch, the launcher checks the pinned source and installed
-dependencies, applies the existing factory seam, copies the frontend source,
-and rebuilds its Web assets (about one second in the prepared local setup)
-before acquiring MainSession. It writes to the checkout, so use a dedicated
-writable copy. Source preparation failures occur before session ownership.
+Supported input is text, native model/effort selection and native slash-menu
+RPNH controls. Only the bound MainSession is available. Native file uploads,
+arbitrary session creation, workspace editing and native DSH local tool execution are
+unsupported. The presence of an official client plugin does not grant its
+backend capability. Stock DSH AgentLoop, LLM, tools and persistence runtimes
+are not loaded; execution, Registry history, workspaces and recovery stay with
+Python RPNH. The pinned upstream has no bundled terminal TUI.
+
 The [unified DSH validation record](../validation/dsh-unified-20261019.md)
-tracks the actual checked scope separately from the earlier
-[host/client compatibility record](../validation/frontends-20261019.md).
-Neither record implies live-provider, all-platform or wheel acceptance beyond
-its stated results.
+separates the earlier component milestone from official Web checks. Assess
+official Web acceptance from its own results; the component milestone does not
+establish acceptance of this path, live providers, all stock DSH capabilities,
+all platforms or wheels.
 
 ## Prepare the pinned source
 
-The integration targets the exact upstream revision declared in
-`integrations/dsh/UPSTREAM.json`. Preparation requires Node.js and pnpm and
-must be run against a separate upstream checkout. Install its pnpm dependencies
-before preparation (see the versions below). These optional legacy host checks
-do not launch or validate the Web frontend:
+Use the dedicated writable checkout pinned by `integrations/dsh/UPSTREAM.json`:
+upstream `687f282e8625c6b8d11ff58211a90524be2e4317` (2026-10-17), root
+`@deepseek-ai/dsh-root@0.2.1-rc.2` and CLI `@deepseek-ai/dsh@0.2.1-rc.2`.
+It requires Node `^22.19.0 || >=24.0.0` (the earlier host checks used `22.22.1`)
+and pnpm `11.28.5`. Install the checkout's dependencies with
+`pnpm install --frozen-lockfile --ignore-scripts` before launching.
+
+The first launch downloads 31 official npm packages at exact version
+`0.2.1-rc.2` into `SOURCE/rpnh-frontend/node_modules`. A complete cache is reused
+without network access; missing or incomplete packages require a download.
+Preparation and asset checks finish before MainSession ownership is acquired.
+A download or preflight failure therefore does not acquire the session owner.
+
+Setup generates `rpnh-frontend/official.json`, `tsconfig.json`, typed Remote
+descriptor copies and `generated/bound-client`. These connect the official UI
+to the bound session; they do not rebuild or modify the official Web UI, patch
+the legacy AgentLoop factory, or start a model call. The checkout and its cache
+must remain writable and available for subsequent launches. The prepared
+checkout and downloaded packages are not bundled in the RPNH wheel.
+
+On 2026-10-19, [official npm metadata](https://registry.npmjs.org/@deepseek-ai%2fdsh)
+reported `latest=0.2.0-rc.2`, `next=0.2.1-rc.2` and `alpha=0.2.1-alpha.5`.
+Default npm install and the newest published prerelease therefore selected
+different versions. This integration uses the exact
+[source commit](https://github.com/deepseek-ai/deepseek-harness/commit/687f282e8625c6b8d11ff58211a90524be2e4317)
+and pinned Web packages, not a default CLI installation. GitHub had no latest
+release in that check.
+
+## Legacy headless host preparation
+
+The following optional checks are for `rpnh-dsh`, not official Web:
 
 ```bash
 RPNH_PYTHON=$(python -c 'import sys; print(sys.executable)')
@@ -96,28 +128,15 @@ bash integrations/dsh/prepare.sh "$RPNH_PYTHON" /absolute/path/to/deepseek-harne
 bash integrations/dsh/verify.sh /absolute/path/to/deepseek-harness
 ```
 
-The current host is upstream `687f282e8625c6b8d11ff58211a90524be2e4317`
-(2026-10-17), root `@deepseek-ai/dsh-root@0.2.1-rc.2` and CLI
-`@deepseek-ai/dsh@0.2.1-rc.2`, using pnpm `11.28.5`. On 2026-10-19,
-[official npm metadata](https://registry.npmjs.org/@deepseek-ai%2fdsh)
-reported `latest=0.2.0-rc.2`, `next=0.2.1-rc.2` and
-`alpha=0.2.1-alpha.5`. Thus a default npm install and the newest published
-prerelease select different versions. The [source commit](https://github.com/deepseek-ai/deepseek-harness/commit/687f282e8625c6b8d11ff58211a90524be2e4317)
-is the source integration target; a downloaded CLI package alone does not
-provide the patched factory. GitHub has no latest release for this check.
-
-Use Node `^22.19.0 || >=24.0.0` (tested here with `22.22.1`). Install the
-checkout's dependencies with `pnpm install --frozen-lockfile --ignore-scripts`
-before preparation. Select an isolated HOME, cache and temporary directory
-when running verification in a shared workspace. `RPNH_DSH_RESULTS` overrides
-the verification output directory; its default is `rpnh-results` inside the
-upstream checkout. Verification runs the actual upstream AgentLoop factory,
-Session, LlmRuntime, ToolRuntime and headless runner with deterministic local
-responses. This is a source-host check, not a desktop/browser UI or remote
-provider acceptance test.
-
-Preparation checks the pinned revision and applies the narrow factory seam
-needed by the RPNH backend. It does not copy credentials into the repository.
+Legacy preparation checks the pinned revision and applies its narrow AgentLoop
+factory seam; a CLI package alone does not provide that patched factory. It
+does not copy credentials into the repository. Select an isolated HOME, cache
+and temporary directory when running verification in a shared workspace.
+`RPNH_DSH_RESULTS` overrides its output directory, which defaults to
+`rpnh-results` in the upstream checkout. Verification runs the actual upstream
+AgentLoop factory, Session, LlmRuntime, ToolRuntime and headless runner with
+deterministic local responses. This is a source-host check, not official Web
+or remote-provider acceptance.
 
 ## Legacy registered headless host: offline
 

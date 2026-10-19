@@ -6,9 +6,9 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: cli.md
-  revision: "2026-10-19.2"
+  revision: "2026-10-19.3"
   status: source-reviewed
-  basis: "current source for unified DSH and preferences; older source links retain their revision; not a new runtime validation"
+  basis: "current source for official DSH Web and preferences; older source links retain their revision; runtime results tracked in the dated record"
 ---
 
 [English](cli.md) | [中文](cli_ZH.md)
@@ -154,15 +154,17 @@ rpnh package resolve ZIP [--local-package ZIP ...] [--entry ENTRY_ID]
 
 普通文本进入 main 或所选单 agent；所选 workflow 需要 `TARGET :: TEXT`。该 parser 没有短写 `/checkpoints`、`/reopen`，应使用 `/task ID ...`。stop 请求被接受不等于 checkpoint 完成。Resume、checkpoint reopen、rollback 的数据和副作用语义不同，按[恢复决策指南](../guides/checkpoint-recovery_ZH.md)与[未知副作用排障](../guides/troubleshooting_ZH.md)处理。
 
-## DSH Web 控制
+## 官方 DSH Web 控制
 
-`rpnh --frontend dsh` 打开采用原生 DSH chat／composer／theme 组件及 AgentLoop/Session
-的 RPNH Web 前端，不是完整 stock DSH Web shell 或 TUI；该固定上游没有随包终端 TUI。
-浏览器未自动打开时访问打印的 loopback URL。`Ctrl+C` 退出宿主，仅对其持有的 main turn
-请求 checkpoint stop。Basic、Codex、OpenCode 与 DSH Web 共用
-`--session-dir`／`--resume`、Registry 历史和唯一可写 owner。重开历史不会自动继续暂停 turn。
+`rpnh --frontend dsh` 打开官方 DSH Web：原生 index、client plugins 和 Web transport
+通过 typed Remote BFF 接入 Python MainSession，不加载 stock DSH AgentLoop、LLM、
+工具及 persistence。仅提供 launcher 绑定的会话。浏览器未自动打开时访问打印的带认证
+loopback URL。`Ctrl+C` 退出宿主，仅对其持有的 main turn 请求 checkpoint stop。
+Basic、Codex、OpenCode 与 DSH Web 共用 `--session-dir`／`--resume`、Registry 历史和
+唯一可写 owner。重开历史不会自动继续暂停 turn。
 
-在 Web 输入框内使用以下命令；完整参数见 `/rpnh-help`：
+使用原生 slash 菜单及参数输入，选择 `/rpnh-help` 查看完整参数；不要将 RPNH 命令作为
+普通聊天文本提交：
 
 | 控制 | 含义 |
 |---|---|
@@ -172,9 +174,11 @@ rpnh package resolve ZIP [--local-package ZIP ...] [--entry ENTRY_ID]
 | `/rpnh-resume`、`/rpnh-rollback` | 显式继续暂停的 main turn，或将主对话回退到上一个已完成 turn |
 | `/rpnh-send UNIQUE_ID TEXT` | 提交具有显式身份的 main 输入 |
 
-Stop 按钮请求 checkpoint stop。模型／effort 控制来自 RPNH catalog；不加载 DSH 原生
-provider、工具或 workspace filesystem。参阅 [DSH 设置与边界](../guides/dsh_ZH.md)和
-[统一前端验证记录](../validation/dsh-unified-20261019_ZH.md)。`rpnh-dsh` 仍为独立的高级
+原生 Stop 请求 checkpoint stop，模型／effort 选择器使用 RPNH catalog。仅接受文本输入，
+不支持原生上传、任意会话、workspace 编辑或 DSH 原生本机工具执行；没有随包终端 TUI。
+设置与边界见 [DSH 指南](../guides/dsh_ZH.md)；
+[验证记录](../validation/dsh-unified-20261019_ZH.md)区分此前组件阶段与官方 Web E2E 结果。
+`rpnh-dsh` 仍为独立的高级
 旧版 headless host，其 `--root`、`--session-id`、frame 与 attempt-budget 选项见该指南。
 
 ## 受控项目 HOST

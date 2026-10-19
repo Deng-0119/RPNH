@@ -69,6 +69,7 @@ integrations = [
   "dsh/patch_upstream.py",
   "dsh/src/*.ts",
     "dsh/frontend/*.ts",
+  "dsh/frontend/*.json",
   "dsh/fixtures/*.json",
 ]
 

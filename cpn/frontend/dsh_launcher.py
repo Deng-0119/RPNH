@@ -68,36 +68,30 @@ def prepare_dsh_frontend(source: Path, env: Mapping[str, str]) -> tuple[str, Pat
     if not (source / "node_modules/.bin/tsx").is_file():
         raise RuntimeError("Install the pinned DSH dependencies before starting its frontend")
     resource = importlib.resources.files("integrations.dsh")
-    with importlib.resources.as_file(resource.joinpath("patch_upstream.py")) as patch:
-        prepared = subprocess.run(
-            [sys.executable, str(patch), str(source)], env=dict(env),
-            capture_output=True, text=True, check=False)
-    if prepared.returncode:
-        raise RuntimeError("DSH factory preparation failed; use the supported source checkout")
     target = source / "rpnh-frontend"
     target.mkdir(exist_ok=True)
     for module in resource.joinpath("frontend").iterdir():
-        if module.name.endswith(".ts") and not module.name.endswith(".test.ts"):
+        if (module.name.endswith(".ts") and not module.name.endswith(".test.ts")
+                or module.name == "web-packages.json"):
             with importlib.resources.as_file(module) as path:
                 shutil.copyfile(path, target / module.name)
-    build_env = {**env, "TSX_TSCONFIG_PATH": str(source / "tsconfig.base.json")}
-    # Rebuild the presentation from the installed source on launch. This also
-    # covers RPNH updates without a separate source-signature or timestamp gate.
-    built = subprocess.run(
-        [node, "--import", "tsx", str(target / "build.ts")],
-        cwd=source, env=build_env, capture_output=True, text=True, check=False)
-    if built.returncode:
-        print((built.stderr or built.stdout)[-4000:], file=sys.stderr)
-        raise RuntimeError(
-            "DSH Web presentation build failed; install the pinned checkout's "
-            "frontend dependencies before launching")
+    from cpn.frontend.dsh_assets import prepare_official_web_assets
+    prepare_official_web_assets(target / "node_modules")
+    native_env = {**env, "TSX_TSCONFIG_PATH": str(source / "tsconfig.base.json")}
+    prepared = subprocess.run(
+        [node, "--import", "tsx", str(target / "setup.ts")],
+        cwd=source, env=native_env, capture_output=True, text=True, check=False)
+    if prepared.returncode:
+        print((prepared.stderr or prepared.stdout)[-4000:], file=sys.stderr)
+        raise RuntimeError("DSH official Web host preparation failed")
+    native_env["TSX_TSCONFIG_PATH"] = str(target / "tsconfig.json")
     checked = subprocess.run(
         [node, "--import", "tsx", str(target / "frontend.ts"), "--check"],
-        cwd=source, env=build_env, capture_output=True,
+        cwd=source, env=native_env, capture_output=True,
         text=True, timeout=30, check=False)
     if checked.returncode:
         print((checked.stderr or checked.stdout)[-4000:], file=sys.stderr)
-        raise RuntimeError("DSH Web presentation is not ready; check its source dependencies and assets")
+        raise RuntimeError("DSH official Web frontend is not ready; check its source dependencies and assets")
     return node, target / "frontend.ts"
 
 
@@ -110,8 +104,9 @@ def run_dsh_frontend(
     with tempfile.TemporaryDirectory(prefix="rpnh-dsh-frontend-") as directory:
         scratch = Path(directory)
         env = isolated_environment(scratch, os.environ)
+        env["RPNH_DSH_CALLER_CWD"] = str(Path.cwd().resolve())
         node, entry = prepare_dsh_frontend(source, env)
-        env["TSX_TSCONFIG_PATH"] = str(source / "tsconfig.base.json")
+        env["TSX_TSCONFIG_PATH"] = str(source / "rpnh-frontend/tsconfig.json")
         gateway = FrontendGateway(
             lambda: RegistryFrontendApplication(root, execution, resume=resume))
         try:

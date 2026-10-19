@@ -6,7 +6,7 @@ metadata:
   audience: user-and-developer
   language: en
   counterpart: CHANGELOG_ZH.md
-  revision: "2026-10-19.2"
+  revision: "2026-10-19.3"
   status: v0.1.0rc2-unreleased
 ---
 
@@ -20,16 +20,22 @@ metadata:
   with `--dsh-source`. Explicit frontend flags override saved preferences; `auto`
   retains Codex/Basic selection. Basic, Codex, OpenCode and DSH Web share the
   direct MainSession root, history, owner lease and explicit checkpoint controls.
-  DSH prepares pinned `687f282` source and rebuilds assets before owner startup;
+  DSH prepares pinned `687f282` source and official assets before owner startup;
   explicit DSH with `--prompt` is rejected before model resolution.
-- DSH presents an RPNH Web frontend using native chat/composer/theme widgets and
-  AgentLoop/Session, not the full stock Web shell or a TUI. Native providers,
-  tools and workspace filesystem are not loaded; the pinned upstream bundles no
-  terminal TUI. `rpnh-dsh` remains the advanced legacy headless host with its
-  original root, budget, frame and recovery contracts. See the
-  [guide](docs/guides/dsh.md) and separate
-  [unified validation record](docs/validation/dsh-unified-20261019.md) for actual
-  scope; this entry does not certify live providers, all platforms or wheels.
+- Replaced the `e9fa433` component Web milestone with official DSH `index.html`,
+  client plugins, native Web transport and a typed Remote BFF over Python
+  MainSession, leaving official UI unchanged. First launch downloads 31 exact
+  `0.2.1-rc.2` official npm packages into `SOURCE/rpnh-frontend/node_modules`;
+  complete caches work offline and preflight precedes session ownership.
+- Official Web supports only the bound MainSession: text, native model/effort
+  selection and native slash-menu RPNH controls. Native uploads, arbitrary
+  sessions, workspace editing and native DSH local tool execution are unsupported; stock
+  DSH AgentLoop, LLM, tools and persistence are not loaded. No terminal TUI is
+  bundled. `rpnh-dsh` retains its legacy root, budget, frame and recovery
+  contracts. See the [guide](docs/guides/dsh.md) and
+  [validation record](docs/validation/dsh-unified-20261019.md) for official Web
+  E2E results, distinct from the component milestone; no live-provider,
+  all-capability, all-platform or wheel acceptance is implied.
 
 - Fixed cold resumed-main-task ownership, periodic reconciliation under continuous observation, and startup checkpoint-stop while child Registry bootstrap is incomplete.
 

@@ -236,20 +236,20 @@ child Registry。Provider 提交状态未知时会被记录，而不是静默重
 ## 前端与宿主集成
 
 客户端版本与此前离线检查见[2026-10-19 前端适配](docs/validation/frontends-20261019_ZH.md)。
-统一 DSH 的检查单列于[新验证记录](docs/validation/dsh-unified-20261019_ZH.md)。
+此前组件阶段与官方 DSH Web 检查单列于[新验证记录](docs/validation/dsh-unified-20261019_ZH.md)。
 
 | 入口 | 用途 |
 |---|---|
 | `rpnh --frontend basic` | 内置终端，提供主会话与独立任务控制 |
 | `rpnh --frontend codex` | Codex 0.163.0 展示前端；见[适配器指南](docs/guides/adapters_ZH.md) |
 | `rpnh --frontend opencode` | OpenCode 1.19.3 展示前端；见[OpenCode 指南](docs/guides/opencode_ZH.md) |
-| `rpnh --frontend dsh` | 使用原生 DSH 组件的 RPNH Web 前端；见[DSH 指南](docs/guides/dsh_ZH.md) |
+| `rpnh --frontend dsh` | 绑定 Python MainSession 的官方 DSH Web；见[DSH 指南](docs/guides/dsh_ZH.md) |
 | `rpnh-dsh` | 使用独立 session root 的高级旧版 registered headless host；见同一指南 |
 
 Basic、Codex、OpenCode 与 DSH Web 展示同一个直接 MainSession root。先用
 `--session-dir` 创建；当前前端退出后，再用另一个前端对完全相同的路径执行 `--resume`。
 共享 owner lease 仅允许一个可写展示，Registry 历史是共同记录。重开历史不会自动继续
-暂停 turn；DSH Web 提供显式 `/rpnh-resume` 与 `/rpnh-rollback` 控制。
+暂停 turn；DSH Web 通过原生 slash 菜单提供 `/rpnh-resume` 与 `/rpnh-rollback` 控制。
 
 ```bash
 rpnh config frontend dsh --dsh-source /absolute/path/to/deepseek-harness
@@ -259,14 +259,17 @@ rpnh --session-dir ./main-session
 
 保存偏好与模型设置独立，显式 `--frontend` 优先。未保存偏好时，`auto` 仍选择兼容
 Codex 或 Basic。`DSH_SOURCE` 优先于保存的源码路径。DSH 要求固定源码 `687f282`
-（`0.2.1-rc.2`）、Node `^22.19.0 || >=24.0.0` 和已安装的 pnpm 依赖。launcher 在
-获取会话前准备并重建 Web 资源，打印 loopback URL 并尝试打开浏览器。`Ctrl+C` 退出
-宿主，只对其持有的 main turn 请求 checkpoint stop。显式 DSH 与 `--prompt` 组合在
-解析模型前拒绝。
+（`0.2.1-rc.2`）、Node `^22.19.0 || >=24.0.0` 和已安装的 pnpm 依赖。首次启动从 npm
+下载精确 `0.2.1-rc.2` 的 31 个官方包到 `SOURCE/rpnh-frontend/node_modules`，完整缓存
+可离线复用。Setup 与资源预检在获取会话前完成。launcher 打印带认证的 loopback URL
+并尝试打开浏览器。`Ctrl+C` 退出宿主，只对其持有的 main turn 请求 checkpoint stop。
+显式 DSH 与 `--prompt` 组合在解析模型前拒绝。
 
-DSH 界面使用原生 chat／composer／theme 组件与 AgentLoop/Session，是 RPNH Web 前端，
-不是完整 stock DSH Web shell 或 TUI；该固定上游没有随包终端 TUI。模型控制来自 RPNH，
-不加载 DSH 原生 provider、工具或 workspace filesystem。实际验证范围见上方独立记录。
+官方 DSH index／client plugins 和 Web transport 经 typed Remote BFF 接入 Python
+共享 MainSession，替代此前 `e9fa433` 组件拼装阶段，不修改官方 UI。仅支持一个绑定
+会话的文本、原生模型／effort 选择和原生 slash 菜单 RPNH 控制。不支持原生上传、任意
+会话、workspace 编辑或 DSH 原生本机工具执行；不加载 stock DSH AgentLoop、LLM、工具和
+persistence runtime，没有随包终端 TUI。官方 Web 结果与组件阶段分列，见上方独立验证记录。
 
 ## 项目协作与结果范围
 

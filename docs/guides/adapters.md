@@ -1,12 +1,12 @@
 ---
 name: rpnh-optional-adapters
-description: "Use Codex and unified DSH presentation, or the advanced legacy DSH host."
+description: "Use Codex and official DSH Web presentation, or the advanced legacy DSH host."
 metadata:
   document-kind: how-to
   audience: operator-and-developer
   language: en
   counterpart: adapters_ZH.md
-  revision: "2026-10-19.2"
+  revision: "2026-10-19.3"
   status: source-reviewed
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -55,7 +55,7 @@ Codex receives the same direct MainSession root as Basic, OpenCode and DSH Web. 
 the current owner exits. Codex protocol thread IDs and `.frontends/codex.json`
 are rebuildable presentation metadata; the Registry transcript is authoritative.
 
-## DSH Web frontend
+## Official DSH Web frontend
 
 Use the shared main session in a browser:
 
@@ -72,19 +72,27 @@ overrides the saved checkout. Preferences are independent of model configuration
 and can be saved before model setup. `rpnh --frontend dsh --prompt TEXT` is
 rejected before model resolution.
 
-The launcher prints a loopback URL and attempts to open a browser. This RPNH Web
-frontend uses native DSH chat/composer/theme widgets and AgentLoop/Session; it
-is not the full stock DSH Web shell or a TUI. The pinned upstream bundles no
-terminal TUI. Native DSH providers, tools and workspace filesystem are not
-loaded. The RPNH catalog, controls and Registry history are shared, with one
-writable owner. Viewing reopened history never continues work automatically;
-use `/rpnh-resume` or `/rpnh-rollback` explicitly. `Ctrl+C` exits the host and
-checkpoint-stops its owned main turn only.
+The launcher prints an authenticated loopback URL and attempts to open a
+browser. It serves official DSH `index.html` and client plugins through native
+Web transport and a typed Remote BFF. All execution stays in Python's shared
+MainSession; stock DSH AgentLoop, LLM, tools and persistence runtimes are not
+loaded. Only the bound session is exposed: text input, native model/effort
+selectors and native slash-menu RPNH controls. File uploads, arbitrary sessions,
+workspace editing and native DSH local tool execution are unsupported. The pinned upstream
+bundles no terminal TUI.
 
-The launcher applies the factory seam and builds Web assets on every launch
-before acquiring MainSession. See the [DSH guide](dsh.md) for pinned source,
-Node/pnpm requirements and the separate
-[unified frontend validation](../validation/dsh-unified-20261019.md).
+The RPNH catalog, Registry history and one writable owner remain shared.
+Viewing reopened history never continues work automatically; choose
+`/rpnh-resume` or `/rpnh-rollback` from the native slash menu. `Ctrl+C` exits the
+host and checkpoint-stops its owned main turn only.
+
+First launch downloads 31 exact `0.2.1-rc.2` official packages into
+`SOURCE/rpnh-frontend/node_modules`; complete cached packages are reused offline.
+Setup generates the loader configuration and bound-session bridge without
+changing official UI. Asset preflight finishes before acquiring MainSession.
+See the [DSH guide](dsh.md) for source and Node/pnpm requirements, and the
+[validation record](../validation/dsh-unified-20261019.md) for the separate
+component milestone and official Web E2E results.
 
 ## Legacy registered headless DSH host prerequisites
 

@@ -6,9 +6,9 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: cli_ZH.md
-  revision: "2026-10-19.2"
+  revision: "2026-10-19.3"
   status: source-reviewed
-  basis: "current source for unified DSH and preferences; older source links retain their revision; not a new runtime validation"
+  basis: "current source for official DSH Web and preferences; older source links retain their revision; runtime results tracked in the dated record"
 ---
 
 [English](cli.md) | [中文](cli_ZH.md)
@@ -209,17 +209,19 @@ Resume, checkpoint reopen and rollback have different data/effect semantics;
 use the [recovery decision guide](../guides/checkpoint-recovery.md) and
 [unknown-effect handling](../guides/troubleshooting.md#stop-resume-and-unknown-effects).
 
-## DSH Web controls
+## Official DSH Web controls
 
-`rpnh --frontend dsh` opens an RPNH Web frontend built with native DSH
-chat/composer/theme widgets and AgentLoop/Session. It is not the full stock DSH
-Web shell or a TUI; the pinned upstream has no bundled terminal TUI. Use the
-printed loopback URL if automatic browser opening fails. `Ctrl+C` exits the
-host and checkpoint-stops only its owned main turn. Basic, Codex, OpenCode and
-DSH Web share `--session-dir`/`--resume`, Registry history and one writable owner.
-Reopening history does not automatically continue a paused turn.
+`rpnh --frontend dsh` opens official DSH Web: the native index, client plugins
+and Web transport use a typed Remote BFF backed by Python MainSession. Stock
+DSH AgentLoop, LLM, tools and persistence are not loaded. Only the launcher-bound
+session is available. Use the printed authenticated loopback URL if browser
+opening fails. `Ctrl+C` exits the host and checkpoint-stops only its owned main
+turn. Basic, Codex, OpenCode and DSH Web share `--session-dir`/`--resume`,
+Registry history and one writable owner. Reopening history never automatically
+continues a paused turn.
 
-Enter these in the Web composer; `/rpnh-help` gives full arguments:
+Use the native slash-command menu and argument input; select `/rpnh-help` for
+full arguments. Do not send RPNH commands as ordinary chat text:
 
 | Control | Meaning |
 |---|---|
@@ -229,10 +231,12 @@ Enter these in the Web composer; `/rpnh-help` gives full arguments:
 | `/rpnh-resume`, `/rpnh-rollback` | Explicitly continue a paused main turn or roll main conversation back to the previous completed turn |
 | `/rpnh-send UNIQUE_ID TEXT` | Submit an explicitly identified main input |
 
-The Stop button requests a checkpoint stop. Model/effort controls use the RPNH
-catalog; native DSH providers, tools and workspace filesystem are not loaded.
+Native Stop requests a checkpoint stop; model/effort selectors use the RPNH
+catalog. Input is text only. Native uploads, arbitrary sessions, workspace
+editing and native DSH local tool execution are unsupported; no terminal TUI is bundled.
 See [DSH setup and limits](../guides/dsh.md) and the
-[unified validation record](../validation/dsh-unified-20261019.md).
+[validation record](../validation/dsh-unified-20261019.md), which distinguishes
+the component milestone from official Web E2E results.
 `rpnh-dsh` remains a separate advanced legacy headless host; its `--root`,
 `--session-id`, frame and attempt-budget options are documented in that guide.
 

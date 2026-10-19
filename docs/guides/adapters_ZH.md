@@ -1,12 +1,12 @@
 ---
 name: rpnh-optional-adapters
-description: "Use Codex and unified DSH presentation, or the advanced legacy DSH host."
+description: "使用 Codex 与官方 DSH Web 展示，或高级旧版 DSH 宿主。"
 metadata:
   document-kind: how-to
   audience: operator-and-developer
   language: zh-CN
   counterpart: adapters.md
-  revision: "2026-10-19.2"
+  revision: "2026-10-19.3"
   status: source-reviewed
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -50,7 +50,7 @@ Codex 与 Basic、OpenCode、DSH Web 接收同一个直接 MainSession root。�
 Codex 协议 thread ID 与 `.frontends/codex.json` 都是可重建的展示 metadata，Registry
 会话历史才是权威。
 
-## DSH Web 前端
+## 官方 DSH Web 前端
 
 在浏览器中使用共享主会话：
 
@@ -65,16 +65,20 @@ rpnh --frontend basic --resume ./main-session
 Basic。`DSH_SOURCE` 优先于保存的 checkout 路径。前端偏好与模型配置独立，可在设置
 模型前保存。`rpnh --frontend dsh --prompt TEXT` 会在解析模型前拒绝。
 
-launcher 打印 loopback URL 并尝试打开浏览器。这是使用原生 DSH chat／composer／theme
-组件及 AgentLoop/Session 的 RPNH Web 前端，不是完整 stock DSH Web shell 或 TUI；
-该固定上游没有随包终端 TUI。不加载 DSH 原生 provider、工具或 workspace filesystem。
-RPNH catalog、控制与 Registry 历史均共享，仅允许一个可写 owner。重开历史不会自动
-继续工作，须显式使用 `/rpnh-resume` 或 `/rpnh-rollback`。`Ctrl+C` 退出宿主，仅对其
+launcher 打印带认证的 loopback URL 并尝试打开浏览器，通过原生 Web transport 和
+typed Remote BFF 提供官方 DSH `index.html` 与 client plugins。全部执行仍由 Python
+共享 MainSession 完成，不加载 stock DSH AgentLoop、LLM、工具或 persistence runtime。
+仅暴露绑定会话：文本输入、原生模型／effort 选择和原生 slash 菜单中的 RPNH 控制。
+不支持文件上传、任意会话、workspace 编辑或 DSH 原生本机工具执行；固定上游没有随包终端 TUI。
+
+RPNH catalog、Registry 历史及唯一可写 owner 继续共享。重开历史不会自动继续工作，
+请从原生 slash 菜单选择 `/rpnh-resume` 或 `/rpnh-rollback`。`Ctrl+C` 退出宿主，仅对其
 持有的 main turn 请求 checkpoint stop。
 
-launcher 每次启动都应用 factory seam、构建 Web 资源，随后才获取 MainSession。
-固定源码及 Node／pnpm 前提见 [DSH 指南](dsh_ZH.md)，实际范围单列于
-[统一前端验证](../validation/dsh-unified-20261019_ZH.md)。
+首次启动下载精确 `0.2.1-rc.2` 的 31 个官方包到 `SOURCE/rpnh-frontend/node_modules`；
+完整缓存可离线复用。Setup 生成 loader 配置与绑定会话桥，不修改官方 UI；资源预检在
+取得 MainSession 前完成。源码与 Node／pnpm 前提见 [DSH 指南](dsh_ZH.md)。
+[验证记录](../validation/dsh-unified-20261019_ZH.md)区分此前组件阶段与官方 Web E2E 结果。
 
 ## 旧版 registered headless DSH host 前提
 

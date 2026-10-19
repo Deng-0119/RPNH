@@ -6,7 +6,7 @@ metadata:
   audience: user-and-developer
   language: zh-CN
   counterpart: CHANGELOG.md
-  revision: "2026-10-19.2"
+  revision: "2026-10-19.3"
   status: v0.1.0rc2-unreleased
 ---
 
@@ -19,14 +19,18 @@ metadata:
 - 新增 `rpnh --frontend dsh` 及独立的 `rpnh config frontend` 偏好设置，支持
   `--dsh-source`。显式前端参数优先于保存偏好，`auto` 保持 Codex／Basic 选择。
   Basic、Codex、OpenCode 与 DSH Web 共用直接 MainSession root、历史、owner lease
-  和显式 checkpoint 控制。DSH 在启动 owner 前准备固定 `687f282` 源码并重建资源；
+  和显式 checkpoint 控制。DSH 在启动 owner 前准备固定 `687f282` 源码及官方资源；
   显式 DSH 与 `--prompt` 组合在解析模型前拒绝。
-- DSH 提供使用原生 chat／composer／theme 组件及 AgentLoop/Session 的 RPNH Web 前端，
-  不是完整 stock Web shell 或 TUI；不加载原生 provider、工具和 workspace filesystem，
-  该固定上游没有随包终端 TUI。`rpnh-dsh` 保留为高级旧版 headless host，原 root、预算、
-  frame 与恢复契约不变。实际范围见[指南](docs/guides/dsh_ZH.md)和单独的
-  [统一验证记录](docs/validation/dsh-unified-20261019_ZH.md)；本条不认证真实 provider、
-  全平台或 wheel。
+- 以官方 DSH `index.html`、client plugins、原生 Web transport 及接入 Python MainSession
+  的 typed Remote BFF 替代 `e9fa433` 组件 Web 阶段，不修改官方 UI。首次启动从 npm 下载
+  精确 `0.2.1-rc.2` 的 31 个官方包到 `SOURCE/rpnh-frontend/node_modules`，完整缓存可
+  离线复用；预检在取得会话 owner 前完成。
+- 官方 Web 仅支持绑定 MainSession 的文本、原生模型／effort 选择及原生 slash 菜单
+  RPNH 控制；不支持原生上传、任意会话、workspace 编辑或 DSH 原生本机工具执行。不加载 stock
+  DSH AgentLoop、LLM、工具及 persistence，没有随包终端 TUI。`rpnh-dsh` 原 root、预算、
+  frame 与恢复契约保持。见[指南](docs/guides/dsh_ZH.md)和
+  [验证记录](docs/validation/dsh-unified-20261019_ZH.md)：官方 Web E2E 结果与此前
+  组件阶段分列；不据此推称真实 provider、全部能力、全平台或 wheel 已验收。
 
 - 修复冷恢复主任务 ownership、持续状态读取下的周期结算，以及子 Registry 启动未完成时的 checkpoint 停止。
 
