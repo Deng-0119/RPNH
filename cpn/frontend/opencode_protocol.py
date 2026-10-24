@@ -464,7 +464,7 @@ class OpenCodeProtocol:
         if workspace or directory not in {"", self.directory}:
             raise FrontendError("unsupported_location", "This attach is scoped to its isolated display directory.", 400)
         if path.startswith("/api/"):
-            # The 1.19.3 SDK serializes LocationQuery with deepObject keys.
+            # The 1.19.4 SDK serializes LocationQuery with deepObject keys.
             # It must not select another workspace through the new read APIs.
             location_keys = {key for key in query if key.startswith("location")}
             if location_keys - {"location[directory]", "location[workspace]"}:
@@ -584,7 +584,7 @@ class OpenCodeProtocol:
         return message_id if message_id is not None else header_id
 
     def _catalog_v2(self, path: str) -> Reply:
-        """1.19.3 DataProvider catalog envelopes; no native runtime authority."""
+        """1.19.4 DataProvider catalog envelopes; no native runtime authority."""
         location = {"directory": self.directory,
                     "project": {"id": "rpnh", "directory": self.directory}}
         if path == "/api/location":
@@ -637,7 +637,7 @@ class OpenCodeProtocol:
         if path in {"/global/health", "/health"}:
             return Reply(200, {"healthy": True, "version": self.profile.version})
         if path == "/experimental/console":
-            # 1.19.3 bootstraps Console metadata. RPNH has no OpenCode-managed
+            # 1.19.4 bootstraps Console metadata. RPNH has no OpenCode-managed
             # accounts or organizations; account mutations remain unsupported.
             return Reply(200, {"consoleManagedProviders": [], "switchableOrgCount": 0})
         if path == "/experimental/capabilities":

@@ -184,58 +184,102 @@ def _canonical_heads(
     canonical_where = (
         "FROM events e WHERE e.ordinal>? AND e.ordinal<=? "
         f"AND {predicate} ")
+    writer_epoch = store.writer_epoch
     with store.connect() as db:
+        db.execute("BEGIN")
         current = db.execute(
             "SELECT e.ordinal " + canonical_where
             + "ORDER BY e.ordinal DESC LIMIT 1",
             (0, maximum_ordinal, maximum_ordinal, maximum_ordinal,
              maximum_ordinal, maximum_ordinal),
         ).fetchone()
-    current_ordinal = int(current["ordinal"]) if current is not None else 0
-    requested = tuple(dict.fromkeys(
-        current_ordinal if value is None else value
-        for value in requested_values))
-    if min(requested) < 0 or max(requested) > current_ordinal:
-        raise StaleAuthorityHead(
-            "canonical Registry head is outside published history")
-    writer_epoch = store.writer_epoch
-    heads: dict[int, RegistryHead] = {}
-    for ordinal in requested:
-        # Promotion publishes earlier events at the Success commit, not at their
-        # original event ordinals. A prefix of today's canonical events would
-        # therefore rewrite a head captured before that promotion.
-        stream_heads: dict[str, int] = {}
-        task_control_sequence = 0
-        last_ordinal = 0
-        with store.connect() as db:
-            rows = db.execute(
+        current_ordinal = int(current["ordinal"]) if current is not None else 0
+        requested = tuple(dict.fromkeys(
+            current_ordinal if value is None else value
+            for value in requested_values))
+        if min(requested) < 0 or max(requested) > current_ordinal:
+            raise StaleAuthorityHead(
+                "canonical Registry head is outside published history")
+        heads: dict[int, RegistryHead] = {}
+        ordered = sorted(requested)
+        # Bound SQL parameters and temporary projection state. No cache survives a
+        # call: fixed history never freezes the caller's current authority checks.
+        for start in range(0, len(ordered), 128):
+            cuts = ordered[start:start + 128]
+            values = ",".join("(?)" for _ in cuts)
+            # Keep the canonical predicate itself as the authority. For firing
+            # members find the first requested cut at which it holds, including
+            # late Success and mechanically closed cap-handoff publication. Events
+            # with no joined membership are canonical at their original ordinal.
+            at_cut = predicate.replace("?", "requested.ordinal")
+            projection = (
+                "WITH requested(ordinal) AS (VALUES " + values + "), visible AS ("
                 "SELECT e.ordinal,e.stream_id,e.stream_sequence,e.task_id,"
-                "e.task_control_sequence " + canonical_where
-                + "ORDER BY e.ordinal",
-                (0, ordinal, ordinal, ordinal, ordinal, ordinal),
+                "e.task_control_sequence,CASE WHEN NOT EXISTS ("
+                "SELECT 1 FROM firing_temporary_members m "
+                "JOIN firing_publications p "
+                "ON p.firing_version_id=m.firing_version_id "
+                "WHERE m.member_kind='event' AND m.member_identity=e.event_id) "
+                "THEN e.ordinal ELSE (SELECT MIN(requested.ordinal) "
+                "FROM requested WHERE " + at_cut + ") END AS visible_at "
+                "FROM events e WHERE e.ordinal>0 AND e.ordinal<=?) "
+                "SELECT ordinal,stream_id,stream_sequence,task_id,"
+                "task_control_sequence,visible_at FROM visible "
+                "WHERE visible_at IS NOT NULL ORDER BY visible_at,ordinal"
             )
+            stream_heads: dict[str, int] = {}
+            stream_ordinals: dict[str, int] = {}
+            task_control_sequence = 0
+            last_ordinal = 0
+            next_cut = 0
+
+            def capture(ordinal: int) -> None:
+                if ordinal and last_ordinal != ordinal:
+                    raise StaleAuthorityHead(
+                        "canonical Registry head snapshot changed during hydration")
+                heads[ordinal] = RegistryHead(
+                    ordinal=ordinal,
+                    writer_fencing_epoch=writer_epoch,
+                    task_control_sequence=task_control_sequence,
+                    stream_heads=dict(stream_heads),
+                )
+
+            if len(cuts) == 1:
+                # The common single-head read needs no activation sorting.
+                # Preserve the indexed original-ordinal streaming path.
+                ordinal = cuts[0]
+                rows = db.execute(
+                    "SELECT e.ordinal,e.stream_id,e.stream_sequence,e.task_id,"
+                    "e.task_control_sequence,e.ordinal AS visible_at "
+                    + canonical_where + "ORDER BY e.ordinal",
+                    (0, ordinal, ordinal, ordinal, ordinal, ordinal))
+            else:
+                rows = db.execute(projection, (*cuts, cuts[-1]))
             for row in rows:
-                last_ordinal = int(row["ordinal"])
-                stream_heads[row["stream_id"]] = row["stream_sequence"]
+                while next_cut < len(cuts) and cuts[next_cut] < row["visible_at"]:
+                    capture(cuts[next_cut])
+                    next_cut += 1
+                event_ordinal = int(row["ordinal"])
+                last_ordinal = max(last_ordinal, event_ordinal)
+                # A late-promoted event must not replace a newer event from
+                # the same stream. Head order is original event order, not
+                # activation order, and stream sequence need not be monotonic.
+                stream = row["stream_id"]
+                if event_ordinal > stream_ordinals.get(stream, 0):
+                    stream_ordinals[stream] = event_ordinal
+                    stream_heads[stream] = row["stream_sequence"]
                 if (TypedId.parse(row["task_id"], expected="task")
                         == self._ResourceServiceKernel__core.task_id
                         and row["task_control_sequence"] is not None):
                     task_control_sequence = max(
                         task_control_sequence, row["task_control_sequence"])
-        if ordinal and last_ordinal != ordinal:
-            raise StaleAuthorityHead(
-                "canonical Registry head snapshot changed during hydration")
-        heads[ordinal] = RegistryHead(
-            ordinal=ordinal,
-            writer_fencing_epoch=writer_epoch,
-            task_control_sequence=task_control_sequence,
-            stream_heads=dict(stream_heads),
-        )
+            for ordinal in cuts[next_cut:]:
+                capture(ordinal)
 
     if store.writer_epoch != writer_epoch:
         raise StaleAuthorityHead(
             "canonical Registry head snapshot changed during hydration")
-    return heads
+    return {ordinal: heads[ordinal] for ordinal in requested}
 
 def _canonical_head(self, *, ordinal: int | None = None) -> RegistryHead:
     """Build a resource-query head from permanently visible facts only."""
@@ -334,6 +378,35 @@ def _canonical_published_ordinal(
     return ordinal
 
 def _header(self, ref: ResourceVersionRef, *, through_head: RegistryHead) -> ResourceHeader:
+    fields, ordinal = _header_fields(self, ref, through_head=through_head)
+    return ResourceHeader(
+        **fields, published_at_head=self._canonical_head(ordinal=ordinal))
+
+
+def _headers(self, refs: Iterable[ResourceVersionRef], *,
+             through_head: RegistryHead) -> Iterable[ResourceHeader]:
+    """Hydrate exact headers in bounded batches, without limiting candidates.
+
+    Authorization/filtering and paging remain the query's responsibility. Each
+    header still names its own publication cut, not the query's newer head.
+    """
+    batch: list[tuple[dict[str, Any], int]] = []
+    for ref in refs:
+        batch.append(_header_fields(self, ref, through_head=through_head))
+        if len(batch) == 128:
+            heads = self._canonical_heads(ordinal for _fields, ordinal in batch)
+            for fields, ordinal in batch:
+                yield ResourceHeader(**fields, published_at_head=heads[ordinal])
+            batch.clear()
+    if batch:
+        heads = self._canonical_heads(ordinal for _fields, ordinal in batch)
+        for fields, ordinal in batch:
+            yield ResourceHeader(**fields, published_at_head=heads[ordinal])
+
+
+def _header_fields(self, ref: ResourceVersionRef, *, through_head: RegistryHead
+                   ) -> tuple[dict[str, Any], int]:
+    """Retain the exact resource/provenance checks before header projection."""
     prepared = self._canonical_prepared(
         ref, through_ordinal=through_head.ordinal)
     ordinal = self._canonical_published_ordinal(
@@ -351,7 +424,7 @@ def _header(self, ref: ResourceVersionRef, *, through_head: RegistryHead) -> Res
             else value if isinstance(value, tuple) else (value,))
         for name, value in sorted(metadata.get("descriptors", {}).items())
     )
-    return ResourceHeader(
+    return dict(
         ref=ref,
         task_ref=_version_from_payload(metadata["task_ref"]),
         round_ref=(_version_from_payload(metadata["round_ref"])
@@ -368,7 +441,7 @@ def _header(self, ref: ResourceVersionRef, *, through_head: RegistryHead) -> Res
         display_summary=metadata.get("summary"),
         descriptor_labels=descriptor_labels,
         relation_kinds=tuple(relation_kinds),
-        published_at_head=self._canonical_head(ordinal=ordinal))
+    ), ordinal
 
 def _firing_header(
         self, context: InvocationContext, ref: ResourceVersionRef, *,
@@ -583,8 +656,9 @@ def query(
     headers: list[ResourceHeader] = []
     allowed_scopes = set(query.scope_refs)
     allowed_producers = set(query.producer_refs)
-    for ref in sorted(visible, key=lambda item: str(item.resource_version_id)):
-        header = self._header(ref, through_head=head)
+    ordered_refs = sorted(visible, key=lambda item: str(item.resource_version_id))
+    for header in _headers(self, ordered_refs, through_head=head):
+        ref = header.ref
         if allowed_scopes and not ({header.task_ref, header.round_ref, header.net_ref}
                                    & allowed_scopes):
             continue

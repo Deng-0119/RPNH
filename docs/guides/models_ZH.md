@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: models.md
-  revision: "2026-10-19.1"
+  revision: "2026-10-23.1"
   status: source-reviewed-v0.1.0rc1
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -116,6 +116,37 @@ catalog 对外暴露的协议是 `openai_chat_completions/v1`，不是所有宣�
 对于 v3 catalog，build 生成 `external_provider_adapter_config/v3` 或 `local_process_adapter_config/v2`，以及 `llm_execution_selection/v2` 和 `rpnh/provider_profiles/v3` 清单。旧 v2 catalog 仍可读取，并继续生成旧版 profile 结构。不要单独编辑派生文件。catalog 或生成器变化后执行 `build --check`。profile/manifest、注册身份/路由身份不一致时应报错，不自动换供应商。
 
 授权执行中发生的健康探测和正式重试都是可能计费的物理调用；recovery 配置本身不是调用许可。授权须覆盖精确路由、模型、超时与调用预算。提交结果未知时，不得直接认定可安全重试，应保留未知效果记录并先核查。
+
+
+HTTP 请求写入结果不确定，或写入后尚未收到响应头便超时时，仍可按已配置预算在原精确路由上
+进行有界健康探测，用于诊断。探测成功不能证明原请求未执行：适配器不会自动再次提交这条正式
+请求，而是返回 `submission_unknown`，交给既有 Registry／owner 的
+`submission_reconciliation` 路径。响应正文未收齐（含正文大小上限截断）也按未知提交分类，
+不再提示为普通修复。完整收到的 HTTP 408／429／5xx 响应，以及确定发生在提交前的暂态故障，
+仍沿用已配置的有界恢复策略；完整收到但协议不合法的响应仍保留协议拒绝分类。
+
+这项修复改变了旧版“unknown 正式请求在探测成功后可能被自动重发”的行为。既有 profile
+schema 和 `bounded_same_route_health_probe/v1` 配置仍可读取，但上述 unknown 情况现在会
+阻塞等待核对。探测成功后的诊断 failure code 为
+`external_submission_unknown_requires_reconciliation`。取消诊断 probe 时，owner interruption
+仍保留此前正式请求的 unknown；probe 自身的 `not_submitted` 或完整响应不能替代这份不确定性。
+既有 attempt 历史、未知外部
+效果、物理调用和探测计数均不重写、不清除。升级本身不授权重放旧 attempt、改换其路由或跳过
+checkpoint 恢复核对。
+
+### 共享 HTTP 端口生命周期
+
+同一个外部 HTTP input port 上，不同已接纳 attempt 可以重叠执行；各自持有独立连接、取消
+观察器、提交进度、精确 route／model 和恢复链。短状态锁仅保护接纳、关闭状态和路由选择；
+已安装的 credential resolver／renderer 回调仅在准备请求头时保留串行。适配器不新增并发
+permit 或调度权威，Registry／PN 限额保持不变。持久 attempt reserve 仍阻止跨线程、共用
+同一审计的多个 port，以及重开该审计时的重复提交。
+
+`ExternalProviderInputPort.close()` 先拒绝新调用，再等待已接纳的传输／恢复调用完成私有
+审计清理。它不会取消这些调用、撤销远程效果，也不等待调用者随后执行的 Registry 结算。
+owner 取消仍只作用于对应 attempt。在活动请求或其取消回调内调用 `close()` 会将端口标为
+关闭，但抛出 `RuntimeError`，避免等待自身；应在这些回调之外再次调用以完成 drain。
+本次 HTTP 改动不改变 `local_process` 生命周期，也不证明真实 provider 吞吐提升。
 
 ## 验证与恢复
 profile 的 `ready: true` 只代表所需变量有值，不能证明 key 正确、路由可达、模型可用或费用情况。密钥不进入 catalog、git 或共享日志。配置漂移时备份唯一 catalog，在受控目录重建，再把 `RPNH_PROFILE_DIR` 指向其 `execution` 子目录。不要静默改写已有运行的路由；切换当前 profile 不迁移历史 run 权威。

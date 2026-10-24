@@ -247,6 +247,230 @@
         "A source checkout plus separately installed zapier/AutomationBench pinned at 4a8e1061254004d9dac807054eed33fad7d1ff14 (1.0.6); follow its README/RUNBOOK and license terms.",
         "A user-owned, separately authorized exact execution profile for new live runs. Retained results are readable offline; benchmark execution dependencies are not exported."
       ]
+    },
+    {
+      "id": "multiuser_release_handoff",
+      "title": "Multi-user release handoff",
+      "title_zh": "多用户发布交接",
+      "exportable": false,
+      "execution_boundary": "offline preflight; new model runs require explicit authorization",
+      "source_url": "https://github.com/Deng-0119/RPNH/tree/main/examples/multiuser_release_handoff",
+      "prerequisites": [
+        "Source checkout, installed RPNH and the original task/dependencies described in RUNNING.md.",
+        "Four independent user Tasks and a separate Source Registry; retained recovery evidence is not a portable one-command resume. New model runs need an explicitly authorized exact execution profile."
+      ],
+      "prerequisites_zh": [
+        "源码 checkout、已安装 RPNH，以及 RUNNING_ZH.md 指定的原任务和依赖。",
+        "四个独立用户 Task 与单独 Source Registry；保留的恢复证据不是便携的一键恢复入口。新模型运行需明确授权的精确 execution profile。"
+      ]
+    },
+    {
+      "id": "project_collaboration",
+      "title": "Copy, merge and reuse an agent project",
+      "title_zh": "复制、合并并复用 Agent 项目",
+      "exportable": false,
+      "execution_boundary": "new agent runs require explicitly authorized profiles",
+      "source_url": "https://github.com/Deng-0119/RPNH/tree/main/examples/project_collaboration",
+      "prerequisites": [
+        "Source checkout plus the example package and its documented pandas/pyarrow dependencies.",
+        "Read the source guide for original task inputs, controlled contributors, exact version adoption and separate receiver execution; authorize model and budget before new runs."
+      ],
+      "prerequisites_zh": [
+        "源码 checkout，以及案例包和指南指定的 pandas/pyarrow 依赖。",
+        "按源码指南准备原任务输入、受控贡献者、精确版本采用和独立接收端运行；新运行前明确授权模型与预算。"
+      ]
+    },
+    {
+      "id": "agent_cobuild",
+      "title": "Two contributors build an agent task net",
+      "title_zh": "两位贡献者共建 Agent 任务网",
+      "exportable": false,
+      "execution_boundary": "deterministic local-process agent protocol; no external model/provider",
+      "source_url": "https://github.com/Deng-0119/RPNH/tree/main/examples/user_collaboration/agent_cobuild",
+      "prerequisites": [
+        "Source checkout and a compatible installed RPNH with supported process/Unix-domain socket permissions.",
+        "Uses the included scripted model protocol and fresh short work directories; it does not demonstrate live-model reasoning or independent remote identities."
+      ],
+      "prerequisites_zh": [
+        "源码 checkout、兼容的 RPNH 安装，以及所需进程和 Unix-domain socket 权限。",
+        "使用随附脚本模型协议和新的短工作路径；不代表真实模型推理或独立远程身份。"
+      ]
+    },
+    {
+      "id": "erp_bench",
+      "title": "ERP-Bench managed agent tasks",
+      "title_zh": "ERP-Bench 受管 Agent 任务",
+      "exportable": false,
+      "execution_boundary": "offline result inspection; new live trials require explicit authorization",
+      "source_url": "https://github.com/Deng-0119/RPNH/tree/main/examples/erp_bench",
+      "prerequisites": [
+        "Python 3.12+, source checkout and the separately installed example package with its pinned Harbor dependency.",
+        "Live trials need the original Docker environment/verifier, supported Linux/WSL process/IPC and explicitly authorized exact model/profile and task budget."
+      ],
+      "prerequisites_zh": [
+        "Python 3.12+、源码 checkout，以及独立安装的案例包和固定 Harbor 依赖。",
+        "实时试验需原 Docker 环境/验证器、支持进程/IPC 的 Linux/WSL，以及明确授权的精确模型/profile和任务预算。"
+      ]
+    },
+    {
+      "id": "slopcodebench",
+      "title": "SlopCodeBench native Session pilot",
+      "title_zh": "SlopCodeBench 原生 Session 试验",
+      "exportable": false,
+      "execution_boundary": "scripted lifecycle fixtures or separately authorized live profile",
+      "source_url": "https://github.com/Deng-0119/RPNH/tree/main/examples/slopcodebench",
+      "prerequisites": [
+        "Source checkout, the separate example package and the fixed upstream Docker Session/Snapshot environment described in its guide.",
+        "Retained prefix results are not the complete benchmark; new provider-backed runs require explicit model and budget authorization."
+      ],
+      "prerequisites_zh": [
+        "源码 checkout、独立案例包，以及指南指定的固定上游 Docker Session/Snapshot 环境。",
+        "保留的前缀结果不是完整 benchmark；新的 provider 运行需明确授权模型与预算。"
+      ]
+    },
+    {
+      "id": "tool_pipeline",
+      "title": "Registered deterministic tool pipeline",
+      "title_zh": "登记的确定性工具流水线",
+      "exportable": false,
+      "execution_boundary": "deterministic HOST tools; no model calls",
+      "source_url": "https://github.com/Deng-0119/RPNH/tree/main/examples/tool_pipeline",
+      "prerequisites": [
+        "Source checkout and a compatible installed RPNH with supported local process/IPC permissions.",
+        "Read the guide for the typed tool contracts and synthetic billing input; tool operations are not agent identities."
+      ],
+      "prerequisites_zh": [
+        "源码 checkout、兼容的 RPNH 安装及支持的本地进程/IPC 权限。",
+        "按指南理解类型化工具合同和合成电费输入；工具操作不是 Agent 身份。"
+      ]
+    },
+    {
+      "id": "query_validation",
+      "title": "Read-only SQL execution and exact comparison",
+      "title_zh": "只读 SQL 执行与精确比较",
+      "exportable": false,
+      "execution_boundary": "fixed SQL candidates; no model/provider calls",
+      "source_url": "https://github.com/Deng-0119/RPNH/tree/main/examples/query_validation",
+      "prerequisites": [
+        "Source checkout, installed RPNH and the original task database/SQL inputs identified in sources.json.",
+        "Read the preparation and verifier boundaries in the guide; commands do not download task data, install dependencies or run the official grader implicitly."
+      ],
+      "prerequisites_zh": [
+        "源码 checkout、已安装 RPNH，以及 sources.json 指定的原任务数据库和 SQL 输入。",
+        "按指南区分准备与验证边界；命令不会隐式下载任务数据、安装依赖或运行官方 grader。"
+      ]
+    },
+    {
+      "id": "multi_source",
+      "title": "Merge original JSON, CSV and Parquet inputs",
+      "title_zh": "合并原始 JSON CSV 与 Parquet 输入",
+      "exportable": false,
+      "execution_boundary": "deterministic HOST tools; no model calls",
+      "source_url": "https://github.com/Deng-0119/RPNH/tree/main/examples/tool_pipeline/multi_source",
+      "prerequisites": [
+        "Source checkout, compatible RPNH, pandas, pyarrow and pytest; use the included original task inputs described in the guide.",
+        "Runtime needs supported process/Unix-domain socket permissions. Path-adapted verification is distinct from executing the original task container."
+      ],
+      "prerequisites_zh": [
+        "源码 checkout、兼容 RPNH、pandas、pyarrow 和 pytest；使用指南说明的随附原任务输入。",
+        "运行需支持进程/Unix-domain socket 权限；路径适配验证与执行原任务容器分开。"
+      ]
+    },
+    {
+      "id": "rsi_workflows",
+      "title": "Bounded synthetic iteration",
+      "title_zh": "有界合成迭代",
+      "exportable": false,
+      "execution_boundary": "deterministic HOST fixture; no model-improvement claim",
+      "source_url": "https://github.com/Deng-0119/RPNH/tree/main/examples/rsi_workflows",
+      "prerequisites": [
+        "Source checkout and compatible RPNH; follow the guide for bounded one-to-four-round scenarios.",
+        "The synthetic integer-distance task demonstrates iteration contracts, not general recursive model improvement."
+      ],
+      "prerequisites_zh": [
+        "源码 checkout 和兼容 RPNH；按指南选择一至四轮的有界场景。",
+        "合成整数距离任务展示迭代合同，不证明通用递归模型改进。"
+      ]
+    },
+    {
+      "id": "example_validation",
+      "title": "Shared example evidence validation",
+      "title_zh": "共享示例证据校验",
+      "exportable": false,
+      "execution_boundary": "read-only evidence validation; no task or model execution",
+      "source_url": "https://github.com/Deng-0119/RPNH/tree/main/examples/example_validation",
+      "prerequisites": [
+        "Source checkout and the validator dependencies documented in the guide.",
+        "Validates evidence and result manifests; it has no independent PN and does not rerun a business task or certify an untested runtime."
+      ],
+      "prerequisites_zh": [
+        "源码 checkout 和指南指定的验证器依赖。",
+        "校验证据与结果清单；无独立 PN，不重跑业务任务，也不认证未经测试的运行时。"
+      ]
+    },
+    {
+      "id": "approval_workflow",
+      "title": "Controlled refund approval fixture",
+      "title_zh": "受控退款审批夹具",
+      "exportable": false,
+      "execution_boundary": "local simulated approval; no money or model calls",
+      "source_url": "https://github.com/Deng-0119/RPNH/tree/main/examples/approval_workflow",
+      "prerequisites": [
+        "Source checkout, compatible RPNH and the local application dependencies described in the guide.",
+        "Uses controlled local requester/approver identities and synthetic refund data; not a payment integration."
+      ],
+      "prerequisites_zh": [
+        "源码 checkout、兼容 RPNH 及指南说明的本地应用依赖。",
+        "使用受控本地申请者/审批者身份和合成退款数据；不是支付接入。"
+      ]
+    },
+    {
+      "id": "a2a_quote",
+      "title": "Controlled quote-input fixture",
+      "title_zh": "受控报价输入夹具",
+      "exportable": false,
+      "execution_boundary": "local HTTP status fixture; no external service or model calls",
+      "source_url": "https://github.com/Deng-0119/RPNH/tree/main/examples/a2a_quote",
+      "prerequisites": [
+        "Source checkout, compatible RPNH and the local application setup described in the guide.",
+        "The bounded synthetic protocol fixture does not establish interoperability with external A2A agents or real quote/booking services."
+      ],
+      "prerequisites_zh": [
+        "源码 checkout、兼容 RPNH 及指南指定的本地应用设置。",
+        "有界合成协议夹具不证明外部 A2A Agent 互操作或真实报价/预订服务接入。"
+      ]
+    },
+    {
+      "id": "user_collaboration",
+      "title": "Historical route contribution evidence",
+      "title_zh": "历史路线贡献证据",
+      "exportable": false,
+      "execution_boundary": "historical mechanism/results; see the source guide before execution",
+      "source_url": "https://github.com/Deng-0119/RPNH/tree/main/examples/user_collaboration",
+      "prerequisites": [
+        "Source checkout to inspect the retained route versions, results and failures.",
+        "Current agent-contract collaboration is the separate agent_cobuild example. Historical route tool operations must not be counted as agents or new validation."
+      ],
+      "prerequisites_zh": [
+        "从源码 checkout 查阅保留的路线版本、结果与失败。",
+        "当前 Agent 合同协作见独立 agent_cobuild 案例；历史路线工具操作不计为 Agent 或新的验证。"
+      ]
+    },
+    {
+      "id": "native_billing",
+      "title": "Historical native billing contributions",
+      "title_zh": "历史原生电费贡献",
+      "exportable": false,
+      "execution_boundary": "deterministic sources and tools; no model/provider or payment calls",
+      "source_url": "https://github.com/Deng-0119/RPNH/tree/main/examples/user_collaboration/native_billing",
+      "prerequisites": [
+        "Source checkout and a compatible installed RPNH with supported local process/IPC permissions.",
+        "Controlled source principals modify a historical ten-tool billing net; this is not an agent task net or production billing service."
+      ],
+      "prerequisites_zh": [
+        "源码 checkout、兼容的 RPNH 安装及支持的本地进程/IPC 权限。",
+        "受控 source 主体修改历史十工具电费网；这不是 Agent 任务网或生产计费服务。"
+      ]
     }
   ]
 }

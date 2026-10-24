@@ -3,8 +3,8 @@
     "status": "source-extracted-subset-not-upstream-generator-output",
     "upstream": {
         "repository": "anomalyco/opencode",
-        "commit": "e3c4eb242585dcd77be1a867391b7c25fd47ce52",
-        "package_version": "1.19.3",
+        "commit": "148842ef7cb1bc34192b3fff57d0f9721ab9c801",
+        "package_version": "1.19.4",
         "paths": [
             "packages/sdk/js/src/v2/gen/types.gen.ts",
             "packages/sdk/js/src/v2/gen/sdk.gen.ts",
@@ -1058,7 +1058,7 @@
                     "const": true
                 },
                 "version": {
-                    "const": "1.19.3"
+                    "const": "1.19.4"
                 }
             },
             "required": [

@@ -10,7 +10,7 @@ The retained official Viewer PN below is an initial declaration: normalize, nati
 
 [Image and input provenance](assets/initial-petri-provenance.json) · [Original completed Detailed flow](assets/hybrid-summary-flow.png)
 
-[Local Viewer and reading guide](../../docs/guides/viewer.md) · Click the panorama to open the original full-size image.
+[Online Viewer and reading guide](https://github.com/Deng-0119/RPNH/blob/main/docs/guides/viewer.md) · Click the panorama to open the original full-size image.
 
 Obtain the complete editable closure from installed RPNH:
 

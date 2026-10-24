@@ -34,8 +34,8 @@ from test_opencode_frontend import (
     ApplicationDouble, LocalGateway, MODEL, MODEL_TWO, SID, prompt,
 )
 
-DEFAULT_VERSION = "1.19.3"
-DEFAULT_COMMIT = "e3c4eb242585dcd77be1a867391b7c25fd47ce52"
+DEFAULT_VERSION = "1.19.4"
+DEFAULT_COMMIT = "148842ef7cb1bc34192b3fff57d0f9721ab9c801"
 CANDIDATE_VERSION = "1.18.35"
 CANDIDATE_COMMIT = "53d1eabb61e21162157817bf677da0a4ad3332e3"
 EFFECTS = {"create_session", "submit", "command", "abort"}
@@ -222,16 +222,18 @@ def _forbid_owner(monkeypatch):
     monkeypatch.setattr(launcher, "OpenCodeHTTPServer", forbidden)
 
 
-def test_production_rejects_candidate_before_owner_despite_environment(tmp_path, monkeypatch):
+@pytest.mark.parametrize("rejected_version", [CANDIDATE_VERSION, "1.19.3", "1.19.5"])
+def test_production_rejects_candidate_before_owner_despite_environment(
+        tmp_path, monkeypatch, rejected_version):
     _forbid_owner(monkeypatch)
     monkeypatch.setattr(launcher, "sys", SimpleNamespace(platform="linux"))
     monkeypatch.setattr(launcher.shutil, "which", lambda _name: "/fixture/opencode")
     attempted_overrides = {
-        "OPENCODE_VERSION": CANDIDATE_VERSION,
-        "OPENCODE_CERTIFY_VERSION": CANDIDATE_VERSION,
-        "OPENCODE_CERTIFICATION_VERSION": CANDIDATE_VERSION,
-        "RPNH_OPENCODE_VERSION": CANDIDATE_VERSION,
-        "RPNH_OPENCODE_CERTIFY_VERSION": CANDIDATE_VERSION,
+        "OPENCODE_VERSION": rejected_version,
+        "OPENCODE_CERTIFY_VERSION": rejected_version,
+        "OPENCODE_CERTIFICATION_VERSION": rejected_version,
+        "RPNH_OPENCODE_VERSION": rejected_version,
+        "RPNH_OPENCODE_CERTIFY_VERSION": rejected_version,
         "OPENCODE_CONFIG": "/fixture/candidate-config.json",
     }
     for name, value in attempted_overrides.items():
@@ -239,7 +241,7 @@ def test_production_rejects_candidate_before_owner_despite_environment(tmp_path,
     calls = []
     def fixed_probe(args, **kwargs):
         calls.append((args, kwargs))
-        return SimpleNamespace(stdout=CANDIDATE_VERSION, returncode=0)
+        return SimpleNamespace(stdout=rejected_version, returncode=0)
     monkeypatch.setattr(subprocess, "run", fixed_probe)
     with pytest.raises(RuntimeError, match=DEFAULT_VERSION):
         launcher.run_opencode_frontend(tmp_path / "root", tmp_path / "execution.json")

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from contextlib import contextmanager, ExitStack
 from dataclasses import dataclass
 import http.client
 import ipaddress
@@ -343,11 +344,13 @@ def _neutral_failure(
         submission_state = "submission_unknown"
     else:
         submission_state = "submission_unknown"
-    if bool(detail.get("retry_eligible")):
-        disposition = "provider_retryable"
-    elif result.outcome == "submission_unknown":
+    if submission_state == "submission_unknown":
+        # A partial write or incomplete response needs reconciliation even when
+        # the low-level outcome is timeout, transport failure, or a size limit.
+        # Neither a retry hint nor a healthy probe proves non-execution.
         disposition = "submission_unknown"
-        submission_state = "submission_unknown"
+    elif bool(detail.get("retry_eligible")):
+        disposition = "provider_retryable"
     elif result.outcome == "protocol_failure":
         disposition = "protocol_rejected"
     else:
@@ -409,7 +412,10 @@ class ExternalProviderInputPort:
                 raise AdapterConfigError(
                     "last selected external route is absent from current config")
             self._active_route_index = active_route_indexes[0]
-        self._lock = threading.Lock()
+        self._state = threading.Condition(threading.Lock())
+        self._inflight: set[object] = set()
+        self._request_context = threading.local()
+        self._credential_lock = threading.Lock()
         self._closed = False
 
     @classmethod
@@ -442,7 +448,10 @@ class ExternalProviderInputPort:
         self._audit = PrivateAttemptAudit(destination_run_root)
         # Fresh public mode never reads historical private audit route selection.
         self._active_route_index = 0
-        self._lock = threading.Lock()
+        self._state = threading.Condition(threading.Lock())
+        self._inflight: set[object] = set()
+        self._request_context = threading.local()
+        self._credential_lock = threading.Lock()
         self._closed = False
         self._public_identity_bytes = canonical(identity)
         self._public_resolver = resolver
@@ -481,13 +490,23 @@ class ExternalProviderInputPort:
         check_capability(resolver, identity['resolver'])
         check_capability(renderer, identity['renderer'])
 
+    @contextmanager
     def _resolved_headers(self, route):
-        if hasattr(self, '_public_identity_bytes'):
-            from .public_credentials import resolved_public_headers
-            if route is not self._routes[0]: raise ValueError('public route changed')
-            return resolved_public_headers(self.public_identity,
-                self._public_resolver, self._public_renderer)
-        return _credential_headers(route)
+        # Installed HOST callbacks need not be thread-safe. Serialize only their
+        # resolution/rendering, never the network request using the local header
+        # dictionary. The built-in context exits only erase per-call secret data.
+        with ExitStack() as stack:
+            with self._credential_lock:
+                if hasattr(self, '_public_identity_bytes'):
+                    from .public_credentials import resolved_public_headers
+                    if route is not self._routes[0]:
+                        raise ValueError('public route changed')
+                    context = resolved_public_headers(self.public_identity,
+                        self._public_resolver, self._public_renderer)
+                else:
+                    context = _credential_headers(route)
+                headers = stack.enter_context(context)
+            yield headers
 
     @staticmethod
     def _private_identity(
@@ -532,24 +551,30 @@ class ExternalProviderInputPort:
         watch_interrupted = threading.Event()
 
         def monitor_interruption() -> None:
-            if interruption_requested is None:
-                return
-            while not watch_stop.wait(0.05):
-                if not interruption_requested():
-                    continue
-                watch_interrupted.set()
-                active = connection
-                current_socket = transport_socket
-                if current_socket is None and active is not None:
-                    current_socket = active.sock
-                if current_socket is not None:
-                    try:
-                        current_socket.shutdown(socket.SHUT_RDWR)
-                    except OSError:
-                        pass  # Already disconnected; the request thread owns cleanup.
-                # Do not close HTTPResponse's buffered reader on this thread:
-                # close() can wait for the blocked read's internal lock.
-                return
+            # A close requested by an observer cannot drain the request which
+            # owns that observer. Fail explicitly instead of self-deadlocking.
+            self._request_context.active = True
+            try:
+                if interruption_requested is None:
+                    return
+                while not watch_stop.wait(0.05):
+                    if not interruption_requested():
+                        continue
+                    watch_interrupted.set()
+                    active = connection
+                    current_socket = transport_socket
+                    if current_socket is None and active is not None:
+                        current_socket = active.sock
+                    if current_socket is not None:
+                        try:
+                            current_socket.shutdown(socket.SHUT_RDWR)
+                        except OSError:
+                            pass  # Already disconnected; the request thread owns cleanup.
+                    # Do not close HTTPResponse's buffered reader on this thread:
+                    # close() can wait for the blocked read's internal lock.
+                    return
+            finally:
+                self._request_context.active = False
 
         watcher = (
             threading.Thread(
@@ -830,230 +855,285 @@ class ExternalProviderInputPort:
     ) -> LLMInputResponseBytes:
         if not isinstance(attempt, LLMCallAttempt):
             raise TypeError("external input port requires LLMCallAttempt")
-        with self._lock:
+        with self._state:
             if self._closed or attempt.model_condition != self._model_condition:
                 raise LLMInputPortFailure(
                     "adapter_not_submitted", submission_state="not_submitted",
                     failure_code="external_adapter_closed_or_model_mismatch")
-            try:
-                provider_request_from_envelope(
-                    attempt.canonical_request_bytes,
-                    expected_model_condition=attempt.model_condition,
-                    expected_max_output_tokens=self._max_output_tokens,
-                    outbound_model=self._routes[0].outbound_model,
-                    reasoning_effort=self._reasoning_effort)
-            except ResponseEnvelopeError:
-                self._audit.finish_external_invocation(
-                    attempt, outcome="adapter_not_submitted",
-                    detail={
-                        "failure_category": "adapter_not_submitted",
-                        "retry_eligible": False,
-                        "recovery_disposition": "block_no_retry",
-                    })
-                raise LLMInputPortFailure(
-                    "adapter_not_submitted", submission_state="not_submitted",
-                    failure_code="external_request_protocol_invalid")
-            if not self._audit.reserve_external_invocation(attempt):
-                raise LLMInputPortFailure(
-                    "adapter_not_submitted", submission_state="not_submitted",
-                    failure_code="external_duplicate_submission_prevented")
-            call_ordinal = 0
-            formal_call_count = 0
-            probe_call_count = 0
-            recovery_cycle_count = 0
-            prior_provider_attempt_id: str | None = None
-            last_result: _ProviderCallResult | None = None
-            last_formal_result: _ProviderCallResult | None = None
-            last_route: _ExternalRoute | None = None
-            route_recovery: list[dict[str, object]] = []
-
-            def invocation_detail(
-                    *, recovery_reason: str | None = None,
-            ) -> dict[str, object]:
-                value: dict[str, object] = {
-                    "formal_call_count": formal_call_count,
-                    "probe_call_count": probe_call_count,
-                    "physical_call_count": call_ordinal,
-                    "recovery_cycle_count": recovery_cycle_count,
-                    "recovery_strategy": self._recovery.strategy,
-                    "route_recovery": list(route_recovery),
-                }
-                if recovery_reason is not None:
-                    value["recovery_reason"] = recovery_reason
-                if last_result is not None and last_route is not None:
-                    value["last_provider_attempt"] = {
-                        "provider_attempt_id": last_result.provider_attempt_id,
-                        "provider_request_id": last_result.provider_request_id,
-                        "outcome": last_result.outcome,
-                        "route": last_route.audit_identity(),
-                        "diagnostic": dict(last_result.detail),
-                    }
-                if last_formal_result is not None and last_route is not None:
-                    value["last_formal_provider_attempt"] = {
-                        "provider_attempt_id": (
-                            last_formal_result.provider_attempt_id),
-                        "provider_request_id": (
-                            last_formal_result.provider_request_id),
-                        "outcome": last_formal_result.outcome,
-                        "route": last_route.audit_identity(),
-                        "diagnostic": dict(last_formal_result.detail),
-                    }
-                return value
-
+            # This is transport lifecycle admission, not a new capacity permit:
+            # Registry/PN still owns concurrency and the audit owns durable
+            # duplicate exclusion, including across ports and process reopen.
+            ticket = object()
+            self._inflight.add(ticket)
             route_index = self._active_route_index
             route = self._routes[route_index]
-            last_route = route
+        previous_active = getattr(self._request_context, "active", False)
+        self._request_context.active = True
+        try:
+            return self._request_admitted(
+                attempt, route=route, route_index=route_index,
+                interruption_requested=interruption_requested)
+        finally:
+            self._request_context.active = previous_active
+            with self._state:
+                self._inflight.remove(ticket)
+                self._state.notify_all()
+
+    def _request_admitted(
+            self, attempt: LLMCallAttempt, *, route: _ExternalRoute,
+            route_index: int,
+            interruption_requested: Callable[[], bool] | None,
+    ) -> LLMInputResponseBytes:
+        try:
+            provider_request_from_envelope(
+                attempt.canonical_request_bytes,
+                expected_model_condition=attempt.model_condition,
+                expected_max_output_tokens=self._max_output_tokens,
+                outbound_model=self._routes[0].outbound_model,
+                reasoning_effort=self._reasoning_effort)
+        except ResponseEnvelopeError:
+            self._audit.finish_external_invocation(
+                attempt, outcome="adapter_not_submitted",
+                detail={
+                    "failure_category": "adapter_not_submitted",
+                    "retry_eligible": False,
+                    "recovery_disposition": "block_no_retry",
+                })
+            raise LLMInputPortFailure(
+                "adapter_not_submitted", submission_state="not_submitted",
+                failure_code="external_request_protocol_invalid")
+        if not self._audit.reserve_external_invocation(attempt):
+            raise LLMInputPortFailure(
+                "adapter_not_submitted", submission_state="not_submitted",
+                failure_code="external_duplicate_submission_prevented")
+        call_ordinal = 0
+        formal_call_count = 0
+        probe_call_count = 0
+        recovery_cycle_count = 0
+        prior_provider_attempt_id: str | None = None
+        last_result: _ProviderCallResult | None = None
+        last_formal_result: _ProviderCallResult | None = None
+        last_route: _ExternalRoute | None = None
+        route_recovery: list[dict[str, object]] = []
+
+        def invocation_detail(
+                *, recovery_reason: str | None = None,
+        ) -> dict[str, object]:
+            value: dict[str, object] = {
+                "formal_call_count": formal_call_count,
+                "probe_call_count": probe_call_count,
+                "physical_call_count": call_ordinal,
+                "recovery_cycle_count": recovery_cycle_count,
+                "recovery_strategy": self._recovery.strategy,
+                "route_recovery": list(route_recovery),
+            }
+            if recovery_reason is not None:
+                value["recovery_reason"] = recovery_reason
+            if last_result is not None and last_route is not None:
+                value["last_provider_attempt"] = {
+                    "provider_attempt_id": last_result.provider_attempt_id,
+                    "provider_request_id": last_result.provider_request_id,
+                    "outcome": last_result.outcome,
+                    "route": last_route.audit_identity(),
+                    "diagnostic": dict(last_result.detail),
+                }
+            if last_formal_result is not None and last_route is not None:
+                value["last_formal_provider_attempt"] = {
+                    "provider_attempt_id": (
+                        last_formal_result.provider_attempt_id),
+                    "provider_request_id": (
+                        last_formal_result.provider_request_id),
+                    "outcome": last_formal_result.outcome,
+                    "route": last_route.audit_identity(),
+                    "diagnostic": dict(last_formal_result.detail),
+                }
+            return value
+
+        last_route = route
+        try:
+            request_bytes = provider_request_from_envelope(
+                attempt.canonical_request_bytes,
+                expected_model_condition=attempt.model_condition,
+                expected_max_output_tokens=self._max_output_tokens,
+                outbound_model=route.outbound_model,
+                reasoning_effort=self._reasoning_effort)
+        except ResponseEnvelopeError:
+            self._audit.finish_external_invocation(
+                attempt, outcome="request_protocol_invalid",
+                detail=invocation_detail(
+                    recovery_reason="request_protocol_invalid"))
+            raise LLMInputPortFailure(
+                "adapter_not_submitted", submission_state="not_submitted",
+                failure_code="external_route_request_protocol_invalid")
+
+        def perform(
+                *, body: bytes, call_kind: str, deadline: float,
+        ) -> _ProviderCallResult:
+            nonlocal call_ordinal, formal_call_count, probe_call_count
+            nonlocal prior_provider_attempt_id, last_result
+            current_call_ordinal = call_ordinal
+            call_ordinal += 1
+            if call_kind == "health_probe":
+                probe_call_count += 1
+            else:
+                formal_call_count += 1
             try:
-                request_bytes = provider_request_from_envelope(
-                    attempt.canonical_request_bytes,
-                    expected_model_condition=attempt.model_condition,
-                    expected_max_output_tokens=self._max_output_tokens,
-                    outbound_model=route.outbound_model,
-                    reasoning_effort=self._reasoning_effort)
-            except ResponseEnvelopeError:
+                result = self._perform_request(
+                    attempt, route=route, method="POST", body=body,
+                    call_kind=call_kind,
+                    call_ordinal=current_call_ordinal,
+                    prior_provider_attempt_id=prior_provider_attempt_id,
+                    deadline=deadline,
+                    max_response_bytes=min(
+                        self._max_response_bytes,
+                        attempt.max_response_bytes),
+                    interruption_requested=interruption_requested)
+            except LLMInputPortInterrupted as interrupted:
+                submission_state = interrupted.submission_state
+                if (call_kind == "health_probe"
+                        and last_formal_result is not None
+                        and last_formal_result.outcome == "submission_unknown"):
+                    # Diagnostic cancellation describes only the probe. It
+                    # cannot downgrade an earlier formal request's uncertainty
+                    # to not_submitted (or to the probe's response_complete).
+                    submission_state = "submission_unknown"
                 self._audit.finish_external_invocation(
-                    attempt, outcome="request_protocol_invalid",
-                    detail=invocation_detail(
-                        recovery_reason="request_protocol_invalid"))
-                raise LLMInputPortFailure(
-                    "adapter_not_submitted", submission_state="not_submitted",
-                    failure_code="external_route_request_protocol_invalid")
-
-            def perform(
-                    *, body: bytes, call_kind: str, deadline: float,
-            ) -> _ProviderCallResult:
-                nonlocal call_ordinal, formal_call_count, probe_call_count
-                nonlocal prior_provider_attempt_id, last_result
-                current_call_ordinal = call_ordinal
-                call_ordinal += 1
-                if call_kind == "health_probe":
-                    probe_call_count += 1
-                else:
-                    formal_call_count += 1
-                try:
-                    result = self._perform_request(
-                        attempt, route=route, method="POST", body=body,
-                        call_kind=call_kind,
-                        call_ordinal=current_call_ordinal,
-                        prior_provider_attempt_id=prior_provider_attempt_id,
-                        deadline=deadline,
-                        max_response_bytes=min(
-                            self._max_response_bytes,
-                            attempt.max_response_bytes),
-                        interruption_requested=interruption_requested)
-                except LLMInputPortInterrupted:
-                    self._audit.finish_external_invocation(
-                        attempt, outcome="owner_interrupted",
-                        detail=invocation_detail(
-                            recovery_reason="owner_interrupted"))
-                    raise
-                prior_provider_attempt_id = result.provider_attempt_id
-                last_result = result
-                return result
-
-            def response(
-                    result: _ProviderCallResult,
-            ) -> LLMInputResponseBytes:
-                response_bytes = result.response_bytes
-                if response_bytes is None:
-                    raise RuntimeError(
-                        "external provider response result is unavailable")
-                self._audit.finish_external_invocation(
-                    attempt, outcome="response_returned",
+                    attempt, outcome="owner_interrupted",
                     detail={
-                        **invocation_detail(),
-                        "route": route.audit_identity()})
-                self._active_route_index = route_index
-                status_code = result.detail.get("http_status")
-                external_request_id = result.detail.get(
-                    "external_request_id")
-                return LLMInputResponseBytes(
-                    response_bytes,
-                    status_code=(
-                        status_code if isinstance(status_code, int)
-                        and not isinstance(status_code, bool) else None),
-                    external_request_id=(
-                        external_request_id
-                        if isinstance(external_request_id, str) else None),
-                )
+                        **invocation_detail(recovery_reason="owner_interrupted"),
+                        "submission_state": submission_state,
+                    })
+                if submission_state != interrupted.submission_state:
+                    raise LLMInputPortInterrupted(
+                        submission_state=submission_state) from interrupted
+                raise
+            prior_provider_attempt_id = result.provider_attempt_id
+            last_result = result
+            return result
 
+        def response(
+                result: _ProviderCallResult,
+        ) -> LLMInputResponseBytes:
+            response_bytes = result.response_bytes
+            if response_bytes is None:
+                raise RuntimeError(
+                    "external provider response result is unavailable")
+            self._audit.finish_external_invocation(
+                attempt, outcome="response_returned",
+                detail={
+                    **invocation_detail(),
+                    "route": route.audit_identity()})
+            with self._state:
+                self._active_route_index = route_index
+            status_code = result.detail.get("http_status")
+            external_request_id = result.detail.get(
+                "external_request_id")
+            return LLMInputResponseBytes(
+                response_bytes,
+                status_code=(
+                    status_code if isinstance(status_code, int)
+                    and not isinstance(status_code, bool) else None),
+                external_request_id=(
+                    external_request_id
+                    if isinstance(external_request_id, str) else None),
+            )
+
+        result = perform(
+            body=request_bytes, call_kind="real_model_call",
+            deadline=time.monotonic() + self._timeout_seconds)
+        last_formal_result = result
+        final_recovery_reason = "failure_blocked"
+        final_failure_code: str | None = None
+
+        while True:
+            if result.response_bytes is not None:
+                return response(result)
+            if not _health_probe_eligible(result):
+                final_recovery_reason = "failure_not_probe_eligible"
+                break
+            if (recovery_cycle_count >=
+                    self._recovery.max_probe_success_formal_failure_cycles):
+                final_recovery_reason = "recovery_cycle_limit_exhausted"
+                final_failure_code = (
+                    "external_recovery_cycle_limit_exhausted")
+                break
+
+            probe_deadline = (
+                time.monotonic()
+                + self._recovery.probe_timeout_budget_seconds)
+            probe_attempts = 0
+            probe_succeeded = False
+            probe_budget_exhausted = False
+            for _probe_ordinal in range(
+                    self._recovery.max_probe_attempts):
+                if time.monotonic() >= probe_deadline:
+                    probe_budget_exhausted = True
+                    break
+                probe_result = perform(
+                    body=_probe_request(
+                        route, self._reasoning_effort),
+                    call_kind="health_probe",
+                    deadline=probe_deadline)
+                probe_attempts += 1
+                if probe_result.response_bytes is not None:
+                    probe_succeeded = True
+                    break
+            route_recovery.append({
+                "route": route.audit_identity(),
+                "probe_attempts": probe_attempts,
+                "probe_succeeded": probe_succeeded,
+                "probe_budget_exhausted": probe_budget_exhausted,
+            })
+            if not probe_succeeded:
+                if probe_budget_exhausted:
+                    final_recovery_reason = "health_probe_budget_exhausted"
+                    final_failure_code = (
+                        "external_health_probe_budget_exhausted")
+                else:
+                    final_recovery_reason = "health_probe_attempts_exhausted"
+                    final_failure_code = (
+                        "external_health_probe_attempts_exhausted")
+                break
+
+            if result.outcome == "submission_unknown":
+                # The probe diagnoses this exact route, not the disposition of
+                # the original formal request. Keep its unknown evidence and
+                # hand it to the existing Registry/owner reconciliation path.
+                final_recovery_reason = "submission_unknown_requires_reconciliation"
+                final_failure_code = "external_submission_unknown_requires_reconciliation"
+                break
+
+            recovery_cycle_count += 1
             result = perform(
                 body=request_bytes, call_kind="real_model_call",
                 deadline=time.monotonic() + self._timeout_seconds)
             last_formal_result = result
-            final_recovery_reason = "failure_blocked"
-            final_failure_code: str | None = None
 
-            while True:
-                if result.response_bytes is not None:
-                    return response(result)
-                if not _health_probe_eligible(result):
-                    final_recovery_reason = "failure_not_probe_eligible"
-                    break
-                if (recovery_cycle_count >=
-                        self._recovery.max_probe_success_formal_failure_cycles):
-                    final_recovery_reason = "recovery_cycle_limit_exhausted"
-                    final_failure_code = (
-                        "external_recovery_cycle_limit_exhausted")
-                    break
-
-                probe_deadline = (
-                    time.monotonic()
-                    + self._recovery.probe_timeout_budget_seconds)
-                probe_attempts = 0
-                probe_succeeded = False
-                probe_budget_exhausted = False
-                for _probe_ordinal in range(
-                        self._recovery.max_probe_attempts):
-                    if time.monotonic() >= probe_deadline:
-                        probe_budget_exhausted = True
-                        break
-                    probe_result = perform(
-                        body=_probe_request(
-                            route, self._reasoning_effort),
-                        call_kind="health_probe",
-                        deadline=probe_deadline)
-                    probe_attempts += 1
-                    if probe_result.response_bytes is not None:
-                        probe_succeeded = True
-                        break
-                route_recovery.append({
-                    "route": route.audit_identity(),
-                    "probe_attempts": probe_attempts,
-                    "probe_succeeded": probe_succeeded,
-                    "probe_budget_exhausted": probe_budget_exhausted,
-                })
-                if not probe_succeeded:
-                    if probe_budget_exhausted:
-                        final_recovery_reason = "health_probe_budget_exhausted"
-                        final_failure_code = (
-                            "external_health_probe_budget_exhausted")
-                    else:
-                        final_recovery_reason = "health_probe_attempts_exhausted"
-                        final_failure_code = (
-                            "external_health_probe_attempts_exhausted")
-                    break
-
-                recovery_cycle_count += 1
-                result = perform(
-                    body=request_bytes, call_kind="real_model_call",
-                    deadline=time.monotonic() + self._timeout_seconds)
-                last_formal_result = result
-
-            self._audit.finish_external_invocation(
-                attempt, outcome="no_result",
-                detail=invocation_detail(
-                    recovery_reason=final_recovery_reason))
-            if last_formal_result is None:
-                raise LLMInputPortFailure(
-                    "provider_failure", submission_state="not_submitted",
-                    failure_code="external_provider_no_route_result")
-            raise _neutral_failure(
-                last_formal_result, failure_code=final_failure_code)
+        self._audit.finish_external_invocation(
+            attempt, outcome="no_result",
+            detail=invocation_detail(
+                recovery_reason=final_recovery_reason))
+        if last_formal_result is None:
+            raise LLMInputPortFailure(
+                "provider_failure", submission_state="not_submitted",
+                failure_code="external_provider_no_route_result")
+        raise _neutral_failure(
+            last_formal_result, failure_code=final_failure_code)
 
     def close(self) -> None:
-        with self._lock:
+        """Reject new calls and drain accepted calls, including recovery/audit.
+
+        Closing does not cancel requests or imply that remote effects vanished.
+        Owner cancellation remains per attempt. A request/observer callback may
+        mark the port closed, but cannot synchronously wait for itself; that
+        reentrant close raises and a non-callback caller can finish the drain.
+        """
+        with self._state:
             self._closed = True
+            if getattr(self._request_context, "active", False):
+                raise RuntimeError(
+                    "external provider close cannot drain from a request callback")
+            self._state.wait_for(lambda: not self._inflight)
 
 
 __all__ = [

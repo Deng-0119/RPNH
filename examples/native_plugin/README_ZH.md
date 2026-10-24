@@ -8,7 +8,7 @@
 
 [![已完成 native-add 的 PetriNet](assets/native-plugin-petrinet.png)](assets/native-plugin-petrinet.png)
 
-[本地 Viewer 与读图说明](../../docs/guides/viewer_ZH.md) · 点击全景打开原始大图。
+[在线 Viewer 与读图说明](https://github.com/Deng-0119/RPNH/blob/main/docs/guides/viewer_ZH.md) · 点击全景打开原始大图。
 
 可从源码根目录运行，或先获取安装版的可修改副本：
 

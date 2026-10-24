@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: frontends.md
-  revision: "2026-10-19.5"
+  revision: "2026-10-24.1"
   status: source-reviewed
   basis: "Frontend selection, setup, Basic terminal and same-session handoff; validation recorded separately"
 ---
@@ -35,6 +35,11 @@ rpnh frontend setup basic
 Codex／OpenCode 安装需要 Node 和 npm；DSH 需要 Git、Node `^22.19.0 || >=24.0.0`，
 setup 会准备固定源码、pnpm 依赖和官方 Web 资源。缺少前置工具时会给出安装指引；
 配置失败不会保存为可用选择，菜单允许改选其他界面。
+
+OpenCode 配置与启动精确要求 **1.19.4**；管理安装使用官方 npm registry 的
+`opencode-ai@1.19.4`。已保存的 1.19.3 客户端须通过 setup 更新或重新连接；启动器在
+取得 Registry owner 前拒绝其他版本。有限离线检查与历史验证边界见
+[OpenCode 指南](opencode_ZH.md)。
 
 也可以明确连接已有安装：
 

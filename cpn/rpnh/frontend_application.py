@@ -337,7 +337,9 @@ class RegistryFrontendApplication:
                 lease.close()
             raise
 
-    def _turns(self, state: _Session) -> list[dict[str, Any]]:
+    def _turns(
+            self, state: _Session, *, include_request_key: bool = False,
+    ) -> list[dict[str, Any]]:
         session = state.session
         current_profile = self._profiles_by_path.get(
             session.execution_config_path)
@@ -431,6 +433,9 @@ class RegistryFrontendApplication:
                     "turn_ref": {"entity_type": ref.entity_type, "logical_id": str(ref.entity_id),
                                  "version_id": str(ref.version_id)},
                     "attempt": current.get("attempt_relative_path"), "answer": None, "children": []}
+            if include_request_key and identity is not None:
+                # Internal command evidence, not a new public projection field.
+                item["_acceptance_key"] = key
             if ordinal in committed:
                 item["answer"] = committed[ordinal]["answer"]
                 item["children"] = [{"task_id": link["task_control_id"], "kind": link["task_kind"]}
@@ -505,7 +510,8 @@ class RegistryFrontendApplication:
             raise FrontendError("invalid_prompt", "A nonempty text prompt is required.", 400)
         if not isinstance(key, str) or not key or len(key) > 200:
             raise FrontendError("invalid_request_id", "Invalid request identity.", 400)
-        existing = [item for item in self._turns(state) if item["key"] == key]
+        existing = [item for item in self._turns(
+            state, include_request_key=True) if item["key"] == key]
         if len(existing) > 1:
             raise FrontendError("ambiguous_submission", "Duplicate Registry submission identities.")
         if existing:
@@ -518,6 +524,7 @@ class RegistryFrontendApplication:
             if item["state"] not in {"accepted", "pending_start"}:
                 return item["ordinal"]
             ordinal = item["ordinal"]
+            acceptance_key = item["_acceptance_key"]
         else:
             profile = self._select_profile(
                 session, profile.selection_id, profile.reasoning_effort)
@@ -525,14 +532,12 @@ class RegistryFrontendApplication:
                 raise FrontendError("session_busy", "Resolve the active or paused main turn first.")
             projection = session._main_thread.recover_thread()
             ordinal = int(projection["next_turn_ordinal"])
-            session._main_thread.accept_turn(
-                thread_ref=session._version_ref(projection["thread_ref"]),
-                user_input={"text": text, "required_task_kind": kind}, expected_ordinal=ordinal,
-                idempotency_key="frontend-request/v3:" + canonical({
-                    "key": key,
-                    "selection": profile.selection_id,
-                    "reasoning_effort": profile.reasoning_effort}))
-        spec = session.prepare_turn(text, required_task_kind=kind)
+            acceptance_key = "frontend-request/v3:" + canonical({
+                "key": key,
+                "selection": profile.selection_id,
+                "reasoning_effort": profile.reasoning_effort})
+        spec = session.prepare_turn(
+            text, required_task_kind=kind, idempotency_key=acceptance_key)
         snap = session.active_turn_snapshot()
         if snap is None or snap.ordinal != ordinal:
             raise FrontendError("missing_attempt", "The prepared turn is missing from Registry authority.")

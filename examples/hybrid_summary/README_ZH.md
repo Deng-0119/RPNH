@@ -10,7 +10,7 @@
 
 [图像与输入来源](assets/initial-petri-provenance.json) · [原完成态 Detailed flow](assets/hybrid-summary-flow.png)
 
-[本地 Viewer 与读图说明](../../docs/guides/viewer_ZH.md) · 点击全景打开原始大图。
+[在线 Viewer 与读图说明](https://github.com/Deng-0119/RPNH/blob/main/docs/guides/viewer_ZH.md) · 点击全景打开原始大图。
 
 从已安装 RPNH 获取完整的可修改依赖闭包：
 

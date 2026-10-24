@@ -5,9 +5,12 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import posixpath
+import re
 import shutil
 import subprocess
 import sys
+from urllib.parse import unquote, urlsplit
 
 import pytest
 
@@ -16,6 +19,52 @@ from cpn.examples.cli import main
 
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def _assert_local_markdown_links_resolve(directory):
+    """Check copied guides and figures, not just the declared export paths."""
+    for guide in directory.rglob("*.md"):
+        for target in re.findall(r"\]\(([^\s)]+)", guide.read_text(encoding="utf-8")):
+            parsed = urlsplit(target)
+            if parsed.scheme or parsed.netloc or not parsed.path:
+                continue
+            resolved = guide.parent / unquote(parsed.path)
+            assert resolved.exists(), f"{guide.relative_to(directory)}: missing {target}"
+
+
+def test_catalog_covers_documented_source_examples_without_exporting_them():
+    entries = gallery.catalog()["examples"]
+    assert len({item["id"] for item in entries}) == len(entries)
+    source_prefix = "https://github.com/Deng-0119/RPNH/tree/main/examples/"
+    declared_sources = {
+        item["source_url"].removeprefix(source_prefix): item
+        for item in entries if item["source_url"].startswith(source_prefix)
+    }
+    for language in ("", "_ZH"):
+        guide = ROOT / f"examples/README{language}.md"
+        documented = set(re.findall(r"\]\(([^\s)]+/README(?:_ZH)?\.md)\)", guide.read_text()))
+        for target in documented:
+            if target.startswith("../") or "/figures/" in target:
+                continue
+            directory = posixpath.dirname(target)
+            assert directory in declared_sources, f"missing source example: {directory}"
+    for directory in ("multiuser_release_handoff", "project_collaboration", "erp_bench",
+                      "slopcodebench", "user_collaboration/agent_cobuild",
+                      "tool_pipeline/multi_source", "user_collaboration/native_billing"):
+        item = declared_sources[directory]
+        assert item["exportable"] is False
+        assert not item.get("paths")
+        assert item["title_zh"] and item["prerequisites_zh"]
+        assert item["execution_boundary"] and item["prerequisites"]
+
+
+@pytest.mark.parametrize("example", [item for item in gallery.catalog()["examples"]
+                                    if not item["exportable"]], ids=lambda item: item["id"])
+def test_every_source_only_example_refuses_export_before_creating_output(tmp_path, example):
+    output = tmp_path / example["id"]
+    with pytest.raises(ValueError, match="source-only"):
+        main(["export", "--example", example["id"], "--output", str(output)])
+    assert not output.exists()
 
 
 @pytest.fixture
@@ -59,6 +108,7 @@ def test_named_export_preserves_complete_declared_closure(tmp_path, assets, name
         assert hashlib.sha256((output / item["path"]).read_bytes()).hexdigest() == item["sha256"]
     assert (output / "README_ZH.md").is_file()
     assert (output / "LICENSE").is_file()
+    _assert_local_markdown_links_resolve(output)
     if name == "hybrid_summary":
         assert (output / "examples/_support/profile.py").is_file()
         assert (output / "examples/_support/scripted_model.py").is_file()
@@ -165,11 +215,17 @@ def test_actual_installed_wheel_exports_outside_checkout(tmp_path):
     location = run("-c", "import cpn; print(cpn.__file__)").strip()
     assert str(ROOT) not in location
     manifest = json.loads(run("-m", "cpn.examples.cli", "list"))
-    assert any(item["id"] == "package_reuse" for item in manifest["examples"])
+    examples = {item["id"]: item for item in manifest["examples"]}
+    assert examples["package_reuse"]["exportable"] is True
+    for name in ("multiuser_release_handoff", "project_collaboration", "erp_bench", "slopcodebench"):
+        assert examples[name]["exportable"] is False
+    gallery_root = Path(location).parent / "examples/gallery/examples"
+    assert not (gallery_root / "multiuser_release_handoff").exists()
     for name in ("native_plugin", "hybrid_summary", "compose_serial", "package_reuse"):
         exported = outside / name
         run("-m", "cpn.examples.cli", "export", "--example", name, "--output", str(exported))
         assert (exported / "manifest.json").is_file()
+        _assert_local_markdown_links_resolve(exported)
     hybrid = outside / "hybrid_summary/examples/hybrid_summary/run.py"
     assert "--graph" in run(str(hybrid), "--help")
     composition = outside / "compose_serial/examples/net_operations/compose_serial.py"

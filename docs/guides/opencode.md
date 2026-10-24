@@ -6,9 +6,9 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: opencode_ZH.md
-  revision: "2026-10-19.1"
-  status: locally-validated-integration-candidate
-  upstream-version: "1.19.3"
+  revision: "2026-10-24.1"
+  status: source-reviewed-compatibility-candidate
+  upstream-version: "1.19.4"
 ---
 
 # OpenCode frontend
@@ -25,12 +25,10 @@ workspaces, tools, independent tasks, Designer workflows, checkpoints and termin
 proof. The compatibility layer neither imports upstream runtime code nor starts
 an OpenCode server/provider/tool loop.
 
-The current exact target is **opencode-ai 1.19.3**, the public npm `latest`
-and GitHub stable release checked on **2026-10-19**. This update is validated
-with that actual Linux x64 client on WSL2, without a real provider. Earlier
-wheel/provider results are historical and do not certify this client version.
-See the [current validation record](../validation/opencode-20261019.md).
-Development version 2.0.32 is not a supported stable target.
+The current exact target is **opencode-ai 1.19.4**. This guide describes the
+compatibility candidate; it is not a release or all-feature certification.
+The [2026-10-19 validation record](../validation/opencode-20261019.md) covers
+**1.19.3** and remains historical evidence, not acceptance of 1.19.4.
 
 The stable client mixes legacy session/HTTP/SSE requests with newer `/api/*`
 bootstrap reads. RPNH projects the same profiles, agent and commands into
@@ -41,16 +39,24 @@ current version; the old 1.18.35 certification candidate has been retired.
 
 ## Prerequisites and entry
 
-Use Linux/WSL2, Python 3.11+, a complete harness checkout, a configured RPNH
-execution profile, and a separately installed trusted **OpenCode 1.19.3** client.
+Use Linux/WSL2, Python 3.11+, an installed RPNH package, a configured RPNH
+execution profile, and a trusted **OpenCode 1.19.4** client.
 The compatibility source is `anomalyco/opencode` commit
-`e3c4eb242585dcd77be1a867391b7c25fd47ce52` (tag `v1.19.3`). Check `opencode --version`.
+`148842ef7cb1bc34192b3fff57d0f9721ab9c801` (tag `v1.19.4`). Check `opencode --version`.
 The launcher rejects other version strings; it does not download/install the
 client, establish binary provenance, or modify global OpenCode settings.
+`rpnh frontend setup opencode` connects an exact-version client or installs
+`opencode-ai@1.19.4` from the official npm registry into the managed `frontends/`
+directory beside RPNH preferences. It saves that binary binding without changing
+the global OpenCode installation or model configuration. Explicit connection is
+also available with `--opencode-bin /absolute/path/to/opencode`; see the
+[frontend setup guide](frontends.md).
 
 ```bash
 python -m pip install .
 rpnh --help
+rpnh frontend setup opencode
+rpnh frontend list
 rpnh --frontend opencode --session-dir ./my-rpnh-session
 # After leaving any RPNH frontend, reopen the same MainSession:
 rpnh --frontend opencode --resume ./my-rpnh-session
@@ -105,7 +111,7 @@ rule is a visible v1 limitation, not transparent exactly-once intent inference.
 | --- | --- |
 | `/rpnh-help` | Discover the supported control surface. |
 | `/rpnh-tasks` | List the session's independent tasks/workflows. |
-| `/rpnh-task ID status\|result\|stop\|resume` | Address exactly one existing child owner; resume continues its current stopped cut. |
+| `/rpnh-task ID status\|result\|stop\|resume` | Address exactly one existing child owner; resume restores its latest valid committed checkpoint. |
 | `/rpnh-task ID checkpoints` | List exact committed checkpoint versions for that child run. |
 | `/rpnh-task ID reopen CHECKPOINT [:: REASON]` | Reopen that exact cut as a new generation in the same Registry/run, with optional owner guidance. |
 | `/rpnh-task ID message TEXT` | Send a registered control message to one child owner. |
@@ -181,18 +187,18 @@ are explicit errors; none asserts successful execution.
 ## Explicit native offline checks
 
 The existing test filenames and `--opencode-certify-*` options are retained, but
-only the current **1.19.3** profile is accepted. There is no production version
+only the current **1.19.4** profile is accepted. There is no production version
 override. Obtain the trusted stock client separately and pass its actual Linux
 ELF executable, not a version-reporting wrapper. Tests use isolated HOME/XDG,
 config, display and temporary directories. They do not install or log in.
 
 ```bash
 python -m pytest -q tests/test_opencode_candidate_native.py \
-  --opencode-certify-version=1.19.3 \
+  --opencode-certify-version=1.19.4 \
   --opencode-certify-binary=/absolute/path/to/opencode \
   --opencode-certify-lane=contract
 python -m pytest -q tests/test_opencode_candidate_native.py \
-  --opencode-certify-version=1.19.3 \
+  --opencode-certify-version=1.19.4 \
   --opencode-certify-binary=/absolute/path/to/opencode \
   --opencode-certify-lane=registry-read
 ```
@@ -211,7 +217,7 @@ Without all explicit native options these lanes do not run. Unknown versions,
 missing dependencies, wrong executable versions and deselected requested lanes
 fail explicitly. Record package/release provenance and actual probe output; the
 test helper performs no task-side file hashes or source-tree acceptance audit.
-The schema is a reviewed source-extracted subset of 1.19.3, not an upstream
+The schema is a reviewed source-extracted subset of 1.19.4, not an upstream
 compiled SDK validator. These are limited native smoke checks, not all-feature
 certification. Live providers, native tools/plugins, picker matrices, forced SSE
 reconnect, long-history pagination and active-worker recovery remain outside them.

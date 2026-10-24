@@ -258,7 +258,7 @@ def test_projection_streams_rows_without_fetchall(ledger, monkeypatch):
     monkeypatch.setattr(store, "connect", Connection)
     assert queries._canonical_heads(kernel, (None, 3))[6].ordinal == 6
     head_queries = [sql for sql in statements if "FROM events e " in sql]
-    assert len(head_queries) == 3
+    assert len(head_queries) == 2
     assert all("SELECT e.*" not in sql for sql in head_queries)
     assert head_queries[0].startswith("SELECT e.ordinal FROM")
 
@@ -303,7 +303,14 @@ def test_cap_handoff_exception_keeps_its_exact_commit_cut(ledger):
     assert actual == reference_heads(store, task, (None, 3, 1))
     assert "member" not in actual[3].stream_heads
     assert {"member", "terminal", "checkpoint"}.issubset(actual[6].stream_heads)
-    # The exception does not turn PROVISIONAL into PUBLISHED or authorize a
+    with store.connect() as db:
+        db.execute(
+            "UPDATE firing_publications SET state='SUPERSEDED', "
+            "published_transaction_id=?,marking_checkpoint_version_id=? "
+            "WHERE firing_version_id=?", (str(handoff_tx), checkpoint, firing))
+    assert queries._canonical_heads(kernel, (6, 3, 1)) == (
+        reference_heads(store, task, (6, 3, 1)))
+    # The exception does not require PUBLISHED or authorize a
     # member when the exact handoff transaction loses committed authority.
     with store.connect() as db:
         db.execute("UPDATE transactions SET status='pending' WHERE transaction_id=?",

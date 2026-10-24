@@ -214,7 +214,7 @@ def test_first_probe_success_stops_probe_sequence_and_retries_formal_call(
         tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     port, attempt, factory = _port_and_attempt(tmp_path, monkeypatch, [
-        socket.timeout("formal response headers timeout"),
+        (503, b'{"error":"transient"}', "formal-1"),
         (200, _provider_response("READY.", "probe-1"), "probe-1"),
         (200, _provider_response("formal result", "formal-2"), "formal-2"),
     ])
@@ -264,9 +264,9 @@ def test_first_probe_success_stops_probe_sequence_and_retries_formal_call(
         item for item in audit
         if item["lifecycle"] == "provider_attempt_finished"
         and item["provider_attempt_id"] == started[0]["provider_attempt_id"])
-    assert first_finished["outcome"] == "submission_unknown"
+    assert first_finished["outcome"] == "http_failure"
     assert first_finished["detail"]["failure_code"] == (
-        "response_headers_timeout")
+        "http_status_503")
     invocation_finished = [
         item for item in audit
         if item["lifecycle"] == "external_provider_invocation_finished"
@@ -286,7 +286,7 @@ def test_selected_reasoning_effort_reaches_formal_and_probe_requests(
 ) -> None:
     port, attempt, factory = _port_and_attempt(
         tmp_path, monkeypatch, [
-            socket.timeout("formal response headers timeout"),
+            (503, b'{"error":"transient"}', "formal-1"),
             (200, _provider_response("READY.", "probe-1"), "probe-1"),
             (200, _provider_response("formal result", "formal-2"), "formal-2"),
         ],
@@ -307,7 +307,7 @@ def test_second_probe_success_skips_third_probe(
         tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     port, attempt, factory = _port_and_attempt(tmp_path, monkeypatch, [
-        socket.timeout("formal response headers timeout"),
+        (503, b'{"error":"transient"}', "formal-1"),
         (503, b'{"error":"down"}', "probe-1"),
         (200, _provider_response("READY.", "probe-2"), "probe-2"),
         (200, _provider_response("formal result", "formal-2"), "formal-2"),
@@ -351,13 +351,13 @@ def test_probe_success_formal_failure_cycles_are_strictly_bounded(
         tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     actions: list[object] = [
-        socket.timeout("formal-1"),
+        (503, b'{"error":"transient"}', "formal-1"),
         (200, _provider_response("READY.", "probe-1"), "probe-1"),
-        socket.timeout("formal-2"),
+        (503, b'{"error":"transient"}', "formal-2"),
         (200, _provider_response("READY.", "probe-2"), "probe-2"),
-        socket.timeout("formal-3"),
+        (503, b'{"error":"transient"}', "formal-3"),
         (200, _provider_response("READY.", "probe-3"), "probe-3"),
-        socket.timeout("formal-4"),
+        (503, b'{"error":"transient"}', "formal-4"),
     ]
     port, attempt, factory = _port_and_attempt(
         tmp_path, monkeypatch, actions)

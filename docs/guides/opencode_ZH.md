@@ -6,9 +6,9 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: opencode.md
-  revision: "2026-10-19.1"
-  status: locally-validated-integration-candidate
-  upstream-version: "1.19.3"
+  revision: "2026-10-24.1"
+  status: source-reviewed-compatibility-candidate
+  upstream-version: "1.19.4"
 ---
 
 # OpenCode 前端
@@ -19,17 +19,24 @@ metadata:
 
 执行路径为 `rpnh → OpenCode attach → 回环 HTTP/SSE → 前端中立 application service → 现有 MainSession/TaskControl → Registry/Petri net`。OpenCode 仅作终端展示，不是 RPNH 的执行后端。精确模型选择、provider 调用、资源、workspace、工具、独立任务、Designer 工作流、checkpoint 和终态证据仍由 RPNH 管理；不复制上游执行循环，也不启动 OpenCode server/provider/tool 后端。
 
-当前精确目标为 **opencode-ai 1.19.3**，即 **2026-10-19** 核对的 npm `latest` 与 GitHub 公开稳定 release。本轮在 WSL2 使用真实 Linux x64 客户端进行无真实 provider 验证；旧 wheel/provider 结果是历史记录，不代表新版已通过这些检查。见[本轮验证记录](../validation/opencode-20261019_ZH.md)。开发版 2.0.32 不属于当前稳定支持目标。
+当前精确目标为 **opencode-ai 1.19.4**。本指南说明兼容候选，不是正式发布或全功能认证。[2026-10-19 验证记录](../validation/opencode-20261019_ZH.md)覆盖 **1.19.3**，保留为历史证据，不代表 1.19.4 已验收。
 
 稳定客户端同时使用既有 session/HTTP/SSE 和新版 `/api/*` 启动读取。RPNH 将同一组 profile、agent、命令投影为带 location 的目录响应；Console 组织、原生 integration、skill、reference 目录为空。这些读取不授予 OpenCode 模型、凭据、工具、workspace 或恢复权威。启动器仍只接受当前精确版本；旧 1.18.35 候选已退出支持集。
 
 ## 前置条件与入口
 
-支持 Linux/WSL2、Python 3.11+。需要完整 harness 源码、已配置的 RPNH execution profile，以及单独安装的可信 **OpenCode 1.19.3** 客户端。协议基线为 `anomalyco/opencode` 的 `e3c4eb242585dcd77be1a867391b7c25fd47ce52`（tag `v1.19.3`）。先检查 `opencode --version`。启动器拒绝其它版本字符串，不自动下载安装，不验证二进制来源，也不修改全局 OpenCode 配置。
+支持 Linux/WSL2、Python 3.11+。需要已安装的 RPNH 包、已配置的 RPNH execution profile，以及可信 **OpenCode 1.19.4** 客户端。协议基线为 `anomalyco/opencode` 的 `148842ef7cb1bc34192b3fff57d0f9721ab9c801`（tag `v1.19.4`）。先检查 `opencode --version`。启动器拒绝其它版本字符串，不自动下载安装，不验证二进制来源，也不修改全局 OpenCode 配置。
+
+`rpnh frontend setup opencode` 连接精确版本客户端，或从官方 npm registry 安装
+`opencode-ai@1.19.4` 到 RPNH 偏好文件旁的管理目录 `frontends/`，并保存 binary
+绑定，不替换全局 OpenCode 安装或模型配置。也可用
+`--opencode-bin /absolute/path/to/opencode` 明确连接已有安装，详见[前端配置指南](frontends_ZH.md)。
 
 ```bash
 python -m pip install .
 rpnh --help
+rpnh frontend setup opencode
+rpnh frontend list
 rpnh --frontend opencode --session-dir ./my-rpnh-session
 # 退出任意 RPNH 前端后，重开同一个 MainSession：
 rpnh --frontend opencode --resume ./my-rpnh-session
@@ -97,22 +104,22 @@ usage、cost 和 context 指标**不可用**。固定 DTO 必填数值使用零�
 
 ## 显式原生离线检查
 
-保留既有测试文件名和 `--opencode-certify-*` 参数，当前只接受 **1.19.3** profile。产品没有版本覆盖开关。先单独取得可信 stock 客户端，传入实际 Linux ELF 可执行文件，而非伪造版本输出的 wrapper。测试使用隔离 HOME/XDG、config、display 和临时目录，不自动安装或登录。
+保留既有测试文件名和 `--opencode-certify-*` 参数，当前只接受 **1.19.4** profile。产品没有版本覆盖开关。先单独取得可信 stock 客户端，传入实际 Linux ELF 可执行文件，而非伪造版本输出的 wrapper。测试使用隔离 HOME/XDG、config、display 和临时目录，不自动安装或登录。
 
 ```bash
 python -m pytest -q tests/test_opencode_candidate_native.py \
-  --opencode-certify-version=1.19.3 \
+  --opencode-certify-version=1.19.4 \
   --opencode-certify-binary=/absolute/path/to/opencode \
   --opencode-certify-lane=contract
 python -m pytest -q tests/test_opencode_candidate_native.py \
-  --opencode-certify-version=1.19.3 \
+  --opencode-certify-version=1.19.4 \
   --opencode-certify-binary=/absolute/path/to/opencode \
   --opencode-certify-lane=registry-read
 ```
 
 contract lane 使用真实客户端完成启动、新建 session、`/rpnh-help`、一次普通 prompt 以及 SSE 答案展示；后端为 `ApplicationDouble`。Registry lane 用确定性 fake port 准备两个 committed turn，再经原 application owner 的 `--session` 和 `--continue` 冷连接读取历史，检查三种 PN 投影、稳定消息 ID、Registry 逻辑版本和 owner lease 排他/释放。准备调用与零新增效果的读取窗口分列。完整 PN 与 RPNH 投影逐结构对照；终端只检查有界可见文本，不宣称截图或完整视口验收。
 
-未提供完整原生参数时不执行这两个 lane；未知版本、缺依赖、版本输出不符或请求 lane 被过滤都会明确失败。记录包/release 来源和真实 probe 输出；helper 不执行任务侧文件 hash 或 source-tree 准入审计。schema 是人工核对的 1.19.3 源码提取子集，不是上游 SDK 编译验证器。这里只是有限原生 smoke；真实 provider、原生工具/插件、picker 矩阵、强制 SSE 重连、长历史分页和活跃 worker 恢复未覆盖。
+未提供完整原生参数时不执行这两个 lane；未知版本、缺依赖、版本输出不符或请求 lane 被过滤都会明确失败。记录包/release 来源和真实 probe 输出；helper 不执行任务侧文件 hash 或 source-tree 准入审计。schema 是人工核对的 1.19.4 源码提取子集，不是上游 SDK 编译验证器。这里只是有限原生 smoke；真实 provider、原生工具/插件、picker 矩阵、强制 SSE 重连、长历史分页和活跃 worker 恢复未覆盖。
 
 ## 验证与代码定位
 

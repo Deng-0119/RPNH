@@ -1150,12 +1150,23 @@ class MainSession:
     def prepare_turn(
             self, user_text: str, *,
             required_task_kind: str | None = None,
+            idempotency_key: str | None = None,
     ) -> AgentTaskSpec:
-        """Create the exact independent task used for one main-session turn."""
+        """Admit and prepare one turn through the existing Registry authority.
+
+        Frontends may supply their exact acceptance identity. Only fresh
+        admission captures owner-selected plugins; retries use the registered
+        input, including the empty capability set of older turns. Completed
+        request receipts remain the caller's observational lookup, not a new
+        preparation or execution.
+        """
         if not isinstance(user_text, str) or not user_text.strip():
             raise ValueError("main-session input must be nonempty text")
         if required_task_kind not in {None, "workflow"}:
             raise ValueError("required main task kind is invalid")
+        if idempotency_key is not None and (
+                not isinstance(idempotency_key, str) or not idempotency_key):
+            raise ValueError("main-turn acceptance identity must be nonempty text")
         self._refresh_from_authority()
         active = self._active_turn()
         if active is not None:
@@ -1172,6 +1183,26 @@ class MainSession:
                 turn, user_text, required_task_kind)
             if turn["state"] not in {"accepted", "running"}:
                 raise RuntimeError("active main turn is not preparable")
+            if idempotency_key is not None:
+                # A running turn has exactly one predecessor: its accepted
+                # version. Read the original command, never reconstruct an
+                # older frontend identity using today's wire format.
+                accepted_ref = (
+                    turn_ref if turn["state"] == "accepted" else
+                    self._version_ref(turn["previous_version_ref"]))
+                accepted_turn = self._turn_document(accepted_ref)
+                event = self._registry_core.event_store.object_publication_event(
+                    accepted_ref.version_id, object_type=accepted_ref.entity_type)
+                command = json.loads(event.command_id)
+                if (not isinstance(command, dict)
+                        or command.get("authority") != "main_thread/v1"
+                        or command.get("command") != "accept_turn"
+                        or command.get("caller_idempotency_key") != idempotency_key
+                        or not isinstance(command.get("material"), dict)
+                        or command["material"].get("user_input")
+                        != accepted_turn["user_input"]):
+                    raise ValueError(
+                        "request identity differs from the active main-session turn")
             self.activate_for_execution()
             if turn["state"] == "accepted":
                 ordinal = int(turn["ordinal"])
@@ -1201,7 +1232,9 @@ class MainSession:
                 "required_task_kind": required_task_kind,
             },
             expected_ordinal=ordinal,
-            idempotency_key=f"main-turn-{ordinal}:accept",
+            idempotency_key=(
+                idempotency_key if idempotency_key is not None else
+                f"main-turn-{ordinal}:accept"),
         )
         attached = self._main_thread.attach_attempt(
             thread_ref=accepted.thread_ref,

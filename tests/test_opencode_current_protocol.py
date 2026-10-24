@@ -1,4 +1,4 @@
-"""The stable 1.19.3 mixed legacy/v2 bootstrap has one RPNH authority."""
+"""The stable 1.19.4 mixed legacy/v2 bootstrap has one RPNH authority."""
 from urllib.parse import urlencode
 
 import pytest
@@ -84,7 +84,7 @@ def test_new_catalog_does_not_enable_native_writes(context, path):
     assert app.calls == ["configuration"]
 
 
-@pytest.mark.parametrize("version", ["1.18.32", "1.18.35", "2.0.32", "1.19.4"])
+@pytest.mark.parametrize("version", ["1.18.32", "1.18.35", "1.19.3", "2.0.32", "1.19.5"])
 def test_historical_and_dev_versions_are_not_supported(version):
     with pytest.raises(ValueError):
         get_opencode_profile(certification_version=version)

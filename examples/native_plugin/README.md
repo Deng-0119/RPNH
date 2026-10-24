@@ -8,7 +8,7 @@ The official PetriNet view shows the recorded demo/add request, operation and re
 
 [![Completed native-add PetriNet](assets/native-plugin-petrinet.png)](assets/native-plugin-petrinet.png)
 
-[Local Viewer and reading guide](../../docs/guides/viewer.md) · Click the panorama to open the original full-size image.
+[Online Viewer and reading guide](https://github.com/Deng-0119/RPNH/blob/main/docs/guides/viewer.md) · Click the panorama to open the original full-size image.
 
 Start from a source checkout root or obtain an editable installed copy:
 

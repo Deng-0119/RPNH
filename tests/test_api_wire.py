@@ -167,12 +167,18 @@ def test_partial_body_is_not_silently_replayed(tmp_path,tls):
         with pytest.raises(LLMInputPortFailure):p.request_once(a)
         assert len(s.records)==1
 
-def test_submission_unknown_keeps_physical_retry_evidence(tmp_path,tls):
+def test_submission_unknown_keeps_diagnostic_evidence_without_formal_replay(tmp_path,tls):
     with serve(tmp_path,tls,[{'disconnect':True},{'body':completion('READY')},{}]) as s:
-        p,a=make_port(tmp_path,s.endpoint);p.request_once(a)
-        assert len(s.records)==3 and s.records[0]['body']==s.records[2]['body']
+        p,a=make_port(tmp_path,s.endpoint)
+        with pytest.raises(LLMInputPortFailure) as failed:
+            p.request_once(a)
+        assert failed.value.disposition == failed.value.submission_state == 'submission_unknown'
+        assert failed.value.failure_code == 'external_submission_unknown_requires_reconciliation'
+        assert len(s.records)==2
         rows=[x for x in audit(tmp_path) if x['lifecycle']=='provider_attempt_finished']
+        assert [row['call_kind'] for row in rows] == ['real_model_call', 'health_probe']
         assert rows[0]['outcome']=='submission_unknown'
+        assert rows[1]['outcome']=='response_returned'
 
 def test_response_byte_limit_no_retry(tmp_path,tls):
     with serve(tmp_path,tls,[{'body':completion('X'*8192)}]) as s:

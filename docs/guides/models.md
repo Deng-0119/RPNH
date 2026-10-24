@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: models_ZH.md
-  revision: "2026-10-19.1"
+  revision: "2026-10-23.1"
   status: source-reviewed-v0.1.0rc1
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -121,6 +121,49 @@ The external transport exposed by this catalog is `openai_chat_completions/v1`, 
 For a v3 catalog, build produces `external_provider_adapter_config/v3` or `local_process_adapter_config/v2`, plus `llm_execution_selection/v2` and a `rpnh/provider_profiles/v3` manifest. Legacy v2 catalogs remain readable and generate their legacy profile shapes. Do not hand-edit generated files. Run `build --check` after catalog or generator changes. Profile/manifest disagreement and registration/route identity mismatch fail rather than selecting another provider.
 
 Health probes and formal retries, when reached during authorized execution, are physical calls and may cost money. A profile's recovery settings are not permission to probe. Authorization must cover the exact route, model, timeout and call budget. Do not replace an unknown submission result with “safe to retry”; retain the unknown-effect record and inspect before further execution.
+
+
+For HTTP, an ambiguous request write or a timeout before response headers may
+still use the configured bounded, same-route health probes for diagnosis. A
+successful probe does not establish that the original request did not execute:
+the adapter does not automatically submit that formal request again. It returns
+`submission_unknown` for the existing Registry/owner
+`submission_reconciliation` path. An incomplete response body, including a
+body-size cutoff, also reports unknown submission rather than ordinary repair.
+A completely received HTTP 408/429/5xx response and a transient failure known to
+precede request submission retain the configured bounded recovery policy;
+completely received protocol-invalid responses retain protocol rejection.
+
+This corrects the earlier recovery behavior that could retry an unknown formal
+request after a healthy probe. The existing profile schema and
+`bounded_same_route_health_probe/v1` configuration remain readable, but this
+unknown case now blocks for reconciliation. Its diagnostic failure code after
+a successful probe is `external_submission_unknown_requires_reconciliation`.
+Cancelling a diagnostic probe preserves any earlier formal unknown submission in
+the owner-interruption record; the probe's own `not_submitted` or complete response
+does not replace that uncertainty. Existing attempt histories, unknown effects, and physical-call/probe counts are
+not rewritten or erased. Upgrading is not permission to replay an old attempt,
+change its route, or skip checkpoint reconciliation.
+
+### Shared HTTP port lifecycle
+
+Different accepted attempts can overlap on one external HTTP input port. Each
+keeps its own connection, cancellation observer, submission progress, exact
+route/model and recovery chain. A short state lock covers admission, closing
+and route selection; installed credential resolver/renderer callbacks remain
+serialized only during header preparation. The adapter adds no concurrency
+permit or scheduling authority: Registry/PN limits remain unchanged. Durable
+attempt reservation still rejects duplicates across threads, separate ports
+using the same audit, and reopening that audit.
+
+`ExternalProviderInputPort.close()` rejects new calls, then drains accepted
+transport/recovery calls through their private-audit cleanup. It does not cancel
+them, undo remote effects, or wait for a caller's subsequent Registry settlement.
+Owner cancellation remains specific to its attempt. Calling `close()` from an
+active request or its cancellation callback marks the port closed but raises
+`RuntimeError` instead of waiting for itself; call it outside such callbacks to
+finish draining. This HTTP change does not change the `local_process` lifecycle
+or establish real-provider throughput improvements.
 
 ## Verify and recover
 `ready: true` from a profile means required environment values are present; it does not validate keys, availability, model behavior or billing. Keep credentials out of the catalog, version control and shared logs. To repair drift, back up the canonical catalog and regenerate in a controlled directory; point `RPNH_PROFILE_DIR` at its `execution` subdirectory. Do not silently redirect existing runs. Changing a selected profile does not migrate prior run authority.

@@ -90,7 +90,14 @@ class ScriptedMain:
                       canonical({"authority": "main_thread/v1", "command": "accept_turn",
                                  "caller_idempotency_key": idempotency_key, "material": {"user_input": user_input}}))
 
-    def prepare_turn(self, text, required_task_kind=None):
+    def prepare_turn(self, text, required_task_kind=None, idempotency_key=None):
+        if self.active_turn_snapshot() is None:
+            projection = self.recover_thread()
+            self.accept_turn(
+                thread_ref=self._version_ref(projection["thread_ref"]),
+                user_input={"text": text, "required_task_kind": required_task_kind},
+                expected_ordinal=projection["next_turn_ordinal"],
+                idempotency_key=idempotency_key)
         document = dict(self.records[-1][-1][1])
         if document["state"] == "accepted":
             document.update(state="running", attempt_relative_path=f"attempts/{document['ordinal']}")
