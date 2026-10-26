@@ -57,6 +57,7 @@ def test_configured_read_preview_survives_direct_context_paths(monkeypatch, path
     host = SimpleNamespace(
         _execution=lambda execution, loop: execution,
         _context=lambda loop: None,
+        _normal_history_reasoning_replay=lambda context, loop: False,
         _declared=lambda context: ({"llm_input_target_ref": {}}, None, None),
         _static=lambda context, name: (catalog_ref, None, b'{"messages":[]}'),
         _target=stop,

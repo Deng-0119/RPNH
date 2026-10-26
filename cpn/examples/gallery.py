@@ -21,8 +21,13 @@ def _assets():
 
 def _files(source, prefix: str):
     if source.is_file():
-        yield prefix, source
+        # Installation/import can add bytecode beside packaged source assets.
+        if PurePosixPath(source.name).suffix not in {".pyc", ".pyo"}:
+            yield prefix, source
     elif source.is_dir():
+        # Match the reserved directory exactly, not similarly named data files.
+        if source.name == "__pycache__":
+            return
         for child in sorted(source.iterdir(), key=lambda item: item.name):
             yield from _files(child, f"{prefix}/{child.name}")
     else:

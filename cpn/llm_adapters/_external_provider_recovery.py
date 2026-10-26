@@ -1,4 +1,4 @@
-"""Current bounded recovery policy for the external-provider adapter."""
+"""Closed recovery policies for the external-provider adapter."""
 
 from __future__ import annotations
 
@@ -7,6 +7,7 @@ from typing import Mapping
 
 
 RECOVERY_STRATEGY = "bounded_same_route_health_probe/v1"
+NO_AUTOMATIC_RETRY_STRATEGY = "no_automatic_retry/v1"
 _RECOVERY_FIELDS = {
     "strategy", "max_probe_attempts", "probe_timeout_budget_seconds",
     "max_probe_success_formal_failure_cycles",
@@ -37,6 +38,8 @@ class ExternalProviderRecoveryPolicy:
     max_probe_success_formal_failure_cycles: int
 
     def as_document(self) -> dict[str, object]:
+        if self.strategy == NO_AUTOMATIC_RETRY_STRATEGY:
+            return {"strategy": self.strategy}
         return {
             "strategy": self.strategy,
             "max_probe_attempts": self.max_probe_attempts,
@@ -49,6 +52,17 @@ class ExternalProviderRecoveryPolicy:
 def recovery_policy_from_document(
         value: object,
 ) -> ExternalProviderRecoveryPolicy:
+    if (isinstance(value, Mapping)
+            and value.get("strategy") == NO_AUTOMATIC_RETRY_STRATEGY):
+        if set(value) != {"strategy"}:
+            raise ExternalProviderRecoveryConfigError(
+                "no-automatic-retry recovery accepts only strategy")
+        return ExternalProviderRecoveryPolicy(
+            strategy=NO_AUTOMATIC_RETRY_STRATEGY,
+            max_probe_attempts=0,
+            probe_timeout_budget_seconds=0,
+            max_probe_success_formal_failure_cycles=0,
+        )
     if not isinstance(value, Mapping) or set(value) != _RECOVERY_FIELDS:
         raise ExternalProviderRecoveryConfigError(
             "external provider recovery fields are not current")
@@ -74,5 +88,6 @@ __all__ = [
     "ExternalProviderRecoveryConfigError",
     "ExternalProviderRecoveryPolicy",
     "RECOVERY_STRATEGY",
+    "NO_AUTOMATIC_RETRY_STRATEGY",
     "recovery_policy_from_document",
 ]

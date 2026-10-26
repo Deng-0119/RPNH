@@ -147,6 +147,11 @@ class ControlClient:
             marking_mapping=marking_mapping, retire_token_refs=retire_token_refs,
             owner_inputs=owner_inputs), command_id=command_id)
 
+    def read_edit_receipt(self, edit_command_id: str, *, command_id: str | None = None) -> dict[str, Any]:
+        """Query a submitted edit; the request identity is not the edit identity."""
+        return self.request("read_edit_receipt", {"edit_command_id": _text(edit_command_id, "edit_command_id")},
+                            command_id=command_id)
+
     def retract_edit(self, edit_command_id: str, *, command_id: str | None = None) -> dict[str, Any]:
         return self.request("retract_edit", {"edit_command_id": _text(edit_command_id, "edit_command_id")},
                             command_id=command_id)

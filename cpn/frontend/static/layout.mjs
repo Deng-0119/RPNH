@@ -57,7 +57,7 @@ export function decodeLayout(result, source) {
     return { nodes, edges, width: result.width, height: result.height };
 }
 export class LayoutCache {
-    constructor(elk) { this.elk = elk; this.cache = new Map(); this.pending = new Map(); this.runs = 0; }
+    constructor(elk) { this.elk = elk; this.cache = new Map(); this.weights = new Map(); this.cachedElements = 0; this.pending = new Map(); this.runs = 0; }
     async get(data) {
         if (!data.nodes.length) return {nodes: new Map(), edges: new Map(), width: 200, height: 120};
         const key = topologyKey(data);
@@ -71,8 +71,12 @@ export class LayoutCache {
             const result = decodeLayout(await this.elk.layout(source.graph), source);
             result.elapsedMs = performance.now() - start;
             this.cache.set(key, result);
-            if (this.cache.size > 4)
-                this.cache.delete(this.cache.keys().next().value);
+            const weight=data.nodes.length+data.edges.length;
+            this.weights.set(key,weight);this.cachedElements+=weight;
+            while (this.cache.size > 4 || this.cachedElements > 40000) {
+                const oldest=this.cache.keys().next().value;
+                this.cachedElements-=this.weights.get(oldest);this.weights.delete(oldest);this.cache.delete(oldest);
+            }
             return result;
         })();
         this.pending.set(key, work);

@@ -11,7 +11,7 @@ from ..identities import TypedId
 from ..models import EventEnvelope, VersionRef
 
 def stream_heads(store) -> dict[str, int]:
-    with store.connect() as db:
+    with store.connection_scope() as db:
         return {row["stream_id"]: int(row["sequence"])
                 for row in db.execute("SELECT stream_id,sequence FROM stream_heads")}
 
@@ -19,7 +19,7 @@ def stream_head_at(store, stream_id: str, *, through_ordinal: int) -> int:
     """Return one stream head at an already captured Registry ordinal."""
     if not stream_id or through_ordinal < 0:
         raise ValueError("stream head lookup requires a stream and ordinal")
-    with store.connect() as db:
+    with store.connection_scope() as db:
         row = db.execute(
             "SELECT stream_sequence FROM events WHERE stream_id=? "
             "AND ordinal<=? ORDER BY ordinal DESC LIMIT 1",
@@ -28,11 +28,11 @@ def stream_head_at(store, stream_id: str, *, through_ordinal: int) -> int:
     return int(row["stream_sequence"]) if row is not None else 0
 
 def max_ordinal(store) -> int:
-    with store.connect() as db:
+    with store.connection_scope() as db:
         return int(db.execute("SELECT COALESCE(MAX(ordinal),0) FROM events").fetchone()[0])
 
 def list_events(store, *, after_ordinal: int = 0) -> tuple[EventEnvelope, ...]:
-    with store.connect() as db:
+    with store.connection_scope() as db:
         rows = db.execute("SELECT * FROM events WHERE ordinal>? ORDER BY ordinal",
                           (after_ordinal,)).fetchall()
         return tuple(store._row_to_envelope(row) for row in rows)
@@ -40,7 +40,7 @@ def list_events(store, *, after_ordinal: int = 0) -> tuple[EventEnvelope, ...]:
 def event_by_id(store, event_id: TypedId) -> EventEnvelope | None:
     if not isinstance(event_id, TypedId) or event_id.kind != "event":
         raise TypeError("event lookup requires one exact typed event id")
-    with store.connect() as db:
+    with store.connection_scope() as db:
         row = db.execute(
             "SELECT * FROM events WHERE event_id=?", (str(event_id),)
         ).fetchone()
@@ -50,7 +50,7 @@ def first_and_last_events(
         store,
 ) -> tuple[EventEnvelope | None, EventEnvelope | None]:
     """Return persisted Registry time bounds without hydrating its history."""
-    with store.connect() as db:
+    with store.connection_scope() as db:
         first = db.execute(
             "SELECT * FROM events ORDER BY ordinal LIMIT 1").fetchone()
         last = db.execute(
@@ -65,7 +65,7 @@ def has_event_idempotency_prefix(store, prefix: str) -> bool:
     if not isinstance(prefix, str) or not prefix:
         raise ValueError("event idempotency prefix must be nonempty")
     upper_bound = prefix + "\U0010ffff"
-    with store.connect() as db:
+    with store.connection_scope() as db:
         row = db.execute(
             "SELECT 1 FROM events "
             "WHERE idempotency_key>=? AND idempotency_key<? LIMIT 1",
@@ -79,7 +79,7 @@ def list_events_by_type(
     if not event_types:
         return ()
     placeholders = ",".join("?" * len(event_types))
-    with store.connect() as db:
+    with store.connection_scope() as db:
         rows = db.execute(
             f"SELECT * FROM events WHERE ordinal>? AND event_type IN "
             f"({placeholders}) ORDER BY ordinal",
@@ -90,7 +90,7 @@ def list_events_by_aggregate(
         store, aggregate_id: str, *,
         event_types: tuple[str, ...] = (),
         after_ordinal: int = 0) -> tuple[EventEnvelope, ...]:
-    with store.connect() as db:
+    with store.connection_scope() as db:
         if event_types:
             placeholders = ",".join("?" * len(event_types))
             rows = db.execute(
@@ -109,7 +109,7 @@ def list_events_by_producer(
         event_types: tuple[str, ...] = (),
         after_ordinal: int = 0) -> tuple[EventEnvelope, ...]:
     """Read only events emitted by one exact invocation principal."""
-    with store.connect() as db:
+    with store.connection_scope() as db:
         if event_types:
             placeholders = ",".join("?" * len(event_types))
             rows = db.execute(

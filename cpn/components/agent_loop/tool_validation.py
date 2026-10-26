@@ -9,6 +9,8 @@ from typing import Any, Mapping
 from jsonschema import Draft7Validator
 from jsonschema.exceptions import SchemaError
 
+from cpn.rpnh._schema_validation import check_draft7_schema
+
 from .models import stable_action_id, stable_malformed_action_id
 from .tool_catalog import TOOL_ARGUMENT_SCHEMAS, _unique_object_pairs
 
@@ -58,6 +60,10 @@ def validate_agent_tool_call(
         arguments = _decode_unique_object(raw_arguments)
         _validate_schema(
             arguments, schemas[tool_name], path="$arguments")
+        if tool_name == "submit_candidate":
+            ports = [item["output_port_id"] for item in arguments["products"]]
+            if len(set(ports)) != len(ports):
+                raise ValueError("$arguments['products']: duplicate output_port_id")
     except (ValueError, TypeError) as exc:
         return AgentToolSyntaxError(
             "arguments_invalid", str(exc), action_id,
@@ -137,7 +143,7 @@ def _validate_schema(value: Any, schema: Mapping[str, Any], *, path: str) -> Non
     if not isinstance(schema, Mapping):
         raise TypeError(f"{path} uses a malformed catalog schema")
     try:
-        Draft7Validator.check_schema(schema)
+        check_draft7_schema(schema)
     except SchemaError as exc:
         raise TypeError(f"{path} uses a malformed catalog schema") from exc
     errors = sorted(

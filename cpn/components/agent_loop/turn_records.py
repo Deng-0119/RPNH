@@ -1110,8 +1110,11 @@ class TurnRecordsMechanicsMixin:
             read_response: Callable[[ResourceVersionRef], bytes],
             render_tool_result: Callable[
                 [AgentActionRecord, VersionRef], Mapping[str, Any]],
+            normal_history_reasoning_replay: bool = False,
     ) -> tuple[Mapping[str, Any], ...]:
         """Build ordered history from immutable turns and settled actions."""
+        if type(normal_history_reasoning_replay) is not bool:
+            raise TypeError("normal history reasoning replay must be a boolean")
         overlay = self.latest_context_overlay(loop)
         messages: list[Mapping[str, Any]] = (
             list(overlay.model_visible_messages) if overlay is not None else [])
@@ -1127,6 +1130,8 @@ class TurnRecordsMechanicsMixin:
             response = json.loads(read_response(turn.response_resource_ref))
             assistant: dict[str, Any] = {
                 "role": "assistant", "content": response.get("text", "")}
+            if normal_history_reasoning_replay and "reasoning_content" in response:
+                assistant["reasoning_content"] = response["reasoning_content"]
             if turn.tool_calls:
                 assistant["tool_calls"] = [{
                     "id": call.tool_call_id,
@@ -1278,6 +1283,9 @@ class TurnRecordsExecutionMixin:
         except Exception as exc:
             raise OptionalAgentCapabilityUnavailable(
                 "normal input port has not committed the exact Core raw return") from exc
+        if payload != _raw_payload:
+            raise ResourceIntegrityFault(
+                "optional response differs from its exact Core raw return")
         context = self._context(loop)
         ref = ResourceVersionRef(new_id("resource"), new_id("resource_version"))
         observed = observe_registered_llm_response(payload, PublishedLLMResponse(ref, attempt.attempt_ref,

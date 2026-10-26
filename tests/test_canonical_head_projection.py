@@ -251,6 +251,9 @@ def test_projection_streams_rows_without_fetchall(ledger, monkeypatch):
         def __exit__(self, *args):
             return self.db.__exit__(*args)
 
+        def close(self):
+            self.db.close()
+
         def execute(self, sql, parameters=()):
             statements.append(sql)
             return Cursor(self.db.execute(sql, parameters))

@@ -214,6 +214,9 @@ def validate_policy(policy):
     if canonical(runtime_policy_from_document(policy['runtime']).as_document()) != canonical(policy['runtime']):
         raise ValueError('runtime defaults may not be silently expanded by consumer')
     route = policy['route_provenance'][0]
+    from cpn.llm_adapters.config import normal_history_reasoning_replay_from_policy
+    normal_history_reasoning_replay_from_policy(
+        policy, model_condition=policy['model_condition'])
     import re
     for name in ('model_condition',):
         if policy[name]!=policy[name].strip(): raise ValueError('public model must be trimmed')

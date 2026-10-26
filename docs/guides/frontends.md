@@ -134,3 +134,6 @@ prompt effects, the welcome panel or interactive input decoration. A script
 with neither an explicit frontend nor a configured preference gets setup
 guidance. Explicit `--frontend auto` retains the earlier compatible-Codex-or-Basic
 selection; the ordinary interactive `rpnh` command presents the menu.
+
+
+See [Basic and Viewer offline help](frontend-help.md) for contextual guidance and local listener limits.

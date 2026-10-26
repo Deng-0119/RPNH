@@ -46,6 +46,23 @@ class DocumentationTests(unittest.TestCase):
         for name in docs.STATIC_DOCUMENTS:
             shutil.copyfile(ROOT / name, self.root / name)
 
+    def test_frozen_upstream_readmes_are_support_not_maintained_topics(self):
+        pages = {path.resolve(): docs.parse_page(path)
+                 for path in docs.pages_in(self.root)}
+        support, _downloads = docs.supporting_documents(self.root, pages)
+        for name in docs.FROZEN_SUPPORT_DOCUMENTS:
+            path = (self.root / name).resolve()
+            self.assertNotIn(path, pages)
+            self.assertIn(path, support)
+            self.assertEqual(path.read_bytes(), (ROOT / name).read_bytes())
+        # Unlisted examples still need their normal bilingual topic contracts.
+        extra = self.root / 'examples/unreviewed/upstream/README.md'
+        extra.parent.mkdir(parents=True)
+        extra.write_text('# Not an exemption\n', encoding='utf-8')
+        self.assertIn(extra, docs.pages_in(self.root))
+        with self.assertRaisesRegex(ValueError, 'counterpart missing'):
+            docs.check(self.root)
+
     def tearDown(self):
         self.tmp.cleanup()
 

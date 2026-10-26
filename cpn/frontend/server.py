@@ -8,11 +8,16 @@ tests without binding a socket.
 from __future__ import annotations
 
 from dataclasses import dataclass
+import http.client
 import json
+import math
+import re
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from ipaddress import IPv4Address, IPv6Address, ip_address
 from pathlib import Path
 import socket
+import threading
+import time
 from typing import Any, Callable, Mapping
 from urllib.parse import urlsplit, parse_qs
 import webbrowser
@@ -22,7 +27,16 @@ ProjectionProvider = Callable[[], Mapping[str, Any]]
 _STATIC_ROOT = Path(__file__).with_name("static")
 _SCHEMA_VERSION = "rpnh/net_view/v1"
 _REQUEST_TIMEOUT_SECONDS = 5.0
+_SESSION_TIMEOUT_SECONDS = 3600.0
+_MAX_CONNECTIONS = 16
+_MAX_TARGET_BYTES = 8192
+_MAX_HEADER_BYTES = 32768
+_MAX_HEADER_LINES = 64
+_MAX_RESPONSE_BYTES = 16 * 1024 * 1024
+_MAX_GRAPH_NODES = 100000
+_MAX_GRAPH_EDGES = 200000
 _ASSETS = {
+    "/help-catalog.json": ("help-catalog.json", "application/json; charset=utf-8"),
     "/user-contributions.mjs": ("user-contributions.mjs", "text/javascript; charset=utf-8"),
     "/source-observation.mjs": ("source-observation.mjs", "text/javascript; charset=utf-8"),
     "/worksets.mjs": ("worksets.mjs", "text/javascript; charset=utf-8"),
@@ -31,7 +45,7 @@ _ASSETS = {
     "/app.js": ("app.js", "application/javascript; charset=utf-8"),
     "/style.css": ("style.css", "text/css; charset=utf-8"),
     **{f"/{name}.mjs": (f"{name}.mjs", "application/javascript; charset=utf-8")
-       for name in ("model", "layout", "renderer", "panels", "dashboard-model", "checkpoint-view", "comparison-view", "comparison-context", "agent-members", "observation-panel", "i18n", "messages", "canvas-text", "overview", "wire-geometry")},
+       for name in ("model", "layout", "renderer", "panels", "dashboard-model", "checkpoint-view", "comparison-view", "comparison-context", "agent-members", "observation-panel", "i18n", "messages", "canvas-text", "overview", "wire-geometry", "helper", "viewer-runtime")},
     **{f"/assets/{name}.js": (f"assets/{name}.js", "application/javascript; charset=utf-8")
        for name in ("joint", "elk-api", "elk-worker")},
     "/assets/manifest.json": ("assets/manifest.json", "application/json; charset=utf-8"),
@@ -47,6 +61,158 @@ class RequestResponse:
     status: int
     headers: Mapping[str, str]
     body: bytes
+
+
+class _ResponseLimitError(Exception):
+    """A projection exceeds the viewer's response budget, not its authority."""
+
+
+class _ViewerSessionExpired(Exception):
+    """Internal signal to leave serve_forever without same-thread shutdown."""
+
+
+_JSON_ESCAPE = re.compile(r'["\\\x00-\x1f]')
+
+
+def _preflight_json(value: Any, *, compact: bool = False) -> int:
+    """Count exact JSON bytes before C encoding, without copying containers.
+
+    Strings needing escaping are measured in 16 KiB character chunks. The
+    request-local short-string cache is bounded. This limits serialization
+    output, not Python's process RSS or concurrent mutation by a provider.
+    """
+    remaining = _MAX_RESPONSE_BYTES
+    separator_bytes = 1 if compact else 2
+    ancestors: set[int] = set()
+    short_strings: dict[str, int] = {}
+    string_encoder = json.JSONEncoder(ensure_ascii=False, allow_nan=False)
+
+    def reserve(size: int) -> None:
+        nonlocal remaining
+        remaining -= size
+        if remaining < 0:
+            raise _ResponseLimitError
+
+    def string_size(item: str) -> int:
+        if len(item) + 2 > remaining:
+            raise _ResponseLimitError
+        cached = short_strings.get(item) if len(item) <= 128 else None
+        if cached is not None:
+            return cached
+        if item.isascii() and _JSON_ESCAPE.search(item) is None:
+            size = len(item) + 2
+        else:
+            size = 2
+            for start in range(0, len(item), 16384):
+                part = string_encoder.encode(item[start:start + 16384])
+                size += len(part.encode("utf-8")) - 2
+                if size > remaining:
+                    raise _ResponseLimitError
+        if len(item) <= 128 and len(short_strings) < 1024:
+            short_strings[item] = size
+        return size
+
+    def key_string(key: Any) -> str:
+        if isinstance(key, str):
+            return key
+        if key is True:
+            return "true"
+        if key is False:
+            return "false"
+        if key is None:
+            return "null"
+        if isinstance(key, int):
+            return int.__repr__(key)
+        if isinstance(key, float) and math.isfinite(key):
+            return float.__repr__(key)
+        raise ValueError("unsupported JSON key")
+
+    def visit(item: Any, depth: int = 0) -> None:
+        if depth > 128:
+            raise _ResponseLimitError
+        if isinstance(item, str):
+            reserve(string_size(item))
+        elif item is None or item is True:
+            reserve(4)
+        elif item is False:
+            reserve(5)
+        elif isinstance(item, int):
+            reserve(len(int.__repr__(item)))
+        elif isinstance(item, float):
+            if not math.isfinite(item):
+                raise ValueError("non-finite JSON number")
+            reserve(len(float.__repr__(item)))
+        elif isinstance(item, (dict, list, tuple)):
+            identity = id(item)
+            if identity in ancestors:
+                raise ValueError("circular JSON value")
+            ancestors.add(identity)
+            reserve(2)
+            try:
+                if isinstance(item, dict):
+                    for index, (key, child) in enumerate(item.items()):
+                        if index:
+                            reserve(separator_bytes)  # comma, optional space
+                        reserve(string_size(key_string(key)))
+                        reserve(separator_bytes)  # colon, optional space
+                        visit(child, depth + 1)
+                else:
+                    for index, child in enumerate(item):
+                        if index:
+                            reserve(separator_bytes)
+                        visit(child, depth + 1)
+            finally:
+                ancestors.remove(identity)
+        else:
+            raise TypeError("unsupported JSON value")
+
+    visit(value)
+    return _MAX_RESPONSE_BYTES - remaining
+
+
+def _json_body(value: Any, *, canonical: bool = False) -> bytes:
+    """Preflight before efficient C encoding; verify wire bytes afterwards."""
+    _preflight_json(value, compact=canonical)
+    options = {"sort_keys": True, "separators": (",", ":")} if canonical else {}
+    encoded = json.dumps(value, ensure_ascii=False, allow_nan=False, **options).encode("utf-8")
+    # A caller is expected to supply a stable snapshot. Even if it mutates
+    # between passes, oversized bytes are never sent; this is not an RSS cap.
+    if len(encoded) > _MAX_RESPONSE_BYTES:
+        raise _ResponseLimitError
+    return encoded
+
+
+def _error_response(status: int, code: str) -> RequestResponse:
+    # Codes are application-owned constants: never interpolate exception text,
+    # selectors, paths, SQL, or credentials into a browser-facing error.
+    return _response(status, "application/json; charset=utf-8",
+                     json.dumps({"error": code}).encode("utf-8"))
+
+
+def _static_bytes(filename: str) -> bytes:
+    root = _STATIC_ROOT.resolve()
+    asset = (root / filename).resolve(strict=True)
+    if not asset.is_relative_to(root):
+        raise OSError("static asset outside packaged root")
+    # Limit the read as well as the declared size, covering concurrent growth.
+    with asset.open("rb") as stream:
+        body = stream.read(_MAX_RESPONSE_BYTES + 1)
+    if len(body) > _MAX_RESPONSE_BYTES:
+        raise _ResponseLimitError
+    return body
+
+
+def _valid_target(target: str) -> bool:
+    if (not target.startswith("/") or target.startswith("//")
+            or "#" in target
+            or len(target.encode("utf-8")) > _MAX_TARGET_BYTES
+            or any(ord(char) < 32 or ord(char) == 127 for char in target)):
+        return False
+    try:
+        parsed = urlsplit(target)
+    except ValueError:
+        return False
+    return not (parsed.scheme or parsed.netloc or parsed.fragment)
 
 
 def _validate_loopback(host: str) -> None:
@@ -153,6 +319,8 @@ def _validate_projection(projection: Mapping[str, Any]) -> Mapping[str, Any]:
     edges = projection.get("edges")
     if not isinstance(nodes, list) or not isinstance(edges, list):
         raise _projection_error("nodes 和 edges 必须是列表")
+    if len(nodes) > _MAX_GRAPH_NODES or len(edges) > _MAX_GRAPH_EDGES:
+        raise _ResponseLimitError
 
     node_ids: set[str] = set()
     for index, node in enumerate(nodes):
@@ -195,21 +363,50 @@ def _validate_projection(projection: Mapping[str, Any]) -> Mapping[str, Any]:
 
 
 def _response(status: int, content_type: str, body: bytes = b"") -> RequestResponse:
-    return RequestResponse(status, {
+    headers = {
         "Content-Type": content_type,
         "Content-Length": str(len(body)),
         "Cache-Control": "no-store",
         "X-Content-Type-Options": "nosniff",
         "Referrer-Policy": "no-referrer",
+        "X-Frame-Options": "DENY",
+        "Cross-Origin-Resource-Policy": "same-origin",
         "Content-Security-Policy": (
             "default-src 'self'; script-src 'self'; worker-src 'self'; "
             "style-src 'self' 'unsafe-inline'; img-src 'self' data:; "
             "connect-src 'self'; object-src 'none'; base-uri 'none'; "
-            "frame-ancestors 'self'; form-action 'none'"),
-    }, body)
+            "frame-ancestors 'none'; form-action 'none'"),
+    }
+    if status == 405:
+        headers["Allow"] = "GET, HEAD"
+    return RequestResponse(status, headers, body)
 
 
 def handle_request(
+    provider: ProjectionProvider,
+    method: str,
+    target: str,
+    *,
+    show_resources: bool = False,
+    body: bytes = b"",
+) -> RequestResponse:
+    """Bound and sanitize every read projection, including POST selection."""
+    try:
+        if not isinstance(target, str) or not _valid_target(target):
+            response = _error_response(400, "invalid_target")
+        else:
+            response = _handle_request(provider, method, target,
+                                       show_resources=show_resources, body=body)
+    except _ResponseLimitError:
+        response = _error_response(413, "scope_limit")
+    except Exception:
+        response = _error_response(503, "read_failed")
+    if method.upper() == "HEAD":
+        return RequestResponse(response.status, response.headers, b"")
+    return response
+
+
+def _handle_request(
     provider: ProjectionProvider,
     method: str,
     target: str,
@@ -228,10 +425,12 @@ def handle_request(
         return _response(
             405, "text/plain; charset=utf-8", "只支持 GET 和 HEAD".encode("utf-8"))
     if path == "/":
-        body = (_STATIC_ROOT / "index.html").read_bytes().replace(
+        body = _static_bytes("index.html").replace(
             b"__NET_VIEW_BOOTSTRAP__",
             json.dumps({"showResources": show_resources, "comparisonOnly": bool(getattr(provider, "comparison_only", False))}).encode("utf-8"),
         )
+        if len(body) > _MAX_RESPONSE_BYTES:
+            raise _ResponseLimitError
         response = _response(200, "text/html; charset=utf-8", body)
     elif path in _ASSETS:
         filename, content_type = _ASSETS[path]
@@ -242,7 +441,7 @@ def handle_request(
                 "npm ci && npm run build, or install an asset-complete wheel."
             ).encode("utf-8"))
         else:
-            response = _response(200, content_type, asset.read_bytes())
+            response = _response(200, content_type, _static_bytes(filename))
     elif path == "/api/v2/source-observation":
         from .source_observation import parse_query, ObservationNotSelected
         import sqlite3
@@ -254,7 +453,7 @@ def handle_request(
             payload = action(**params)
             if payload.get('schema_version') != 'rpnh/source_observation/v1':
                 raise RuntimeError('source observation response version differs')
-            response = _response(200, 'application/json; charset=utf-8', json.dumps(payload, ensure_ascii=False, allow_nan=False).encode('utf8'))
+            response = _response(200, 'application/json; charset=utf-8', _json_body(payload))
         except NotImplementedError:
             response = _response(501, 'application/json; charset=utf-8', b'{"error":"not_provided"}')
         except ObservationNotSelected:
@@ -276,7 +475,7 @@ def handle_request(
             payload = action(**selected)
             if payload.get('schema_version') != SCHEMA or payload.get('selector') != selected:
                 raise ValueError('contribution response selector differs')
-            response = _response(200, 'application/json; charset=utf-8', json.dumps(payload, ensure_ascii=False, allow_nan=False).encode('utf8'))
+            response = _response(200, 'application/json; charset=utf-8', _json_body(payload))
         except NotImplementedError:
             response = _response(501, 'application/json; charset=utf-8', b'{"error":"not_configured_or_unsupported"}')
         except ContributionInvalid:
@@ -302,7 +501,7 @@ def handle_request(
                 payload = provider.worksets()
                 if payload.get("schema_version") not in {"rpnh/workset_view/v1", "rpnh/workset_view/v2"}:
                     raise ValueError("Workset projection schema differs")
-                response = _response(200, "application/json; charset=utf-8", json.dumps(payload, allow_nan=False).encode("utf8"))
+                response = _response(200, "application/json; charset=utf-8", _json_body(payload))
             except (ValueError, RuntimeError):
                 response = _response(409, "application/json; charset=utf-8", b'{"error":"workset_unavailable"}')
     elif path == "/api/v2/execution-nets":
@@ -321,7 +520,7 @@ def handle_request(
                     or payload.get('source') != params['expected_source']
                     or payload.get('instance_ref') != params.get('instance_ref')):
                 raise ValueError('execution response identity differs')
-            response = _response(200, 'application/json; charset=utf-8', json.dumps(payload, ensure_ascii=False, allow_nan=False).encode('utf8'))
+            response = _response(200, 'application/json; charset=utf-8', _json_body(payload))
         except NotImplementedError:
             response = _response(501, 'application/json; charset=utf-8', b'{"error":"unsupported"}')
         except ExecutionQueryError:
@@ -345,7 +544,7 @@ def handle_request(
                     or payload.get('selector') != {k: params[k] for k in ('net_ref', 'checkpoint_ref', 'cut')}
                     or payload.get('firing_ref') != params['firing_ref']):
                 raise ValueError('managed response identity differs')
-            response = _response(200, 'application/json; charset=utf-8', json.dumps(payload, ensure_ascii=False, allow_nan=False).encode('utf8'))
+            response = _response(200, 'application/json; charset=utf-8', _json_body(payload))
         except NotImplementedError:
             response = _response(501, 'application/json; charset=utf-8', b'{"error":"unsupported"}')
         except ManagedQueryError:
@@ -368,7 +567,7 @@ def handle_request(
                 selected = {k: params[k] for k in ("net_ref", "checkpoint_ref", "cut")}
                 if payload.get("schema_version") != "rpnh/firing_activity/v1" or payload.get("selector") != selected:
                     raise RuntimeError("activity response identity differs")
-                response = _response(200, "application/json; charset=utf-8", json.dumps(payload, ensure_ascii=False, allow_nan=False).encode("utf8"))
+                response = _response(200, "application/json; charset=utf-8", _json_body(payload))
         except (ActivityQueryError, ActivityCursorError):
             response = _response(400, "application/json; charset=utf-8", b'{"error":"invalid_query"}')
         except ActivityStaleError:
@@ -403,7 +602,7 @@ def handle_request(
                 payload = action(cursor=params.get("cursor", [None])[0])
                 if payload.get("schema_version") != "rpnh/comparison_selection/v1":
                     raise ComparisonContextError("read_failed")
-            response = _response(200, "application/json; charset=utf-8", _json(payload).encode("utf8"))
+            response = _response(200, "application/json; charset=utf-8", _json_body(payload, canonical=True))
         except (ComparisonContextError, RegistryReadSessionError) as error:
             code = error.code if isinstance(error, ComparisonContextError) else _session_error(error).code
             status = {"invalid_query": 400, "access_changed": 403, "stale_observation": 409,
@@ -423,7 +622,7 @@ def handle_request(
             else:
                 payload = action(**params)
                 validate_comparison_response(payload, **params)
-                response = _response(200, "application/json; charset=utf-8", json.dumps(payload, ensure_ascii=False, allow_nan=False).encode("utf8"))
+                response = _response(200, "application/json; charset=utf-8", _json_body(payload))
         except ComparisonInvalid:
             response = _response(400, "application/json; charset=utf-8", b'{"error":"invalid_query"}')
         except ComparisonStale:
@@ -467,15 +666,15 @@ def handle_request(
                 if extended:
                     validate_token_resource_response(payload, resource_target)
                 _validate_projection(payload["frame"]["net"])
-                response = _response(200, "application/json; charset=utf-8", json.dumps(payload, ensure_ascii=False, allow_nan=False).encode("utf8"))
+                response = _response(200, "application/json; charset=utf-8", _json_body(payload))
             except TokenResourceStale:
                 response = _response(409, "application/json; charset=utf-8", b'{"error":"stale_observation"}')
             except TokenResourceAccessChanged:
                 response = _response(403, "application/json; charset=utf-8", b'{"error":"access_changed"}')
             except (TypeError, ValueError, KeyError) as exc:
-                response = _response(400, "application/json; charset=utf-8", json.dumps({"error": "invalid_target" if extended else str(exc)}, ensure_ascii=False).encode("utf8"))
+                response = _response(400, "application/json; charset=utf-8", b'{"error":"invalid_target"}')
             except (RuntimeError, OSError, sqlite3.Error) as exc:
-                response = _response(503, "application/json; charset=utf-8", json.dumps({"error": "read_failed" if extended else str(exc)}, ensure_ascii=False).encode("utf8"))
+                response = _response(503, "application/json; charset=utf-8", b'{"error":"read_failed"}')
     elif path in {"/api/v1/dashboard", "/api/v1/history"}:
         action = getattr(provider, "dashboard" if path.endswith("dashboard") else "history", None)
         if not callable(action):
@@ -490,22 +689,20 @@ def handle_request(
                 payload = action(**params)
                 if path.endswith("dashboard"):
                     _validate_projection(payload["net"])
-                response = _response(200, "application/json; charset=utf-8", json.dumps(payload, ensure_ascii=False, allow_nan=False).encode("utf8"))
+                response = _response(200, "application/json; charset=utf-8", _json_body(payload))
             except (TypeError, ValueError, KeyError) as exc:
-                response = _response(400, "application/json; charset=utf-8", json.dumps({"error": str(exc)}, ensure_ascii=False).encode("utf8"))
+                response = _response(400, "application/json; charset=utf-8", b'{"error":"read_failed"}')
             except (RuntimeError, OSError) as exc:
-                response = _response(503, "application/json; charset=utf-8", json.dumps({"error": str(exc)}, ensure_ascii=False).encode("utf8"))
+                response = _response(503, "application/json; charset=utf-8", b'{"error":"read_failed"}')
     elif path == "/api/v1/net" and not callable(provider):
         response = _response(501, "application/json; charset=utf-8", b'{"error":"unsupported"}')
     elif path == "/api/v1/net":
         try:
             projection = _validate_projection(provider())
-            body = json.dumps(projection, ensure_ascii=False, allow_nan=False).encode("utf-8")
+            body = _json_body(projection)
             response = _response(200, "application/json; charset=utf-8", body)
         except (TypeError, ValueError, RuntimeError) as exc:
-            response = _response(500, "application/json; charset=utf-8", json.dumps({
-                "error": str(exc),
-            }, ensure_ascii=False).encode("utf-8"))
+            response = _response(500, "application/json; charset=utf-8", b'{"error":"projection_unavailable"}')
     else:
         response = _response(404, "text/plain; charset=utf-8", "未找到资源".encode("utf-8"))
     if method == "HEAD":
@@ -513,10 +710,52 @@ def handle_request(
     return response
 
 
+class _HeaderReader:
+    """Limit headers before stdlib's parser builds its message object."""
+
+    def __init__(self, reader: Any) -> None:
+        self.reader = reader
+        self.size = 0
+        self.lines = 0
+
+    def readline(self, size: int = -1) -> bytes:
+        remaining = _MAX_HEADER_BYTES - self.size
+        line = self.reader.readline(min(size, remaining + 1) if size >= 0 else remaining + 1)
+        self.size += len(line)
+        self.lines += 1
+        if self.size > _MAX_HEADER_BYTES or self.lines > _MAX_HEADER_LINES:
+            raise http.client.HTTPException("viewer header budget exceeded")
+        return line
+
+
 class _ProjectionHandler(BaseHTTPRequestHandler):
     server: "_ProjectionHTTPServer"
+    server_version = "RPNHViewer"
+    sys_version = ""
+
+    def parse_request(self) -> bool:
+        reader = self.rfile
+        self.rfile = _HeaderReader(reader)
+        try:
+            return super().parse_request()
+        finally:
+            self.rfile = reader
+
+    def send_error(self, code: int, message: str | None = None,
+                   explain: str | None = None) -> None:
+        self.close_connection = True
+        self._send_response(_error_response(code, "invalid_http_request"))
+
+    def handle(self) -> None:
+        try:
+            super().handle()
+        except (ConnectionError, OSError):
+            # Client disconnect / absolute socket deadline: no stack or input
+            # is logged, and the server's worker finally releases its slot.
+            self.close_connection = True
 
     def _send_response(self, response: RequestResponse) -> None:
+        self.close_connection = True
         self.send_response(response.status)
         for name, value in response.headers.items():
             self.send_header(name, value)
@@ -529,15 +768,20 @@ class _ProjectionHandler(BaseHTTPRequestHandler):
     ) -> tuple[RequestResponse | None, str | None]:
         request_parts = self.requestline.split()
         raw_target = request_parts[1] if len(request_parts) == 3 else ""
-        target = urlsplit(raw_target)
-        if (not raw_target.startswith("/") or raw_target.startswith("//")
-                or target.scheme or target.netloc or target.fragment):
+        if not _valid_target(raw_target):
             return (
                 _response(
                     400, "text/plain; charset=utf-8",
                     "Viewer 只接受 origin-form request target".encode("utf-8")),
                 None,
             )
+
+        lengths = self.headers.get_all("Content-Length", [])
+        comparison_post = (self.command == "POST"
+                           and urlsplit(raw_target).path == "/api/v2/comparison-context")
+        if (self.headers.get_all("Transfer-Encoding", []) or len(lengths) > 1
+                or (not comparison_post and lengths and lengths[0] != "0")):
+            return _error_response(400, "request_body_not_allowed"), None
 
         host_values = self.headers.get_all("Host", [])
         if (len(host_values) != 1
@@ -615,6 +859,9 @@ class _ProjectionHandler(BaseHTTPRequestHandler):
     def do_PUT(self) -> None: self._send()
     def do_PATCH(self) -> None: self._send()
     def do_DELETE(self) -> None: self._send()
+    def do_OPTIONS(self) -> None: self._send()
+    def do_TRACE(self) -> None: self._send()
+    def do_CONNECT(self) -> None: self._send()
 
     def log_message(self, _format: str, *_args: object) -> None:
         return
@@ -624,6 +871,7 @@ class _ProjectionHTTPServer(ThreadingHTTPServer):
     """Bounded-request loopback server for the read-only Viewer."""
 
     daemon_threads = True
+    request_queue_size = 16
 
     def __init__(
         self,
@@ -631,18 +879,121 @@ class _ProjectionHTTPServer(ThreadingHTTPServer):
         host: str,
         port: int,
         show_resources: bool,
+        *,
+        max_connections: int = _MAX_CONNECTIONS,
+        request_timeout_seconds: float = _REQUEST_TIMEOUT_SECONDS,
+        session_timeout_seconds: float = _SESSION_TIMEOUT_SECONDS,
     ) -> None:
         _validate_loopback(host)
+        if type(max_connections) is not int or not 1 <= max_connections <= 256:
+            raise ValueError("max_connections must be within 1..256")
+        if (isinstance(request_timeout_seconds, bool)
+                or not math.isfinite(request_timeout_seconds)
+                or request_timeout_seconds <= 0):
+            raise ValueError("request_timeout_seconds must be positive and finite")
+        if (isinstance(session_timeout_seconds, bool)
+                or not math.isfinite(session_timeout_seconds)
+                or session_timeout_seconds < 0):
+            raise ValueError("session_timeout_seconds must be finite and nonnegative")
         address = ip_address(host)
         self.address_family = socket.AF_INET6 if address.version == 6 else socket.AF_INET
         self.provider = provider
         self.show_resources = show_resources
-        self.request_timeout_seconds = _REQUEST_TIMEOUT_SECONDS
+        self.request_timeout_seconds = float(request_timeout_seconds)
+        self.session_timeout_seconds = float(session_timeout_seconds)
+        self._slots = threading.BoundedSemaphore(max_connections)
+        self._requests_lock = threading.Lock()
+        self._requests: dict[socket.socket, float] = {}
+        self._started_at = time.monotonic()
+        self.expired = False
+        self.max_connections = max_connections
+        # Method is not parsed when the worker gate rejects a connection.
+        # An empty response therefore preserves HEAD semantics as well as GET.
+        busy = _response(503, "application/json; charset=utf-8")
+        self._busy_response = (
+            "HTTP/1.0 503 Service Unavailable\r\nConnection: close\r\n"
+            + "".join(f"{key}: {value}\r\n" for key, value in busy.headers.items())
+            + "\r\n").encode("ascii") + busy.body
         super().__init__((address.compressed, port), _ProjectionHandler)
         self.bound_address = ip_address(self.server_address[0])
         self.bound_port = int(self.server_address[1])
         self.authority = _format_authority(self.bound_address, self.bound_port)
         self.origin = f"http://{self.authority}"
+
+    @property
+    def active_connections(self) -> int:
+        with self._requests_lock:
+            return len(self._requests)
+
+    def process_request(self, request: socket.socket, client_address: Any) -> None:
+        # Bound workers before ThreadingMixIn creates a thread, not inside it.
+        if not self._slots.acquire(blocking=False):
+            try:
+                request.setblocking(False)
+                request.send(self._busy_response)
+            except OSError:
+                pass
+            finally:
+                self.shutdown_request(request)
+            return
+        with self._requests_lock:
+            self._requests[request] = time.monotonic()
+        try:
+            super().process_request(request, client_address)
+        except BaseException:
+            with self._requests_lock:
+                self._requests.pop(request, None)
+            self._slots.release()
+            self.shutdown_request(request)
+            raise
+
+    def process_request_thread(self, request: socket.socket,
+                               client_address: Any) -> None:
+        try:
+            super().process_request_thread(request, client_address)
+        finally:
+            with self._requests_lock:
+                self._requests.pop(request, None)
+            self._slots.release()
+
+    def handle_error(self, request: socket.socket, client_address: Any) -> None:
+        # Unexpected transport failures must not print provider internals.
+        return
+
+    @staticmethod
+    def _close_socket(request: socket.socket) -> None:
+        try:
+            request.shutdown(socket.SHUT_RDWR)
+        except OSError:
+            pass
+        request.close()
+
+    def service_actions(self) -> None:
+        now = time.monotonic()
+        with self._requests_lock:
+            overdue = [request for request, started in self._requests.items()
+                       if now - started >= self.request_timeout_seconds]
+        for request in overdue:
+            self._close_socket(request)
+        if (self.session_timeout_seconds
+                and now - self._started_at >= self.session_timeout_seconds):
+            self.expired = True
+            raise _ViewerSessionExpired
+
+    def serve_forever(self, poll_interval: float = 0.1) -> None:
+        try:
+            super().serve_forever(poll_interval=min(poll_interval, 0.1))
+        except _ViewerSessionExpired:
+            # BaseServer's finally has signalled shutdown completion already.
+            # Calling shutdown() inside service_actions would deadlock.
+            self.server_close()
+
+    def server_close(self) -> None:
+        with self._requests_lock:
+            requests = list(self._requests)
+        for request in requests:
+            self._close_socket(request)
+        super().server_close()
 
     def get_request(self) -> tuple[socket.socket, Any]:
         request, client_address = super().get_request()
@@ -656,19 +1007,30 @@ def serve_projection(
     port: int = 0,
     open_browser: bool = True,
     show_resources: bool = False,
+    *,
+    session_timeout_seconds: float = _SESSION_TIMEOUT_SECONDS,
+    max_connections: int = _MAX_CONNECTIONS,
 ) -> int:
-    """Serve a projection on loopback until interrupted, then return its port."""
+    """Serve on loopback for a finite session (0 explicitly stays open)."""
     _validate_loopback(host)
-    if not isinstance(port, int) or not 0 <= port <= 65535:
+    if type(port) is not int or not 0 <= port <= 65535:
         raise ValueError("port 必须在 0 到 65535 之间")
 
-    with _ProjectionHTTPServer(provider, host, port, show_resources) as server:
+    with _ProjectionHTTPServer(provider, host, port, show_resources,
+                               session_timeout_seconds=session_timeout_seconds,
+                               max_connections=max_connections) as server:
         url = f"{server.origin}/"
         print(f"PetriNet 只读查看器：{url}")
+        if session_timeout_seconds:
+            print(f"仅本机 / loopback only · {session_timeout_seconds:g}s 后关闭端口 / closes after session limit · Ctrl-C 停止")
+        else:
+            print("持续监听 / persistent listener explicitly enabled · 请用 Ctrl-C 关闭端口 / stop to close port")
         if open_browser:
             webbrowser.open(url)
         try:
             server.serve_forever()
         except KeyboardInterrupt:
             pass
+        if server.expired:
+            print("Viewer 会话已到期，端口已关闭 / Session expired; listener closed.")
     return server.bound_port

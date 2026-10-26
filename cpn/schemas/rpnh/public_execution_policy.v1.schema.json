@@ -60,6 +60,7 @@
         }
       ]
     },
+    "normal_history_reasoning_replay": {"type": "boolean"},
     "reasoning_effort": {
       "anyOf": [
         {
@@ -278,32 +279,41 @@
           "type": "integer"
         },
         "recovery": {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "strategy": {
-              "const": "bounded_same_route_health_probe/v1"
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "strategy": {
+                  "const": "bounded_same_route_health_probe/v1"
+                },
+                "max_probe_attempts": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 3
+                },
+                "max_probe_success_formal_failure_cycles": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 3
+                },
+                "probe_timeout_budget_seconds": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              },
+              "required": [
+                "strategy",
+                "max_probe_attempts",
+                "max_probe_success_formal_failure_cycles",
+                "probe_timeout_budget_seconds"
+              ]
             },
-            "max_probe_attempts": {
-              "type": "integer",
-              "minimum": 1,
-              "maximum": 3
-            },
-            "max_probe_success_formal_failure_cycles": {
-              "type": "integer",
-              "minimum": 1,
-              "maximum": 3
-            },
-            "probe_timeout_budget_seconds": {
-              "type": "integer",
-              "minimum": 1
+            {
+              "type": "object", "additionalProperties": false,
+              "properties": {"strategy": {"const": "no_automatic_retry/v1"}},
+              "required": ["strategy"]
             }
-          },
-          "required": [
-            "strategy",
-            "max_probe_attempts",
-            "max_probe_success_formal_failure_cycles",
-            "probe_timeout_budget_seconds"
           ]
         }
       },

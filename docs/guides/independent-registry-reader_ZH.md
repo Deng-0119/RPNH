@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: independent-registry-reader.md
-  revision: "2026-10-09.1"
+  revision: "2026-10-25.1"
   status: implemented
   basis: "explicit trusted local HOST; existing owner-issued authority"
 ---
@@ -65,6 +65,56 @@ CLI 从 OS 派生 caller 身份，不接受请求传入 principal、callback、�
 不会迁移页面。多源结果不是全局原子快照。源不可用、字段未披露、unknown
 和记录不存在保持区别。query 不发布 Observation，也不改变 Registry 事实；
 SQLite 只读 WAL sidecar 行为不冒充规范事实写入。
+
+## 用 CLI 流式读取单个产物来源
+
+使用已安装的 `rpnh origin` 命令，传入现有 owner 批准的 HOST 配置，以及通过
+已有授权取得的精确 root 引用：
+
+```bash
+rpnh origin --read-host-config HOST.json --root ROOT.json --page-size 1
+```
+
+`ROOT.json` 保存未改动的引用 wire form：可以是 `SourceQualifiedResourceRef`
+（`rpnh/collaboration/source_resource_ref/v1`，带 `source_id` 和
+`ref {resource_id, resource_version_id}`），或 `SourceQualifiedVersionRef`
+（`rpnh/collaboration/source_version_ref/v1`，带 `source_id` 和
+`ref {entity_type, logical_id, version_id}`）。后者必须是 `operation_result/v1`，
+ID kind 必须为 `operation_result` / `operation_result_version`。两种形式都必须带
+精确 `schema_version`。它们沿用既有的
+[resource 引用](../../cpn/schemas/rpnh/collaboration/source_resource_ref.v1.schema.json)与
+[version 引用](../../cpn/schemas/rpnh/collaboration/source_version_ref.v1.schema.json)
+契约，不是新的查找请求。Root 输入必须是普通 UTF-8 JSON 文件，解析前限制为
+64 KiB，捕获 cut 前还受 HOST 的有效 query-byte 限制。重复 key、未知字段、
+缺失 source、裸 ID、名称、路径、`latest` 和通用 resource `VersionRef` 根均被拒绝。
+
+省略 `--include` 时保留三个默认关系：`producer_execution`、`start_inputs` 和
+`claims`。显式选择使用重复的 `--include RELATION` 选项，值不能重复，且必须包含
+`producer_execution`。例如仅交付生产者证明：
+
+```bash
+rpnh origin --read-host-config HOST.json --root ROOT.json \
+  --include producer_execution
+```
+
+`--page-size N` 沿用 Python 查询的有效最大值与默认值，不改变 cut 或所选关系。
+命令使用固定内置 catalog 打开一个 public read session，为 root 明确指定的 source
+捕获一个 cut，并只跟随同一请求返回的 continuation。它不打开 writer、不读取
+material 正文、不选择任意 module 或 catalog、不发现 source，也不获取新权限。
+
+Stdout 是 NDJSON：每行是一个原始页面的 canonical 紧凑 ASCII JSON 序列化，
+包括重复的 proof、coverage 和原 continuation；没有聚合 wrapper。当前页的传输
+buffer 受 `session.limits.max_response_bytes` 限制，另有一个换行符。CLI 先完成
+序列化，再对所选 source 调用 public `final_recheck`，随后写入并 flush 该行；
+请求下一页前丢弃当前 page 和传输 buffer。后续页或 sink 失败时，先前已授权的行
+可以保留；sink 失败还可能留下未完成的最后一行。
+
+退出码 `0` 表示末页已 flush 且 session 已关闭。任何非零退出码都表示流不完整，
+即使已收到一些有效行。Stderr 只使用固定安全代码，例如 `INVALID_ROOT`、
+`INVALID_ARGUMENTS`、`ACCESS_CHANGED`、`LIMIT_EXCEEDED` 和 `OUTPUT_FAILED`，
+不回显异常消息或本地路径。不接受外部 cursor、resume 文件，不自动重开 session，
+也没有持久 cursor 服务。进程关闭 session 后，输出中的 continuation 不再可用。
+重新启动是在新 cut 和当前权限下重新读取，不是续传旧流。
 
 ## 用 Python 查询单个产物来源
 
@@ -140,7 +190,8 @@ resource 引用不授权读取目标。这些行不读取业务正文，也不�
 不支持的 include 返回 `UNSUPPORTED_RELATION`；合法 changed-net settlement 返回
 `UNSUPPORTED_SETTLEMENT_SHAPE`。晚 promotion 不改写旧 cut，历史读取仍要求当前权限。
 必要 proof 或单行无法放入有界响应时返回 `LIMIT_EXCEEDED`，不先返回前半成功。
-此 Python API 不新增比较查看器路由、CLI origin 命令、owner 操作或 Registry 事实写入。
+本查询不新增比较查看器路由、owner 操作或 Registry 事实写入。已安装的
+`rpnh origin` CLI 仅是同一 public query 的传输适配器。
 
 ## 比较和验证边界
 
@@ -152,3 +203,4 @@ resource 引用不授权读取目标。这些行不读取业务正文，也不�
 记账。Node DOM 模拟、合成响应、准备成功或返回 owner handle 都不能证明业务
 terminal 或真实浏览器验收。此离线流程不调用真实 provider；实际执行项及未
 解决 blocker 以注明日期的验证记录为准。
+

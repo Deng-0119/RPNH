@@ -230,6 +230,7 @@ def build_agent_system_initialization(
     if not isinstance(catalog, AgentToolCatalog):
         raise TypeError("agent initialization requires one exact tool catalog")
     names = tuple(sorted(catalog.tool_names))
+    candidate_only = "submit_candidate" in names and "write_file" not in names
     inputs = tuple(located_inputs)
     if any(not isinstance(item, LocatedAgentInput) for item in inputs):
         raise TypeError("agent initialization located inputs must be typed")
@@ -315,6 +316,13 @@ def build_agent_system_initialization(
         "Actually available tools: " + ", ".join(names),
         ("Framework tool protocol: every provider response must contain one or "
          "more calls to the actually available tools; chat text alone is not a "
+         "valid progress state. Submit the complete structured output bundle "
+         "with submit_candidate. Correct rejected candidates before acceptance; "
+         "after acceptance call complete_interaction as the final ordered tool "
+         "call, optionally in the same response. "
+         if candidate_only else
+         "Framework tool protocol: every provider response must contain one or "
+         "more calls to the actually available tools; chat text alone is not a "
          "valid progress state. Complete only after write_file has registered every "
          "intended output file required by the assignment. The final write_file and "
          "complete_interaction may be "
@@ -326,7 +334,8 @@ def build_agent_system_initialization(
          "self-assigned extensions, or work not needed by that assignment. This "
          "rule is execution guidance and is not a framework judgment of semantic "
          "quality or sufficiency."),
-        IMMEDIATE_COMPLETION_GUIDANCE,
+        (IMMEDIATE_COMPLETION_GUIDANCE.replace("write_file", "submit_candidate")
+         if candidate_only else IMMEDIATE_COMPLETION_GUIDANCE),
         ("Completion rule: decide when this role's assigned semantic "
          "responsibility is complete. As soon as the required outputs are "
          "registered, finish immediately."),
@@ -365,7 +374,12 @@ def build_agent_system_initialization(
         ("External-component guidance: consult registered external components "
          "when they are necessary for the assignment. The KB is one read-only "
          "example, not the only possible external component."),
-        ("Output-port rule: when provider-writable semantic output_port_ids are "
+        ("Output-port rule: each submit_candidate product must name one exact "
+         "declared output_port_id listed below and supply JSON object content. "
+         "Submit all required products together; filenames and internal port_* "
+         "handles are not symbolic output_port_id values."
+         if candidate_only else
+         "Output-port rule: when provider-writable semantic output_port_ids are "
          "listed below, every write_file call must use one of those exact ids. "
          "A business artifact name or filename is not an output_port_id. Omit "
          "output_port_id only when this initialization explicitly says the "
@@ -437,7 +451,9 @@ def build_agent_system_initialization(
             "rerun the task, train, solve, simulate, or create new empirical "
             "evidence when the registered evidence already supports the required "
             "decision. Write the review and any declared result/evidence file "
-            "directly with write_file, then complete the interaction.",
+            + ("through submit_candidate, then complete the interaction."
+               if candidate_only else
+               "directly with write_file, then complete the interaction."),
         ])
     if "query_kb" in names:
         from ..external_kb import KB_QUERY_SKILL_DESCRIPTION, KB_QUERY_SKILL_ID
@@ -469,8 +485,11 @@ def build_agent_system_initialization(
             "workspace receives one opaque shell script and runs it "
             "from the firing workspace. Use it for all internal file inspection, "
             "source editing, custom/helper scripts, temporary files, supporting "
-            "traces, and commands. To publish semantic output, use write_file "
-            "with direct content or with an exact current Registry source. The "
+            "traces, and commands. "
+            + ("To publish semantic output, use submit_candidate with the "
+               "complete structured product bundle. The " if candidate_only else
+               "To publish semantic output, use write_file "
+               "with direct content or with an exact current Registry source. The ") +
             "same private workspace remains available while this responsibility "
             "is being completed. Use read_action_output for an earlier command "
             "result when needed. Network access is unavailable.")
@@ -576,7 +595,13 @@ def build_agent_system_initialization(
         ])
     sections.extend([
         "Broad output contract: " + contract,
-        ("Ordinary documents: materialize the direct nonempty human-readable body "
+        ("Structured content contract: submit every required semantic product "
+         "as JSON object content through submit_candidate. A rejection preserves "
+         "the original action evidence and permits correction before sealing. "
+         "An accepted bundle supplies the exact registered product and check "
+         "references; complete_interaction closes those current products."
+         if candidate_only else
+         "Ordinary documents: materialize the direct nonempty human-readable body "
          "in the workspace and register it against "
          "registry_v1/agent_document/v2. The body is opaque; do not "
          "construct a semantic JSON envelope and the framework will not wrap, "
@@ -923,6 +948,18 @@ class ContextExecutionMixin:
             operation.declaration.config["resource_bounds"]["max_tool_turns"], catalog,
             self._catalog(context, catalog), idempotency_key)
 
+    def _normal_history_reasoning_replay(self, context, loop):
+        from cpn.llm_adapters.config import (
+            normal_history_reasoning_replay_from_policy,
+        )
+        _ref, _prepared, payload = self._static(context, "optional_agent_backend")
+        backend = json.loads(payload)
+        if backend["model"] != loop.model_condition:
+            raise ResourceIntegrityFault(
+                "normal history policy crossed its exact loop/model")
+        return normal_history_reasoning_replay_from_policy(
+            backend["selection"], model_condition=loop.model_condition)
+
     def _target(self, context):
         binding = self.kernel._exact_object(context.operation_binding_ref,
                                             expected_type="operation_binding/v1").metadata
@@ -1043,7 +1080,9 @@ class ContextExecutionMixin:
         try:
             messages = self.mechanical_lifecycle.history_messages(
                 loop, read_response=read_response,
-                render_tool_result=render_tool_result)
+                render_tool_result=render_tool_result,
+                normal_history_reasoning_replay=(
+                    self._normal_history_reasoning_replay(context, loop)))
         except Exception as exc:
             raise ResourceIntegrityFault(
                 "optional history lacks exact immutable turn/action facts") from exc

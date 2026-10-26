@@ -25,6 +25,9 @@ REQUIRED_STATIC_FILES = (
     "source-observation.mjs",
     "firing-activity.mjs",
     "worksets.mjs",
+    "help-catalog.json",
+    "helper.mjs",
+    "viewer-runtime.mjs",
     "user-contributions.mjs",
 )
 REQUIRED_VENDOR_FILES = (

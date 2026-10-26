@@ -978,6 +978,9 @@ class AgentActionRecord:
                     "kind", "path", "query", "case_sensitive",
                     "offset_match", "next_offset_match", "total_matches",
                     "matches", "resource_ref", "use_receipt_ref"})),
+            "submit_candidate": (
+                "content_candidate_accepted/v1", frozenset({
+                    "kind", "products", "check_ref"})),
             "write_file": (
                 "registered_file_write/v1", frozenset({
                     "kind", "path", "description", "output_port_id",
@@ -1288,6 +1291,39 @@ class AgentActionRecord:
                      and not isinstance(next_offset, bool)
                      and next_offset == offset + result_count
                      and next_offset < total_count))
+        elif self.tool_name == "submit_candidate":
+            products = value["products"]
+            check = value["check_ref"]
+            valid = (
+                self.state == AgentLoopState.ACTION_APPLIED
+                and isinstance(products, list) and bool(products)
+                and all(isinstance(item, Mapping)
+                        and set(item) == {"output_port_id", "resource_ref"}
+                        and isinstance(item["output_port_id"], str)
+                        and bool(item["output_port_id"])
+                        and resource_ref(item["resource_ref"])
+                        for item in products)
+                and typed_ref(check, "resource_version/v1", "resource", "resource_version"))
+            if valid:
+                try:
+                    refs = tuple(ResourceVersionRef(
+                        TypedId.parse(item["resource_ref"]["resource_id"], expected="resource"),
+                        TypedId.parse(item["resource_ref"]["resource_version_id"], expected="resource_version"),
+                    ).as_version_ref() for item in products)
+                    check_ref = VersionRef(
+                        check["entity_type"], TypedId.parse(check["logical_id"]),
+                        TypedId.parse(check["version_id"]))
+                    ports = [item["output_port_id"] for item in products]
+                    requested = self.arguments.get("products", [])
+                    valid = (
+                        len(set(ports)) == len(ports)
+                        and len(set(refs)) == len(refs)
+                        and all(isinstance(item, Mapping) for item in requested)
+                        and set(ports) == {item.get("output_port_id") for item in requested}
+                        and len(products) == len(requested)
+                        and self.result_refs == (*refs, check_ref))
+                except (TypeError, ValueError):
+                    valid = False
         elif self.tool_name == "write_file":
             valid = (isinstance(value["path"], str) and bool(value["path"])
                      and isinstance(value["description"], str)

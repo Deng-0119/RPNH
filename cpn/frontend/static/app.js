@@ -9,6 +9,7 @@ import { t as tr, messageError, getLanguage, setLanguage, applyLanguage } from '
 import { head, referenceText, searchText, firingSummary, stable } from './model.mjs';
 import { normalizeFrame, scope, nodePresentation, displayGraph, visibleSelection, TimelineState, isAdjacent } from './dashboard-model.mjs';
 import { LayoutCache } from './layout.mjs';
+import { createReadRequest, diagnosticTopic, BoundedLayoutEngine } from './viewer-runtime.mjs';
 import { NetRenderer } from './renderer.mjs';
 import { refreshCanvasText } from './canvas-text.mjs';
 import { applyWireBridges } from './wire-geometry.mjs';
@@ -28,14 +29,37 @@ async function loadSourceObservation(reference=null){
     drawSourceObservation();
 }
 $('source-observations').onclick=()=>loadSourceObservation();
-let emptyFailure=null;
+let emptyFailure=null, readRequest=null, layoutEngine=null, historyController=null, refreshFailures=0, pageSuspended=false;
+function reportProblem(error, component='viewer / current observation') {
+    window.rpnhViewerDiagnostic={topic:diagnosticTopic(error),code:error.code??'viewer_read_failed',component};
+    window.rpnhViewerHelp?.update();
+}
+function clearDiagnostic(component) {
+    if(window.rpnhViewerDiagnostic?.component===component){window.rpnhViewerDiagnostic=null;window.rpnhViewerHelp?.update();}
+}
+function helpContext() {
+    const kind=selection?.kind, selected=selection?.id;
+    window.rpnhViewerContext={mode,selection:selected ? `${kind}: ${selected}` : null};
+    window.rpnhViewerHelp?.update();
+    const key={overview:'矩形是 Agent；箭头是结构后继，不表示已执行。资源在详细流程或 Petri 网中查看。',
+        flow:'卡片解释操作与交接；汇合、条件、资源保持显示。',petri:'矩形是操作；圆形是库所；数字是有效 token。弧类型请选择后查看。',
+        list:'每行是已披露的执行记录；已结算不等于业务成功。'}[mode];
+    $('view-reading-key').textContent=tr(key);
+}
+function zoomGuidance() {$('zoom-guidance').hidden=mode==='list' || !renderer || renderer.viewport().scale>=.2;}
+function refreshStatus() {
+    $('refresh-status').textContent=document.hidden || pageSuspended ? tr('页面隐藏：自动刷新与回放已暂停')
+        : (comparisonOnly || contributionPanel.state.open || managedTools.state.open || executionNets.state.open || crossComparison.state.open || comparisonPanel.state.open || activity.paused || checkpointView || retainedCapture || checkpointBusy) ? tr('自动刷新暂停：正在查看固定观察')
+        : !$('auto-refresh').checked ? tr('自动刷新已暂停；本地服务仍可能监听')
+        : tr('自动刷新：{0} 秒', Math.min(30000,2500*2**refreshFailures)/1000);
+}
 let noticeMessage = null, healthMessage = () => tr("加载本地展示组件…");
 function showMessage(value) { return typeof value === 'function' ? value() : value; }
 function setHealth(message, state) { healthMessage = message; $('health').textContent = showMessage(message); if (state)
     $('health').dataset.state = state; }
 applyLanguage(document);
 $('language').value = getLanguage();
-let renderer, layouts, frame, graph, layout, selection = null, firingTarget = null, mode = 'overview', tab = 'about', controller, timer, playTimer, playing = false, findIndex = -1, renderSerial = 0, dragTimer, playGeneration = 0, historySerial = 0;
+let renderer, layouts, frame, graph, layout, selection = null, firingTarget = null, mode = 'overview', committedMode = 'overview', tab = 'about', controller, timer, playTimer, playing = false, findIndex = -1, renderSerial = 0, dragTimer, playGeneration = 0, historySerial = 0;
 const comparisonOnly=Boolean(JSON.parse($('bootstrap').textContent).comparisonOnly);
 let showResources = JSON.parse($('bootstrap').textContent).showResources, hasDashboard = true, historySupported = false, nextBefore = null, latestHead = null;
 const viewports = new Map();
@@ -106,9 +130,10 @@ async function loadActivity(action='load') {
             || (old && stable(origin)!==stable({task_ref:old.context.query_scope.task_ref,run_ref:old.context.query_scope.run_ref,source:old.context.query_scope.source})))) {const e=new Error('access changed');e.status=403;throw e;}
         const page=normalizeActivityPage(raw,params,frame);
         const next=mergeActivity(action==='more'?old:null,page);
-        activity={observation:next,loading:false,error:null,stale:false,paused:true,expanded:action==='more'?activity.expanded:new Set()};
+        activity={observation:next,loading:false,error:null,stale:false,paused:true,expanded:action==='more'?activity.expanded:new Set()};clearDiagnostic('Registry / firing activity');
     } catch(error) {
         if (!accepted() || error.name==='AbortError') return;
+        if(![404,501].includes(error.status))reportProblem(error,'Registry / firing activity');
         if (error.status===403) {cancelActivity();activity.error='access_changed';detail();return;}
         activity={...activity,loading:false,error:error.status===501?'unsupported':error.status===409?'stale_observation':'read_failed',
             stale:activity.stale || error.status===409};
@@ -164,24 +189,29 @@ async function loadTokenResource(token) {
             const error=new Error('access changed');error.status=403;throw error;
         }
         tokenResource={request:params,metadata,identity:identity??{
-            task_ref:structuredClone(metadata.scope.task_ref),run_ref:structuredClone(metadata.scope.run_ref)},loading:false,error:null};
+            task_ref:structuredClone(metadata.scope.task_ref),run_ref:structuredClone(metadata.scope.run_ref)},loading:false,error:null};clearDiagnostic('Registry / resource metadata');
     } catch(error) {
         if(!accepted() || error.name==='AbortError')return;
+        if(![404,501].includes(error.status))reportProblem(error,'Registry / resource metadata');
         const status=error.status;
         tokenResource={request:params,metadata:status===403?null:old,identity,loading:false,
             error:status===403?'access_changed':status===409?'stale_observation':[400,404,501].includes(status)?'unsupported':'read_failed'};
     } finally {if(accepted()){tokenResource.loading=false;detail();}}
 }
 
-function loadScript(src) { return new Promise((resolve, reject) => { const s = document.createElement('script'); s.src = src; s.onload = resolve; s.onerror = () => reject(messageError("本地展示资产未构建，请按分支手册构建或安装完整 wheel。")); document.head.append(s); }); }
-async function request(path, signal, options = {}) { const r = await fetch(path, { ...options, cache: 'no-store', signal }); const value = await r.json(); if (!r.ok) {
-    const e = new Error(value.error ?? `HTTP ${r.status}`);
-    e.status = r.status;
-    throw e;
-} return value; }
+function loadScript(src) { return new Promise((resolve, reject) => {
+    const s=document.createElement('script');s.src=src;
+    const fail=()=>{clearTimeout(deadline);s.remove();const error=messageError('本地展示资产未构建，请按分支手册构建或安装完整 wheel。');error.code='viewer_assets_unavailable';error.helpTopic='assets';reject(error);};
+    const deadline=setTimeout(fail,15000);s.onload=()=>{clearTimeout(deadline);resolve();};s.onerror=fail;document.head.append(s);
+}); }
+async function request(path, signal, options = {}) {
+    readRequest ??= createReadRequest((...args)=>fetch(...args));
+    return readRequest(path,signal,options);
+}
 function clearMotion() { renderer?.paper.svg.querySelectorAll('.token-illustration').forEach(node => node.remove()); }
 function notice(message) { noticeMessage = message; const text = showMessage(message); $('error-banner').hidden = !text; $('error-banner').textContent = text ?? ''; }
 function detail() {
+    helpContext();
     const chosen = mode === 'overview' ? visibleSelection(graph, selection) : selection;
     contributionPanel.selected(chosen?.kind==='node'&&frame?.net.nodes.some(node=>node.id===chosen.id)?chosen.id:null);
     $('inspector').hidden = !chosen;
@@ -244,6 +274,8 @@ function drawMap() {
     }
 }
 function decorate() {
+    document.querySelector('.wire-tools').hidden=mode==='list';
+    if (mode==='list') {$('counts').textContent='';$('resources').hidden=true;return;}
     if (!graph)
         return;
     const counts = renderer.decorate({ showResources, search: $('search').value, selection: visibleSelection(graph, selection), contribution:mode==='petri'?contributionPanel.overlay():null });
@@ -283,18 +315,36 @@ function summary() {
         notice(() => presentationWarning(frame));
 }
 async function render(previous = null, ticket = timeline.serial, candidate = frame) {
+    const selectedMode=mode;
+    // Controls request a mode; readers keep using the last committed geometry
+    // while its replacement is pending. A newer render invalidates this ticket.
+    mode=committedMode;
     if (!candidate)
         return false;
-    const serial = ++renderSerial, selectedMode = mode;
-    let nextGraph = displayGraph(candidate, mode === 'list' ? 'flow' : mode);
-    const nextLayout = await layouts.get(nextGraph);
+    const serial = ++renderSerial;
+    let nextGraph = displayGraph(candidate, selectedMode === 'list' ? 'flow' : selectedMode);
+    let nextLayout=null;
+    if(selectedMode!=='list') {
+        try {nextLayout=await layouts.get(nextGraph);}
+        catch(error) {
+            if(serial!==renderSerial || !timeline.accepts(ticket))return false;
+            // A failed request must not reinterpret the retained graph with another mode.
+            // Keep list distinct from its underlying flow graph representation.
+            mode=committedMode;
+            helpContext();
+            reportProblem(error,'viewer / ELK layout');
+            notice(()=>tr('布局未完成，保留最后完整画面；可查看执行列表或打开帮助。'));
+            setHealth(()=>tr('读取失败 · 状态可能已过期'),'stale');return false;
+        }
+    }
     // A newer navigation may arrive while ELK is still computing. Commit only
     // a complete, still-requested frame, never a stale graph with a new header.
-    if (serial !== renderSerial || mode !== selectedMode || !timeline.accepts(ticket))
+    if (serial !== renderSerial || !timeline.accepts(ticket))
         return false;
+    mode=selectedMode;
     // Locale may have changed during the layout request; geometry is locale independent.
     nextGraph = displayGraph(candidate, mode === 'list' ? 'flow' : mode);
-    const first = !graph, scopeChanged = previous && scope(previous) !== scope(candidate), oldView = graph?.view_mode;
+    const first = !graph || !renderer.snapshot, scopeChanged = previous && scope(previous) !== scope(candidate), oldView = renderer.snapshot?.view_mode ?? graph?.view_mode;
     const resolved = firingTarget ? resolveFiringTarget(candidate, firingTarget) : null;
     if (scopeChanged) {
         timeline.resetHistory();
@@ -316,13 +366,13 @@ async function render(previous = null, ticket = timeline.serial, candidate = fra
         firingTarget = resolved.target;
         selection = firingTarget ? { kind: 'node', id: firingTarget.transition_id } : null;
     }
-    if (graph && !scopeChanged && oldView !== nextGraph.view_mode)
+    if (selectedMode!=='list' && graph && !scopeChanged && oldView !== nextGraph.view_mode)
         viewports.set(oldView, renderer.viewport());
     clearMotion();
     graph = nextGraph;
     layout = nextLayout;
-    renderer.apply(graph, layout);
-    refreshCanvasText(renderer, graph, layout);
+    committedMode=selectedMode;
+    if(selectedMode!=='list') {renderer.apply(graph, layout);refreshCanvasText(renderer, graph, layout);}
     $('canvas-wrap').hidden = mode === 'list';
     $('execution-table').hidden = mode !== 'list';
     if (mode === 'list')
@@ -339,7 +389,7 @@ async function render(previous = null, ticket = timeline.serial, candidate = fra
     // its lazy health text so the visible layout counter is not left at zero.
     setHealth(healthMessage);
     $('paper').dataset.viewMode = mode;
-    if (first || scopeChanged) {
+    if (selectedMode!=='list' && (first || scopeChanged)) {
         renderer.fit();
         if (renderer.viewport().scale < .45 && graph.nodes.length > 8) {
             const start = graph.nodes.find(n => n.display?.role === 'entry') ?? graph.nodes[0];
@@ -347,16 +397,16 @@ async function render(previous = null, ticket = timeline.serial, candidate = fra
                 renderer.center('node', start.id);
         }
     }
-    else if (oldView !== graph.view_mode) {
+    else if (selectedMode!=='list' && oldView !== graph.view_mode) {
         const remembered = viewports.get(graph.view_mode);
         if (remembered)
             renderer.restore(remembered);
         else
             renderer.fit();
     }
-    if (mode !== 'overview' && $('motion').checked && isAdjacent(previous, frame))
+    if (mode !== 'overview' && mode !== 'list' && $('motion').checked && isAdjacent(previous, frame))
         renderer.illustrate(frame);
-    timeControls();
+    timeControls();zoomGuidance();
     return true;
 }
 function timeControls() {
@@ -413,8 +463,9 @@ async function loadHistory(before = null) {
     if (!hasDashboard || !frame || checkpointView || retainedCapture || checkpointBusy)
         return;
     const serial = ++historySerial, bound = scope(frame);
+    historyController?.abort();historyController=new AbortController();
     try {
-        const data = await request('/api/v1/history' + (before != null ? `?before=${before}` : ''));
+        const data = await request('/api/v1/history' + (before != null ? `?before=${before}` : ''),historyController.signal);
         if (serial !== historySerial || scope(frame) !== bound)
             return;
         if (scope({ source: data.source }) !== bound) {
@@ -423,31 +474,32 @@ async function loadHistory(before = null) {
         }
         if (!timeline.updatePage(data, before))
             return;
-        historySupported = true;
+        historySupported = true;clearDiagnostic('Registry / checkpoint index');
         nextBefore = timeline.nextBefore;
         latestHead = Math.max(latestHead ?? 0, data.source.verified_head_ordinal);
         timeControls();
         if (timeline.endReason === 'net_version_boundary') await probeCheckpoint();
     }
     catch (error) {
-        if (serial !== historySerial || scope(frame) !== bound)
+        if (serial !== historySerial || scope(frame) !== bound || error.name==='AbortError')
             return;
         if (error.status === 501 || error.status === 404) {
             historySupported = false;
             timeControls();
         }
         else {
+            reportProblem(error,'Registry / checkpoint index');
             setHealth(() => tr("历史索引暂不可读：") + error.message);
         }
     }
 }
-function schedule() { clearTimeout(timer); if (!comparisonOnly && !contributionPanel.state.open && !crossComparison.state.open && !comparisonPanel.state.open && !activity.paused && !managedTools.state.open && !executionNets.state.open && !checkpointView && !retainedCapture && !checkpointBusy && $('auto-refresh').checked)
-    timer = setTimeout(async () => { if (timeline.mode === 'live')
+function schedule() { clearTimeout(timer);refreshStatus(); if (!document.hidden && !pageSuspended && !comparisonOnly && !contributionPanel.state.open && !crossComparison.state.open && !comparisonPanel.state.open && !activity.paused && !managedTools.state.open && !executionNets.state.open && !checkpointView && !retainedCapture && !checkpointBusy && $('auto-refresh').checked)
+    timer = setTimeout(async () => { if(document.hidden || pageSuspended)return; if (timeline.mode === 'live')
         await loadFrame(null);
     else {
         await loadHistory();
         schedule();
-    } }, 2500); }
+    } }, Math.min(30000,2500*2**refreshFailures)); }
 async function loadFrame(cursor) {
     if (checkpointView || retainedCapture || checkpointBusy) return;
     contributionPanel.close(false);comparisonPanel.close();crossComparison.close();
@@ -496,6 +548,7 @@ async function loadFrame(cursor) {
         timeControls();
         if (!timeline.accepts(ticket))
             return;
+        refreshFailures=0;if(['viewer / current observation','viewer / ELK layout'].includes(window.rpnhViewerDiagnostic?.component))window.rpnhViewerDiagnostic=null;window.rpnhViewerHelp?.update();
         const observedAt = new Date();
         setHealth(() => tr("{0} · {1} · 布局 {2} 次", cursor == null ? tr("实时观察") : tr("历史查看"), observedAt.toLocaleTimeString(getLanguage()), layouts.runs), 'ok');
         if (cursor == null)
@@ -506,6 +559,7 @@ async function loadFrame(cursor) {
     catch (error) {
         if (!timeline.accepts(ticket) || error.name === 'AbortError')
             return;
+        refreshFailures=Math.min(4,refreshFailures+1);reportProblem(error);
         notice(() => `${frame ? tr("保留最后完整画面") : tr("尚无可用画面")}：${error.message}`);
         setHealth(() => tr("读取失败 · 状态可能已过期"), 'stale');
         if (!frame) {
@@ -581,6 +635,7 @@ function pauseCheckpointNavigation() {
     return timeline.begin();
 }
 async function openPreviousNet() {
+    if(checkpointReturns.length>=8){notice(()=>tr('已达到 8 个保留视图上限；先返回保留视图或返回实时，再继续浏览。'));return;}
     if (checkpointBusy) return;
     const selected = (checkpointView ?? checkpointProbe)?.navigation.previous_net_segment;
     if (!selected) return;
@@ -681,10 +736,9 @@ function refreshLanguage() {
     const openDetails = [...$('detail').querySelectorAll('details')].map((d, i) => d.open ? i : -1), scroll = $('detail').scrollTop;
     applyLanguage(document);
     $('language').value = getLanguage();
-    if (frame && graph && layout) {
+    if (frame && graph && (layout || mode==='list')) {
         graph = displayGraph(frame, mode === 'list' ? 'flow' : mode);
-        renderer.apply(graph, layout);
-    refreshCanvasText(renderer, graph, layout);
+        if(mode!=='list'){renderer.apply(graph, layout);refreshCanvasText(renderer, graph, layout);}
         overviewEmpty();
         if (mode === 'list')
             renderExecutionTable($('execution-table'), frame, select);
@@ -698,18 +752,19 @@ function refreshLanguage() {
         $('detail').scrollTop = scroll;
     }
     notice(savedNotice);
-    setHealth(healthMessage);
+    setHealth(healthMessage);helpContext();refreshStatus();window.rpnhViewerHelp?.update();
     if(!frame&&emptyFailure){$('canvas-empty').querySelector('h2').textContent=tr('无法读取这次运行');$('canvas-empty').querySelector('p').textContent=emptyFailure.message;}
 }
-$('language').onchange = () => { setLanguage($('language').value); refreshLanguage(); };
+$('language').onchange = () => {setLanguage($('language').value);try{refreshLanguage();}catch(error){reportProblem(error,'viewer / rendering');notice(()=>tr('暂时无法读取此视图；原因尚未确认，请查看帮助。'));}};
+helpContext();refreshStatus();
 async function start() {
     await Promise.all([loadScript('/assets/joint.js'), loadScript('/assets/elk-api.js')]);
-    const elk = new window.ELK({ workerUrl: '/assets/elk-worker.js' });
+    const elk = layoutEngine = new BoundedLayoutEngine(()=>new window.ELK({ workerUrl: '/assets/elk-worker.js' }));
     layouts = new LayoutCache(elk);crossComparison.setRendering({joint:window.joint,elk});
     if (!$('paper')?.parentElement) throw messageError('PetriNet 画布缺少宿主容器');
-    renderer = new NetRenderer(window.joint, $('paper'), selectRendered);
+    renderer = new NetRenderer(window.joint, $('paper'), selectRendered);renderer.paper.on('scale',zoomGuidance);
     for (const m of ['overview', 'flow', 'petri', 'list'])
-        $(`mode-${m}`).onclick = () => { if(m!=='petri')contributionPanel.close(); if(m==='overview') {cancelActivity(true);cancelTokenResource();managedTools.close(false);executionNets.close(false);} mode = m; render(); };
+        $(`mode-${m}`).onclick = () => { if(m!=='petri')contributionPanel.close(); if(m==='overview') {cancelActivity(true);cancelTokenResource();managedTools.close(false);executionNets.close(false);} mode = m; render().catch(error=>{reportProblem(error,'viewer / rendering');notice(()=>tr('暂时无法读取此视图；原因尚未确认，请查看帮助。'));}); };
     for (const t of ['about', 'executions', 'evidence'])
         $(`tab-${t}`).onclick = () => { tab = t; detail(); };
     $('line-bridges').onchange = () => { clearMotion(); decorate(); };
@@ -756,8 +811,6 @@ async function start() {
         return; const ticket = timeline.select(item.cursor); controller?.abort(); $('time-position').textContent = `${i + 1} / ${timeline.items.length} · #${item.cursor}`; dragTimer = setTimeout(() => { if (timeline.accepts(ticket))
         loadFrame(item.cursor); }, 100); };
     $('load-earlier').onclick = () => loadHistory(nextBefore);
-    $('help').onclick = () => $('guide').showModal();
-    $('close-help').onclick = () => $('guide').close();
     $('fullscreen').onclick = async () => { try {
         if (document.fullscreenElement)
             await document.exitFullscreen();
@@ -773,17 +826,24 @@ async function start() {
     $('motion').onchange = () => { if (!$('motion').checked)
         clearMotion(); };
     $('motion').checked = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    document.addEventListener('visibilitychange',()=>{
+        if(document.hidden){clearTimeout(timer);stop();++historySerial;historyController?.abort();timeline.begin();controller?.abort();checkpointBusy=false;timeControls();clearMotion();}
+        else schedule();
+        refreshStatus();
+    });
     window.addEventListener('pagehide', event => {
+        pageSuspended=true;historyController?.abort();readRequest?.abortAll();
         contributionPanel.close(false);cancelActivity();cancelTokenResource();managedTools.close(false);executionNets.close(false); clearTimeout(timer); stop(); ++historySerial; ++probeSerial; timeline.begin(); controller?.abort();
         checkpointBusy=false;
         // A bfcache entry keeps this app instance: its paper and resize observer
         // must survive, while pending reads and comparison state are discarded.
-        if (!event.persisted) renderer.dispose();
+        if (!event.persisted) {renderer.dispose();layoutEngine?.terminateWorker();}
+        else layoutEngine?.reset();
     });
-    window.addEventListener('pageshow', event => { if (event.persisted) { timeControls();schedule(); } });
+    window.addEventListener('pageshow', event => { if (event.persisted) { pageSuspended=false;timeControls();schedule(); } });
     if(comparisonOnly){$('workspace').hidden=true;document.querySelector('.timeline').hidden=true;document.querySelector('.run-header').hidden=true;crossComparison.open();setHealth(()=>tr('独立只读比较已就绪'),'ok');}
     else await loadFrame(null);
 }
-start().catch(error => { notice(() => error.message); setHealth(() => tr("看板启动失败"), 'stale'); });
+start().catch(error => { reportProblem(error,'viewer / startup');notice(() => error.message);setHealth(() => tr("看板启动失败"),'stale'); });
 
 installWorksetPanel(document.getElementById("worksets"));

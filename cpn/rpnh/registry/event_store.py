@@ -6,10 +6,11 @@ import json
 import sqlite3
 import threading
 import uuid
+from contextlib import contextmanager
 from dataclasses import asdict, dataclass, replace
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Iterable, Mapping, Sequence
+from typing import Any, Iterable, Iterator, Mapping, Sequence
 from ..effects import EffectDeclarationError, structural_effect_declaration
 
 from .identities import TypedId, fresh_bootstrap_resource_id, new_id
@@ -1202,6 +1203,21 @@ class EventStore:
     def connect(self) -> sqlite3.Connection:
         from ._event_store import backend
         return backend.connect(self)
+
+    @contextmanager
+    def connection_scope(self) -> Iterator[sqlite3.Connection]:
+        """Own one connection, preserving transaction exit before closing it.
+
+        Callers must consume cursors inside the scope. A connection passed into
+        another helper remains owned by this outer scope, not by that helper.
+        ``connect`` remains available for callers with explicit lifecycle needs.
+        """
+        connection = self.connect()
+        try:
+            with connection:
+                yield connection
+        finally:
+            connection.close()
 
     def _initialize(self) -> None:
         from ._event_store import backend

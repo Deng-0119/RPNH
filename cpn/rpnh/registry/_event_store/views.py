@@ -38,7 +38,7 @@ def canonical_events(
         member_kind="event", member_identity_sql="e.event_id",
         published_event_sql="e.ordinal")
     parameters.extend((upper, upper, upper, upper))
-    with store.connect() as db:
+    with store.connection_scope() as db:
         rows = db.execute(
             "SELECT e.* FROM events e "
             "WHERE e.ordinal>? AND e.ordinal<=? "
@@ -367,7 +367,7 @@ def canonical_view(
         store, *, through_ordinal: int | None = None) -> CanonicalView:
     """Capture one immutable canonical read boundary."""
 
-    with store.connect() as db:
+    with store.connection_scope() as db:
         row = db.execute(
             "SELECT COALESCE(MAX(ordinal),0) AS maximum FROM events"
         ).fetchone()
@@ -485,7 +485,7 @@ def canonical_object_row(
     predicate = store._canonical_member_sql(
         member_kind="object", member_identity_sql="o.version_id",
         published_event_sql="published_event.ordinal")
-    with store.connect() as db:
+    with store.connection_scope() as db:
         return db.execute(
             "SELECT o.* FROM objects o JOIN events published_event "
             "ON published_event.event_id=o.published_event_id "
@@ -560,7 +560,7 @@ def canonical_object_rows(
     parameters: list[Any] = [upper, upper, upper, upper]
     if object_type is not None:
         parameters.append(object_type)
-    with store.connect() as db:
+    with store.connection_scope() as db:
         return tuple(db.execute(
             "SELECT o.* FROM objects o JOIN events published_event "
             "ON published_event.event_id=o.published_event_id "
@@ -583,7 +583,7 @@ def canonical_relation_rows(
     parameters: list[Any] = [upper, upper, upper, upper]
     if version_id is not None:
         parameters.extend((str(version_id), str(version_id)))
-    with store.connect() as db:
+    with store.connection_scope() as db:
         return tuple(db.execute(
             "SELECT r.* FROM relations r JOIN events published_event "
             "ON published_event.event_id=r.published_event_id "

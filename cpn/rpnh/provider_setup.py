@@ -322,6 +322,12 @@ def _render(document: Mapping[str, Any]) -> dict[str, bytes]:
                         "supported_reasoning_efforts": list(supported_efforts),
                         "default_reasoning_effort": default_effort,
                     })
+                if "normal_history_reasoning_replay" in raw_model:
+                    replay = raw_model["normal_history_reasoning_replay"]
+                    if replay and adapter["adapter_kind"] != "external_provider":
+                        raise ValueError(
+                            "normal history reasoning replay requires an external Chat adapter")
+                    execution_document["normal_history_reasoning_replay"] = replay
                 if "context_window_tokens" in raw_model:
                     execution_document["context_window_tokens"] = (
                         raw_model["context_window_tokens"])

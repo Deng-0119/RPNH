@@ -116,7 +116,7 @@ def test_viewer_reports_a_moving_registry_head_without_partial_graph() -> None:
     response = handle_request(changed, "GET", "/api/v1/net")
     assert response.status == 500
     value = json.loads(response.body)
-    assert set(value) == {"error"} and "Registry changed" in value["error"]
+    assert value == {"error": "projection_unavailable"}
 
 
 def test_ipv4_wire_boundary_accepts_only_the_bound_authority_and_same_origin() -> None:

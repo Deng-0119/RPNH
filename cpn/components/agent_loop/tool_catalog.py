@@ -7,8 +7,9 @@ import re
 from dataclasses import dataclass
 from typing import Any, Mapping
 
-from jsonschema import Draft7Validator
 from jsonschema.exceptions import SchemaError
+
+from cpn.rpnh._schema_validation import check_draft7_schema
 
 from .result_archive import ARCHIVE_ARGUMENT_SCHEMA
 
@@ -28,12 +29,13 @@ AGENT_TOOL_NAMES = (
     "request_resource",
     "run_tool_program",
     "search_text",
+    "submit_candidate",
     "workspace",
     "write_file",
 )
 DEFAULT_AGENT_TOOL_NAMES = tuple(
     name for name in AGENT_TOOL_NAMES
-    if name not in {"read_managed_output", "read_tool_program_output", "run_tool_program"})
+    if name not in {"read_managed_output", "read_tool_program_output", "run_tool_program", "submit_candidate"})
 
 DELEGATE_LEAF_TOOL_NAME = "delegate_leaf"
 REQUEST_RESOURCE_TOOL_NAME = "request_resource"
@@ -237,6 +239,24 @@ TOOL_ARGUMENT_SCHEMAS: dict[str, dict[str, Any]] = {
         },
         "required": ["path", "query"],
     },
+    "submit_candidate": {
+        "type": "object", "additionalProperties": False,
+        "properties": {
+            "outcome_id": {"type": "string", "minLength": 1},
+            "products": {
+                "type": "array", "minItems": 1,
+                "items": {
+                    "type": "object", "additionalProperties": False,
+                    "properties": {
+                        "output_port_id": {"type": "string", "minLength": 1},
+                        "content": {"type": "object"},
+                    },
+                    "required": ["output_port_id", "content"],
+                },
+            },
+        },
+        "required": ["products"],
+    },
     "workspace": {
         "type": "object", "additionalProperties": False,
         "properties": {
@@ -421,9 +441,9 @@ def _canonical_agent_tool_catalog_payload() -> bytes:
                 "name": name,
                 "description": {
                     "complete_interaction": (
-                        "Complete only after at least one write_file call succeeded "
-                        "and registered a document. It may be the final ordered "
-                        "tool call in the same response as the final write_file."),
+                        "Complete only after the declared semantic output bundle "
+                        "has been registered by the permitted submission tool. "
+                        "This must be the final ordered tool call."),
                     "delegate_leaf": (
                         "Open one depth-one, one-atomic-task subtask session "
                         "annotation under this parent invocation. It is not a "
@@ -488,6 +508,13 @@ def _canonical_agent_tool_catalog_payload() -> bytes:
                         "or resource delivery. Returns bounded line/column excerpts "
                         "and pagination metadata without opening the complete body. "
                         "Use it after the file summary and before full-page reads."),
+                    "submit_candidate": (
+                        "Submit the complete structured candidate bundle for the "
+                        "bound content contract. Supply products with exact declared "
+                        "output_port_id values and JSON object content. Optional outcome_id "
+                        "selects the bound semantic outcome. Rejected "
+                        "candidates may be corrected before any product is sealed. "
+                        "After acceptance, call complete_interaction last."),
                     "workspace": (
                         "Run one opaque shell program in the firing-private view "
                         "of the exact Registry/Petri-authorized workspace projection. "
@@ -581,7 +608,7 @@ def _parse_agent_tool_catalog_document(
                 or not isinstance(tool.get("arguments"), dict)):
             raise ValueError("agent tool catalog descriptor is malformed")
         try:
-            Draft7Validator.check_schema(tool["arguments"])
+            check_draft7_schema(tool["arguments"])
         except SchemaError as exc:
             raise ValueError(
                 "agent tool catalog argument schema is invalid") from exc
@@ -638,11 +665,11 @@ def model_visible_agent_tool_description(name: str) -> str:
 
     descriptions = {
         "complete_interaction": (
-            "Complete only after write_file has registered every intended output "
-            "file required by the assignment. Earlier failed actions remain in "
+            "Complete only after the permitted submission tool has registered "
+            "every intended semantic output required by the assignment. Earlier failed actions remain in "
             "Registry history but do not require a reserved comment or a Harness-"
             "imposed retry before completion. "
-            "The final write_file may precede this call in the same response when "
+            "The final output submission may precede this call in the same response when "
             "complete_interaction is the final ordered call."),
         "delegate_leaf": (
             "Open one depth-one, one-atomic-task subtask session annotation. "
@@ -688,6 +715,12 @@ def model_visible_agent_tool_description(name: str) -> str:
             "resource delivery. Read the listed summary first; use bounded search "
             "to locate relevant passages, then read original pages only when the "
             "task needs the complete evidence or surrounding context."),
+        "submit_candidate": (
+            "Submit products as a list of exact declared output_port_id and JSON "
+            "object content pairs for the bound content contract. Optional outcome_id "
+            "selects the bound semantic outcome. Correct any "
+            "reported candidate errors and resubmit; rejected candidates do not "
+            "seal outputs. After acceptance, call complete_interaction last."),
         "write_file": (
             "Register a semantic output from exactly one source: supplied nonempty "
             "UTF-8 content, or one exact current Registry source_resource_ref. For "

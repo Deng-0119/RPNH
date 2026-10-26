@@ -67,6 +67,7 @@ def register_operation_outputs(
     selected, registered = repository.validate_operation_output_bundle(
         authority=authority, outputs=registered,
         selected_outcome_id=selected_outcome_id)
+    repository.verify_firing_content_outputs(execution, registered, selected)
     ordered = tuple(sorted(
         registered,
         key=lambda item: (item.port_id, str(item.resource_ref.resource_version_id))))

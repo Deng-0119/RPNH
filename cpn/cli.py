@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 from pathlib import Path
 from typing import Any, Callable, Mapping, Sequence
 
@@ -43,6 +44,8 @@ def build_parser() -> argparse.ArgumentParser:
     view.add_argument("--no-open", action="store_true")
     view.add_argument("--host", default="127.0.0.1")
     view.add_argument("--port", type=int, default=0)
+    view.add_argument("--session-timeout", type=float, default=3600,
+                      help="close viewer port after seconds (default 3600); 0 keeps it open until Ctrl-C")
     view.add_argument("--max-checkpoints", type=int, default=2048)
     view.add_argument("--max-firings", type=int, default=2000)
     view.set_defaults(handler=_cmd_net_view)
@@ -178,6 +181,8 @@ def _cmd_net_show(args: argparse.Namespace) -> int:
 def _cmd_net_view(args: argparse.Namespace) -> int:
     if isinstance(args.port, bool) or not 0 <= args.port <= 65535:
         raise CLIUserError("--port must be within 0..65535")
+    if not math.isfinite(args.session_timeout) or args.session_timeout < 0:
+        raise CLIUserError("--session-timeout must be finite and nonnegative")
     from cpn.frontend.dashboard import RegistryDashboard
     from cpn.rpnh.agent_tasks import agent_task_catalog
     provider = RegistryDashboard(
@@ -187,7 +192,8 @@ def _cmd_net_view(args: argparse.Namespace) -> int:
     from cpn.frontend.server import serve_projection
     serve_projection(
         provider, host=args.host, port=args.port,
-        open_browser=not args.no_open, show_resources=args.show_resources)
+        open_browser=not args.no_open, show_resources=args.show_resources,
+        session_timeout_seconds=args.session_timeout)
     return 0
 
 

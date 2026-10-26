@@ -38,6 +38,7 @@ from ._external_provider_protocol import (
 from ._external_provider_recovery import (
     ExternalProviderRecoveryConfigError,
     ExternalProviderRecoveryPolicy,
+    NO_AUTOMATIC_RETRY_STRATEGY,
     recovery_policy_from_document,
 )
 
@@ -1048,6 +1049,9 @@ class ExternalProviderInputPort:
         while True:
             if result.response_bytes is not None:
                 return response(result)
+            if self._recovery.strategy == NO_AUTOMATIC_RETRY_STRATEGY:
+                final_recovery_reason = "automatic_recovery_disabled"
+                break
             if not _health_probe_eligible(result):
                 final_recovery_reason = "failure_not_probe_eligible"
                 break

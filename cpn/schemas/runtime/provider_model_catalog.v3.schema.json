@@ -55,18 +55,27 @@
       ]
     },
     "externalRecovery": {
-      "type": "object", "additionalProperties": false,
-      "properties": {
-        "strategy": {"const": "bounded_same_route_health_probe/v1"},
-        "max_probe_attempts": {"type": "integer", "minimum": 1, "maximum": 3},
-        "probe_timeout_budget_seconds": {"$ref": "#/definitions/positiveInteger"},
-        "max_probe_success_formal_failure_cycles": {
-          "type": "integer", "minimum": 1, "maximum": 3
+      "oneOf": [
+        {
+          "type": "object", "additionalProperties": false,
+          "properties": {
+            "strategy": {"const": "bounded_same_route_health_probe/v1"},
+            "max_probe_attempts": {"type": "integer", "minimum": 1, "maximum": 3},
+            "probe_timeout_budget_seconds": {"$ref": "#/definitions/positiveInteger"},
+            "max_probe_success_formal_failure_cycles": {
+              "type": "integer", "minimum": 1, "maximum": 3
+            }
+          },
+          "required": [
+            "strategy", "max_probe_attempts", "probe_timeout_budget_seconds",
+            "max_probe_success_formal_failure_cycles"
+          ]
+        },
+        {
+          "type": "object", "additionalProperties": false,
+          "properties": {"strategy": {"const": "no_automatic_retry/v1"}},
+          "required": ["strategy"]
         }
-      },
-      "required": [
-        "strategy", "max_probe_attempts", "probe_timeout_budget_seconds",
-        "max_probe_success_formal_failure_cycles"
       ]
     },
     "stringArray": {
@@ -144,6 +153,7 @@
       "properties": {
         "profile": {"$ref": "#/definitions/identifier"},
         "model_condition": {"$ref": "#/definitions/opaqueText"},
+        "normal_history_reasoning_replay": {"type": "boolean"},
         "reasoning_efforts": {"$ref": "#/definitions/reasoningEfforts"},
         "adapter": {
           "oneOf": [

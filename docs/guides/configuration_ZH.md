@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: configuration.md
-  revision: "2026-10-11.1"
+  revision: "2026-10-25.1"
   status: source-reviewed-pre-release
 ---
 
@@ -141,11 +141,18 @@ profile 会记录解析后的值，因此 run 及其 resume 使用同一份精�
 
 ## 恢复、attempt 与幂等
 
-外部 provider transport 恢复在 `adapter.recovery` 下由用户配置：
+外部 provider transport 恢复在 `adapter.recovery` 下由用户配置。若要禁用自动健康探测和
+正式重试，将整个对象设为 `{"strategy": "no_automatic_retry/v1"}`。此封闭结构不接受任何
+probe/cycle 字段。每次 adapter invocation 只进行最初的一次正式 attempt；若 preflight 或
+owner interruption 阻止提交，则不会提交。失败保留原始中立分类、提交状态及 failure code。
+此选项不限制 AgentLoop turn、独立的 compaction 调用或之后由 owner 授权的 attempt。
+
+现有 `bounded_same_route_health_probe/v1` 策略与 onboarding 基线不变；此策略要求下表
+全部四个字段：
 
 | 字段 | 约束 | 含义 |
 |---|---:|---|
-| `strategy` | 固定 `bounded_same_route_health_probe/v1` | 不切换 provider/model/credential route。 |
+| `strategy` | `bounded_same_route_health_probe/v1` | 不切换 provider/model/credential route。 |
 | `max_probe_attempts` | 1–3 | 一次健康序列的 probe 上限；首次成功立即停止。 |
 | `probe_timeout_budget_seconds` | 正数 | 该 probe 序列共享的墙钟预算。 |
 | `max_probe_success_formal_failure_cycles` | 1–3 | 同一 logical call 中“probe 成功但正式请求失败”的循环上限。 |
@@ -158,8 +165,8 @@ probe 提示 `Reply with READY.` 及 8-token 上限同样是固定协议细节�
 
 编译后 Agent operation 中的 `provider_attempt_limit` 是固定的 Registry admission envelope，
 不是自动重试次数。它只容纳当前 Agent 协议规定的 attempt 形状（普通调用一次，或另行限定的
-compaction 路径），因此不会复制到 catalog。公开可配置的 transport recovery 控制只有上表
-三个 external-provider recovery 字段。
+compaction 路径），因此不会复制到 catalog。公开可配置的 transport recovery 控制包括
+显式禁用自动重试的策略，或上表三个有界恢复参数。
 
 ## Workflow 与 plugin declaration
 
@@ -237,3 +244,12 @@ unsupported event/item诊断仅在私有stderr审计metadata保留最多64字符
 路径不保证都有request-budget摘要。旧unsupported item不再出现不等于已确定或修复未知根因；
 容量拒绝不是context溢出证明。[公开结果](../../examples/automationbench/PUBLIC_RESULTS_20261006_ZH.md)
 将配置、canonical usage及provider未知字段分开。
+
+### 普通历史推理内容回放
+
+普通历史默认不回放提供方推理内容。当前版本的提供方模型目录条目可显式设置
+`normal_history_reasoning_replay: true`，仅适用于精确绑定的单个外部
+`openai_chat_completions/v1` 路由与模型。它只回放已保存在不可变响应记录中的
+推理内容，不推测推理，也不向提供方索取隐藏推理。此选择属于已注册的 HOST
+执行身份，并用于压缩前的历史构造。省略或设置 false 保持既有行为及默认策略
+字节不变。委派历史独立保持原有行为。

@@ -1,0 +1,451 @@
+{
+  "schema": "rpnh/help/v1",
+  "topics": [
+    {
+      "id": "basic",
+      "title": {
+        "en": "Use the Basic terminal",
+        "zh-CN": "使用 Basic 终端"
+      },
+      "summary": {
+        "en": "Messages go to the selected conversation or task. Slash commands operate locally; help never calls a model.",
+        "zh-CN": "消息发送给当前选中的会话或任务。斜杠命令在本地处理；帮助不会调用模型。"
+      },
+      "steps": {
+        "en": [
+          "Read the prompt focus before sending: main is the main conversation; a task ID targets that child. /current shows the exact focus; /switch main returns to main.",
+          "/status reads the current focus. /history shows only the last 10 main-conversation messages; /clear clears the display, not stored history.",
+          "/help tasks lists all existing task controls. /help viewer and /help provider open local guidance. To send literal text beginning with /, type // instead; one leading slash is removed.",
+          "In a terminal, a trailing backslash continues a message. Ctrl+C at the input prompt reminds you how to leave; /quit, /exit or EOF leave Basic without stopping child tasks. During execution, use the existing pause/recovery contract."
+        ],
+        "zh-CN": [
+          "发送前先看输入区的目标：main 是主会话，任务 ID 是对应子任务。/current 显示精确目标；/switch main 返回主会话。",
+          "/status 查看当前目标状态。/history 只显示主会话最近 10 条消息；/clear 清屏但不删除已保存的历史。",
+          "/help tasks 列出原有任务控制；/help viewer、/help provider 打开本地说明。要发送以 / 开头的原文，先输入 //；系统只去掉第一层斜杠。",
+          "终端输入行末尾的反斜杠表示续行。输入提示处按 Ctrl+C 会提示退出方式；/quit、/exit 或 EOF 离开 Basic，不停止子任务。执行期间沿用原有暂停与恢复机制。"
+        ]
+      },
+      "owner": "basic-terminal",
+      "source_paths": [
+        "cpn/rpnh/basic_terminal.py",
+        "cpn/rpnh_cli.py"
+      ],
+      "docs": [
+        "docs/guides/frontend-help.md",
+        "docs/guides/frontend-help_ZH.md"
+      ]
+    },
+    {
+      "id": "viewer",
+      "title": {
+        "en": "Understand this viewer",
+        "zh-CN": "看懂当前 Viewer"
+      },
+      "summary": {
+        "en": "The viewer reads recorded evidence. Changing the view never starts, resumes, stops or repairs a task.",
+        "zh-CN": "Viewer 读取已记录的证据。改变视图不会启动、恢复、停止或修复任务。"
+      },
+      "steps": {
+        "en": [
+          "Start with Overview to identify which agents do the work. Detailed flow and PetriNet expose the actual conditions, places and arcs; an overview link is not proof that the path ran.",
+          "Select a step, then About, Executions or Evidence. Use exact references in Evidence to locate the underlying record.",
+          "Search and Locate change focus; Fit to view restores the complete current projection. Resources shows declared dependencies only in supporting views.",
+          "Use /task ID status and /task ID result in Basic for task status and its registered result. Settled records and an output place alone do not prove success."
+        ],
+        "zh-CN": [
+          "先用概览识别承担工作的 agent；详细流程与 PetriNet 展示实际条件、库所和弧。概览连线不能证明这条路径已经执行。",
+          "选择步骤后查看“说明”“执行”或“技术证据”；通过技术证据中的精确引用定位底层记录。",
+          "搜索与定位只改变焦点；“完整视图”恢复当前投影的全景。“资源”只在支持的视图中显示声明的依赖。",
+          "在 Basic 中用 /task ID status、/task ID result 查看任务状态与登记的结果。已结算记录或输出库所本身不能证明成功。"
+        ]
+      },
+      "owner": "viewer-presentation",
+      "source_paths": [
+        "cpn/frontend/static/app.js",
+        "cpn/frontend/dashboard.py"
+      ],
+      "docs": [
+        "docs/guides/viewer.md",
+        "docs/guides/viewer_ZH.md"
+      ]
+    },
+    {
+      "id": "legend",
+      "title": {
+        "en": "Read symbols and states",
+        "zh-CN": "理解图形与状态"
+      },
+      "summary": {
+        "en": "A diagram combines declared structure and disclosed recorded state. Missing data is unknown, not zero.",
+        "zh-CN": "图中同时展示声明的结构和获准披露的记录状态。缺少数据表示未知，不等于零。"
+      },
+      "steps": {
+        "en": [
+          "Rectangular steps are transitions/agents; circles are places. Place numbers count active tokens; ? means the count was not provided.",
+          "Solid arrows consume or produce. Read arcs observe without consuming; reset arcs and resource dependencies have distinct line styles. Select an arc for exact mode and evidence.",
+          "Green task input and purple result output identify declared boundaries. They are not running/success indicators. A line bridge crosses another line without joining.",
+          "Unsettled means a record is not settled; started does not prove a process is still alive. Animation illustrates adjacent checkpoints, not new execution facts."
+        ],
+        "zh-CN": [
+          "矩形步骤表示 transition 或 agent；圆形表示库所。库所数字是有效 token 数；? 表示未提供计数。",
+          "实线弧表示消耗或产生；读取弧观察但不消耗；重置弧与资源依赖使用不同线型。选择弧可查看精确模式和证据。",
+          "绿色任务输入和紫色结果出口表示声明的边界，不代表运行中或成功。跳线跨过另一条线但不与其连接。",
+          "未结算表示记录尚未结算；started 不证明进程仍存活。动画只说明相邻 checkpoint 的变化，不是新的执行事实。"
+        ]
+      },
+      "owner": "viewer-semantics",
+      "source_paths": [
+        "cpn/frontend/static/renderer.mjs",
+        "cpn/frontend/static/model.mjs"
+      ],
+      "docs": [
+        "docs/guides/viewer.md",
+        "docs/guides/viewer_ZH.md"
+      ]
+    },
+    {
+      "id": "live",
+      "title": {
+        "en": "Refresh and freshness",
+        "zh-CN": "刷新与数据新旧"
+      },
+      "summary": {
+        "en": "Live refresh observes a run. A fresh HTTP response and a live task process are different facts.",
+        "zh-CN": "实时刷新用于观察运行。HTTP 响应新鲜与任务进程存活是不同事实。"
+      },
+      "steps": {
+        "en": [
+          "Check whether Live is enabled and whether you are viewing live position or a historical checkpoint. Returning to live changes only the viewing position.",
+          "If the page keeps the last complete frame after a read error, treat it as retained evidence; it may no longer be current. Use Refresh once after correcting the reported boundary.",
+          "A background/hidden tab may pause or slow observation. Bring it to the foreground before judging freshness; consult the status shown by the viewer.",
+          "If events stop, inspect the existing task status and result through the owner. Do not restart a task merely to make the viewer change."
+        ],
+        "zh-CN": [
+          "确认“实时”是否开启，以及当前是实时位置还是历史 checkpoint。返回实时只改变观看位置。",
+          "读取失败后保留的最后完整画面是已有证据，可能不再是当前状态。修正报告的问题边界后，再手动刷新一次。",
+          "后台或隐藏标签页可能暂停或减慢观察。判断新旧前先切回前台，并查看 Viewer 显示的状态。",
+          "若记录不再更新，通过原有 owner 的任务状态和结果入口检查。不要为了让图变化而重启任务。"
+        ]
+      },
+      "owner": "viewer-observation",
+      "source_paths": [
+        "cpn/frontend/static/app.js",
+        "cpn/frontend/dashboard.py"
+      ],
+      "docs": [
+        "docs/guides/viewer.md",
+        "docs/guides/viewer_ZH.md"
+      ]
+    },
+    {
+      "id": "history",
+      "title": {
+        "en": "Replay saved checkpoints",
+        "zh-CN": "回看保存的 checkpoint"
+      },
+      "summary": {
+        "en": "Replay changes what you inspect, not what the task executes. Its coverage is limited to available saved evidence.",
+        "zh-CN": "回放改变查看的内容，不改变任务执行；范围以实际保存的证据为限。"
+      },
+      "steps": {
+        "en": [
+          "Use the timeline to select a saved canonical checkpoint. Read the stated net/version and replay scope before interpreting a change.",
+          "Earlier records loads a bounded page when supported. If history is unavailable, it does not prove no work happened; the read provider may not support it.",
+          "Return to live explicitly. A running task can progress while you inspect history; the viewer should not silently pull your view away.",
+          "To continue real work, use the owner recovery commands and committed-checkpoint contract. Playing history is never resume or reopen."
+        ],
+        "zh-CN": [
+          "用时间轴选择保存的正式 checkpoint；解释变化前先核对所选网、版本及回放范围。",
+          "支持时，“更早记录”加载一个有界分页。历史不可用不证明没有发生工作，也可能是当前读取源不支持。",
+          "明确选择返回实时。查看历史期间任务仍可能前进；Viewer 不应静默抢回实时位置。",
+          "继续真实任务需要使用 owner 的恢复命令与已提交 checkpoint 契约。播放历史从来不是 resume 或 reopen。"
+        ]
+      },
+      "owner": "checkpoint-read",
+      "source_paths": [
+        "cpn/frontend/checkpoint_view.py",
+        "cpn/frontend/static/checkpoint-view.mjs"
+      ],
+      "docs": [
+        "docs/guides/viewer.md",
+        "docs/guides/viewer_ZH.md"
+      ]
+    },
+    {
+      "id": "comparison",
+      "title": {
+        "en": "Compare without changing identity",
+        "zh-CN": "比较而不改变身份"
+      },
+      "summary": {
+        "en": "Checkpoint comparison and independent-net comparison answer different questions. Unknown correspondence is not an unchanged result.",
+        "zh-CN": "checkpoint 比较与独立网比较回答不同问题。对应关系未知不代表没有变化。"
+      },
+      "steps": {
+        "en": [
+          "Compare checkpoints for saved states of the supported same-net scope. Compare independent nets for explicitly selected separate sources.",
+          "Read whether a pair is evidence-backed, manually aligned or unmatched. Manual alignment helps reading; it does not merge Registry identities.",
+          "Compare structure/configuration and runtime facts separately. Unknown or inaccessible sections cannot be counted as unchanged.",
+          "If alignment is unclear, use the available side-by-side/full-net view and inspect exact references. Do not edit records to force correspondence."
+        ],
+        "zh-CN": [
+          "checkpoint 比较用于支持范围内同网的保存状态；独立网比较用于明确选择的不同来源。",
+          "确认配对是有证据支持、人工对照还是未匹配。人工对照只辅助阅读，不合并 Registry 身份。",
+          "分开理解结构、配置与运行事实。未知或无权读取的部分不能计为未变化。",
+          "对齐不清楚时，使用可用的并排或完整网视图检查精确引用。不要修改记录来强行建立对应。"
+        ]
+      },
+      "owner": "comparison-read",
+      "source_paths": [
+        "cpn/frontend/comparison_view.py",
+        "cpn/frontend/static/comparison-view.mjs"
+      ],
+      "docs": [
+        "docs/guides/checkpoint-comparison.md",
+        "docs/guides/checkpoint-comparison_ZH.md"
+      ]
+    },
+    {
+      "id": "connection",
+      "title": {
+        "en": "Viewer cannot connect",
+        "zh-CN": "Viewer 无法连接"
+      },
+      "summary": {
+        "en": "A connection failure identifies the local transport boundary; the underlying cause is not confirmed by the browser alone.",
+        "zh-CN": "连接失败定位到本地传输边界；仅凭浏览器不能确定底层原因。"
+      },
+      "steps": {
+        "en": [
+          "Open the exact loopback URL printed by the viewer process you started. A different hostname/port or proxy can be rejected even on the same computer.",
+          "Check whether that viewer process ended, its finite session lifetime expired, or the port is already occupied. Restart only the viewer against the same run when appropriate.",
+          "For an intentional persistent local session, inspect rpnh net --help and --session-timeout. Close the owning viewer process when finished; closing a tab is not a server shutdown.",
+          "Do not bind publicly, disable Host/Origin checks or forward a port to work around a connection failure. If the page loads but data fails, use the access or registry topic."
+        ],
+        "zh-CN": [
+          "打开自己启动的 Viewer 进程打印的精确 loopback 地址。即使在同一电脑，换主机名、端口或代理也可能被拒绝。",
+          "检查该 Viewer 进程是否结束、有限会话时长是否到期，或端口是否占用。适当时只针对同一运行重新打开 Viewer。",
+          "确需本机持续监听时，查看 rpnh net --help 中的 --session-timeout。用完关闭所属 Viewer 进程；关闭标签页不等于关闭服务器。",
+          "不要通过公开绑定、关闭 Host/Origin 检查或转发端口来绕过连接问题。页面能打开但数据失败时，查看 access 或 registry 主题。"
+        ]
+      },
+      "owner": "viewer-transport",
+      "source_paths": [
+        "cpn/frontend/server.py",
+        "cpn/rpnh_cli.py"
+      ],
+      "docs": [
+        "docs/guides/viewer.md",
+        "docs/guides/viewer_ZH.md"
+      ]
+    },
+    {
+      "id": "access",
+      "title": {
+        "en": "A read was refused",
+        "zh-CN": "读取被拒绝"
+      },
+      "summary": {
+        "en": "Denied, stale and unsupported are distinct read outcomes. The helper cannot grant access or infer hidden data.",
+        "zh-CN": "拒绝、观察过期与不支持是不同的读取结果。helper 无法授予权限或推断隐藏数据。"
+      },
+      "steps": {
+        "en": [
+          "Read the status/category shown by the failing panel. HTTP 403 means this request was refused; it does not by itself prove a particular permission configuration is wrong.",
+          "After source scope or permission changes, reselect the authorized source through the existing read interface. Do not reuse a stale comparison or observation cursor.",
+          "A 404/501 may indicate that the selected provider does not expose this resource/capability. Use supported views and preserve the unavailable status.",
+          "Inspect the curated source boundary below and the local owner configuration. Never remove Registry locks, edit identities or disable read validation to obtain a view."
+        ],
+        "zh-CN": [
+          "查看失败面板显示的状态或类别。HTTP 403 表示本次请求被拒绝，不能单凭它确定某项权限配置错误。",
+          "来源范围或权限变化后，通过既有读取入口重新选择获授权来源，不复用过期的比较或观察游标。",
+          "404 或 501 可能表示读取源未暴露该资源或能力。使用支持的视图，并保留不可用状态。",
+          "检查下方列出的源码边界及本地 owner 配置。不要删除 Registry 锁、修改身份或关闭读取校验来强行查看。"
+        ]
+      },
+      "owner": "read-access",
+      "source_paths": [
+        "cpn/frontend/server.py",
+        "cpn/frontend/net_view_adapters/_registry.py"
+      ],
+      "docs": [
+        "docs/guides/troubleshooting.md",
+        "docs/guides/troubleshooting_ZH.md"
+      ]
+    },
+    {
+      "id": "registry",
+      "title": {
+        "en": "Locate an internal read problem",
+        "zh-CN": "定位内部读取问题"
+      },
+      "summary": {
+        "en": "A projection failure can originate in the read binding, Registry records or incompatible code. The cause remains unconfirmed until checked.",
+        "zh-CN": "投影失败可能来自读取绑定、Registry 记录或代码不兼容；检查前原因仍未确认。"
+      },
+      "steps": {
+        "en": [
+          "Record the failing operation, visible HTTP/category, exact selected run and installed source revision privately. Do not publish raw Registry files or logs.",
+          "Check that the run/profile identity and schema are supported by the installed code. Use the original exact profile; do not relabel historical records.",
+          "For a read-HOST selection, use its existing preflight/describe entry before an object query. This is separate from model configuration and task execution.",
+          "Preserve the Registry and external-effect evidence. If work itself failed, use recovery/provider guidance; refreshing the browser cannot repair settlement."
+        ],
+        "zh-CN": [
+          "私下记录失败操作、可见 HTTP 或类别、精确运行选择及安装版本。不要公开原始 Registry 文件或日志。",
+          "检查安装代码是否支持该运行、profile 身份及 schema。使用原有精确 profile，不重新标记历史记录。",
+          "使用 read-HOST 时，先通过既有 preflight 或 describe 入口检查，再查询对象；它与模型配置、任务执行独立。",
+          "保留 Registry 与外部效果证据。任务本身失败时查看 recovery 或 provider；刷新浏览器不能修复结算。"
+        ]
+      },
+      "owner": "registry-read-binding",
+      "source_paths": [
+        "cpn/frontend/dashboard.py",
+        "cpn/frontend/net_view_adapters/_registry.py",
+        "cpn/rpnh/registry/event_store.py"
+      ],
+      "docs": [
+        "docs/guides/troubleshooting.md",
+        "docs/guides/troubleshooting_ZH.md"
+      ]
+    },
+    {
+      "id": "recovery",
+      "title": {
+        "en": "Continue from a committed checkpoint",
+        "zh-CN": "从已提交 checkpoint 继续"
+      },
+      "summary": {
+        "en": "Recovery uses Registry authority and a valid committed checkpoint. It does not continue arbitrarily from a failed operation.",
+        "zh-CN": "恢复使用 Registry 权威和有效的已提交 checkpoint，不是任意从失败操作接着执行。"
+      },
+      "steps": {
+        "en": [
+          "For a paused main turn, /resume continues or settles terminal evidence. /rollback returns main conversation authority to its prior completed turn and retains child evidence.",
+          "For a selected child, /resume uses that task owner. /task ID checkpoints lists supported saved cuts; reopen CHECKPOINT is an explicit earlier-generation choice.",
+          "Resolve an existing owner/writer conflict through the original owner. Do not clear locks or start a competing writer.",
+          "Inspect post-checkpoint external effects before retrying. Local restore does not undo a remote write, provider charge or settled external effect. The viewer never performs recovery."
+        ],
+        "zh-CN": [
+          "主会话暂停时，/resume 用于继续或结算终态证据；/rollback 将主会话权威退回上一已完成轮次，并保留子任务证据。",
+          "选中子任务时，/resume 使用该任务 owner。/task ID checkpoints 列出支持的保存切点；reopen CHECKPOINT 是明确选择更早切点的新代次。",
+          "通过原 owner 解决已有 owner 或 writer 冲突，不删除锁或启动竞争 writer。",
+          "重试前核对 checkpoint 之后的外部效果。本地恢复不会撤销远端写入、模型费用或已结算的外部效果；Viewer 从不执行恢复。"
+        ]
+      },
+      "owner": "owner-and-checkpoint",
+      "source_paths": [
+        "cpn/rpnh/main_session.py",
+        "cpn/rpnh/task_control.py",
+        "cpn/rpnh/session_access.py"
+      ],
+      "docs": [
+        "docs/guides/checkpoint-recovery.md",
+        "docs/guides/checkpoint-recovery_ZH.md"
+      ]
+    },
+    {
+      "id": "provider",
+      "title": {
+        "en": "Check model configuration",
+        "zh-CN": "检查模型配置"
+      },
+      "summary": {
+        "en": "Provider or model failures are execution/configuration problems, not something the viewer can repair.",
+        "zh-CN": "provider 或模型失败属于执行或配置问题，Viewer 不能修复。"
+      },
+      "steps": {
+        "en": [
+          "Run rpnh doctor for an offline configuration check. Ready means local checks passed; it does not prove credential validity or provider reachability.",
+          "Verify the exact saved provider/model/route and required environment variable names. Do not print credential values, private endpoints or the full environment.",
+          "A timeout can leave submission or effect status unknown. Preserve the recorded attempt and inspect the boundary before deciding whether a new call is safe.",
+          "Use rpnh config --help for available configuration commands. Resume keeps the persisted exact profile; do not silently switch model or retry via another provider."
+        ],
+        "zh-CN": [
+          "运行 rpnh doctor 进行离线配置检查。ready 只表示本地检查通过，不证明凭据有效或 provider 可达。",
+          "核对已保存的精确 provider、模型、路由及所需环境变量名；不要输出密钥值、私有 endpoint 或完整环境。",
+          "超时可能使提交或效果状态未知。保留已记录的尝试，检查效果边界后再判断是否可以新调用。",
+          "用 rpnh config --help 查看可用配置命令。恢复沿用持久化的精确 profile，不静默换模型或改 provider 重试。"
+        ]
+      },
+      "owner": "provider-configuration",
+      "source_paths": [
+        "cpn/rpnh/user_config.py",
+        "cpn/rpnh/onboarding.py"
+      ],
+      "docs": [
+        "docs/guides/troubleshooting.md",
+        "docs/guides/troubleshooting_ZH.md"
+      ]
+    },
+    {
+      "id": "assets",
+      "title": {
+        "en": "Viewer assets did not load",
+        "zh-CN": "Viewer 展示资产未加载"
+      },
+      "summary": {
+        "en": "Missing or incompatible local assets can prevent rendering before run data is read. This does not establish that the run failed.",
+        "zh-CN": "本地展示资产缺失或不匹配可能在读取运行数据前阻止渲染；这不说明任务运行失败。"
+      },
+      "steps": {
+        "en": [
+          "Check that HTML, app modules and bundled rendering/worker assets come from the same complete installed source/wheel.",
+          "Reload the exact local viewer URL after correcting the installation. Do not mix assets from a CDN, another branch or a downloaded script.",
+          "Use the terminal projection (rpnh net --run RUN_DIR) to inspect available run evidence while repairing presentation. Replace RUN_DIR with the existing run; this command does not start it.",
+          "If reporting a browser console/network error, share only the failing asset name and status after review. Do not paste run payloads, secrets or full local paths."
+        ],
+        "zh-CN": [
+          "确认 HTML、app 模块、渲染库和 worker 资产来自同一份完整源码或 wheel。",
+          "修正安装后重新加载精确本地 Viewer 地址，不混用 CDN、其它分支或单独下载脚本的资产。",
+          "修复展示期间，可用终端投影 rpnh net --run RUN_DIR 查看现有证据。将 RUN_DIR 替换为已有运行目录；命令不会启动任务。",
+          "反馈浏览器 console 或 network 错误时，审核后只提供失败资产名与状态，不粘贴运行载荷、密钥或完整本地路径。"
+        ]
+      },
+      "owner": "viewer-assets",
+      "source_paths": [
+        "cpn/frontend/server.py",
+        "cpn/frontend/static/app.js",
+        "cpn/frontend/static/layout.mjs"
+      ],
+      "docs": [
+        "docs/guides/viewer.md",
+        "docs/guides/viewer_ZH.md"
+      ]
+    },
+    {
+      "id": "layout",
+      "title": {
+        "en": "Find a hidden or slow graph",
+        "zh-CN": "定位看不见或缓慢的图"
+      },
+      "summary": {
+        "en": "An empty canvas can be a filtered projection, unavailable data or a layout failure. Check the visible category before concluding the net is empty.",
+        "zh-CN": "空画布可能是筛选投影、数据不可用或布局失败。先检查可见类别，再判断网是否为空。"
+      },
+      "steps": {
+        "en": [
+          "Clear search, choose Fit to view and check the selected information level. An agent-only Overview can legitimately be empty when no agents are declared; open PetriNet for actual structure.",
+          "Use Executions or the terminal projection to inspect available records without relying on a large canvas. A resource-only view can be empty when no resources are declared.",
+          "If the page reports a layout/worker failure, check the matching local worker asset and use the assets topic. Do not infer data loss from a rendering error.",
+          "For a large run, retain bounded history/firing options and inspect a smaller supported scope. Increasing every limit can increase memory and latency; measure before changing them."
+        ],
+        "zh-CN": [
+          "清除搜索、选择“完整视图”并检查信息层级。未声明 agent 时，agent 概览可能合理地为空；打开 PetriNet 查看真实结构。",
+          "使用“执行列表”或终端投影查看可用记录，避免依赖大画布。未声明资源时，纯资源视图可以为空。",
+          "若页面报告布局或 worker 失败，检查匹配的本地 worker 资产，并查看 assets 主题。不能由渲染错误推断数据丢失。",
+          "大运行应保留历史和 firing 的有界选项，检查支持的较小范围。扩大所有限制会增加内存与延迟，应先测量再调整。"
+        ]
+      },
+      "owner": "viewer-layout",
+      "source_paths": [
+        "cpn/frontend/static/layout.mjs",
+        "cpn/frontend/static/renderer.mjs",
+        "cpn/frontend/static/overview.mjs"
+      ],
+      "docs": [
+        "docs/guides/viewer.md",
+        "docs/guides/viewer_ZH.md"
+      ]
+    }
+  ]
+}

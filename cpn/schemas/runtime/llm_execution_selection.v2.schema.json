@@ -24,6 +24,7 @@
       "items": {"$ref": "#/definitions/identifier"}
     },
     "default_reasoning_effort": {"$ref": "#/definitions/nullableIdentifier"},
+    "normal_history_reasoning_replay": {"type": "boolean"},
     "runtime": {"$ref": "#/definitions/runtimePolicy"}
   },
   "required": [

@@ -9,6 +9,8 @@ from ... import event_store as facade
 from ...models import PreparedObject
 
 def validate_operation_contract_objects(context) -> None:
+    from ....firing_content_contract import validate_content_transaction
+    validate_content_transaction(context)
     events = context.events
     objects = context.objects
     transaction_id = context.transaction_id
@@ -1080,6 +1082,8 @@ def validate_operation_contract_objects(context) -> None:
                         != invocation_ref
                         or ready[0].payload.get("business_outcome")
                         != metadata.get("business_outcome")
+                        or ready[0].payload.get("selected_outcome_id")
+                        != metadata.get("selected_outcome_id")
                         or ready[0].payload.get("output_resource_refs")
                         != metadata.get("output_resource_refs"))):
                 raise RegistryConflict(

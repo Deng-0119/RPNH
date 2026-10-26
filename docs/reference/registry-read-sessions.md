@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: registry-read-sessions_ZH.md
-  revision: "2026-10-11.1"
+  revision: "2026-10-25.1"
   status: implemented
 ---
 
@@ -183,6 +183,35 @@ page_size=None, cursor=None)` has the same behavior. Both are available through
 `product_origin_v1`, `rpnh/product_origin_page/v1`, and revision `2`.
 There is no `fields` parameter or per-request limit override. The existing
 comparison viewer and its HTTP endpoints do not expose this query.
+
+### Installed origin CLI transport
+
+`rpnh origin --read-host-config HOST.json --root ROOT.json
+[--include RELATION ...] [--page-size N]` is a thin adapter over this same public
+query and the fixed built-in read-HOST catalog. The strict root file uses the
+existing source-qualified reference schemas, rejects duplicate/unknown fields,
+and never infers identity. It is limited to 64 KiB before decoding and to the
+effective query-byte budget before capture. Default includes remain all three
+relations; explicit includes repeat `--include` and require unique values with
+`producer_execution` present.
+
+One process owns one session and one source cut. Each stdout NDJSON line is the
+unchanged original canonical page, with its original proof, coverage and
+continuation. Only the current page/transport buffer is held; the transport
+buffer is bounded by the effective response-byte limit plus one newline. The
+adapter serializes before public `final_recheck((root.source_id,))`, writes and
+flushes, then discards the buffer before requesting the next internal
+continuation. It never aggregates pages or exposes cursor/resume inputs.
+
+Exit `0` requires the terminal page to be flushed and the session to close.
+A later error can leave earlier authorized lines, and sink failure can leave
+an unfinished last line: any nonzero exit means the stream is incomplete.
+The session closes on failure, including a sink failure. Stderr uses only fixed
+safe codes, with no exception message, path, or grant contents. There is no
+persistent cursor service, automatic reopen, arbitrary catalog/module selector,
+writer access, or material expansion. See the
+[CLI guide](../guides/independent-registry-reader.md#stream-one-products-origin-from-the-cli)
+for commands and root-file details.
 
 ### Exact root and request
 
@@ -382,3 +411,4 @@ zero fact/fence writes, paging, separate scopes, fixed cuts, missing sources,
 mid-read invalidation, and bounded scans. It performs no provider calls or real
 external permission grants. These are ordinary functional regressions; they do
 not replace the separately gated independent adversarial authority audit.
+

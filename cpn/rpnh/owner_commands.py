@@ -46,15 +46,35 @@ class OwnerControl:
             descriptors={"owner_control_kind": kind, "command_id": command_id},
             idempotency_key=f"owner:{command_id}:{kind}:{suffix}"), transaction=transaction)
 
-    def records(self, kind):
+    def records(self, kind, *, _reads=None):
         result = []
         core = self.owner._core
-        for row in core.event_store.canonical_object_rows(object_type="resource_version/v1"):
+        if _reads is None:
+            rows = core.event_store.canonical_object_rows(object_type="resource_version/v1")
+        else:
+            # Receipt reads use the existing canonical-member predicate at one
+            # fixed Registry cut, without opening another reader or writer.
+            if (_reads.store is not core.event_store or _reads.catalog is not core.catalog
+                    or _reads.task_id != core.task_id):
+                raise TypeError("owner records require their own Registry read cut")
+            upper = _reads.db.execute("SELECT COALESCE(MAX(ordinal),0) FROM events").fetchone()[0]
+            predicate = core.event_store._canonical_member_sql(member_kind="object",
+                member_identity_sql="o.version_id", published_event_sql="published_event.ordinal")
+            rows = _reads.db.execute("SELECT o.* FROM objects o JOIN events published_event "
+                "ON published_event.event_id=o.published_event_id WHERE " + predicate
+                + " AND o.object_type='resource_version/v1' ORDER BY o.rowid", (upper,) * 4).fetchall()
+        for row in rows:
             metadata = json.loads(row["metadata_json"])
             if metadata.get("content_schema_ref") != SCHEMA:
                 continue
-            prepared = core.get_version(row["version_id"])
-            body = json.loads(core.object_store.read_registered(prepared))
+            if _reads is None:
+                prepared = core.get_version(row["version_id"])
+                body = json.loads(core.object_store.read_registered(prepared))
+            else:
+                reference = VersionRef("resource_version/v1", TypedId.parse(row["logical_id"]),
+                    TypedId.parse(row["version_id"]))
+                prepared = _reads.prepared(reference, "resource_version/v1")
+                body = _reads.document(reference)
             core.catalog.validate_schema_ref(SCHEMA, body)
             if (body["kind"] == kind and body["source"] == ref_payload(self.owner.principal_ref)
                     and metadata["task_ref"] == ref_payload(self.owner.identity.task_ref)):

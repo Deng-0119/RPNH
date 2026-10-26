@@ -201,7 +201,7 @@ def registered_host_execution_identity(
         profile_keys = {
             "config_schema_version", "config_revision", "recovery",
             "route_count"}
-        if (set(document) != {
+        if (set(document) - {"normal_history_reasoning_replay"} != {
                     "schema_version", "adapter_kind", "timeout_seconds",
                     "max_output_tokens", "max_response_bytes", "routes",
                     "adapter_profile"}
@@ -217,6 +217,9 @@ def registered_host_execution_identity(
                     profile_keys)):
             raise ValueError(
                 "registered HOST execution identity is malformed")
+        from cpn.llm_adapters.config import normal_history_reasoning_replay_from_policy
+        normal_history_reasoning_replay_from_policy(
+            document, model_condition=document["routes"][0].get("outbound_model"))
         return document
     routes = document.get("route_provenance")
     profile = document.get("adapter_profile")
@@ -275,6 +278,12 @@ def registered_host_execution_identity(
         "routes": [route],
         "adapter_profile": adapter_profile,
     }
+    if "normal_history_reasoning_replay" in document:
+        from cpn.llm_adapters.config import normal_history_reasoning_replay_from_policy
+        normal_history_reasoning_replay_from_policy(
+            document, model_condition=route.get("outbound_model"))
+        identity["normal_history_reasoning_replay"] = document[
+            "normal_history_reasoning_replay"]
     if (not isinstance(identity["adapter_kind"], str)
             or not identity["adapter_kind"]
             or any(isinstance(identity[name], bool)

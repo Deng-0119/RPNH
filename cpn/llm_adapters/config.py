@@ -74,6 +74,7 @@ class LLMExecutionSelection:
     reasoning_effort: str | None = None
     supported_reasoning_efforts: tuple[str, ...] = ()
     default_reasoning_effort: str | None = None
+    normal_history_reasoning_replay: bool = False
 
     def as_registry_policy(self) -> dict[str, object]:
         """Return non-secret execution policy/provenance without local paths."""
@@ -201,6 +202,13 @@ class LLMExecutionSelection:
                 "supported": list(self.supported_reasoning_efforts),
                 "default": self.default_reasoning_effort,
             }
+        if type(self.normal_history_reasoning_replay) is not bool:
+            raise LLMExecutionConfigError(
+                "normal_history_reasoning_replay must be a boolean")
+        if self.normal_history_reasoning_replay:
+            policy["normal_history_reasoning_replay"] = True
+            normal_history_reasoning_replay_from_policy(
+                policy, model_condition=self.input_target.model_condition)
         return policy
 
     @classmethod
@@ -225,7 +233,7 @@ class LLMExecutionSelection:
                 "LLM execution selection schema_version is unsupported")
         allowed_fields = required_fields | legacy_optional_fields
         if version == SCHEMA_VERSION:
-            allowed_fields |= current_fields
+            allowed_fields |= current_fields | {"normal_history_reasoning_replay"}
         if (not required_fields.issubset(value)
                 or set(value) - allowed_fields
                 or (version == SCHEMA_VERSION
@@ -303,6 +311,10 @@ class LLMExecutionSelection:
                     or default_reasoning_effort is not None):
                 raise LLMExecutionConfigError(
                     "reasoning effort metadata is inconsistent")
+        replay = value.get("normal_history_reasoning_replay", False)
+        if type(replay) is not bool or (replay and adapter_kind != "external_provider"):
+            raise LLMExecutionConfigError(
+                "normal history reasoning replay requires a boolean external-provider policy")
         return cls(
             input_target=input_target,
             adapter_kind=adapter_kind,
@@ -317,7 +329,33 @@ class LLMExecutionSelection:
                 item for item in supported_reasoning_efforts
                 if item is not None),
             default_reasoning_effort=default_reasoning_effort,
+            normal_history_reasoning_replay=replay,
         )
+
+
+def normal_history_reasoning_replay_from_policy(
+        policy: Mapping[str, object], *, model_condition: str) -> bool:
+    """Read HOST opt-in from one exact registered Chat route, never model hints.
+
+    Absence preserves normal history's legacy behavior. Delegated history has
+    its own existing replay behavior and does not consult this policy.
+    """
+    replay = policy.get("normal_history_reasoning_replay", False)
+    if type(replay) is not bool:
+        raise LLMExecutionConfigError(
+            "normal_history_reasoning_replay must be a boolean")
+    if not replay:
+        return False
+    routes = policy.get("route_provenance", policy.get("routes"))
+    if (not isinstance(model_condition, str) or not model_condition
+            or policy.get("adapter_kind") != "external_provider"
+            or not isinstance(routes, list) or len(routes) != 1
+            or not isinstance(routes[0], Mapping)
+            or routes[0].get("protocol") != "openai_chat_completions/v1"
+            or routes[0].get("outbound_model") != model_condition):
+        raise LLMExecutionConfigError(
+            "normal history reasoning replay requires one exact Chat route/model")
+    return True
 
 
 def load_llm_execution_selection(path: Path) -> LLMExecutionSelection:

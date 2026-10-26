@@ -1355,6 +1355,10 @@ class RegistryOperationAuthorityRepository:
         except (KeyError, TypeError, ValueError) as exc:
             raise OperationAuthorityError("registered output bundle violates declared outcome contract") from exc
 
+    def verify_firing_content_outputs(self, execution, outputs, outcome):
+        from ..firing_content_contract import verify_firing_content_outputs
+        verify_firing_content_outputs(self.__core, execution, outputs, outcome)
+
     def resolve_historical_operation_output(
             self, *, authority: RegisteredOperationAuthority,
             artifact: VerifiedResourceArtifact,

@@ -797,7 +797,7 @@ def build_agent_task_module(
                 "request_port": "request",
                 "tools": sorted({
                     *(name for name in OPTIONAL_TOOL_BINDINGS
-                      if name not in {"read_managed_output", "read_tool_program_output", "run_tool_program"}),
+                      if name not in {"read_managed_output", "read_tool_program_output", "run_tool_program", "submit_candidate"}),
                     *managed_tools.get(stage.stage_id, ()),
                 }),
                 "config": {
@@ -1058,7 +1058,7 @@ def _execute_agent_task(
             executor_key=EXECUTOR_KEY,
             terminal_key=TERMINAL_KEY,
             tools=tuple(name for name in OPTIONAL_TOOL_BINDINGS
-                        if name not in {"read_managed_output", "read_tool_program_output", "run_tool_program"}),
+                        if name not in {"read_managed_output", "read_tool_program_output", "run_tool_program", "submit_candidate"}),
             required_schemas=(CONFIG_SCHEMA_ID, *schemas),
             max_attempts_per_node=spec.max_attempts_per_stage,
             plugin_catalog=plugin_catalog,

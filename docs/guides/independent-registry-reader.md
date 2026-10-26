@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: independent-registry-reader_ZH.md
-  revision: "2026-10-09.1"
+  revision: "2026-10-25.1"
   status: implemented
   basis: "explicit trusted local HOST; existing owner-issued authority"
 ---
@@ -75,6 +75,64 @@ result is not a globally atomic snapshot. Unavailable sources, denied fields,
 unknown values and absent records remain distinct. Querying does not publish an
 Observation or alter Registry facts; SQLite read-only WAL sidecar behavior is
 not confused with canonical fact writes.
+
+## Stream one product's origin from the CLI
+
+Use the installed `rpnh origin` command with an existing owner-approved HOST
+configuration and an already authorized exact root reference:
+
+```bash
+rpnh origin --read-host-config HOST.json --root ROOT.json --page-size 1
+```
+
+`ROOT.json` contains the unchanged wire form of either
+`SourceQualifiedResourceRef` (`rpnh/collaboration/source_resource_ref/v1`, with
+`source_id` and `ref {resource_id, resource_version_id}`) or
+`SourceQualifiedVersionRef` (`rpnh/collaboration/source_version_ref/v1`, with
+`source_id` and `ref {entity_type, logical_id, version_id}`). The latter must be
+an `operation_result/v1` with `operation_result` / `operation_result_version`
+ID kinds. Each form also requires its exact `schema_version`. These are the
+existing [resource reference](../../cpn/schemas/rpnh/collaboration/source_resource_ref.v1.schema.json)
+and [version reference](../../cpn/schemas/rpnh/collaboration/source_version_ref.v1.schema.json)
+contracts, not new lookup requests. Root input is a regular UTF-8 JSON file,
+bounded to 64 KiB before parsing and to the HOST's effective query-byte limit
+before capturing a cut. Duplicate keys, unknown fields, missing sources, bare
+IDs, names, paths, `latest`, and generic resource `VersionRef` roots are rejected.
+
+Without `--include`, the command preserves all three default relations:
+`producer_execution`, `start_inputs`, and `claims`. An explicit selection uses
+repeated `--include RELATION` options, contains unique values, and must contain
+`producer_execution`. For example, producer-only delivery is:
+
+```bash
+rpnh origin --read-host-config HOST.json --root ROOT.json \
+  --include producer_execution
+```
+
+`--page-size N` uses the same effective maximum and default as the Python query;
+it does not change the cut or the selected relations. The command opens one
+public read session using the fixed built-in catalog, captures one cut for the
+root's explicit source, and follows only continuations from that same request.
+It does not open a writer, read material bodies, select arbitrary modules or
+catalogs, discover a source, or obtain new authority.
+
+Stdout is NDJSON: each line is one exact original page serialized as canonical
+compact ASCII JSON, including its repeated proof, coverage and original
+continuation. There is no aggregate wrapper. The current page's transport
+buffer is bounded by `session.limits.max_response_bytes`, plus one newline.
+After serialization, the CLI calls the public `final_recheck` for the selected
+source, writes and flushes the line, then discards the page and transport buffer
+before requesting another page. Earlier authorized lines can remain if a later
+page or sink fails; a sink failure can also leave an unfinished last line.
+
+Exit `0` means the terminal page was flushed and the session closed. Any nonzero
+exit means an incomplete stream, even if some valid lines were received. Stderr
+uses fixed safe codes such as `INVALID_ROOT`, `INVALID_ARGUMENTS`,
+`ACCESS_CHANGED`, `LIMIT_EXCEEDED`, and `OUTPUT_FAILED`; it never echoes exception
+messages or local paths. There is no external cursor input, resume file,
+automatic reopen, or persistent cursor service. Printed continuations stop being
+usable when this process closes its session. Restarting is a new read with a new
+cut and current authority, not continuation of an old stream.
 
 ## Query one product's origin in Python
 
@@ -166,8 +224,9 @@ return `UNSUPPORTED_RELATION`. Legal changed-net settlement returns
 `UNSUPPORTED_SETTLEMENT_SHAPE`. Later promotion never rewrites an old cut;
 historical reads still require current authority. A necessary proof or row that
 cannot fit the bounded response returns `LIMIT_EXCEEDED`, without a partial
-success prefix. This Python API adds no comparison-viewer route, CLI origin
-command, owner action, or Registry fact write.
+success prefix. The query adds no comparison-viewer route, owner action, or
+Registry fact write. The installed `rpnh origin` CLI is only a transport over
+this same public query.
 
 ## Comparison and verification limits
 
@@ -183,3 +242,4 @@ synthetic response, successful preparation, or returned owner handle is not
 proof of a business terminal or real-browser acceptance. No real provider call
 is part of this offline flow. Consult the dated validation record for executed
 checks and unresolved blockers.
+

@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: configuration_ZH.md
-  revision: "2026-10-11.1"
+  revision: "2026-10-25.1"
   status: source-reviewed-pre-release
 ---
 
@@ -154,11 +154,20 @@ Example fragment:
 ## Recovery, attempts and idempotency
 
 External-provider transport recovery is user-configurable under
-`adapter.recovery`:
+`adapter.recovery`. To disable automatic provider health probes and formal
+retries, set the entire object to `{"strategy": "no_automatic_retry/v1"}`.
+This closed shape accepts no probe/cycle fields. Each adapter invocation makes
+only its initial formal attempt, unless preflight or owner interruption prevents
+submission; a failure retains its original neutral classification, submission
+state and failure code. It does not cap AgentLoop turns, separate compaction
+calls or later owner-authorized attempts.
+
+The existing `bounded_same_route_health_probe/v1` strategy and onboarding
+baseline are unchanged; that strategy requires all four fields below:
 
 | Field | Constraint | Meaning |
 |---|---:|---|
-| `strategy` | fixed `bounded_same_route_health_probe/v1` | No provider/model/credential-route fallback. |
+| `strategy` | `bounded_same_route_health_probe/v1` | No provider/model/credential-route fallback. |
 | `max_probe_attempts` | 1–3 | Maximum probes in one health sequence; the first success stops the sequence. |
 | `probe_timeout_budget_seconds` | positive | Shared wall-clock budget for that probe sequence. |
 | `max_probe_success_formal_failure_cycles` | 1–3 | Maximum probe-success/formal-failure recovery cycles for one logical call. |
@@ -176,8 +185,8 @@ The `provider_attempt_limit` value embedded in compiled Agent operations is a
 fixed Registry admission envelope, not the number of automatic retries. It
 allows only the attempt shapes defined by the current Agent protocol (one
 ordinary call, or the separately bounded compaction path). It is therefore not
-copied into the catalog. The only public transport-recovery controls are the
-three external-provider recovery fields above.
+copied into the catalog. The public transport-recovery controls are the explicit
+no-automatic-retry strategy or the three bounded-recovery parameters above.
 
 ## Workflow and plugin declarations
 
@@ -276,3 +285,14 @@ guaranteed a request-budget summary. A later run without the old unsupported
 item does not identify or fix its unknown root cause. Capacity rejection is not
 proof of context overflow. The [public result](../../examples/automationbench/PUBLIC_RESULTS_20261006.md)
 keeps configuration, canonical usage and provider-unknown fields separate.
+
+### Normal-history reasoning replay
+
+Normal history omits provider reasoning by default. A current provider-model
+catalog entry may explicitly set `normal_history_reasoning_replay: true` for
+one exact external `openai_chat_completions/v1` route/model. This replays only
+reasoning already retained in immutable response records; it does not infer
+reasoning or request hidden reasoning from a provider. The selection is part of
+the registered HOST identity and also applies when preparing compaction history.
+Absent or false leaves legacy behavior and default policy bytes unchanged.
+Delegated history keeps its existing behavior independently.

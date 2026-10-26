@@ -503,7 +503,9 @@ class CompactionExecutionMixin:
             loop,
             read_response=lambda ref: self.kernel._read_firing_registered(
                 context, ref),
-            render_tool_result=render_tool_result)
+            render_tool_result=render_tool_result,
+            normal_history_reasoning_replay=(
+                self._normal_history_reasoning_replay(context, loop)))
         if interruption is not None:
             # A length-interrupted request has no ordinary turn record. Carry
             # only its new owner inputs into the existing summary/retained

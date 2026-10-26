@@ -10,15 +10,28 @@ from typing import Iterator
 
 
 BASIC_COMMANDS = (
-    ("/help", "show basic commands"),
+    ("/help [TOPIC]", "show commands or offline guidance (for example: viewer)"),
     ("/clear", "clear the screen, keeping this conversation"),
     ("/status", "show session, model and current focus"),
-    ("/history", "show the last 10 conversation messages"),
+    ("/history", "show the last 10 main-conversation messages"),
     ("/frontend [NAME]", "choose or switch the interface for this session"),
     ("/resume", "continue a paused turn or settle its result"),
     ("/rollback", "return a paused main turn to the prior completed turn"),
     ("/quit", "leave the interface; /exit also works"),
 )
+
+
+def terminal_text(value: object, *, multiline: bool = False) -> str:
+    """Show untrusted display text without interpreting terminal controls."""
+    out = []
+    for char in str(value):
+        code = ord(char)
+        if (code < 32 or 127 <= code <= 159
+                or 0x202A <= code <= 0x202E or 0x2066 <= code <= 0x2069):
+            out.append(char if multiline and char in "\n\t" else f"\\u{code:04x}")
+        else:
+            out.append(char)
+    return "".join(out)
 
 
 class BasicTerminal:
@@ -50,17 +63,17 @@ class BasicTerminal:
     def welcome(self) -> None:
         if not self.interactive:
             print("RPNH — AI assistant")
-            print(f"session: {self.root}")
+            print(f"session: {terminal_text(self.root)}")
             print("Type /help for basic commands.")
             return
         print()
         print(self._style("╭─ RPNH · Basic " + "─" * max(0, self.width - 17) + "╮", "36"))
         print("  " + self._style("AI assistant", "1"))
-        print(f"  Model    {self.model}")
-        print(f"  Folder   {Path.cwd()}")
-        print(f"  Session  {self.root}")
+        print(f"  Model    {terminal_text(self.model)}")
+        print(f"  Folder   {terminal_text(Path.cwd())}")
+        print(f"  Session  {terminal_text(self.root)}")
         print(self._style("╰" + "─" * (self.width - 2) + "╯", "36"))
-        print("  Send a message to begin. /help for commands · /frontend to switch")
+        print("  Send a message to begin. /help for commands · /help viewer for the graph")
 
     def help(self) -> None:
         print(self._style("Basic commands", "1;36"))
@@ -68,8 +81,9 @@ class BasicTerminal:
             print(f"  {command:<20} {description}")
         print("\nEnter sends · trailing \\ continues on another line")
         print("Up/Down recalls input · Tab completes commands (with readline)")
-        print("Ctrl+C interrupts · Ctrl+D leaves at an empty prompt")
-        print("Task controls: /help tasks")
+        print("Ctrl+C at input shows exit guidance · Ctrl+D leaves at an empty prompt")
+        print("Task controls: /help tasks · Local guidance: /help viewer | /help provider")
+        print("Use // to send literal text starting with /; /history is main-conversation history.")
 
     def clear(self) -> None:
         if self.interactive:
@@ -79,23 +93,26 @@ class BasicTerminal:
             print("Screen clearing is available in an interactive terminal.")
 
     def status(self, *, focus: str, turn_state: str) -> None:
-        print(f"Frontend  basic\nModel     {self.model}\nSession   {self.root}")
-        print(f"Focus     {focus}\nTurn      {turn_state}")
+        print(f"Frontend  basic\nModel     {terminal_text(self.model)}\nSession   {terminal_text(self.root)}")
+        print(f"Focus     {terminal_text(focus)}\nTurn      {terminal_text(turn_state)}")
 
     def history(self, messages: list[tuple[str, str]]) -> None:
         recent = messages[-10:]
         if not recent:
             print("No conversation messages yet.")
             return
-        print(self._style("Recent conversation", "1;36"))
+        print(self._style("Recent main conversation", "1;36"))
         for role, body in recent:
-            print(self._style(f"\n{role.capitalize()}", "1"))
-            print(body)
+            print(self._style(f"\n{terminal_text(role.capitalize())}", "1"))
+            print(terminal_text(body, multiline=True))
 
     def _complete(self, text: str, state: int) -> str | None:
         line = self._readline.get_line_buffer().lstrip()
         if line.startswith("/frontend "):
             candidates = ("basic", "codex", "opencode", "dsh")
+        elif line.startswith("/help "):
+            from .help_catalog import help_topics
+            candidates = ("tasks", *help_topics())
         elif self._readline.get_begidx() == 0:
             candidates = tuple(command.split()[0] for command, _ in BASIC_COMMANDS)
         else:
@@ -137,12 +154,13 @@ class BasicTerminal:
         if self.interactive:
             print()
             print(self._style("─" * self.width, "2"))
-            print(self._style(f"  basic · {focus} · {turn_state}", "2"))
+            print(self._style(
+                f"  basic · {terminal_text(focus)} · main turn: {terminal_text(turn_state)}", "2"))
             # Readline needs nonprinting delimiters around ANSI prompt bytes.
             prompt = ("\001\033[36m\002›\001\033[0m\002 "
                       if self.color else "› ")
         else:
-            prompt = f"RPNH[{focus}] › "
+            prompt = f"RPNH[{terminal_text(focus)}] › "
         lines: list[str] = []
         while True:
             line = input(prompt if not lines else "… ")

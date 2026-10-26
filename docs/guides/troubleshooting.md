@@ -72,3 +72,6 @@ Never post credentials, raw Registry databases, full shell environment, signed d
 Repeat the smallest relevant deterministic test before attempting an authorized live reproduction. Link/build checks do not validate runtime recovery. The framework governs structural admission and records; it is not a universal business authorization policy, an OS sandbox, or an automatic external-effect compensation service.
 
 Source boundaries: `cpn/rpnh/user_config.py`, `control_server.py`, `task_control.py`, `registry/checkpoint_reentry.py`, `harness.py`, `registry/event_store.py`, `registry/firing_recovery.py`; `cpn/plugins/{api,catalog,managed_tools}.py`, `cpn/dsh/backend.py`, `integrations/dsh/src/{agent,app}.ts`. [Architecture](../architecture/design.md) explains why these boundaries are separate.
+
+
+See [Basic and Viewer offline help](frontend-help.md) for contextual guidance and local listener limits.

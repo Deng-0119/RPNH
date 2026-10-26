@@ -1,3 +1,5 @@
+import * as runtimeModule from '../../../cpn/frontend/static/viewer-runtime.mjs';
+import * as contributionsModule from '../../../cpn/frontend/static/user-contributions.mjs';
 import * as comparisonContextModule from '../../../cpn/frontend/static/comparison-context.mjs';
 import * as comparisonModule from '../../../cpn/frontend/static/comparison-view.mjs';
 import * as sourceObservationModule from '../../../cpn/frontend/static/source-observation.mjs';
@@ -9,7 +11,7 @@ import vm from 'node:vm';
 import * as model from '../../../cpn/frontend/static/model.mjs';
 import * as dashboard from '../../../cpn/frontend/static/dashboard-model.mjs';
 import * as locale from '../../../cpn/frontend/static/i18n.mjs';
-import { renderInspector, renderExecutionTable, element } from '../../../cpn/frontend/static/panels.mjs';
+import { createManagedTools, renderInspector, renderExecutionTable, element } from '../../../cpn/frontend/static/panels.mjs';
 import { renderObservationPanel } from '../../../cpn/frontend/static/observation-panel.mjs';
 import { allMemberFirings, resolveFiringTarget, sameFiringTarget } from '../../../cpn/frontend/static/agent-members.mjs';
 afterEach(() => locale.setLanguage('en'));
@@ -62,9 +64,9 @@ function app() {
         viewport: () => ({ scale: 1, tx: 0, ty: 0 }), fit: () => {}, restore: () => {}, center: () => {}, illustrate: () => {} };
     let getLayout = async graph => fakeLayout(graph);
     const layouts = { runs: 0, get: graph => getLayout(graph) };
-    const context = vm.createContext({...comparisonContextModule,...comparisonModule,...sourceObservationModule,...activityModule, ...model, ...dashboard, ...locale, tr: locale.t,
-        renderInspector, renderExecutionTable, renderObservationPanel, element, resolveFiringTarget,
-        document, window: {}, console, structuredClone, setTimeout, clearTimeout, AbortController,
+    const context = vm.createContext({...runtimeModule,...contributionsModule,...comparisonContextModule,...comparisonModule,...sourceObservationModule,...activityModule, ...model, ...dashboard, ...locale, tr: locale.t,
+        createManagedTools, renderInspector, renderExecutionTable, renderObservationPanel, element, resolveFiringTarget,
+        document, window: new EventTarget(), console, structuredClone, setTimeout, clearTimeout, AbortController,
         refreshCanvasText: () => {}, applyWireBridges: () => ({ crossings: 0 }), injectedRenderer: renderer, injectedLayouts: layouts });
     const source = readFileSync(new URL('../../../cpn/frontend/static/app.js', import.meta.url), 'utf8');
     const script = source.replace(/^import .*;\n/gm, '').replace(/\nstart\(\)\.catch[\s\S]*$/, '') + `

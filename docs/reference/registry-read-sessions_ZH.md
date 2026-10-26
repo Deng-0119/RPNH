@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: registry-read-sessions.md
-  revision: "2026-10-11.1"
+  revision: "2026-10-25.1"
   status: implemented
 ---
 
@@ -154,6 +154,29 @@ cursor=None)` 行为相同，两者都可通过 `cpn.rpnh.collaboration` 使用�
 `PRODUCT_ORIGIN_CONTRACT_REVISION` 分别标识 `product_origin_v1`、
 `rpnh/product_origin_page/v1` 和修订 `2`。没有 `fields` 参数或逐请求限额覆盖。
 现有比较查看器及其 HTTP 接口不提供此查询。
+
+### 已安装的 origin CLI 传输
+
+`rpnh origin --read-host-config HOST.json --root ROOT.json
+[--include RELATION ...] [--page-size N]` 是同一 public query 与固定内置
+read-HOST catalog 的薄适配器。严格 root 文件沿用既有带 source 的引用 schema，
+拒绝重复/未知字段，不推断身份。解码前限制为 64 KiB，捕获 cut 前还受有效
+query-byte budget 限制。默认 includes 仍为三个关系；显式选择重复使用
+`--include`，值不能重复，且必须包含 `producer_execution`。
+
+一个进程拥有一个 session 和一个 source cut。Stdout 的每行 NDJSON 都是未改动
+原始页面的 canonical 序列化，保留原 proof、coverage 与 continuation。仅持有
+当前页/传输 buffer；传输 buffer 受有效 response-byte 限制，另有一个换行符。
+适配器先序列化，再调用 public `final_recheck((root.source_id,))`，写入并 flush，
+随后丢弃 buffer，再请求下一条内部 continuation。不聚合页面，不暴露 cursor 或
+resume 输入。
+
+退出码 `0` 要求末页已 flush 且 session 已关闭。后续错误可以留下先前已授权的行，
+sink 失败可以留下未完成的最后一行；任何非零退出码都表示流不完整。失败时也会关闭
+session，包括 sink 失败。Stderr 只输出固定安全代码，不包含异常消息、路径或 grant
+内容。没有持久 cursor 服务、自动重开、任意 catalog/module 选择、writer access 或
+material expansion。命令与 root 文件说明见
+[CLI 指南](../guides/independent-registry-reader_ZH.md#用-cli-流式读取单个产物来源)。
 
 ### 精确根与请求
 
@@ -312,3 +335,4 @@ SourceSet/Observation capture 合同仍通过原 API 使用；新 session 的普
 覆盖独立第二进程配置读取、零事实/fence 写入、分页、分层权限、固定 cut、
 缺失来源、读取中途失效和有界扫描。不调用 provider，不签发真实外部权限。
 这些是普通功能回归，不代替另行设门的独立对抗性权限审计。
+

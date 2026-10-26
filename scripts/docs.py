@@ -45,6 +45,12 @@ PUBLIC_DOWNLOADS = {
     'examples/tool_pipeline/tools.py',
     'examples/tool_pipeline/tests/pipe_transport.py',
 }
+# Frozen upstream task READMEs are supporting source material, not bilingual
+# RPNH-maintained topics. Keep this exact list; do not exempt arbitrary examples.
+FROZEN_SUPPORT_DOCUMENTS = {
+    'examples/project_collaboration/materials/upstream/multi-source-data-merger/README.md',
+    'examples/tool_pipeline/multi_source/upstream/multi-source-data-merger/README.md',
+}
 PNG_SIGNATURE = b'\x89PNG\r\n\x1a\n'
 # Exact already-reviewed report artwork only; new or changed SVGs require review.
 # Keep path/content admission separate from static-XML safety validation below.
@@ -113,7 +119,8 @@ def pages_in(root: Path) -> list[Path]:
         paths.extend(sorted((root / 'docs' / folder).glob('*.md')))
     paths.extend(sorted((root / 'docs' / 'results').glob('README*.md')))
     paths.extend(sorted((root / 'docs' / 'results').glob('*/README*.md')))
-    paths.extend(sorted((root / 'examples').glob('**/README*.md')))
+    paths.extend(path for path in sorted((root / 'examples').glob('**/README*.md'))
+                 if path.relative_to(root).as_posix() not in FROZEN_SUPPORT_DOCUMENTS)
     return paths
 
 
@@ -337,8 +344,11 @@ def supporting_documents(root: Path, pages: dict[Path, Page]):
     Maintained pages still require direct reachability through maintained pages.
     Legal downloads retain their source-relative paths, including nested notices.
     """
-    support, downloads = {}, set()
-    queue = list(pages.values())
+    support = {(root / name).resolve(): parse_page(root / name, maintained=False)
+               for name in sorted(FROZEN_SUPPORT_DOCUMENTS)
+               if (root / name).is_file()}
+    downloads = set()
+    queue = [*pages.values(), *support.values()]
     while queue:
         page = queue.pop()
         for token in children(page.tokens):

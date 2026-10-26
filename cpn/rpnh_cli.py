@@ -5,6 +5,7 @@ import argparse
 from contextlib import nullcontext
 from dataclasses import dataclass
 import json
+import math
 from pathlib import Path
 import shlex
 import sys
@@ -38,9 +39,12 @@ def _parser() -> argparse.ArgumentParser:
         description="RPNH — an AI assistant for conversations and tasks",
         epilog=(
             "Start with `rpnh init`; check configuration with `rpnh doctor`. "
+            "Offline guidance: `rpnh help viewer` (no configuration or model call). "
             "Choose or configure an interface with `rpnh frontend`; "
             "commands: `rpnh config {init|add|build|list|show|use|setup|doctor|frontend}` and "
             "`rpnh net --run RUN_DIR` or `rpnh net --read-host-config FILE --view`; "
+            "stream exact origin pages with `rpnh origin --read-host-config HOST.json "
+            "--root ROOT.json` (NDJSON, one session/cut, nonzero means incomplete); "
             "export installed examples with "
             "`rpnh examples export --output DIR`; inspect data-only packages with "
             "`rpnh package {preview|resolve} ZIP`"),
@@ -324,11 +328,18 @@ def _net_parser() -> argparse.ArgumentParser:
     parser.add_argument("--port", type=int, default=0)
     parser.add_argument("--max-checkpoints", type=int, default=2048)
     parser.add_argument("--max-firings", type=int, default=2000)
+    parser.add_argument(
+        "--session-timeout", type=float, default=3600.0, metavar="SECONDS",
+        help="close the viewer after this duration (default 3600); 0 explicitly keeps it open until Ctrl+C")
     return parser
 
 
 def _net_command(argv: Sequence[str]) -> int:
     args = _net_parser().parse_args(argv)
+    if not math.isfinite(args.session_timeout) or args.session_timeout < 0:
+        raise ValueError("--session-timeout must be finite and non-negative")
+    if not args.view and args.session_timeout != 3600.0:
+        raise ValueError("--session-timeout requires --view")
     if args.preflight or args.result_evidence:
         if (args.show_resources or args.resources_only or args.node is not None
                 or args.output is not None or args.no_open
@@ -368,7 +379,8 @@ def _net_command(argv: Sequence[str]) -> int:
         with open_read_host_session(args.read_host_config) as session:
             serve_projection(ComparisonProvider(session), host=args.host,
                              port=args.port, open_browser=not args.no_open,
-                             show_resources=args.show_resources)
+                             show_resources=args.show_resources,
+                             session_timeout_seconds=args.session_timeout)
         return 0
     forwarded = ["net", "view" if args.view else "show"]
     forwarded.extend(("--run", str(args.run)))
@@ -380,7 +392,8 @@ def _net_command(argv: Sequence[str]) -> int:
         forwarded.extend(("--host", args.host, "--port", str(args.port)))
         forwarded.extend((
             "--max-checkpoints", str(args.max_checkpoints),
-            "--max-firings", str(args.max_firings)))
+            "--max-firings", str(args.max_firings),
+            "--session-timeout", str(args.session_timeout)))
     else:
         forwarded.extend(("--format", args.format))
         if args.resources_only:
@@ -495,6 +508,15 @@ def _task_command(
   /rollback                    with main selected, return to its prior completed turn
   TEXT                         talk to main, or message the selected single-agent
   /quit                        leave the main session without stopping tasks""")
+        return True
+    if line.startswith("/help "):
+        from cpn.rpnh.help_catalog import help_command
+        try:
+            arguments = shlex.split(line)[1:]
+        except ValueError:
+            print("Help arguments have an unmatched quote. Use /help viewer.", file=sys.stderr)
+            return True
+        help_command(arguments)
         return True
     if line == "/tasks":
         session.reconcile_child_registry_links()
@@ -724,6 +746,9 @@ def _run_basic_frontend(
             except EOFError:
                 print()
                 return 0
+            except KeyboardInterrupt:
+                print("\nUse /quit to leave; Ctrl+C interrupted only this input.")
+                continue
             if not line:
                 continue
             if line in {"/quit", "/exit"}:
@@ -752,17 +777,20 @@ def _run_basic_frontend(
                         print("This session is already using Basic.")
                         continue
                     raise FrontendSwitch(selected)
-                working = (not line.startswith("/") or line == "/resume"
+                literal = line.startswith("//")
+                if literal:
+                    line = line[1:]
+                working = (literal or not line.startswith("/") or line == "/resume"
                            or line.startswith(("/agent ", "/workflow ")))
                 with terminal.working() if working else nullcontext():
-                    if not _task_command(session, line, frontend_state):
-                        if line.startswith("/"):
+                    if literal or not _task_command(session, line, frontend_state):
+                        if not literal and line.startswith("/"):
                             raise ValueError("unknown command; use /help")
                         if frontend_state.selected_task_id is None:
                             _run_turn(session, line)
                         else:
                             _route_selected_input(session, frontend_state, line)
-                if (not line.startswith("/")
+                if (literal or not line.startswith("/")
                         or line in {"/resume", "/rollback"}
                         or line.startswith("/workflow ")):
                     snapshot = session.active_turn_snapshot()
@@ -780,11 +808,19 @@ def _run_basic_frontend(
 
 def main(argv: list[str] | None = None) -> int:
     arguments = list(sys.argv[1:] if argv is None else argv)
+    if arguments and arguments[0] == "help":
+        from cpn.rpnh.help_catalog import help_command
+        return help_command(arguments[1:])
     # The selected interpreter invokes only this fixed, installed HOST entry.
     # The stdin contract is data; it cannot select a module to import.
     if arguments and arguments[0] == "_environment-host":
         from cpn.rpnh.collaboration.environment_host import main as host_main
         return host_main(arguments[1:])
+    # This read-only transport owns safe diagnostics and must never fall through
+    # to the generic exception formatter or interactive provider configuration.
+    if arguments and arguments[0] == "origin":
+        from cpn.rpnh.collaboration.origin_cli import main as origin_main
+        return origin_main(arguments[1:])
     # Data-only package inspection must never enter plugin discovery or model
     # configuration. Import its command only when explicitly selected.
     if arguments and arguments[0] == "package":
@@ -938,3 +974,4 @@ if __name__ == "__main__":
 
 
 __all__ = ("main",)
+

@@ -405,3 +405,6 @@ python -m examples.view_input_declaration a2a_quote --run-dir /path/to/quote-dem
 未指定 `--run-dir` 时明确标为 `initial_configured`，只展示声明，不是运行证据。
 `--json` 输出选定投影而不启动 HTTP。实际等待／完成截图与历史捕获边界见各示例。外部响应是本地合成 fixture；
 输入准入与登记完成使用原生 RPNH 操作。
+
+
+参见 [Basic 与 Viewer 离线帮助](frontend-help_ZH.md)，了解情境排查及本机监听上限。

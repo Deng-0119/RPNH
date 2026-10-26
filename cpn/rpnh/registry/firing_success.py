@@ -90,6 +90,8 @@ def _verify_closed_operation_outputs(
         item.port_id, str(item.resource_ref.resource_version_id))))
     if outputs != ordered:
         raise ResourceIntegrityFault("Success outputs are not canonically ordered")
+    repository.verify_firing_content_outputs(
+        execution, outputs, supplied.selected_outcome_id)
     return supplied
 
 
@@ -119,6 +121,7 @@ Module-specific review/workspace policy is not part of harness settlement.
         "invocation_ref": _ref_payload(context.invocation_ref),
         "transition_firing_ref": _ref_payload(firing.transition_firing_ref),
         "business_outcome": "completed",
+        "selected_outcome_id": outputs.selected_outcome_id,
         "output_resource_refs": [_ref_payload(ref) for ref in exact_outputs],
         "provider_attempt_evidence_refs": [],
         "workspace_access_set_ref": None,

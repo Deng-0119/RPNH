@@ -266,6 +266,11 @@ class LocalProjectApplication:
             endpoint._authorize(owner=True)
             if endpoint.viewer is None:
                 raise ValueError("configure explicit owner read selections before opening contributions")
+            cached = self.viewer_servers.get(route)
+            if cached is not None and (cached.expired or cached.socket.fileno() < 0):
+                cached.shutdown()
+                cached.server_close()
+                del self.viewer_servers[route]
             if route not in self.viewer_servers:
                 from cpn.frontend.server import _ProjectionHTTPServer
                 from threading import Thread
@@ -337,6 +342,7 @@ class LocalProjectApplication:
     def close_readers(self):
         for server in self.viewer_servers.values():
             server.shutdown(); server.server_close()
+        self.viewer_servers.clear()
         for reader in self.readers.values():
             reader.close()
 

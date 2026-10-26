@@ -164,3 +164,82 @@ test(`full startup interrupted previous-net navigation releases controls after $
     assert.equal(h.document.getElementById('auto-refresh').disabled,true);
     assert.equal(h.timers.size,0,'saved historical capture must not start live polling');
 });
+
+test('Executions bypasses graph layout and stale delayed layout cannot replace list selection',async()=>{
+    const h=await boot(),viewer=h.api.viewer(),original=h.api.state().frame,late=deferred();
+    let layouts=0;h.setLayout(()=>{layouts++;return late.promise;});
+    const delayed=h.api.mode('flow');assert.equal(layouts,1);
+    await h.api.mode('list');assert.equal(layouts,1,'list does not request layout');
+    assert.equal(h.document.getElementById('execution-table').hidden,false);
+    assert.equal(h.document.getElementById('canvas-wrap').hidden,true);
+    late.resolve({width:100,height:100,nodes:new Map(),edges:new Map()});assert.equal(await delayed,false);
+    assert.equal(h.api.state().frame,original);assert.equal(h.document.getElementById('paper').dataset.viewMode,'list');
+    h.setLayout(async()=>{throw Error('layout unavailable');});await h.api.mode('petri');
+    assert.equal(h.api.state().frame,original);assert.equal(h.window.rpnhViewerDiagnostic.component,'viewer / ELK layout');
+    assert.doesNotThrow(()=>h.api.refreshLanguage());
+    assert.equal(h.window.rpnhViewerContext.mode,'list');
+    assert.equal(h.document.getElementById('mode-list').getAttribute('aria-pressed'),'true');
+    await h.api.mode('list');assert.equal(h.document.getElementById('paper').dataset.viewMode,'list');
+    assert.equal(viewer.paper.removed,false);
+});
+test('hidden page pauses polls and aborts pending primary reads without leaving history or accepting late data',async()=>{
+    const h=await boot(),original=h.api.state().frame,late=deferred();
+    h.document.getElementById('auto-refresh').checked=true;h.api.schedule();
+    h.setDashboard(()=>late.promise);const read=h.document.getElementById('refresh').onclick(),request=h.requests.at(-1);
+    h.document.hidden=true;h.document.dispatchEvent(new Event('visibilitychange'));
+    assert.equal(request.signal.aborted,true);assert.equal(h.timers.size,0);assert.equal(h.api.state().playing,false);
+    const changed=structuredClone(h.current);changed.net.nodes[0].label='Hidden stale';late.resolve(response(changed));await read;
+    assert.equal(h.api.state().frame,original);assert.equal(h.timers.size,0);
+    h.document.hidden=false;h.document.dispatchEvent(new Event('visibilitychange'));assert.equal(h.timers.size,1);
+    h.document.getElementById('auto-refresh').checked=false;h.document.getElementById('auto-refresh').onchange();
+    assert.equal(h.timers.size,0);assert.match(h.document.getElementById('refresh-status').textContent,/local server may still be listening/);
+});
+test('failed automatic reads back off, while expected history capability absence is not a broken Registry diagnosis',async()=>{
+    const h=await boot();h.document.getElementById('auto-refresh').checked=true;
+    h.setDashboard(()=>response({error:'read_failed'},503));await h.document.getElementById('refresh').onclick();
+    assert.equal([...h.timers.values()][0].ms,5000);assert.match(h.document.getElementById('error-banner').textContent,/cause is unconfirmed/);
+    h.setDashboard(()=>response(h.current));await h.document.getElementById('refresh').onclick();
+    assert.equal([...h.timers.values()][0].ms,2500);assert.equal(h.window.rpnhViewerDiagnostic,null);
+    const current=structuredClone(fixture.right.frame);current.position.mode='live';
+    const other=checkpointApp(async path=>path==='/api/v1/dashboard'?response(current):response({error:'unsupported'},501),{startup:true});
+    await other.ready;assert.ok(other.api.state().frame);assert.equal(other.window.rpnhViewerDiagnostic,undefined);
+});
+
+test('failed mode layout retains coherent committed view across language, selection and successful retry',async()=>{
+    const h=checkpointApp(async()=>{throw Error('unexpected read');});
+    h.api.install(structuredClone(fixture.right.frame));await h.api.mode('overview');
+    const original=h.applied.at(-1);
+    h.setLayout(async()=>{throw Error('forced layout failure');});
+    assert.equal(await h.api.mode('petri'),false);
+    assert.equal(h.applied.at(-1),original);
+    for(const language of ['zh-CN','en']){
+        setLanguage(language);assert.doesNotThrow(()=>h.api.refreshLanguage());
+        assert.equal(h.applied.at(-1).view_mode,'overview');
+        assert.equal(h.window.rpnhViewerContext.mode,'overview');
+        assert.equal(h.document.getElementById('paper').dataset.viewMode,'overview');
+        const node=h.applied.at(-1).nodes[0];
+        if(node)assert.doesNotThrow(()=>h.api.select('node',node.id));
+        assert.equal(h.document.getElementById('mode-overview').getAttribute('aria-pressed'),'true');
+    }
+    h.setLayout(async graph=>({width:600,height:400,nodes:new Map(graph.nodes.map((n,i)=>[n.id,{x:i*240,y:30,width:224,height:126,ports:[]}])),edges:new Map()}));
+    assert.equal(await h.api.mode('petri'),true);
+    assert.equal(h.applied.at(-1).view_mode,'petri');
+    assert.doesNotThrow(()=>h.api.refreshLanguage());
+    assert.equal(h.document.getElementById('mode-petri').getAttribute('aria-pressed'),'true');
+});
+
+test('pending mode layout keeps language and selection on committed graph until successful commit',async()=>{
+    const h=checkpointApp(async()=>{throw Error('unexpected read');});h.api.install(structuredClone(fixture.right.frame));await h.api.mode('overview');
+    const late=deferred();let requestedGraph;h.setLayout(graph=>{requestedGraph=graph;return late.promise;});
+    const pending=h.api.mode('petri');
+    setLanguage('zh-CN');assert.doesNotThrow(()=>h.api.refreshLanguage());
+    assert.equal(h.applied.at(-1).view_mode,'overview');
+    assert.equal(h.window.rpnhViewerContext.mode,'overview');
+    assert.equal(h.document.getElementById('mode-overview').getAttribute('aria-pressed'),'true');
+    assert.equal(h.document.getElementById('mode-petri').getAttribute('aria-pressed'),'false');
+    assert.match(h.document.getElementById('mode-caption').textContent,/概览/);
+    const node=h.applied.at(-1).nodes[0];if(node)assert.doesNotThrow(()=>h.api.select('node',node.id));
+    late.resolve({width:600,height:400,nodes:new Map(requestedGraph.nodes.map((n,i)=>[n.id,{x:i*240,y:30,width:224,height:126,ports:[]}])),edges:new Map()});
+    assert.equal(await pending,true);assert.equal(h.applied.at(-1).view_mode,'petri');
+    setLanguage('en');assert.doesNotThrow(()=>h.api.refreshLanguage());
+});

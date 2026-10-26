@@ -188,7 +188,8 @@ def test_companion_view_delegates_to_shared_server(host_run, monkeypatch):
         return 0
     monkeypatch.setattr(_cli, 'serve_projection', capture)
     assert dsh_main(['--root', str(root), '--session-id', 'session-a', '--view', '--no-open', '--show-resources']) == 0
-    assert seen == {'port': 0, 'open_browser': False, 'show_resources': True}
+    assert seen == {'port': 0, 'open_browser': False, 'show_resources': True,
+                    'session_timeout_seconds': 3600}
 
 
 def test_fresh_import_does_not_load_execution_hosts():

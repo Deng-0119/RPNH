@@ -415,6 +415,7 @@ class RegistryDashboard:
 
 
 def main():
+    import math
     parser = argparse.ArgumentParser(description='RPNH read-only workflow dashboard')
     parser.add_argument('--run', type=Path, required=True)
     parser.add_argument('--presentation', type=Path)
@@ -422,11 +423,15 @@ def main():
     parser.add_argument('--no-open', action='store_true')
     parser.add_argument('--show-resources', action='store_true')
     parser.add_argument('--port', type=int, default=0)
+    parser.add_argument('--session-timeout', type=float, default=3600,
+                        help='Close viewer port after seconds; 0 explicitly keeps it open until Ctrl-C')
     parser.add_argument('--max-checkpoints', type=int,
                         default=DEFAULT_MAX_CHECKPOINTS)
     parser.add_argument('--max-firings', type=int,
                         default=DEFAULT_MAX_FIRINGS)
     args = parser.parse_args()
+    if not math.isfinite(args.session_timeout) or args.session_timeout < 0:
+        parser.error('--session-timeout must be finite and nonnegative')
     from cpn.rpnh.agent_tasks import agent_task_catalog
     from cpn.frontend.server import serve_projection
     try:
@@ -441,7 +446,8 @@ def main():
                               'coverage': frame['coverage']}, ensure_ascii=False, indent=2))
         else:
             serve_projection(provider, port=args.port, open_browser=not args.no_open,
-                             show_resources=args.show_resources)
+                             show_resources=args.show_resources,
+                             session_timeout_seconds=args.session_timeout)
     except (OSError, ValueError, RuntimeError, TypeError) as error:
         parser.exit(2, f'dashboard: {error}\n')
 

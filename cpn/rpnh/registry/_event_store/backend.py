@@ -358,7 +358,7 @@ def _migrate_firing_publications(db: sqlite3.Connection) -> None:
 
 
 def writer_epoch(store) -> int:
-    with store.connect() as db:
+    with store.connection_scope() as db:
         row = db.execute("SELECT value FROM registry_meta WHERE key='writer_epoch'").fetchone()
         if row is None:
             raise RegistryCorruptError("writer epoch is missing")
@@ -375,7 +375,7 @@ def get_or_create_meta(store, key: str, candidate: str) -> str:
     return value
 
 def get_meta(store, key: str) -> str | None:
-    with store.connect() as db:
+    with store.connection_scope() as db:
         row = db.execute(
             "SELECT value FROM registry_meta WHERE key=?", (key,)).fetchone()
     return str(row[0]) if row is not None else None

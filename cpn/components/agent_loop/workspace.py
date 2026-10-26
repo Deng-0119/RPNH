@@ -1246,6 +1246,9 @@ class WorkspaceExecutionMixin:
         if outcome is None:
             raise ValueError(
                 "write_file requires one exact declared semantic outcome_id")
+        marker = operation.declaration.config.get("firing_content_contract")
+        if marker is not None and outcome.name in marker["success_outcomes"]:
+            raise ValueError("write_file cannot seal content-contract outputs; use submit_candidate")
         if port.name not in {product.port for product in outcome.products}:
             raise ValueError(
                 "write_file output port is outside the selected outcome bundle")

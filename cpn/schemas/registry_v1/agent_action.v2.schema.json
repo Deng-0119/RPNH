@@ -266,6 +266,33 @@
         },
         {
           "type": "object", "additionalProperties": false,
+          "properties": {
+            "kind": {"const": "content_candidate_accepted/v1"},
+            "products": {
+              "type": "array", "minItems": 1, "uniqueItems": true,
+              "items": {
+                "type": "object", "additionalProperties": false,
+                "properties": {
+                  "output_port_id": {"type": "string", "minLength": 1},
+                  "resource_ref": {"$ref": "#/definitions/resource_ref"}
+                },
+                "required": ["output_port_id", "resource_ref"]
+              }
+            },
+            "check_ref": {
+              "allOf": [{"$ref": "#/definitions/ref"}, {
+                "properties": {
+                  "entity_type": {"const": "resource_version/v1"},
+                  "logical_id": {"pattern": "^resource:[a-f0-9]{32}$"},
+                  "version_id": {"pattern": "^resource_version:[a-f0-9]{32}$"}
+                }
+              }]
+            }
+          },
+          "required": ["kind", "products", "check_ref"]
+        },
+        {
+          "type": "object", "additionalProperties": false,
           "properties": {"kind": {"const": "registered_file_write/v1"}, "path": {"type": "string", "minLength": 1}, "description": {"type": "string", "minLength": 1, "maxLength": 600}, "output_port_id": {"type": "string", "minLength": 1}, "resource_ref": {"$ref": "#/definitions/resource_ref"}, "registered": {"const": true}},
           "required": ["kind", "path", "description", "output_port_id", "resource_ref", "registered"]
         },

@@ -1,3 +1,4 @@
+import * as runtimeModule from '../../../cpn/frontend/static/viewer-runtime.mjs';
 import * as contributionsModule from '../../../cpn/frontend/static/user-contributions.mjs';
 import * as comparisonContextModule from '../../../cpn/frontend/static/comparison-context.mjs';
 import * as comparisonModule from '../../../cpn/frontend/static/comparison-view.mjs';
@@ -33,10 +34,10 @@ class Node extends EventTarget {
 function walk(node) { return [node, ...node.children.flatMap(walk)]; }
 function dom(startup = false) {
     const ids = new Map(), selectors = new Map();
-    const document = { createElement: tag => new Node(tag, document), createElementNS: (_, tag) => new Node(tag, document),
+    const document = Object.assign(new EventTarget(), { createElement: tag => new Node(tag, document), createElementNS: (_, tag) => new Node(tag, document),
         getElementById: id => { if (!ids.has(id)) ids.set(id, new Node('section', document)); return ids.get(id); },
         querySelector: selector => { if (!selectors.has(selector)) selectors.set(selector, new Node('section', document)); return selectors.get(selector); },
-        querySelectorAll: () => [] };
+        querySelectorAll: () => [] });
     document.documentElement = new Node('html', document); document.head = new Node('head', document);
     document.body = new Node('body', document); document.documentElement.append(document.head, document.body);
     document.body.append(document.getElementById('canvas-wrap'));
@@ -65,7 +66,7 @@ export function checkpointApp(fetcher, {startup = false} = {}) {
         nodes: new Map(graph.nodes.map((n,i) => [n.id,{x:i*240,y:30,width:224,height:126,ports:[]}])), edges:new Map()});
     const layouts = {runs: 0, get: graph => getLayout(graph)};
     const runtime = startup ? rendererRuntime(document, window) : {};
-    const context = vm.createContext({...contributionsModule,...comparisonContextModule,...comparisonModule,...sourceObservationModule,...activityModule,...model, ...dashboard, ...checkpoint, ...locale, tr: locale.t,
+    const context = vm.createContext({...runtimeModule,...contributionsModule,...comparisonContextModule,...comparisonModule,...sourceObservationModule,...activityModule,...model, ...dashboard, ...checkpoint, ...locale, tr: locale.t,
         createManagedTools, renderInspector, renderExecutionTable, renderObservationPanel, element, resolveFiringTarget, installWorksetPanel,
         document, window, console, structuredClone, AbortController, ...runtime,
         LayoutCache: class {constructor() {return layouts;}},

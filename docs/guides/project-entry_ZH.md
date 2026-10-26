@@ -1,3 +1,16 @@
+---
+name: rpnh-project-entry
+description: "通过原 Registry 和 owner HOST 使用受控本地项目入口。"
+metadata:
+  document-kind: guide
+  audience: operator-and-developer
+  language: zh-CN
+  counterpart: project-entry.md
+  revision: "2026-10-25.1"
+  status: maintained
+  basis: "controlled local HOST; Registry authority; checkpoint continuation"
+---
+
 # 受控本地项目操作入口
 
 [English](project-entry.md) · [完整项目示例](../../examples/project_collaboration/README_ZH.md)

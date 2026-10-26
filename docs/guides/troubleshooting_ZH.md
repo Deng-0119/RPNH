@@ -82,3 +82,6 @@ Owner-stop 与 checkpoint reentry 会按已记录字节和 mode，把 snapshot �
 `registry/firing_recovery.py`、`cpn/plugins/{api,catalog,managed_tools}.py`、
 `cpn/dsh/backend.py`、`integrations/dsh/src/{agent,app}.ts`。另见
 [架构](../architecture/design_ZH.md)。
+
+
+参见 [Basic 与 Viewer 离线帮助](frontend-help_ZH.md)，了解情境排查及本机监听上限。

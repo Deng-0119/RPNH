@@ -2,6 +2,7 @@
 from __future__ import annotations
 import argparse
 import json
+import math
 from pathlib import Path
 from typing import Callable
 
@@ -24,12 +25,16 @@ def run_cli(host: str, binder: Callable[..., RegistryViewBinding], argv=None) ->
     parser.add_argument('--no-open', action='store_true')
     parser.add_argument('--show-resources', action='store_true')
     parser.add_argument('--port', type=int, default=0)
+    parser.add_argument('--session-timeout', type=float, default=3600,
+                        help='Close viewer port after seconds; 0 explicitly keeps it open until Ctrl-C')
     parser.add_argument('--max-checkpoints', type=int, default=2048)
     parser.add_argument('--max-firings', type=int, default=2000)
     parser.add_argument('--presentation', type=Path, help='Optional exact-topology display metadata; no execution changes')
     args = parser.parse_args(argv)
     if not 0 <= args.port <= 65535:
         parser.error('port must be between 0 and 65535')
+    if not math.isfinite(args.session_timeout) or args.session_timeout < 0:
+        parser.error('--session-timeout must be finite and nonnegative')
     kwargs = {'turn': args.turn}
     kwargs['task_id' if host == 'codex' else 'request_id'] = getattr(args, 'task_id' if host == 'codex' else 'request_id')
     try:
@@ -50,6 +55,7 @@ def run_cli(host: str, binder: Callable[..., RegistryViewBinding], argv=None) ->
                                      max_checkpoints=args.max_checkpoints,
                                      max_firings=args.max_firings)
         return serve_projection(provider, port=args.port, open_browser=not args.no_open,
-                                show_resources=args.show_resources)
+                                show_resources=args.show_resources,
+                                session_timeout_seconds=args.session_timeout)
     except (OSError, ValueError, TypeError, RuntimeError) as error:
         parser.exit(2, f'PN view binding refused: {error}\n')

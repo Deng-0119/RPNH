@@ -267,6 +267,10 @@ class RunOwner:
         self.control = OwnerControl(self)
 
     def command(self, name, arguments, *, command_id):
+        if name == "read_edit_receipt":
+            if set(arguments) != {"edit_command_id"}:
+                raise ValueError("read_edit_receipt requires one explicit edit_command_id")
+            return self.read_edit_receipt(arguments["edit_command_id"])
         if name == "message":
             return self.control.message(arguments, command_id)
         if name == "edit":
@@ -276,6 +280,10 @@ class RunOwner:
         if name == "correct_edit":
             return self.control.edits.correct(arguments, command_id)
         raise ValueError("unregistered owner command")
+
+    def read_edit_receipt(self, edit_command_id):
+        """Read original Registry evidence without resubmitting an edit."""
+        return self.control.edits.read_receipt(edit_command_id)
 
     def request_boundary(self, context, *, request_id):
         return self.control.request_boundary(context, request_id)
@@ -962,9 +970,19 @@ def resume_run(
     return owner
 
 
+def resume_pending_edit(registration, **arguments):
+    """Explicit narrow pending-edit recovery; an existing receipt is read-only.
+
+    Returns PendingEditResumeResult. Only recovery_status == "RESUMED" carries
+    an owner. No operation suffix is executed and ordinary resume is unchanged.
+    """
+    from .owner_edit_recovery import resume_pending_edit as recover
+    return recover(registration, **arguments)
+
+
 def snapshot(owner_or_client):
     """Same snapshot API for the execution owner or its channel-only client."""
     return owner_or_client.snapshot()
 
 
-__all__ = ("OwnerInput", "RunOwner", "start_run", "resume_run", "snapshot")
+__all__ = ("OwnerInput", "RunOwner", "start_run", "resume_run", "resume_pending_edit", "snapshot")

@@ -13,6 +13,7 @@
     "invocation_ref": {"$ref": "#/definitions/ref"},
     "transition_firing_ref": {"$ref": "#/definitions/ref"},
     "business_outcome": {"const": "completed"},
+    "selected_outcome_id": {"type": "string", "minLength": 1},
     "output_resource_refs": {"type": "array", "items": {"$ref": "#/definitions/ref"}, "uniqueItems": true},
     "provider_attempt_evidence_refs": {"type": "array", "items": {"$ref": "#/definitions/ref"}, "uniqueItems": true},
     "workspace_access_set_ref": {"$ref": "#/definitions/nullable_ref"}

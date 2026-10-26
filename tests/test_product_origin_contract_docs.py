@@ -209,7 +209,7 @@ def test_paired_docs_metadata_and_product_contract(relative):
     documents = [english.read_text(), chinese.read_text()]
     for text, counterpart in zip(documents, (chinese.name, english.name)):
         assert 'counterpart: ' + counterpart in text
-        assert 'revision: "2026-10-09.1"' in text
+        assert 'revision: "2026-10-25.1"' in text
         assert 'status: implemented' in text
         for term in ('query_product_origin_v1', 'producer_execution', 'start_inputs', 'claims',
                 'petri_output', 'workspace_write', 'operation_result/v1',

@@ -50,6 +50,7 @@ RPNH 以 Registry 和 PetriNet 共同声明、执行、检查和复用 agent 工
 |---|---|
 | 启动会话、创建任务、向 workflow 目标发送消息 | [使用](guides/usage_ZH.md)、[CLI 参考](reference/cli_ZH.md) |
 | 继续同一任务或选择旧 checkpoint | [Checkpoint 恢复](guides/checkpoint-recovery_ZH.md) |
+| 验证 firing 产物或查看原 owner edit 回执 | [Firing 内容契约与 owner 回执](guides/firing-content-contract_ZH.md) |
 | 排查配置缺失、owner 冲突或未知副作用 | [排障与安全恢复](guides/troubleshooting_ZH.md) |
 | 查看完整 PN、agent Overview、firing、资源或 checkpoint | [Viewer](guides/viewer_ZH.md)、[展示/证据语义](DISPLAY_OBSERVATION_ZH.md) |
 | 比较同一 Registry 的 checkpoint 或跨来源精确网 | [Checkpoint 比较](guides/checkpoint-comparison_ZH.md)、[跨网比较](guides/comparison-context_ZH.md) |
@@ -128,3 +129,5 @@ Native-input 应用示例见[受控模拟退款](../examples/approval_workflow/R
 [完整示例](../examples/multiuser_release_handoff/README_ZH.md)展示四个受控参与者的独立 Task/Registry/私有智能体 PN，以及独立第五个 Source Registry 的资源控制 PN。原 episode 经原生检查点恢复完成 v2、SQL、QA 检查表、事件和最终交接；最终只读审计 98/98 必需检查通过。Source 不是智能体，原始故障和两项可选历史覆盖 UNKNOWN 保留。
 
 [实际角色 PN 与 Source 详情](../examples/multiuser_release_handoff/figures/README_ZH.md) · [原任务及运行依赖](../examples/multiuser_release_handoff/RUNNING_ZH.md) · [精确历史结果与边界](../examples/multiuser_release_handoff/RESULTS_ZH.md)。新模型运行需授权；这不是官方基准分数、部署或实际回滚验证。
+
+- [Basic 与 Viewer 离线帮助](guides/frontend-help_ZH.md)

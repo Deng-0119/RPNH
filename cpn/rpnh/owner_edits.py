@@ -44,6 +44,10 @@ class OwnerEdits:
         self.owner = owner
         self.queue = []
 
+    def read_receipt(self, command_id):
+        from .owner_edit_receipts import read_edit_receipt
+        return read_edit_receipt(self.owner, command_id)
+
     def retract(self, arguments, command_id, *, collaboration_action=None):
         from .registry.user_collaboration import owner_edit_action
         owner_edit_action(self.owner._core, command_id, collaboration_action, operation='retract')
@@ -170,6 +174,8 @@ class OwnerEdits:
                 or not isinstance(arguments["retire_token_refs"], list)
                 or not isinstance(arguments["owner_inputs"], dict)):
             raise TypeError("owner edit marking choices must be explicit JSON containers")
+        from .control_client import json_data
+        arguments = json_data(arguments)
         owner = self.owner
         candidate_data = dict(arguments)
         if collaboration_action is not None:
@@ -187,7 +193,7 @@ class OwnerEdits:
             results = [body["data"] for _ref, body in owner.control.records("result")
                        if body["command_id"] == command_id]
             if results:
-                return results[-1]
+                return self.read_receipt(command_id)
             if (any(body["command_id"] == command_id
                     for _ref, body in owner.control.records("command"))
                     or any(edit.command_id == command_id for edit in self.queue)):
@@ -214,7 +220,7 @@ class OwnerEdits:
                 {"status": "CONFLICT", "reason": "base NET changed; explicitly resubmit",
                  "active_net_ref": ref_payload(executable.net_ref)},
                 lineage=(candidate_record.as_version_ref(),), suffix="conflict")
-            return {"status": "CONFLICT", "result_ref": ref_payload(result.as_version_ref())}
+            return self.read_receipt(command_id)
         inputs = {}
         for place, declarations in arguments["owner_inputs"].items():
             if not isinstance(declarations, list):
@@ -278,7 +284,10 @@ class OwnerEdits:
         self.queue.append(edit)
         owner.admission_paused = True
         self.result(edit, "REGISTERED")
-        return self.advance()
+        self.advance()
+        # Advance still operates on the original queue head. The submission
+        # response must describe this command, never an earlier pending edit.
+        return self.read_receipt(command_id)
 
     def advance(self):
         """Called on submission and after each ordinary operation completion."""
@@ -336,10 +345,7 @@ class OwnerEdits:
         self.queue.pop(0)
         owner.publication = edit.publication
         owner.admission_paused = bool(self.queue)
-        return {"status": "ADOPTED", "net_ref": ref_payload(request.candidate_net_ref),
-                "checkpoint_ref": ref_payload(request.checkpoint_ref),
-                "result_ref": ref_payload(staged.owner_command_result_ref.as_version_ref()),
-                "transaction_id": str(staged.transaction_id)}
+        return self.read_receipt(edit.command_id)
 
 
 __all__ = ("OwnerEdits",)

@@ -1,3 +1,16 @@
+---
+name: rpnh-project-entry
+description: "Operate a controlled local project through the existing Registry and owner HOST."
+metadata:
+  document-kind: guide
+  audience: operator-and-developer
+  language: en
+  counterpart: project-entry_ZH.md
+  revision: "2026-10-25.1"
+  status: maintained
+  basis: "controlled local HOST; Registry authority; checkpoint continuation"
+---
+
 # Controlled local project entry
 
 [中文](project-entry_ZH.md) · [Complete project example](../../examples/project_collaboration/README.md)

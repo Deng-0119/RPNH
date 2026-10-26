@@ -533,6 +533,8 @@ class PNFragment:
                     raise DeclarationError("Operation budget binding must be typed")
                 operation.budget_binding.validate()
             registration.resolve("executor", operation.executor)
+            from .firing_content_contract import validate_marker
+            validate_marker(operation, registration)
             if operation.request_port is not None and operation.request_port not in operation.inputs:
                 raise DeclarationError("Request binding must name an exact operation input")
             validate_registered_config(registration, "executor", operation.executor,

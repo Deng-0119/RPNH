@@ -322,15 +322,23 @@ def test_changed_lowerer_can_remove_only_nonproduct_static_read_arc(tmp_path):
 def test_two_same_base_pending_edits_advance_only_first(tmp_path, monkeypatch):
     owner = make_owner(tmp_path)
     execution = begin(owner)
-    assert adopt(owner, "B")["status"] == "DRAINING"
-    assert adopt(owner, "C")["status"] == "DRAINING"
+    first = adopt(owner, "B")
+    second = adopt(owner, "C")
+    assert first["status"] == "DRAINING"
+    assert second["status"] == "REGISTERED"
+    assert first["owner_command_ref"] != second["owner_command_ref"]
+    assert owner.read_edit_receipt("replace:B")["status"] == "DRAINING"
+    assert owner.read_edit_receipt("replace:C") == second
     assert len(owner.control.edits.queue) == 2
     settle(owner, execution)
     assert current(owner)[1].compiled.source.name == "B"
+    assert owner.read_edit_receipt("replace:B")["status"] == "ADOPTED"
+    assert owner.read_edit_receipt("replace:C")["status"] == "REGISTERED"
     assert len(owner.control.edits.queue) == 1
     assert owner.control.edits.queue[0].compiled.source.name == "C"
     result = owner.control.edits.advance()
     assert result["status"] == "CONFLICT"
+    assert owner.read_edit_receipt("replace:C") == result
     assert current(owner)[1].compiled.source.name == "B"
     assert owner.control.edits.queue == []
     assert_terminal(owner, execution, carrier(owner).state.resource_ref)
@@ -1029,3 +1037,4 @@ def test_physically_missing_owner_result_is_integrity_not_incomplete(tmp_path, f
         owner.terminal()
     assert terminal_count(owner) == 0
     assert owner._core.event_store.max_ordinal() == before
+

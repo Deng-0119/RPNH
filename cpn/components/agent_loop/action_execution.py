@@ -12,6 +12,7 @@ import os
 from pathlib import Path, PurePosixPath
 import stat
 
+from cpn.rpnh.firing_content_contract import FiringContentContractError
 from cpn.rpnh.executable_net import load_compiled_net
 from cpn.rpnh.llm_contracts import LLMCallAttempt, LLMInputTarget
 from cpn.rpnh.response_protocol import (
@@ -89,6 +90,41 @@ def _read_file(*, service, execution, loop, turn, arguments, idempotency_key):
 
 def _write_file(*, service, execution, loop, turn, arguments, idempotency_key):
     return service._write_product(execution, loop, arguments, idempotency_key)
+
+def _submit_candidate(*, service, execution, loop, turn, arguments, idempotency_key):
+    from cpn.rpnh.firing_content_contract import (
+        get_firing_content_check, preflight_candidate, seal_candidate,
+    )
+    _, compiled, operation = service._declared(service._context(loop))
+    marker = operation.declaration.config.get("firing_content_contract")
+    if marker is None:
+        raise ValueError("submit_candidate requires a bound firing content contract")
+    outcome = arguments.get("outcome_id")
+    if outcome is None and len(marker["success_outcomes"]) == 1:
+        outcome, = marker["success_outcomes"]
+    if outcome not in marker["success_outcomes"]:
+        raise ValueError("submit_candidate requires one exact bound success outcome_id")
+    products = {}
+    for index, item in enumerate(arguments["products"]):
+        name = item["output_port_id"]
+        if name in products:
+            raise ValueError(f"$arguments['products'][{index}]: duplicate output_port_id")
+        products[name] = canonical_json(item["content"])
+    preflight_candidate(service.core, execution, products=products,
+                        selected_outcome_id=outcome)
+    authority = seal_candidate(service.core, execution, products=products,
+                               selected_outcome_id=outcome,
+                               idempotency_key=idempotency_key)
+    check_ref, _snapshot = get_firing_content_check(service.core, execution)
+    names = {port.port_id: port.name for port in compiled.ports}
+    accepted = [{"output_port_id": names[item.port_id],
+                 "resource_ref": _resource_payload(item.resource_ref)}
+                for item in authority.outputs]
+    refs = tuple(item.resource_ref.as_version_ref() for item in authority.outputs)
+    return (*refs, check_ref.as_version_ref()), {
+        "kind": "content_candidate_accepted/v1", "products": accepted,
+        "check_ref": _ref_payload(check_ref.as_version_ref())}
+
 
 def _workspace(*, service, execution, loop, turn, arguments, idempotency_key):
     return service._run_workspace(execution, loop, arguments, idempotency_key)
@@ -180,6 +216,9 @@ OPTIONAL_TOOL_BINDINGS = {
         ("write_file", _write_file,
          "Register one workspace file and its exact semantic Petri output. Use content or one exact visible source_resource_ref. With source_resource_ref only, optional json_replacements applies ordered {pointer,value} replacements to existing RFC 6901 JSON targets (~0 for ~, ~1 for /, empty pointer for root). A JSON-string source containing JSON is decoded once more. Publish the complete edited document without mutating the source; no add/remove operations or code execution. Omit json_replacements for the unchanged whole-resource copy. For a text output, content is direct text; for a structured output, content is one JSON document. output_port_id is the declared symbolic output port; outcome_id is required when the operation declares multiple semantic outcomes.",
         TOOL_ARGUMENT_SCHEMAS["write_file"]),
+        ("submit_candidate", _submit_candidate,
+         "Submit the complete JSON object product bundle for the bound firing content contract. Use exact declared symbolic output_port_id values and optional outcome_id. Correct rejected candidates before any semantic output is sealed; after acceptance call complete_interaction last.",
+         TOOL_ARGUMENT_SCHEMAS["submit_candidate"]),
         ("workspace", _workspace,
          "Run one bounded, network-disabled shell script in this firing's persistent private workspace. Regular files created or changed by the command are versioned in Registry and projected to later agents after this firing settles.",
          _SYNC_WORKSPACE_SCHEMA),
@@ -211,7 +250,7 @@ OPTIONAL_TOOL_BINDINGS = {
          "Run one depth-one parent-owned subtask with a nonrecursive tool catalog.",
          TOOL_ARGUMENT_SCHEMAS["delegate_leaf"]),
         ("complete_interaction", _complete_interaction,
-         "Complete after registered write_file products satisfy the declared output bundle. Must be the final tool call.",
+         "Complete after the permitted submission tool registers the declared output bundle. Must be the final tool call.",
          TOOL_ARGUMENT_SCHEMAS["complete_interaction"]),
     )
 }
@@ -614,7 +653,7 @@ class ActionExecutionMixin:
                 tool_loop = (
                     current
                     if validation.tool_name in {
-                        "write_file", "complete_interaction"}
+                        "write_file", "submit_candidate", "complete_interaction"}
                     else loop)
                 try:
                     refs, metadata = self.invoke_tool(execution, validation.tool_name,
@@ -623,7 +662,7 @@ class ActionExecutionMixin:
                             "arguments": validation.arguments, "idempotency_key": f"{idempotency_key}:tool:{ordinal}"})
                     if validation.tool_name == "complete_interaction":
                         state = AgentLoopState.COMPLETED
-                except (ValueError, ResourcePayloadSchemaViolation) as exc:
+                except (ValueError, ResourcePayloadSchemaViolation, FiringContentContractError) as exc:
                     error = str(exc)
             if error:
                 record, _action_ref, error_document = (
@@ -687,6 +726,10 @@ class ActionExecutionMixin:
             written = current.written_resource_refs
             if metadata and metadata["kind"] == "registered_file_write/v1":
                 written += (_resource_from_payload(metadata["resource_ref"]),)
+            if metadata and metadata["kind"] == "content_candidate_accepted/v1":
+                written += tuple(
+                    ref for item in metadata["products"]
+                    if (ref := _resource_from_payload(item["resource_ref"])) not in written)
             current = replace(current, state=state, written_resource_refs=written)
             records.append(record)
 

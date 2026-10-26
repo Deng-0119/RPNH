@@ -500,3 +500,6 @@ declaration, not execution evidence. `--json` prints the selected projection
 without starting HTTP. Actual waiting/completed images and historical capture scope
 are documented with each example. External responses are local synthetic fixtures;
 input admission and registered completion are native RPNH operations.
+
+
+See [Basic and Viewer offline help](frontend-help.md) for contextual guidance and local listener limits.

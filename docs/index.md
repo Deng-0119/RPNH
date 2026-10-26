@@ -60,6 +60,7 @@ For a conceptual introduction before running anything, read the
 |---|---|
 | Start sessions, launch tasks and target workflow messages | [Usage](guides/usage.md), [CLI reference](reference/cli.md) |
 | Continue the same task or select an older checkpoint | [Checkpoint recovery](guides/checkpoint-recovery.md) |
+| Validate firing products or inspect original owner edit receipts | [Firing content contracts and owner receipts](guides/firing-content-contract.md) |
 | Diagnose missing configuration, owner conflicts or unknown effects | [Troubleshooting and safe recovery](guides/troubleshooting.md) |
 | Inspect a full PN, agent Overview, firing, resource or checkpoint | [Viewer](guides/viewer.md), [display/evidence semantics](DISPLAY_OBSERVATION.md) |
 | Compare checkpoints in one Registry or exact nets across sources | [Checkpoint comparison](guides/checkpoint-comparison.md), [cross-net comparison](guides/comparison-context.md) |
@@ -159,3 +160,5 @@ explicitly bounded evidence and external-protocol status.
 The [complete example](../examples/multiuser_release_handoff/README.md) follows four controlled participants with independent Tasks, Registries and private agent PNs, plus a separate fifth Source Registry for resource control. Native checkpoint restoration completed v2, SQL, the QA checklist, incident and final handoffs; the final read-only audit passed 98/98 required checks. Source is not an agent. Original failures and two optional UNKNOWN history-coverage checks remain explicit.
 
 [Actual role PNs and Source details](../examples/multiuser_release_handoff/figures/README.md) · [Original task and run prerequisites](../examples/multiuser_release_handoff/RUNNING.md) · [Exact historical results and limits](../examples/multiuser_release_handoff/RESULTS.md). New model runs require authorization; this is not an official benchmark score, deployment or executed rollback validation.
+
+- [Basic and Viewer offline help](guides/frontend-help.md)

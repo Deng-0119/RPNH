@@ -50,9 +50,23 @@ def _declared_agent_prompt(operation, target: LLMInputTarget) -> dict:
         f"{outcome.name}="
         + ",".join(product.port for product in outcome.products)
         for outcome in semantic_outcomes)
+    marker = operation.declaration.config.get("firing_content_contract")
     messages.append({
         "role": "system",
         "content": (
+            "Use only these exact declared semantic outcome and output-port "
+            "identifiers: " + bundles + ". This operation has a bound firing "
+            "content contract. Use only read_file, search_text, submit_candidate "
+            "and complete_interaction. Submit all required products together "
+            "through submit_candidate as products=[{output_port_id: an exact "
+            "symbolic port after '=', content: a JSON object}]. Optional "
+            "outcome_id selects the exact name before '='; omit it only when "
+            "the contract has one success outcome. Rejected candidates give "
+            "conditions or paths to correct before any semantic product is "
+            "sealed. After acceptance, complete_interaction validates the "
+            "current registered product bundle and must be the final tool "
+            "call, optionally in the same response."
+            if marker is not None else
             "Use only these exact declared semantic outcome and output-port "
             "identifiers: " + bundles + ". On every write_file call, set "
             "outcome_id to the exact name before '=' and output_port_id to "
