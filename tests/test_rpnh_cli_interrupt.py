@@ -15,7 +15,7 @@ from test_main_session_registry import (
 )
 
 
-def test_basic_ctrl_c_at_input_exits_and_releases_owner(
+def test_basic_ctrl_c_at_input_cancels_then_quit_releases_owner(
         tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys,
 ) -> None:
     execution = _write_execution_profile(tmp_path)
@@ -27,6 +27,9 @@ def test_basic_ctrl_c_at_input_exits_and_releases_owner(
         input_calls += 1
         if input_calls == 1:
             os.kill(os.getpid(), signal.SIGINT)
+        # Cancellation keeps the same session owned until explicit /quit.
+        with pytest.raises(RuntimeError, match="already has an owner lease"):
+            MainSessionOwnerLease(root)
         return "/quit"
 
     monkeypatch.setattr("builtins.input", interrupt_input)
@@ -34,14 +37,29 @@ def test_basic_ctrl_c_at_input_exits_and_releases_owner(
     assert main([
         "--frontend", "basic", "--execution", str(execution),
         "--session-dir", str(root),
-    ]) == 130
-    assert input_calls == 1
-    assert "Traceback" not in capsys.readouterr().err
+    ]) == 0
+    assert input_calls == 2
+    captured = capsys.readouterr()
+    assert "Use /quit to leave; Ctrl+C interrupted only this input." in captured.out
+    assert "Traceback" not in captured.err
     with MainSessionOwnerLease(root):
         pass
     session = MainSession.resume(root, execution)
     assert session.active_turn_snapshot() is None
     assert session.history == []
+
+    # Reopening the same persisted session must still work after cancellation
+    # followed by explicit exit, with no registered turn created by the signal.
+    monkeypatch.setattr("builtins.input", lambda _prompt: "/quit")
+    assert main([
+        "--frontend", "basic", "--execution", str(execution),
+        "--resume", str(root),
+    ]) == 0
+    with MainSessionOwnerLease(root):
+        pass
+    resumed = MainSession.resume(root, execution)
+    assert resumed.active_turn_snapshot() is None
+    assert resumed.history == []
 
 
 @pytest.mark.parametrize("interactive", [False, True])

@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: frontends.md
-  revision: "2026-10-24.1"
+  revision: "2026-10-26.1"
   status: source-reviewed
   basis: "Frontend selection, setup, Basic terminal and same-session handoff; validation recorded separately"
 ---
@@ -80,7 +80,9 @@ Python `readline` 可用时，支持当前行编辑、Up/Down 浏览本进程输
 `/switch` 和 `/task ID ...`；它们仍可使用，但不出现在默认帮助或基本命令补全中。
 任务示例见[使用指南](usage_ZH.md)。
 
-在空输入时按 `Ctrl+D` 发出 EOF 并退出。在提示符按 `Ctrl+C` 仍以状态码 130 退出。
+在空输入时按 `Ctrl+D` 发出 EOF 并退出。在提示符按 `Ctrl+C` 会取消当前输入，
+显示使用 `/quit` 退出的提示，然后在同一会话中继续接受输入。
+`/quit`（或 `/exit`）正常退出，状态码为 0。
 Agent 执行期间仍沿用既有 checkpoint 暂停行为和显式恢复／回退控制。切换前端不改变
 会话的模型或恢复语义。
 

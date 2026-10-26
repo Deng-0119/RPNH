@@ -77,17 +77,12 @@ def _local_failure_disposition(
     """Classify a local provider result without losing submission evidence.
 
     A bridge process can exit before returning bytes even after its request was
-    written to the subprocess.  The provider boundary treats that transient
-    bridge failure as retryable; the submission state remains unknown so the
-    audit does not claim that the external request was never sent.
+    written to the subprocess. Without a result, the external submission must
+    be reconciled before another attempt; a process fault does not establish
+    that the request was never sent.
     """
     if failure == "response_too_large":
         return "provider_failure", "response_observed"
-    if failure in {None, "local_process_error", "timeout"}:
-        return (
-            "provider_retryable",
-            "submission_unknown" if request_submitted else "not_submitted",
-        )
     if request_submitted:
         return "submission_unknown", "submission_unknown"
     return "provider_retryable", "not_submitted"

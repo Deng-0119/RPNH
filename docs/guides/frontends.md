@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: frontends_ZH.md
-  revision: "2026-10-24.1"
+  revision: "2026-10-26.1"
   status: source-reviewed
   basis: "Frontend selection, setup, Basic terminal and same-session handoff; validation recorded separately"
 ---
@@ -91,8 +91,10 @@ Registry records, and `/history` does not replay messages or call a model.
 usable but do not appear in default help or basic command completion. See
 [usage](usage.md) for task examples.
 
-`Ctrl+D` on an empty input signals EOF and exits. `Ctrl+C` at the prompt exits
-with status 130. During agent execution, the existing checkpoint-pause behavior and explicit
+`Ctrl+D` on an empty input signals EOF and exits. `Ctrl+C` at the prompt cancels
+the current input, shows guidance to use `/quit`, and returns to the prompt in
+the same session. `/quit` (or `/exit`) exits normally with status 0.
+During agent execution, the existing checkpoint-pause behavior and explicit
 resume/rollback controls still apply. Changing the frontend does not change the
 session's model or recovery semantics.
 

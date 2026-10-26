@@ -8,7 +8,7 @@ firing_content_contracts: {binding_key: {resource_id, resource_version_id}}.
 That resource is JSON with protocol='firing_content_contract/v1', run_ref,
 net_ref, operation_binding_ref (or operation_binding_refs), checker (the full
 Registration tool declaration), sources, products, required_reads, refinement.
-sources maps role to {resource_ref, sha256, decoded_sha256?}; products maps
+sources maps role to {resource_ref, sha256?, decoded_sha256?}; products maps
 qualified symbolic port name to registered schema ID. Domain fields remain
 ordinary data interpreted by the explicitly registered trusted checker.
 
@@ -22,8 +22,9 @@ evidence.db exposes SELECT on the SAME validating SQLite transaction.
 evidence.read_resource(ref, max_bytes=None) returns registered bytes (or None
 when the bound is exceeded). evidence.read_object(ref) returns metadata.
 evidence.events(*, event_types=()) and objects(*, object_type) return original
-facts at acceptance_cut. Snapshot refs are original JSON refs, products and
-sources include payload bytes and sha256. Preflight product refs are None.
+facts at acceptance_cut. Snapshot refs are original JSON refs;
+sources include original payload bytes and any explicit digest assertions;
+products include payload bytes and sha256. Preflight product refs are None.
 """
 from __future__ import annotations
 
@@ -256,12 +257,25 @@ def _load(evidence, invocation_ref, outcome=None):
     if not isinstance(contract["sources"], dict) or not isinstance(contract["products"], dict):
         _fail("sources and products must be mappings")
     for role, source in contract["sources"].items():
+        if not isinstance(source, Mapping) or not isinstance(source.get("resource_ref"), Mapping):
+            _fail("source requires an exact resource_ref: " + role)
+        try:
+            ref = _version(source["resource_ref"])
+        except (KeyError, TypeError, ValueError) as exc:
+            raise FiringContentContractError("source requires an exact resource_ref: " + role) from exc
+        if (ref.get("entity_type") != "resource_version/v1"
+                or any(not isinstance(ref.get(key), str) or not ref[key]
+                       for key in ("logical_id", "version_id"))):
+            _fail("source requires an exact resource_ref: " + role)
         raw = evidence.read_resource(source["resource_ref"])
-        if (hashlib.sha256(raw).hexdigest() != source["sha256"]
-                or evidence.read_object(source["resource_ref"])["task_ref"] != invocation["task_ref"]):
+        if (evidence.read_object(source["resource_ref"])["task_ref"] != invocation["task_ref"]
+                or ("sha256" in source and hashlib.sha256(raw).hexdigest() != source["sha256"])):
             _fail("SOURCE_BINDING_MISMATCH: source bytes or task differs: " + role)
         if "decoded_sha256" in source:
-            decoded = json.loads(raw)
+            try:
+                decoded = json.loads(raw)
+            except (ValueError, UnicodeError) as exc:
+                raise FiringContentContractError("decoded source is not a JSON string: " + role) from exc
             if not isinstance(decoded, str) or hashlib.sha256(decoded.encode()).hexdigest() != source["decoded_sha256"]:
                 _fail("decoded source bytes differ: " + role)
         sources[role] = {**source, "payload": raw}

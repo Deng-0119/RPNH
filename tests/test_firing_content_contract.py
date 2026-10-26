@@ -25,7 +25,8 @@ SCHEMA = 'application/firing_contract_test/v1'
 PRODUCTS = {'work.analysis': canonical_json({'value': 7}), 'work.plan': canonical_json({'value': 7})}
 
 
-def _owner(path, *, bound=True, wrong_source=False, callback=None, missing_binding=False):
+def _owner(path, *, bound=True, wrong_source=False, callback=None, missing_binding=False,
+           source_builder=None, expected_source=canonical_json({'value': 7})):
     reg = Registration()
     register_basic_components(reg)
     reg.register_schema(SCHEMA, {'$schema': 'http://json-schema.org/draft-07/schema#',
@@ -36,7 +37,8 @@ def _owner(path, *, bound=True, wrong_source=False, callback=None, missing_bindi
     reg.register_tool('test-terminal',lambda *args: None,identity={'revision':'v1'},contracts={})
 
     def checker(*, snapshot, evidence):
-        assert evidence.read_resource(snapshot['sources']['input']['resource_ref']) == canonical_json({'value':7})
+        assert evidence.read_resource(snapshot['sources']['input']['resource_ref']) == expected_source
+        assert snapshot['sources']['input']['payload'] == expected_source
         if any(json.loads(p['payload']) != {'value':7} for p in snapshot['products'].values()):
             raise FiringContentContractError('CONTENT_INVALID')
         if callback is not None:
@@ -71,12 +73,17 @@ def _owner(path, *, bound=True, wrong_source=False, callback=None, missing_bindi
         source = owner.original_input_ref
         if wrong_source:
             source = publish({'value': 6}, 'wrong-source-version')
+        source_entry = {'resource_ref': {'resource_id': str(source.resource_id),
+                                       'resource_version_id': str(source.resource_version_id)}}
+        if source_builder is None:
+            source_entry['sha256'] = hashlib.sha256(canonical_json({'value':7})).hexdigest()
+        else:
+            source_entry = source_builder(owner, source_entry, publish)
         contract = {'protocol':'firing_content_contract/v1',
             'run_ref':_ref_payload(owner.identity.run_ref),'net_ref':_ref_payload(owner.publication.net_ref),
             'operation_binding_refs':[_ref_payload(r) for r in owner.publication.binding_refs.values()],
             'checker':reg.declaration('tool','test-checker'),
-            'sources':{'input':{'resource_ref':{'resource_id':str(source.resource_id),'resource_version_id':str(source.resource_version_id)},
-                'sha256':hashlib.sha256(canonical_json({'value':7})).hexdigest()}},
+            'sources':{'input':source_entry},
             'products':{name:SCHEMA for name in PRODUCTS},'required_reads':[],'refinement':None}
         contract_ref=publish(contract,'contract')
         mapping={} if missing_binding else {'work':{'resource_id':str(contract_ref.resource_id),'resource_version_id':str(contract_ref.resource_version_id)}}
@@ -99,6 +106,128 @@ def _seal(owner,execution,key='seal',products=PRODUCTS):
 def _checks(owner):
     return [json.loads(r['metadata_json']) for r in owner._core.event_store.object_rows_by_type('resource_version/v1')
             if json.loads(r['metadata_json']).get('descriptors',{}).get('firing_content_check')=='v1']
+
+
+def _exact_source(owner, source, publish):
+    return source
+
+
+@pytest.mark.parametrize('version_ref', [False, True])
+def test_exact_source_without_digest_seals_and_rechecks(tmp_path, version_ref):
+    calls = []
+    def source_builder(owner, source, publish):
+        if version_ref:
+            source['resource_ref'] = _ref_payload(owner.original_input_ref.as_version_ref())
+        return source
+    owner, execution = _owner(tmp_path / 'exact', source_builder=source_builder,
+                              callback=lambda **kw: calls.append(kw['snapshot']))
+    head = owner._core.event_store.max_ordinal()
+    snapshot = preflight_candidate(owner._core, execution, products=PRODUCTS,
+                                   selected_outcome_id='complete')
+    assert 'sha256' not in snapshot['sources']['input']
+    assert owner._core.event_store.max_ordinal() == head
+    outputs = _seal(owner, execution)
+    sealed_head = owner._core.event_store.max_ordinal()
+    assert _seal(owner, execution).outputs == outputs.outputs
+    assert owner._core.event_store.max_ordinal() == sealed_head
+    check_ref, accepted = get_firing_content_check(owner._core, execution)
+    verify_firing_content_check(owner._core, check_ref)
+    assert 'sha256' not in accepted['sources']['input']
+    before_success = len(calls)
+    owner.succeed(outputs, command_id='success')
+    assert len(calls) > before_success
+    assert len(_checks(owner)) == 1
+    assert len(owner._core.event_store.object_rows_by_type('operation_result/v1')) == 1
+
+
+@pytest.mark.parametrize('source', [None, [], 'input', {}, {'resource_ref': None},
+    {'resource_ref': []}, {'resource_ref': {}}, {'resource_ref': {'resource_id': 'missing'}},
+    {'resource_ref': {'entity_type': 'resource_version/v1', 'logical_id': 'missing'}},
+    {'resource_ref': {'resource_id': [], 'resource_version_id': {}}}])
+def test_malformed_source_is_contract_error(tmp_path, source):
+    owner, execution = _owner(tmp_path / 'malformed',
+        source_builder=lambda owner, entry, publish: source)
+    head = owner._core.event_store.max_ordinal()
+    with pytest.raises(FiringContentContractError, match='source'):
+        _seal(owner, execution)
+    assert owner._core.event_store.max_ordinal() == head
+    assert not _checks(owner)
+
+
+@pytest.mark.parametrize('case', ['logical_id', 'version_id', 'object_type', 'foreign_registry', 'task'])
+def test_exact_source_rejects_wrong_identity_or_task(tmp_path, monkeypatch, case):
+    from cpn.rpnh.firing_content_contract import FiringContentEvidence
+    foreign, _ = _owner(tmp_path / 'foreign', source_builder=_exact_source)
+    def source_builder(owner, source, publish):
+        ref = source['resource_ref']
+        if case == 'logical_id':
+            ref['resource_id'] = str(owner.publication.declaration_resource_ref.resource_id)
+        elif case == 'version_id':
+            ref['resource_version_id'] = str(owner.publication.declaration_resource_ref.resource_version_id)
+        elif case == 'object_type':
+            source['resource_ref'] = _ref_payload(owner.identity.task_ref)
+        elif case == 'foreign_registry':
+            source['resource_ref'] = _ref_payload(foreign.original_input_ref.as_version_ref())
+        return source
+    owner, execution = _owner(tmp_path / 'target', source_builder=source_builder)
+    if case == 'task':
+        # Inject only foreign ownership metadata at the original evidence read
+        # boundary; the exact local resource and its original bytes still exist.
+        original = FiringContentEvidence.read_object
+        source_ref = {'resource_id': str(owner.original_input_ref.resource_id),
+                      'resource_version_id': str(owner.original_input_ref.resource_version_id)}
+        def read_object(evidence, ref):
+            metadata = original(evidence, ref)
+            if ref == source_ref:
+                return {**metadata, 'task_ref': _ref_payload(foreign.identity.task_ref)}
+            return metadata
+        monkeypatch.setattr(FiringContentEvidence, 'read_object', read_object)
+    head = owner._core.event_store.max_ordinal()
+    with pytest.raises(FiringContentContractError):
+        _seal(owner, execution)
+    assert owner._core.event_store.max_ordinal() == head
+    assert not _checks(owner)
+
+
+@pytest.mark.parametrize('case', ['schema', 'port', 'content', 'verdict'])
+def test_exact_source_preserves_candidate_gates(tmp_path, case):
+    owner, execution = _owner(tmp_path / case, source_builder=_exact_source,
+        callback=(lambda **kw: {'PASS': True}) if case == 'verdict' else None)
+    products = dict(PRODUCTS)
+    if case == 'schema':
+        products['work.analysis'] = canonical_json({'value': '7'})
+    elif case == 'port':
+        products.pop('work.plan')
+    elif case == 'content':
+        products['work.analysis'] = canonical_json({'value': 8})
+    expected = {'schema': 'schema rejected', 'port': 'MISSING_REQUIRED_PRODUCT',
+                'content': 'CONTENT_INVALID', 'verdict': 'UNTRUSTED_CHECK_EVIDENCE'}[case]
+    head = owner._core.event_store.max_ordinal()
+    with pytest.raises(FiringContentContractError, match=expected):
+        _seal(owner, execution, products=products)
+    assert owner._core.event_store.max_ordinal() == head
+    assert not _checks(owner)
+
+
+@pytest.mark.parametrize('field,value', [('sha256', None), ('sha256', 'incorrect'),
+                                      ('decoded_sha256', None), ('decoded_sha256', 'incorrect')])
+def test_explicit_source_assertions_are_not_ignored(tmp_path, field, value):
+    owner, execution = _owner(tmp_path / 'explicit',
+        source_builder=lambda owner, source, publish: {**source, field: value})
+    with pytest.raises(FiringContentContractError, match='source bytes|SOURCE_BINDING_MISMATCH'):
+        _seal(owner, execution)
+    assert not _checks(owner)
+
+
+def test_decoded_source_assertion_without_raw_digest(tmp_path):
+    def source_builder(owner, source, publish):
+        ref = publish('abc', 'text-source')
+        return {'resource_ref': _ref_payload(ref.as_version_ref()),
+                'decoded_sha256': 'ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad'}
+    owner, execution = _owner(tmp_path / 'decoded', source_builder=source_builder,
+                              expected_source=canonical_json('abc'))
+    owner.succeed(_seal(owner, execution), command_id='success')
+    assert len(_checks(owner)) == 1
 
 
 def test_correctable_draft_atomic_success_and_same_command_replay(tmp_path):
