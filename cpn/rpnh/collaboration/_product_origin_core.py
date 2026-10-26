@@ -54,6 +54,7 @@ def _ref(value, expected=None, *, nullable=False):
     logical, version = {'resource_version': ('resource', 'resource_version'),
         'node_declaration': ('node', 'node_declaration_version'),
         'workspace_write_intent': ('write_intent', 'write_intent_version'),
+        'workspace_revision': ('workspace_lineage', 'workspace_revision'),
         'plan_version': ('plan', 'plan_version')}.get(stem, (stem, stem + '_version'))
     TypedId.parse(value['logical_id'], expected=logical)
     TypedId.parse(value['version_id'], expected=version)
