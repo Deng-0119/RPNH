@@ -116,12 +116,12 @@ class _EnumerationDeadline(Exception):
     """Stop pure analysis without altering its recorded semantic conclusions."""
 
 
-def _check_deadline(deadline):
-    if deadline is not None and monotonic() >= deadline:
+def _check_deadline(deadline, clock=None):
+    if deadline is not None and (monotonic if clock is None else clock)() >= deadline:
         raise _EnumerationDeadline
 
 
-def _candidate_groups(pools, deadline):
+def _candidate_groups(pools, deadline, clock=None):
     """Iterative deterministic Cartesian traversal, keeping no combination pool.
 
     Every input pool is already known nonempty. Each yielded candidate costs
@@ -129,13 +129,13 @@ def _candidate_groups(pools, deadline):
     one more candidate rather than all combinations of a weighted input.
     """
     if not pools:
-        _check_deadline(deadline)
+        _check_deadline(deadline, clock)
         yield ()
         return
     stack = [iter(combinations(*pools[0]))]
     prefix = []
     while stack:
-        _check_deadline(deadline)
+        _check_deadline(deadline, clock)
         try:
             group = next(stack[-1])
         except StopIteration:
@@ -150,7 +150,8 @@ def _candidate_groups(pools, deadline):
             stack.append(iter(combinations(*pools[len(stack)])))
 
 
-def enabled_bindings(analysis_input, state, *, deadline=None, _candidate_limit=None):
+def enabled_bindings(analysis_input, state, *, deadline=None, _candidate_limit=None, _clock=None):
+    clock = _clock
     support = check_supported_semantics(analysis_input)
     if not support.supported:
         return BindingEnumeration((), False, support.reasons)
@@ -165,11 +166,11 @@ def enabled_bindings(analysis_input, state, *, deadline=None, _candidate_limit=N
         # not a combinatorial pool. Preserve their existing order and counters.
         for occurrence in state.active:
             for case in _model(analysis_input, occurrence.transition_id).cases:
-                _check_deadline(deadline)
+                _check_deadline(deadline, clock)
                 actions.append(ActionBinding("SETTLE", occurrence.transition_id,
                     firing_ref=occurrence.firing_ref, case_id=case.case_id))
         for transition_id in sorted(local._net.transitions):
-            _check_deadline(deadline)
+            _check_deadline(deadline, clock)
             required = Counter()
             for place, _, weight in local._claim_input_arcs(transition_id):
                 required[place] += weight
@@ -180,7 +181,7 @@ def enabled_bindings(analysis_input, state, *, deadline=None, _candidate_limit=N
                      for place, weight in sorted(required.items())]
             if any(len(tokens) < weight for tokens, weight in pools):
                 continue
-            candidates = _candidate_groups(pools, deadline)
+            candidates = _candidate_groups(pools, deadline, clock)
             while True:
                 # Stored time prefixes replay exactly their examined START
                 # count, without constructing an extra lookahead candidate.

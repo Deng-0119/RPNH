@@ -493,6 +493,14 @@ class _ActiveManagedInvocation:
     call_id: str = ""
 
 
+@dataclass
+class _ManagedInvocationCoordinator:
+    # Derived in-process duplicate observation only. Durable receipts and
+    # original Registry/PN checks remain the authority for admission.
+    lock: Any = field(default_factory=RLock)
+    calls: dict[tuple[int, str], _ActiveManagedInvocation] = field(default_factory=dict)
+
+
 class ManagedPluginInvocationService:
     """Owner-bound durable execution service for managed native-plugin tools.
 
@@ -506,8 +514,19 @@ class ManagedPluginInvocationService:
     # same live owner still share this small coordinator, so a duplicate
     # observer gets the active executor's Future instead of misclassifying its
     # durable started receipt as executor loss. Waiting is outside new owner APIs.
-    _active_lock = RLock()
-    _active_calls: dict[tuple[int, str], _ActiveManagedInvocation] = {}
+    _coordinator_creation_lock = RLock()
+
+    @classmethod
+    def _coordinator_for(cls, core):
+        # No Registry I/O or executor runs under this short process-wide lock.
+        # Attaching to the core avoids a global map retaining active executions
+        # (which can themselves reference their core) indefinitely.
+        with cls._coordinator_creation_lock:
+            coordinator = getattr(core, "_managed_invocation_coordinator", None)
+            if coordinator is None:
+                coordinator = _ManagedInvocationCoordinator()
+                core._managed_invocation_coordinator = coordinator
+            return coordinator
 
     def __init__(self, owner: Any, kernel: Any, repository: Any,
                  catalog: ManagedPluginToolCatalog) -> None:
@@ -533,6 +552,9 @@ class ManagedPluginInvocationService:
                 "managed invocation service must use the owner's exact repository")
         self.owner = owner
         self.core = owner._core
+        coordinator = self._coordinator_for(self.core)
+        self._active_lock = coordinator.lock
+        self._active_calls = coordinator.calls
         self.kernel = kernel
         self.repository = repository
         self.catalog = catalog

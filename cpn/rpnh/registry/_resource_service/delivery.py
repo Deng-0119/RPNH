@@ -59,7 +59,7 @@ def prepare_delivery(
         context, command.authorization_ref, command.resource_ref,
         metadata_only=False, native_resume=native_resume)
     try:
-        self._read_firing_registered(
+        self._verify_firing_registered(
             context, command.resource_ref, view=view, prepared=prepared)
     except Exception as exc:
         raise ResourceIntegrityFault("resource failed exact registered read") from exc

@@ -22,7 +22,27 @@ def _freeze(value):
     return value
 
 
+class _ExplorationInput:
+    """Private call-local structural view; never evidence or a public input DTO.
+
+    The canonical input remains untouched. Each restoration still creates a
+    new marking; only the mechanically validated, read-only net is reused.
+    """
+    def __init__(self, original):
+        self._original = original
+        self.compiled = original.compiled
+        self._net = None
+
+    def __getattr__(self, name):
+        return getattr(self._original, name)
+
+
 def runtime_net(analysis_input):
+    if isinstance(analysis_input, _ExplorationInput):
+        if analysis_input._net is None:
+            analysis_input._net = RuntimeNet(analysis_input.compiled,
+                net_ref=analysis_input.net_ref, resource_plan=analysis_input.resource_plan)
+        return analysis_input._net
     return RuntimeNet(analysis_input.compiled, net_ref=analysis_input.net_ref,
                       resource_plan=analysis_input.resource_plan)
 

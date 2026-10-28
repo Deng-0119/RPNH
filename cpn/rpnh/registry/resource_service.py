@@ -101,6 +101,12 @@ class _ResourceServiceKernel:
             prepared: Any = None) -> bytes:
         return _references._read_firing_registered(**locals())
 
+    def _verify_firing_registered(
+            self, context: InvocationContext,
+            ref: ResourceVersionRef, *, view: FiringView | None = None,
+            prepared: Any = None) -> None:
+        return _references._verify_firing_registered(**locals())
+
     def _prepared_reference(
             self, ref: ResourceVersionRef, *, prepared: Any = None,
             view: RegistryAuthorityView | None = None):

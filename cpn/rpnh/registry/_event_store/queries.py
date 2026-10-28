@@ -129,7 +129,7 @@ def firing_lifecycle_events_for_net(
         store, net_ref: VersionRef) -> tuple[EventEnvelope, ...]:
     """Read only firing admission/settlement facts for one exact net."""
     ref = _exact_ref_payload(net_ref)
-    with store.connect() as db:
+    with store.connection_scope() as db:
         rows = db.execute(
             "SELECT * FROM events WHERE (net_instance_id=? AND "
             "event_type IN ('firing_admitted/v1',"
@@ -154,7 +154,7 @@ def agent_turn_events_for_closure(
         loop_id: TypedId | str, sequence: int,
         ) -> tuple[EventEnvelope, ...]:
     """Read turn facts that can collide with one exact turn closure."""
-    with store.connect() as db:
+    with store.connection_scope() as db:
         rows = db.execute(
             "SELECT * FROM events "
             "WHERE event_type='agent_turn_recorded/v1' AND ("
@@ -175,7 +175,7 @@ def agent_turn_events_for_ref(
             or turn_ref.entity_type != "agent_turn/v1"):
         raise TypeError(
             "agent turn event lookup requires an exact agent_turn/v1 ref")
-    with store.connect() as db:
+    with store.connection_scope() as db:
         rows = db.execute(
             "SELECT * FROM events "
             "WHERE event_type='agent_turn_recorded/v2' "
@@ -190,7 +190,7 @@ def adopted_call_events_for_invocation(
         store, invocation_id: TypedId | str,
         ) -> tuple[EventEnvelope, ...]:
     """Read legacy call adoptions whose exact call belongs to an invocation."""
-    with store.connect() as db:
+    with store.connection_scope() as db:
         rows = db.execute(
             "SELECT e.* FROM events e JOIN objects o "
             "ON o.version_id=json_extract("
@@ -207,7 +207,7 @@ def adopted_call_events_for_invocation(
 
 def list_events_by_transaction(
         store, transaction_id: str) -> tuple[EventEnvelope, ...]:
-    with store.connect() as db:
+    with store.connection_scope() as db:
         rows = db.execute(
             "SELECT * FROM events WHERE transaction_id=? ORDER BY ordinal",
             (transaction_id,)).fetchall()
@@ -215,7 +215,7 @@ def list_events_by_transaction(
 
 def list_events_by_idempotency_key(
         store, idempotency_key: str) -> tuple[EventEnvelope, ...]:
-    with store.connect() as db:
+    with store.connection_scope() as db:
         rows = db.execute(
             "SELECT * FROM events WHERE idempotency_key=? ORDER BY ordinal",
             (idempotency_key,)).fetchall()
@@ -447,28 +447,30 @@ def _verified_persisted_event_record(
             "persisted event task-control head is corrupt")
     return dict(row)
 
-def object_row(store, version_id: TypedId) -> sqlite3.Row | None:
+def object_row(store, version_id: TypedId, *,
+               use_cache: bool = True) -> sqlite3.Row | None:
     key = str(version_id)
-    with store._lock:
-        cached = store._object_row_memo.get(key)
-    if cached is not None:
-        return cached
-    with store.connect() as db:
+    if use_cache:
+        cached = store._object_row_cache.get(
+            store._object_row_cache_namespace, key)
+        if cached is not None:
+            return cached
+    with store.connection_scope() as db:
         row = db.execute("SELECT * FROM objects WHERE version_id=?",
                          (key,)).fetchone()
-    if row is not None:
+    if row is not None and use_cache:
         # Object versions are immutable after their publishing transaction
         # commits.  Cache only positive exact-version reads; a miss remains
         # observable after a later transaction publishes that version.
-        with store._lock:
-            return store._object_row_memo.setdefault(key, row)
-    return None
+        return store._object_row_cache.put(
+            store._object_row_cache_namespace, key, row)
+    return row
 
 def firing_publication_row(
         store, firing_version_id: TypedId | str) -> sqlite3.Row | None:
     """Return the mutable publication gate for one exact firing."""
 
-    with store.connect() as db:
+    with store.connection_scope() as db:
         return db.execute(
             "SELECT * FROM firing_publications WHERE firing_version_id=?",
             (str(firing_version_id),),
@@ -485,7 +487,7 @@ def provisional_firing_rows_for_checkpoint(
     if not net_key or not checkpoint_key:
         raise TypeError(
             "provisional firing selection requires exact net/checkpoint ids")
-    with store.connect() as db:
+    with store.connection_scope() as db:
         return tuple(db.execute(
             "SELECT * FROM firing_publications "
             "WHERE state='PROVISIONAL' AND net_version_id=? "
@@ -497,7 +499,7 @@ def firing_publication_for_invocation(
         store, invocation_id: TypedId | str) -> sqlite3.Row | None:
     """Resolve the publication gate that owns one invocation lineage."""
 
-    with store.connect() as db:
+    with store.connection_scope() as db:
         return db.execute(
             "SELECT * FROM firing_publications "
             "WHERE invocation_logical_id=? OR invocation_version_id=?",
@@ -511,7 +513,7 @@ def firing_publication_for_member(
 
     if member_kind not in {"object", "event", "relation", "transaction"}:
         raise TypeError("unknown firing temporary member kind")
-    with store.connect() as db:
+    with store.connection_scope() as db:
         rows = db.execute(
             "SELECT p.* FROM firing_temporary_members m "
             "JOIN firing_publications p "
@@ -528,7 +530,7 @@ def workspace_lineage_head(
         store, workspace_lineage_id: TypedId | str) -> sqlite3.Row | None:
     """Return the sole SQL-CAS workspace head for one run lineage."""
 
-    with store.connect() as db:
+    with store.connection_scope() as db:
         return db.execute(
             "SELECT * FROM workspace_lineage_heads "
             "WHERE workspace_lineage_id=?",
@@ -549,7 +551,7 @@ def object_publication_event(
             or not isinstance(object_type, str) or not object_type):
         raise TypeError(
             "object publication lookup requires an exact typed version")
-    with store.connect() as db:
+    with store.connection_scope() as db:
         row = db.execute(
             "SELECT e.* FROM objects o JOIN events e "
             "ON e.event_id=o.published_event_id "
@@ -595,7 +597,7 @@ def latest_object_row(
         store, logical_id: TypedId, *, object_type: str) -> sqlite3.Row | None:
     """Return the latest committed version for one exact logical object."""
 
-    with store.connect() as db:
+    with store.connection_scope() as db:
         return db.execute(
             "SELECT * FROM objects WHERE logical_id=? AND object_type=? "
             "ORDER BY rowid DESC LIMIT 1",
@@ -603,9 +605,21 @@ def latest_object_row(
 
 def object_rows_by_logical(
         store, logical_id: TypedId | str, *,
-        object_type: str | None = None) -> tuple[sqlite3.Row, ...]:
-    """Read only immutable versions under one logical identity."""
-    with store.connect() as db:
+        object_type: str | None = None,
+        object_types: tuple[str, ...] | None = None) -> tuple[sqlite3.Row, ...]:
+    """Read immutable versions under one identity, optionally for exact types."""
+    if object_types is not None:
+        if (object_type is not None or type(object_types) is not tuple or not object_types
+                or any(type(value) is not str or not value for value in object_types)
+                or len(set(object_types)) != len(object_types)):
+            raise TypeError("object_types requires a nonempty unique string tuple, without object_type")
+        placeholders = ",".join("?" for _ in object_types)
+        with store.connection_scope() as db:
+            return tuple(db.execute(
+                "SELECT * FROM objects WHERE logical_id=? "
+                f"AND object_type IN ({placeholders}) ORDER BY rowid",
+                (str(logical_id), *object_types)).fetchall())
+    with store.connection_scope() as db:
         if object_type is None:
             rows = db.execute(
                 "SELECT * FROM objects WHERE logical_id=? ORDER BY rowid",
@@ -620,7 +634,7 @@ def object_rows_by_logical(
 def object_rows_by_type(
         store, object_type: str) -> tuple[sqlite3.Row, ...]:
     """Read only objects of one registered type."""
-    with store.connect() as db:
+    with store.connection_scope() as db:
         return tuple(db.execute(
             "SELECT * FROM objects WHERE object_type=? ORDER BY rowid",
             (object_type,)).fetchall())
@@ -639,7 +653,7 @@ def execution_environment_inventory_rows(
            for ref, entity_type in expected):
         raise TypeError(
             "execution inventory lookup requires exact task/round/net refs")
-    with store.connect() as db:
+    with store.connection_scope() as db:
         return tuple(db.execute(
             "SELECT * FROM objects "
             "WHERE object_type='resource_version/v1' "
@@ -683,7 +697,7 @@ def transition_firing_rows_for_task_net_transition(
         raise TypeError(
             "transition firing lookup requires exact task/net refs and "
             "one transition id")
-    with store.connect() as db:
+    with store.connection_scope() as db:
         return tuple(db.execute(
             "SELECT o.* FROM objects o JOIN transactions t "
             "ON t.transaction_id=o.transaction_id AND t.status='committed' "
@@ -709,7 +723,7 @@ def object_rows_by_producer(
         store, producer_invocation_id: TypedId | str, *,
         object_types: tuple[str, ...] = ()) -> tuple[sqlite3.Row, ...]:
     """Read only objects published by one exact invocation principal."""
-    with store.connect() as db:
+    with store.connection_scope() as db:
         if object_types:
             placeholders = ",".join("?" * len(object_types))
             rows = db.execute(
@@ -727,7 +741,7 @@ def object_rows_by_invocation_id(
         store, invocation_id: TypedId | str, *,
         object_types: tuple[str, ...] = ()) -> tuple[sqlite3.Row, ...]:
     """Read objects whose immutable metadata names one invocation."""
-    with store.connect() as db:
+    with store.connection_scope() as db:
         if object_types:
             placeholders = ",".join("?" * len(object_types))
             rows = db.execute(
@@ -757,7 +771,7 @@ def resource_address_binding_rows_for_invocation_scope(
         raise TypeError(
             "address-binding lookup requires exact invocation and "
             "operation-binding refs")
-    with store.connect() as db:
+    with store.connection_scope() as db:
         return tuple(db.execute(
             "SELECT * FROM objects "
             "WHERE object_type='resource_address_binding/v1' "
@@ -782,7 +796,7 @@ def provider_attempt_rows_for_call(
         store, call_id: TypedId | str,
         call_version_id: TypedId | str) -> tuple[sqlite3.Row, ...]:
     """Read provider attempts belonging to one exact logical call."""
-    with store.connect() as db:
+    with store.connection_scope() as db:
         return tuple(db.execute(
             "SELECT * FROM objects "
             "WHERE object_type='provider_attempt_spec/v1' "
@@ -798,7 +812,7 @@ def agent_action_rows_for_turn(
             or turn_ref.entity_type != "agent_turn/v1"):
         raise TypeError(
             "agent action lookup requires an exact agent_turn/v1 ref")
-    with store.connect() as db:
+    with store.connection_scope() as db:
         return tuple(db.execute(
             "SELECT * FROM objects WHERE object_type IN "
             "('agent_action/v2','agent_action/v3') "
@@ -819,7 +833,7 @@ def settled_agent_action_rows_for_turn(
             or turn_ref.entity_type != "agent_turn/v1"):
         raise TypeError(
             "settled action lookup requires an exact agent_turn/v1 ref")
-    with store.connect() as db:
+    with store.connection_scope() as db:
         return tuple(db.execute(
             "SELECT action.* FROM objects action WHERE "
             "action.object_type IN ('agent_action/v2','agent_action/v3') AND "
@@ -845,7 +859,7 @@ def settled_agent_action_rows_for_turn(
 def completed_agent_context_compaction_rows_for_loop(
         store, loop_id: TypedId | str) -> tuple[sqlite3.Row, ...]:
     """Read current-v3 completed context compactions for one agent loop."""
-    with store.connect() as db:
+    with store.connection_scope() as db:
         return tuple(db.execute(
             "SELECT * FROM objects "
             "WHERE object_type='agent_context_compaction/v3' "
@@ -858,7 +872,7 @@ def agent_loop_rows_for_invocation(
         store, *, invocation_ref: VersionRef,
         operation_binding_ref: VersionRef) -> tuple[sqlite3.Row, ...]:
     """Read loops for one exact invocation and operation binding."""
-    with store.connect() as db:
+    with store.connection_scope() as db:
         return tuple(db.execute(
             "SELECT * FROM objects WHERE object_type='agent_loop/v1' "
             "AND json_extract(metadata_json,"
@@ -889,7 +903,7 @@ def provider_materialization_events_for_call(
         raise TypeError(
             "provider materialization lookup requires an exact "
             "llm_call_spec/v2 ref")
-    with store.connect() as db:
+    with store.connection_scope() as db:
         rows = db.execute(
             "SELECT * FROM events WHERE "
             "event_type='provider_payload_materialization_recorded/v1' "
@@ -906,7 +920,7 @@ def relation_rows_from_version(
         store, version_id: TypedId) -> tuple[sqlite3.Row, ...]:
     """Read only relations whose exact source version matches."""
 
-    with store.connect() as db:
+    with store.connection_scope() as db:
         return tuple(db.execute(
             "SELECT * FROM relations WHERE "
             "json_extract(source_json,'$.version_id')=? ORDER BY rowid",
@@ -933,22 +947,22 @@ def relation_rows_for_version(
     if relation_type is not None:
         where = "relation_type=? AND " + where
         parameters.insert(0, relation_type)
-    with store.connect() as db:
+    with store.connection_scope() as db:
         return tuple(db.execute(
             f"SELECT * FROM relations WHERE {where} ORDER BY rowid",
             tuple(parameters)).fetchall())
 
 def object_rows(store) -> tuple[sqlite3.Row, ...]:
-    with store.connect() as db:
+    with store.connection_scope() as db:
         return tuple(db.execute("SELECT * FROM objects ORDER BY rowid"))
 
 def relation_rows(store) -> tuple[sqlite3.Row, ...]:
-    with store.connect() as db:
+    with store.connection_scope() as db:
         return tuple(db.execute("SELECT * FROM relations ORDER BY rowid"))
 
 def outbox_rows(store) -> tuple[sqlite3.Row, ...]:
     """Committed fact-batch notifications, written atomically with their facts."""
-    with store.connect() as db:
+    with store.connection_scope() as db:
         return tuple(db.execute("SELECT * FROM outbox ORDER BY rowid"))
 
 

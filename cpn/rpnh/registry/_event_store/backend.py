@@ -70,20 +70,28 @@ def connect(store) -> sqlite3.Connection:
     else:
         connection = sqlite3.connect(
             store.path, timeout=30, isolation_level=None)
-    connection.row_factory = sqlite3.Row
-    connection.execute("PRAGMA foreign_keys=ON")
-    if store.read_only:
-        connection.execute("PRAGMA query_only=ON")
-    else:
-        with store._lock:
-            if not store._journal_mode_ready:
-                connection.execute("PRAGMA journal_mode=WAL")
-                store._journal_mode_ready = True
-        connection.execute("PRAGMA synchronous=FULL")
+    try:
+        connection.row_factory = sqlite3.Row
+        connection.execute("PRAGMA foreign_keys=ON")
+        if store.read_only:
+            connection.execute("PRAGMA query_only=ON")
+        else:
+            with store._lock:
+                if not store._journal_mode_ready:
+                    connection.execute("PRAGMA journal_mode=WAL")
+                    store._journal_mode_ready = True
+            connection.execute("PRAGMA synchronous=FULL")
+    except BaseException:
+        # Preserve the setup failure even if cleanup itself fails.
+        try:
+            connection.close()
+        except Exception:
+            pass
+        raise
     return connection
 
 def _initialize(store) -> None:
-    with store.connect() as db:
+    with store.connection_scope() as db:
         db.execute(_FIRING_PUBLICATIONS_SCHEMA)
         _migrate_firing_publications(db)
         db.executescript("""
@@ -365,7 +373,7 @@ def writer_epoch(store) -> int:
         return int(row[0])
 
 def get_or_create_meta(store, key: str, candidate: str) -> str:
-    with store.connect() as db:
+    with store.connection_scope() as db:
         db.execute("BEGIN IMMEDIATE")
         db.execute("INSERT OR IGNORE INTO registry_meta(key,value) VALUES(?,?)",
                    (key, candidate))
@@ -381,7 +389,7 @@ def get_meta(store, key: str) -> str | None:
     return str(row[0]) if row is not None else None
 
 def rotate_writer(store, *, expected_epoch: int) -> int:
-    with store.connect() as db:
+    with store.connection_scope() as db:
         db.execute("BEGIN IMMEDIATE")
         from ..parent_bound import reject_bound_writer_at
         reject_bound_writer_at(db)
@@ -398,7 +406,7 @@ def rotate_writer(store, *, expected_epoch: int) -> int:
 
 def acquire_writer(store) -> int:
     """Atomically acquire the sole production-writer epoch."""
-    with store.connect() as db:
+    with store.connection_scope() as db:
         db.execute("BEGIN IMMEDIATE")
         from ..parent_bound import reject_bound_writer_at
         reject_bound_writer_at(db)
@@ -412,7 +420,7 @@ def acquire_writer(store) -> int:
 
 def current_task_recovery_manifest_row(store) -> sqlite3.Row | None:
     """Read the committed task manifest named by the exact current pointer."""
-    with store.connect() as db:
+    with store.connection_scope() as db:
         return _current_task_recovery_manifest_row(db)
 
 def compare_and_set_task_recovery_manifest_pointer(
@@ -431,7 +439,7 @@ def compare_and_set_task_recovery_manifest_pointer(
             or writer_epoch < 1):
         raise TypeError(
             "recovery-manifest pointer replacement requires exact refs")
-    with store._lock, store.connect() as db:
+    with store._lock, store.connection_scope() as db:
         db.execute("BEGIN IMMEDIATE")
         task_row = db.execute(
             "SELECT value FROM registry_meta WHERE key='task_id'",

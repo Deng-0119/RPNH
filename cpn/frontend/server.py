@@ -94,11 +94,22 @@ def _preflight_json(value: Any, *, compact: bool = False) -> int:
             raise _ResponseLimitError
 
     def string_size(item: str) -> int:
-        if len(item) + 2 > remaining:
-            raise _ResponseLimitError
-        cached = short_strings.get(item) if len(item) <= 128 else None
-        if cached is not None:
-            return cached
+        # Exact built-in strings are immutable. A cached size still passes
+        # through reserve() against this request's current remaining budget.
+        # Keep subclass operations on the original path.
+        if type(item) is str:
+            length = len(item)
+            cached = short_strings.get(item) if length <= 128 else None
+            if cached is not None:
+                return cached
+            if length + 2 > remaining:
+                raise _ResponseLimitError
+        else:
+            if len(item) + 2 > remaining:
+                raise _ResponseLimitError
+            cached = short_strings.get(item) if len(item) <= 128 else None
+            if cached is not None:
+                return cached
         if item.isascii() and _JSON_ESCAPE.search(item) is None:
             size = len(item) + 2
         else:
@@ -153,7 +164,14 @@ def _preflight_json(value: Any, *, compact: bool = False) -> int:
                     for index, (key, child) in enumerate(item.items()):
                         if index:
                             reserve(separator_bytes)  # comma, optional space
-                        reserve(string_size(key_string(key)))
+                        # Projection dictionaries repeat a small set of keys.
+                        # Reuse only this request's exact encoded string size,
+                        # never a projection, authorization or mutable value.
+                        key_size = (short_strings.get(key)
+                                    if type(key) is str and len(key) <= 128 else None)
+                        if key_size is None:
+                            key_size = string_size(key_string(key))
+                        reserve(key_size)
                         reserve(separator_bytes)  # colon, optional space
                         visit(child, depth + 1)
                 else:
@@ -304,16 +322,17 @@ def _projection_error(message: str) -> ValueError:
 
 
 def _validate_projection(projection: Mapping[str, Any]) -> Mapping[str, Any]:
-    if not isinstance(projection, Mapping):
+    if type(projection) is not dict and not isinstance(projection, Mapping):
         raise _projection_error("根对象必须是映射")
     if projection.get("schema_version") != _SCHEMA_VERSION:
         raise _projection_error(f"schema_version 必须为 {_SCHEMA_VERSION}")
     source = projection.get("source")
-    if not isinstance(source, Mapping) or source.get("mode") not in {
+    if (type(source) is not dict and not isinstance(source, Mapping)) or source.get("mode") not in {
         "initial_configured", "registry_current",
     }:
         raise _projection_error("source.mode 必须为 initial_configured 或 registry_current")
-    if not isinstance(projection.get("summary"), Mapping):
+    summary = projection.get("summary")
+    if type(summary) is not dict and not isinstance(summary, Mapping):
         raise _projection_error("summary 必须是映射")
     nodes = projection.get("nodes")
     edges = projection.get("edges")
@@ -324,7 +343,7 @@ def _validate_projection(projection: Mapping[str, Any]) -> Mapping[str, Any]:
 
     node_ids: set[str] = set()
     for index, node in enumerate(nodes):
-        if not isinstance(node, Mapping):
+        if type(node) is not dict and not isinstance(node, Mapping):
             raise _projection_error(f"nodes[{index}] 必须是映射")
         node_id = node.get("id")
         if not isinstance(node_id, str) or not node_id:
@@ -343,7 +362,7 @@ def _validate_projection(projection: Mapping[str, Any]) -> Mapping[str, Any]:
 
     edge_ids: set[str] = set()
     for index, edge in enumerate(edges):
-        if not isinstance(edge, Mapping):
+        if type(edge) is not dict and not isinstance(edge, Mapping):
             raise _projection_error(f"edges[{index}] 必须是映射")
         edge_id = edge.get("id")
         if not isinstance(edge_id, str) or not edge_id or edge_id in edge_ids:

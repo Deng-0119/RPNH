@@ -549,9 +549,12 @@ def canonical_object_publication_ordinal(
 
 def canonical_object_rows(
         store, *, through_ordinal: int | None = None,
-        object_type: str | None = None) -> tuple[sqlite3.Row, ...]:
+        object_type: str | None = None,
+        logical_id: TypedId | str | None = None) -> tuple[sqlite3.Row, ...]:
     """Return objects canonical at the requested history head."""
 
+    if logical_id is not None and not isinstance(logical_id, (TypedId, str)):
+        raise TypeError("canonical object logical_id must be a TypedId or string")
     upper = store.max_ordinal() if through_ordinal is None else through_ordinal
     predicate = store._canonical_member_sql(
         member_kind="object", member_identity_sql="o.version_id",
@@ -560,11 +563,14 @@ def canonical_object_rows(
     parameters: list[Any] = [upper, upper, upper, upper]
     if object_type is not None:
         parameters.append(object_type)
+    logical_clause = "" if logical_id is None else "AND o.logical_id=? "
+    if logical_id is not None:
+        parameters.append(str(logical_id))
     with store.connection_scope() as db:
         return tuple(db.execute(
             "SELECT o.* FROM objects o JOIN events published_event "
             "ON published_event.event_id=o.published_event_id "
-            f"WHERE {predicate} {type_clause}ORDER BY o.rowid",
+            f"WHERE {predicate} {type_clause}{logical_clause}ORDER BY o.rowid",
             tuple(parameters),
         ).fetchall())
 

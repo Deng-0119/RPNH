@@ -731,7 +731,7 @@ def install_published_model_call_baseline_v1(
         raise RegistryConflict(
             "published call baseline provenance names invalid authorities")
 
-    with store._lock, store.connect() as db:
+    with store._lock, store.connection_scope() as db:
         db.execute("BEGIN IMMEDIATE")
         task_row = db.execute(
             "SELECT value FROM registry_meta WHERE key='task_id'",
@@ -842,7 +842,7 @@ def actual_model_call_counts(store) -> tuple[int, int]:
     """Return raw settled task calls and their post-limit excess."""
     from ..event_store import RegistryCorruptError
 
-    with store.connect() as db:
+    with store.connection_scope() as db:
         task_row = db.execute(
             "SELECT value FROM registry_meta WHERE key='task_id'",
         ).fetchone()
@@ -875,7 +875,7 @@ def agent_loop_model_call_monitoring_counts(
     authority.
     """
 
-    with store.connect() as db:
+    with store.connection_scope() as db:
         direct, delegated = (
             _accountable_agent_loop_model_call_monitoring_counts(
                 db, agent_loop_id=agent_loop_id))
@@ -897,7 +897,7 @@ def task_model_call_terminal_phase_entered(store) -> bool:
     task_id = store.get_meta("task_id")
     if task_id is None:
         raise RegistryCorruptError("task identity is missing")
-    with store.connect() as db:
+    with store.connection_scope() as db:
         return _task_model_call_terminal_phase_entered(
             db, task_id=task_id)
 
@@ -905,7 +905,7 @@ def actual_model_call_limit(store) -> int | None:
     """Return the effective hard limit for the current execution generation."""
     from ..event_store import RegistryCorruptError
 
-    with store.connect() as db:
+    with store.connection_scope() as db:
         task_row = db.execute(
             "SELECT value FROM registry_meta WHERE key='task_id'",
         ).fetchone()
@@ -924,7 +924,7 @@ def ordinary_model_call_limit(store) -> int | None:
     """Return the effective ordinary-call limit for the current generation."""
     from ..event_store import RegistryCorruptError
 
-    with store.connect() as db:
+    with store.connection_scope() as db:
         task_row = db.execute(
             "SELECT value FROM registry_meta WHERE key='task_id'",
         ).fetchone()

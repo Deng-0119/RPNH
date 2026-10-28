@@ -39,6 +39,7 @@ class RuntimeNet:
             for transition in compiled.symbolic.transitions})
         self._arcs = compiled.symbolic.arcs
         self._reset_arcs = compiled.symbolic.reset_arcs
+        self._index_arcs()
         self._transitions = {t.name: t for t in compiled.symbolic.transitions}
         self._selected_outcomes = {}
         self.initial_marking = MappingProxyType({p.name: sum(t.count for t in p.initial_tokens)
@@ -65,41 +66,58 @@ class RuntimeNet:
         self.registered_fault_transition_routes = MappingProxyType({})
         self.registered_fault_places = ()
 
+    def _index_arcs(self):
+        """Ordered structural projections only; no marking or admission state."""
+        inputs, outputs, pairs, consumers, producers = {}, {}, {}, {}, {}
+        for arc in self._arcs:
+            if arc.direction == "input":
+                inputs.setdefault(arc.transition, []).append(arc)
+                consumers.setdefault(arc.place, []).append(arc.transition)
+            elif arc.direction == "output":
+                outputs.setdefault(arc.transition, []).append(arc)
+                pairs.setdefault((arc.transition, arc.place), []).append(arc)
+        # Provenance is declaration-wide, even on selected/predicate views.
+        for arc in self.compiled.symbolic.arcs:
+            if arc.direction == "output":
+                producers.setdefault(arc.place, []).append(arc.transition)
+        self._inputs_by_transition = MappingProxyType({k: tuple(v) for k, v in inputs.items()})
+        self._outputs_by_transition = MappingProxyType({k: tuple(v) for k, v in outputs.items()})
+        self._outputs_by_pair = MappingProxyType({k: tuple(v) for k, v in pairs.items()})
+        self._consumers_by_place = MappingProxyType({k: tuple(dict.fromkeys(v)) for k, v in consumers.items()})
+        self._producers_by_place = MappingProxyType({k: tuple(dict.fromkeys(v)) for k, v in producers.items()})
+
     def producers_of(self, place):
         # Producer provenance in a persisted marking is declaration-wide.  A
         # selected outcome only constrains deposits for the firing currently
         # being projected; it must not make a token produced by an earlier,
         # different outcome invalid when that checkpoint is resumed.
-        return tuple(dict.fromkeys(arc.transition for arc in self.compiled.symbolic.arcs
-                                  if arc.direction == "output" and arc.place == place))
+        return self._producers_by_place.get(place, ())
 
     def consumers_of(self, place):
-        return tuple(dict.fromkeys(arc.transition for arc in self._arcs
-                                  if arc.direction == "input" and arc.place == place))
+        return self._consumers_by_place.get(place, ())
 
     def inputs_of(self, transition_id):
-        return tuple(dict.fromkeys(arc.place for arc in self._arcs
-                                  if arc.direction == "input" and arc.mode != "guard"
-                                  and arc.transition == transition_id))
+        return tuple(dict.fromkeys(arc.place for arc in self._inputs_by_transition.get(transition_id, ())
+                                  if arc.mode != "guard"))
 
     def token_inputs_of(self, transition_id):
-        return tuple(dict.fromkeys(place for place, target, _ in self.token_input_arcs if target == transition_id))
+        return tuple(dict.fromkeys(arc.place for arc in self._inputs_by_transition.get(transition_id, ())
+                                  if arc.mode in {"consume", "borrow"}))
 
     def reference_inputs_of(self, transition_id):
-        return tuple(dict.fromkeys(place for place, target, _ in self.registry_read_arcs if target == transition_id))
+        return tuple(dict.fromkeys(arc.place for arc in self._inputs_by_transition.get(transition_id, ())
+                                  if arc.mode == "read"))
 
     def outputs_of(self, transition_id):
-        return tuple(dict.fromkeys(arc.place for arc in self._arcs
-                                  if arc.direction == "output" and arc.transition == transition_id))
+        return tuple(dict.fromkeys(arc.place for arc in self._outputs_by_transition.get(transition_id, ())))
 
     def input_arc_weight(self, place, transition_id):
-        return sum(arc.weight for arc in self._arcs
-                   if (arc.place, arc.transition, arc.direction) == (place, transition_id, "input")
+        return sum(arc.weight for arc in self._inputs_by_transition.get(transition_id, ())
+                   if arc.place == place
                    and arc.mode != "guard")
 
     def output_arc_weight(self, transition_id, place):
-        arcs = tuple(arc for arc in self._arcs
-                     if (arc.place, arc.transition, arc.direction) == (place, transition_id, "output"))
+        arcs = self._outputs_by_pair.get((transition_id, place), ())
         if transition_id in self._selected_outcomes:
             return sum(arc.weight for arc in arcs)
         outcomes = {arc.outcome for arc in arcs if arc.outcome is not None}
@@ -131,6 +149,7 @@ class RuntimeNet:
             if arc.transition not in view._selected_outcomes
             or arc.outcome in {
                 None, view._selected_outcomes[arc.transition]})
+        view._index_arcs()
         return view
 
     def for_claimed_inputs(self, transition_id, claimed_colors):
@@ -145,6 +164,7 @@ class RuntimeNet:
             or self.output_predicates_hold(a, claimed_colors))
         view.output_arcs = tuple((a.transition, a.place, a.weight)
             for a in view._arcs if a.direction == "output")
+        view._index_arcs()
         return view
 
     def place_kind(self, place):
@@ -179,7 +199,7 @@ class RuntimeNet:
         return tuple((g.place, g.threshold, g.comparison, g.scope)
                      for g in self._transitions[transition_id].count_guards)
     def forward_source_place(self, transition_id, output_place):
-        return next((a.forward_source for a in self._arcs if a.transition == transition_id
+        return next((a.forward_source for a in self._outputs_by_transition.get(transition_id, ()) if a.transition == transition_id
                      and a.place == output_place and a.direction == "output" and a.emit == "forward"), None)
     def counter_guards_of(self, transition_id):
         return tuple((g.place, g.threshold, g.comparison)
@@ -190,7 +210,7 @@ class RuntimeNet:
     def output_guards_of(self, transition_id):
         # Only claimed input-colour predicates are PN deposit guards.
         # Registered operation-output outcome selection remains for_outcome.
-        return tuple((a.place, p.expected) for a in self._arcs
+        return tuple((a.place, p.expected) for a in self._outputs_by_transition.get(transition_id, ())
                      if a.direction == "output" and a.transition == transition_id
                      for p in a.output_predicates)
 
@@ -204,18 +224,18 @@ class RuntimeNet:
         return next(iter(guards), None)
 
     def output_emit_of(self, transition_id):
-        return tuple((a.place, a.emit) for a in self._arcs if a.direction == "output"
+        return tuple((a.place, a.emit) for a in self._outputs_by_transition.get(transition_id, ()) if a.direction == "output"
                      and a.transition == transition_id and a.emit != "produced")
     def output_emit_for(self, transition_id, place):
         return next((emit for target, emit in self.output_emit_of(transition_id) if target == place), None)
     def output_color_expression_for(self, transition_id, place):
-        return next((asdict(a.colour_expression) for a in self._arcs if a.transition == transition_id
+        return next((asdict(a.colour_expression) for a in self._outputs_by_transition.get(transition_id, ()) if a.transition == transition_id
                      and a.place == place and a.direction == "output" and a.colour_expression is not None), None)
     def output_color_expressions_of(self, transition_id):
-        return tuple((a.place, asdict(a.colour_expression)) for a in self._arcs
+        return tuple((a.place, asdict(a.colour_expression)) for a in self._outputs_by_transition.get(transition_id, ())
                      if a.transition == transition_id and a.direction == "output" and a.colour_expression is not None)
     def output_lease_claims_for(self, transition_id, place):
-        arcs = tuple(a for a in self._arcs
+        arcs = tuple(a for a in self._outputs_by_transition.get(transition_id, ())
                      if a.transition == transition_id
                      and a.place == place and a.direction == "output")
         if not arcs:
@@ -227,7 +247,7 @@ class RuntimeNet:
                 "lease-colour projection has ambiguous output declarations")
         return claims
     def output_lease_claim_exclusions_for(self, transition_id, place):
-        arcs = tuple(a for a in self._arcs
+        arcs = tuple(a for a in self._outputs_by_transition.get(transition_id, ())
                      if a.transition == transition_id
                      and a.place == place and a.direction == "output")
         if not arcs:
@@ -240,7 +260,7 @@ class RuntimeNet:
         return exclusions
     def output_lease_claim_set_for(self, transition_id, place):
         expressions = tuple(
-            a.lease_claim_set for a in self._arcs
+            a.lease_claim_set for a in self._outputs_by_transition.get(transition_id, ())
             if a.transition == transition_id
             and a.place == place and a.direction == "output"
             and a.lease_claim_set is not None)
@@ -249,7 +269,7 @@ class RuntimeNet:
         return expressions[0] if expressions else None
     def selected_output_arcs_of(self, transition_id):
         return tuple(
-            (arc.effect_selector, arc.place) for arc in self._arcs
+            (arc.effect_selector, arc.place) for arc in self._outputs_by_transition.get(transition_id, ())
             if arc.transition == transition_id
             and arc.direction == "output"
             and arc.effect_selector is not None)
@@ -263,7 +283,7 @@ class RuntimeNet:
         return places[0] if places else None
     def output_effect_selector_for(self, transition_id, place):
         selectors = tuple(
-            arc.effect_selector for arc in self._arcs
+            arc.effect_selector for arc in self._outputs_by_transition.get(transition_id, ())
             if arc.transition == transition_id
             and arc.place == place
             and arc.direction == "output"
@@ -291,7 +311,7 @@ class RuntimeNet:
             raise ValueError("reset selector is ambiguous")
         return places[0] if places else None
     def project_output_color(self, transition_id, place, claimed_colors):
-        arc = next(a for a in self._arcs if a.transition == transition_id
+        arc = next(a for a in self._outputs_by_transition.get(transition_id, ()) if a.transition == transition_id
                    and a.place == place and a.direction == "output")
         if not self.output_predicates_hold(arc, claimed_colors):
             raise ValueError("output colour lacks its exact claimed input predicate")
@@ -323,8 +343,7 @@ class RuntimeNet:
         return True
     def read_scope_of(self, transition_id):
         return tuple((arc.place, "read" if arc.mode == "read" else "consume")
-                     for arc in self._arcs if arc.direction == "input" and arc.mode != "guard"
-                     and arc.transition == transition_id)
+                     for arc in self._inputs_by_transition.get(transition_id, ()) if arc.mode != "guard")
     def is_guard_only_transition(self, transition_id):
         # The marking's input-free reservation interface includes a declared
         # PN source: no consume/read claim is invented to make it executable.

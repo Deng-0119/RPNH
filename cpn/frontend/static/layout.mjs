@@ -1,5 +1,5 @@
 import { t as tr, messageError } from './i18n.mjs';
-import { topologyKey, byId, arcLabel } from './model.mjs';
+import { identity, byId, arcLabel } from './model.mjs';
 /** Only anonymous geometry enters ELK. No config, token, resource or firing data. */
 export function geometry(data) {
     // ELK 0.12 needs nonempty label text to lay out the reserved label box.
@@ -60,14 +60,18 @@ export class LayoutCache {
     constructor(elk) { this.elk = elk; this.cache = new Map(); this.weights = new Map(); this.cachedElements = 0; this.pending = new Map(); this.runs = 0; }
     async get(data) {
         if (!data.nodes.length) return {nodes: new Map(), edges: new Map(), width: 200, height: 120};
-        const key = topologyKey(data);
+        // Key the exact anonymous geometry plus its semantic ID mapping. Text,
+        // tokens and firing state remain in the renderer, never in ELK.
+        const source = geometry(data);
+        const key = JSON.stringify([identity(data), source.nodes.map(n => n.id),
+            source.edges.map(e => e.id), source.graph]);
         if (this.cache.has(key))
             return this.cache.get(key);
         if (this.pending.has(key))
             return this.pending.get(key);
         const work = (async () => {
             this.runs++;
-            const source = geometry(data), start = performance.now();
+            const start = performance.now();
             const result = decodeLayout(await this.elk.layout(source.graph), source);
             result.elapsedMs = performance.now() - start;
             this.cache.set(key, result);

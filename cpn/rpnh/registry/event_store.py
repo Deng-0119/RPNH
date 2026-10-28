@@ -6,6 +6,7 @@ import json
 import sqlite3
 import threading
 import uuid
+import weakref
 from contextlib import contextmanager
 from dataclasses import asdict, dataclass, replace
 from datetime import datetime, timezone
@@ -1078,13 +1079,22 @@ class EventStore:
         self._lock = threading.RLock()
         self.__historical_terminal_ready_authorizations: dict[
             object, _HistoricalMechanicalTerminalReadyAuthorization] = {}
-        self._net_closure_memo: dict[str, Mapping[str, Any]] = {}
+        from ._event_store.local_memo import EntryBoundedMemo
+        self._net_closure_memo = EntryBoundedMemo()
         self._adoption_lineage_memo: dict[
             str, tuple[int, tuple[VersionRef, ...]]] = {}
         self._checkpoint_head_memo: dict[
             tuple[str, str], tuple[int, VersionRef]] = {}
-        self._verified_read_only_transactions: set[str] = set()
-        self._object_row_memo: dict[str, sqlite3.Row] = {}
+        from ._event_store.local_memo import BoundedProofSet
+        self._verified_read_only_transactions = BoundedProofSet()
+        from ._event_store.exact_read_cache import (
+            PROCESS_EXACT_READ_CACHE, StoreNamespace)
+        self._object_row_cache = PROCESS_EXACT_READ_CACHE
+        self._object_row_cache_namespace = StoreNamespace(
+            str(self.path.absolute()))
+        self._object_row_cache_finalizer = weakref.finalize(
+            self, self._object_row_cache.clear_namespace,
+            self._object_row_cache_namespace)
         self._journal_mode_ready = self.read_only
         if not self.read_only:
             self._initialize()
@@ -1216,7 +1226,14 @@ class EventStore:
         try:
             with connection:
                 yield connection
-        finally:
+        except BaseException:
+            # The transaction/body failure remains primary if cleanup fails.
+            try:
+                connection.close()
+            except Exception:
+                pass
+            raise
+        else:
             connection.close()
 
     def _initialize(self) -> None:
@@ -2122,9 +2139,14 @@ class EventStore:
         from ._event_store import queries
         return queries._verified_persisted_event_record(self, db, row)
 
-    def object_row(self, version_id: TypedId) -> sqlite3.Row | None:
+    def object_row(self, version_id: TypedId, *,
+                   use_cache: bool = True) -> sqlite3.Row | None:
         from ._event_store import queries
-        return queries.object_row(self, version_id)
+        return queries.object_row(self, version_id, use_cache=use_cache)
+
+    def clear_exact_read_cache(self) -> None:
+        """Release this reader's exact rows without changing Registry facts."""
+        self._object_row_cache.clear_namespace(self._object_row_cache_namespace)
 
     def firing_publication_row(self, firing_version_id: TypedId | str) -> sqlite3.Row | None:
         from ._event_store import queries
@@ -2176,9 +2198,9 @@ class EventStore:
         from ._event_store import views
         return views.canonical_object_publication_ordinal(self, version_id, through_ordinal=through_ordinal)
 
-    def canonical_object_rows(self, *, through_ordinal: int | None=None, object_type: str | None=None) -> tuple[sqlite3.Row, ...]:
+    def canonical_object_rows(self, *, through_ordinal: int | None=None, object_type: str | None=None, logical_id: TypedId | str | None=None) -> tuple[sqlite3.Row, ...]:
         from ._event_store import views
-        return views.canonical_object_rows(self, through_ordinal=through_ordinal, object_type=object_type)
+        return views.canonical_object_rows(self, through_ordinal=through_ordinal, object_type=object_type, logical_id=logical_id)
 
     def canonical_relation_rows(self, *, through_ordinal: int | None=None, version_id: TypedId | str | None=None) -> tuple[sqlite3.Row, ...]:
         from ._event_store import views
@@ -2216,9 +2238,9 @@ class EventStore:
         from ._event_store import queries
         return queries.latest_object_row(self, logical_id, object_type=object_type)
 
-    def object_rows_by_logical(self, logical_id: TypedId | str, *, object_type: str | None=None) -> tuple[sqlite3.Row, ...]:
+    def object_rows_by_logical(self, logical_id: TypedId | str, *, object_type: str | None=None, object_types: tuple[str, ...] | None=None) -> tuple[sqlite3.Row, ...]:
         from ._event_store import queries
-        return queries.object_rows_by_logical(self, logical_id, object_type=object_type)
+        return queries.object_rows_by_logical(self, logical_id, object_type=object_type, object_types=object_types)
 
     def object_rows_by_type(self, object_type: str) -> tuple[sqlite3.Row, ...]:
         from ._event_store import queries

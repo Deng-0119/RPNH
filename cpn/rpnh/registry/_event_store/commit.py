@@ -451,7 +451,7 @@ def publish_batch(event_store: "EventStore", *, task_id: TypedId, branch_id: str
     if collaboration_action is not None:
         from ..user_collaboration import check_handle
         command_material['user_collaboration'] = check_handle(event_store, collaboration_action).material()
-    with event_store._lock, event_store.connect() as db:
+    with event_store._lock, event_store.connection_scope() as db:
         db.execute("BEGIN IMMEDIATE")
         current_epoch = int(db.execute(
             "SELECT value FROM registry_meta WHERE key='writer_epoch'").fetchone()[0])

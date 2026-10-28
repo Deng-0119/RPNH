@@ -274,6 +274,20 @@ def preflight_module_firing(
     claimed_token_refs: tuple[VersionRef, ...],
 ) -> PetriFiringPreflight:
     """Prove every declared firing outcome capacity-valid before Registry I/O."""
+    permit, _consumed = _preflight_module_firing(
+        structure, predecessor, transition_id=transition_id,
+        claimed_token_refs=claimed_token_refs)
+    return permit
+
+
+def _preflight_module_firing(
+    structure: RuntimeNet,
+    predecessor: TypedMarkingAuthority,
+    *,
+    transition_id: str,
+    claimed_token_refs: tuple[VersionRef, ...],
+) -> tuple[PetriFiringPreflight, tuple[tuple[VersionRef, str], ...]]:
+    """Prove every declared firing outcome capacity-valid before Registry I/O."""
 
     if (not isinstance(structure, RuntimeNet)
             or not isinstance(predecessor, TypedMarkingAuthority)
@@ -359,13 +373,16 @@ def preflight_module_firing(
             has_declared_effects=bool(outcome.effects),
         ))
 
-    return PetriFiringPreflight(
+    permit = PetriFiringPreflight(
         checkpoint_ref=predecessor.checkpoint_ref,
         net_ref=predecessor.net_ref,
         transition_id=transition_id,
         claimed_token_refs=claims,
         outcomes=tuple(outcome_projections),
     )
+    # Exact facts from this occurrence's already-validated local claim; not all
+    # requested refs are consumed (static lease reads remain references).
+    return permit, tuple((state.token_ref, state.place) for state in consumed_states)
 
 
 def preflight_module_firing_set(
@@ -390,12 +407,13 @@ def preflight_module_firing_set(
                    for item in occurrences)):
         raise MarkingStateError(
             "Petri firing-set preflight requires exact allocated occurrences")
-    permits = tuple(preflight_module_firing(
+    prepared = tuple(_preflight_module_firing(
         structure,
         predecessor,
         transition_id=transition_id,
         claimed_token_refs=claimed_token_refs,
     ) for transition_id, claimed_token_refs in occurrences)
+    permits = tuple(permit for permit, _consumed in prepared)
 
     # A singleton retains its declared route/reset successor interval exactly.
     if len(permits) == 1:
@@ -429,18 +447,13 @@ def preflight_module_firing_set(
         item.state.place for item in predecessor.tokens)
     consumed_refs: set[VersionRef] = set()
     consumed_counts: Counter[str] = Counter()
-    for transition_id, claimed_token_refs in occurrences:
-        local = TeamNetMarking.from_authority(structure, predecessor)
-        claim_epoch = local.install_registered_firing_claim(
-            transition_id, claimed_token_refs)
-        consumed = tuple(local.claimed_tokens(
-            transition_id, claim_epoch))
-        refs = {state.token_ref for state in consumed}
+    for _permit, consumed in prepared:
+        refs = {token_ref for token_ref, _place in consumed}
         if consumed_refs & refs:
             raise MarkingStateError(
                 "Petri firing-set preflight repeats one consumed occurrence")
         consumed_refs.update(refs)
-        consumed_counts.update(state.place for state in consumed)
+        consumed_counts.update(place for _token_ref, place in consumed)
 
     capacities = {
         item.name: item.capacity

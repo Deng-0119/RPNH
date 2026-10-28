@@ -122,6 +122,22 @@ def _read_firing_registered(
         raise ResourceIntegrityFault(
             "firing-view registered resource read failed") from exc
 
+def _verify_firing_registered(
+        self, context: InvocationContext,
+        ref: ResourceVersionRef, *, view: FiringView | None = None,
+        prepared: Any = None) -> None:
+    """Verify bytes with bounded allocation after the same firing gate."""
+
+    if prepared is None:
+        prepared = self._firing_prepared(context, ref, view=view)
+    try:
+        return self._ResourceServiceKernel__core.object_store.verify_registered(prepared)
+    except ResourceServiceError:
+        raise
+    except Exception as exc:
+        raise ResourceIntegrityFault(
+            "firing-view registered resource read failed") from exc
+
 def _prepared_reference(
         self, ref: ResourceVersionRef, *, prepared: Any = None,
         view: RegistryAuthorityView | None = None):

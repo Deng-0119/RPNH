@@ -66,9 +66,10 @@ class History:
         events = self.turns if event_types == ("agent_turn_recorded/v2",) else self.settlements
         return tuple(e for e in reversed(events) if e.payload["agent_loop_id"] == loop_id)
 
-    def object_rows_by_logical(self, logical_id, *, object_type):
+    def object_rows_by_logical(self, logical_id, *, object_type=None, object_types=None):
+        types = object_types if object_types is not None else (object_type,)
         return tuple(r for r in reversed(self.rows)
-                     if r["logical_id"] == str(logical_id) and r["object_type"] == object_type)
+                     if r["logical_id"] == str(logical_id) and r["object_type"] in types)
 
     def add(self, sequence=0, ordinal=0, *, kind="managed", status="returned", revision=5):
         turn = next((e for e in self.turns if e.payload["sequence"] == sequence), None)

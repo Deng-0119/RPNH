@@ -113,7 +113,7 @@ for(const locale of ['en','zh-CN'])test(`actual app colors full PN, focuses node
     assert.equal(h.timers.size,0,'observation remains fixed while contribution evidence is open');
     const sent=h.requests.at(-1);assert.equal(sent.cache,'no-store');assert.equal(sent.method,undefined);assert.ok(sent.signal);
     assert.equal(panel(h).hidden,false);assert.equal(h.document.getElementById('user-contributions').getAttribute('aria-pressed'),'true');
-    const [first,second]=payload().nodes,cell=viewer.graph.getCell(nodeKey(first.node_id));
+    const [first,second]=payload().nodes;let cell=viewer.graph.getCell(nodeKey(first.node_id));
     assert.equal(cell.attributes.attrs['body/stroke'],contributionColor(actorA));
     const select=control(h,'actor');select.value=actorB;select.onchange();
     assert.equal(cell.attributes.attrs['root/opacity'],.15);
@@ -130,6 +130,8 @@ for(const locale of ['en','zh-CN'])test(`actual app colors full PN, focuses node
     panel(h).scrollTop=140;const disclosure=walk(panel(h)).find(node=>node.tagName==='details'&&node.dataset.contributionEvidence);disclosure.open=true;
     const disclosureKey=disclosure.dataset.contributionEvidence;
     const selected=h.api.contributionPanel.state.actor;setLanguage(locale==='en'?'zh-CN':'en');h.api.refreshLanguage();
+    // Static localized SVG content may rebuild cells; inspect the current graph.
+    cell=viewer.graph.getCell(nodeKey(first.node_id));
     assert.equal(panel(h).scrollTop,140);assert.equal(walk(panel(h)).find(node=>node.dataset.contributionEvidence===disclosureKey).open,true);
     assert.equal(h.api.contributionPanel.state.actor,selected);assert.equal(cell.attributes.attrs['body/stroke'],contributionColor(actorA));
     control(h,'close').onclick();assert.equal(panel(h).textContent,'');assert.equal(panel(h).hidden,true);

@@ -70,8 +70,13 @@ def validate_registered_net_closure(event_store: "EventStore", catalog: SchemaCa
     if _memo is not None and type(_memo) is not dict:
         raise TypeError("net closure local memo must be a plain per-read dictionary")
     memo = event_store._net_closure_memo if _memo is None else _memo
-    if key in memo:
-        return memo[key]
+    if _memo is not None:
+        if key in memo:
+            return memo[key]
+    else:
+        cached = memo.get(key)
+        if cached is not None:
+            return cached
     if _db is None:
         # One closure can contain hundreds of exact refs.  Keep the entire
         # read-only validation on one SQLite snapshot instead of opening a new
@@ -283,7 +288,8 @@ def verified_adoption_lineage(
         (int(row["task_control_sequence"] or 0)
          for row in event_rows), default=0)
     result = _verify_adoption_events(event_store, catalog, event_rows, _db=_db)
-    event_store._adoption_lineage_memo[task_key] = (maximum_sequence, result)
+    # Keep the sequence conversion above as integrity validation; this result
+    # was never read from the former store-owned memo. Do not retain it.
     return result
 
 
@@ -823,6 +829,5 @@ def verified_checkpoint_head(event_store: "EventStore", catalog: SchemaCatalog,
                 "checkpoint commit differs from its immutable same-net object")
         head = checkpoint_ref
     assert head is not None
-    event_store._checkpoint_head_memo[cache_key] = (
-        maximum_sequence, head)
+    # Sequence validation remains above; no consumer read the former head memo.
     return head

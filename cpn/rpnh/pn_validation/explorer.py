@@ -58,7 +58,10 @@ def explore(analysis_input: AnalysisInput) -> ExplorationGraph:
     from . import semantics
     from .properties import classify_terminal
 
+    from .projection import _ExplorationInput
+
     started = monotonic()
+    analysis_input = _ExplorationInput(analysis_input)
     policy = analysis_input.policy
     support = semantics.check_supported_semantics(analysis_input)
     nodes = [GraphNode(analysis_input.initial_state, 0)]
@@ -100,11 +103,11 @@ def explore(analysis_input: AnalysisInput) -> ExplorationGraph:
             # separate point query. Retain its bounded evidence when requested.
             if index == 0 and "enabledness" in (*policy.properties, *policy.required_properties):
                 initial_bindings = semantics.enabled_bindings(analysis_input, node.state,
-                    deadline=started + policy.max_seconds)
+                    deadline=started + policy.max_seconds, _clock=monotonic)
             expanded.append(index)
             continue
         enumeration = semantics.enabled_bindings(analysis_input, node.state,
-                                                 deadline=started + policy.max_seconds)
+                                                 deadline=started + policy.max_seconds, _clock=monotonic)
         if index == 0:
             initial_bindings = enumeration
         if not enumeration.complete:

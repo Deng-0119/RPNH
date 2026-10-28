@@ -298,6 +298,28 @@ class ObjectStore:
                 f"registered payload size differs: {prepared.version_id}")
         return payload
 
+    def verify_registered(self, prepared: PreparedObject) -> None:
+        """Validate all registered bytes without materializing their body."""
+        self.validate_envelope(prepared)
+        if prepared.storage_locator != self.locator_for_version(prepared.version_id):
+            raise ObjectIntegrityError(
+                "registered object locator is not in exact canonical form")
+        path = self.path_for_version(prepared.version_id)
+        total = 0
+        try:
+            with path.open("rb") as stream:
+                while True:
+                    chunk = stream.read(self._CHUNK_SIZE)
+                    if not chunk:
+                        break
+                    total += len(chunk)
+        except OSError as exc:
+            raise ObjectIntegrityError(
+                f"missing registered payload {prepared.version_id}") from exc
+        if total != prepared.size:
+            raise ObjectIntegrityError(
+                f"registered payload size differs: {prepared.version_id}")
+
     def verify_prepared(self, prepared: PreparedObject) -> None:
         """Verify an immutable object using bounded reads."""
 

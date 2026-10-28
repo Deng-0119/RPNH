@@ -29,6 +29,7 @@ from .schema_catalog import registry_read_schema_data
 from .share_packages import strict_json
 
 CONFIG_SCHEMA = 'rpnh/registry_read_host_config/v1'
+HIERARCHY_CONFIG_SCHEMA = 'rpnh/registry_read_host_config/v2'
 MAX_CONFIG_BYTES = 1024 * 1024
 
 
@@ -110,8 +111,13 @@ def load_read_host_config(path: Path | str) -> ReadHostConfiguration:
         path = Path(path).absolute()
         payload, file_identity = _read_owned_file(path)
         document = strict_json(payload, path='read-host-configuration')
-        _object(document, ('schema_version', 'purpose', 'sources'), ('limits', 'source_set'))
-        if document['schema_version'] != CONFIG_SCHEMA:
+        if type(document) is not dict:
+            raise _invalid()
+        if document.get('schema_version') == CONFIG_SCHEMA:
+            _object(document, ('schema_version', 'purpose', 'sources'), ('limits', 'source_set'))
+        elif document.get('schema_version') == HIERARCHY_CONFIG_SCHEMA:
+            _object(document, ('schema_version', 'purpose', 'sources', 'hierarchy'), ('limits', 'source_set'))
+        else:
             raise _invalid()
         limits_data = document.get('limits', {})
         if (type(limits_data) is not dict
@@ -140,6 +146,9 @@ def load_read_host_config(path: Path | str) -> ReadHostConfiguration:
             sources[key] = (root, row['binding_generation'])
             authorities[(caller, *key)] = context
             selections.append(selection)
+        if document['schema_version'] == HIERARCHY_CONFIG_SCHEMA:
+            from .read_host_hierarchy import expand_host_hierarchy
+            selections = list(expand_host_hierarchy(document['hierarchy'], tuple(selections)))
         def revalidate():
             if _read_owned_file(path)[1] != file_identity:
                 raise RegistryReadSessionError('ACCESS_CHANGED')

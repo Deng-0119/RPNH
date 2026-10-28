@@ -579,7 +579,7 @@ def _unique_object_pairs(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
     return value
 
 
-def _parse_agent_tool_catalog_document(
+def _parse_agent_tool_catalog_document_uncached(
         payload: bytes) -> tuple[dict[str, Any], tuple[str, ...]]:
     if not isinstance(payload, bytes) or not payload:
         raise ValueError("agent tool catalog payload must be nonempty bytes")
@@ -616,6 +616,13 @@ def _parse_agent_tool_catalog_document(
     if len(set(names)) != len(names):
         raise ValueError("agent tool catalog names must be unique")
     return document, tuple(names)
+
+
+def _parse_agent_tool_catalog_document(
+        payload: bytes) -> tuple[dict[str, Any], tuple[str, ...]]:
+    from ._parsed_catalog_cache import PARSED_CATALOG_CACHE
+    return PARSED_CATALOG_CACHE.parse(
+        payload, _parse_agent_tool_catalog_document_uncached)
 
 
 def parse_agent_tool_catalog(payload: bytes) -> AgentToolCatalog:

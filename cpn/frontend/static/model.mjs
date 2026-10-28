@@ -154,3 +154,11 @@ export function referenceText(reference) {
         return value.value;
     return stable(value);
 }
+
+/** Static SVG content dependencies; runtime status is updated separately. */
+export function renderKey(snapshot) {
+  return stable([topologyKey(snapshot), [...snapshot.nodes].sort(byId).map(n =>
+    [n.id, n.display == null ? null : [n.display.role, n.display.name, n.display.type, n.display.description], n.operation ?? null]),
+    [...snapshot.edges].sort(byId).map(e =>
+      [e.id, Boolean(e.resource), Boolean(e.agent_relation), e.display_label ?? null, Boolean(e.hidden_place)])]);
+}

@@ -1,6 +1,6 @@
 import { contributionNodeStyle } from './user-contributions.mjs';
 import { cardState } from './dashboard-model.mjs';
-import { nodeKey, edgeKey, topologyKey, statusLabel, firingSummary, tokensLabel, arcLabel, arcStyle, wrapLabel, resourceEdge, searchText } from './model.mjs';
+import { nodeKey, edgeKey, renderKey, statusLabel, firingSummary, tokensLabel, arcLabel, arcStyle, wrapLabel, resourceEdge, searchText } from './model.mjs';
 /** JointJS is a renderer only. All semantic relationships remain in the snapshot. */
 export class NetRenderer {
   constructor(joint, element, onSelect) {
@@ -101,7 +101,7 @@ export class NetRenderer {
   }
   apply(snapshot, layout) {
     this.viewMode = snapshot.view_mode ?? 'petri';
-    const signature = topologyKey(snapshot), changed = signature !== this.signature;
+    const signature = renderKey(snapshot), changed = signature !== this.signature || layout !== this.layout;
     if (changed) {
       const cells = [...snapshot.nodes.map(n => this.createNode(n, layout.nodes.get(n.id))), ...snapshot.edges.map(e => this.createEdge(e, layout.edges.get(e.id)))];
       this.graph.resetCells(cells); this.signature = signature; this.layout = layout;

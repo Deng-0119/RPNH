@@ -226,8 +226,17 @@ def test_report_verifies_stored_time_prefix_without_new_bfs_and_rejects_fakecomp
 
     analysis = make_input(policy=AnalysisPolicy(max_seconds=0.5))
     complete = analyze(analysis)
-    ticks = iter((0.0, 0.0, 0.0, 1.0, 1.0))
-    monkeypatch.setattr(explorer, "monotonic", lambda: next(ticks))
+    # One shared clock includes enumeration; advance on the semantic event,
+    # not a fragile number of calls to just the outer BFS clock.
+    from cpn.rpnh.pn_validation import semantics
+    now = {"value": 0.0}
+    original_successors = semantics.successors
+    def finish_first_edge(*args, **kwargs):
+        result = original_successors(*args, **kwargs)
+        now["value"] = 1.0
+        return result
+    monkeypatch.setattr(explorer, "monotonic", lambda: now["value"])
+    monkeypatch.setattr(semantics, "successors", finish_first_edge)
     report = analyze(analysis)
     encoded = report.to_dict()
     assert len(report.graph.nodes) == 2 and len(report.graph.edges) == 1

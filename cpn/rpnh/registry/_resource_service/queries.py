@@ -708,7 +708,7 @@ def history(
             resource_id,
             TypedId.parse(row["version_id"], expected="resource_version"))
          for row in self._ResourceServiceKernel__core.event_store.canonical_object_rows(
-             object_type="resource_version/v1")
+             object_type="resource_version/v1", logical_id=resource_id)
          if row["object_type"] == "resource_version/v1"
          and row["logical_id"] == str(resource_id)),
         key=lambda item: self._canonical_published_ordinal(

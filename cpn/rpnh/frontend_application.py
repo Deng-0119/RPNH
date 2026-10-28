@@ -894,7 +894,10 @@ class FrontendGateway:
             raise
 
     def _changed(self, app: Any) -> None:
-        value = canonical(app.snapshot())
+        self._changed_value(app.snapshot())
+
+    def _changed_value(self, snapshot: Any) -> None:
+        value = canonical(snapshot)
         if value != self._last:
             self._last = value
             self._on_change()
@@ -930,7 +933,13 @@ class FrontendGateway:
                     if name not in {"configuration", "snapshot"}:
                         app.tick()
                         next_tick = time.monotonic() + self._interval
-                    self._changed(app)
+                    if name == "snapshot" and not args and not kwargs:
+                        # This owner turn has already projected the full v1 view.
+                        # Compare that observation, not a second immediate read.
+                        # No result is reused across requests or periodic ticks.
+                        self._changed_value(value)
+                    else:
+                        self._changed(app)
                 except FrontendError as exc:
                     result.set_exception(exc)
                 except Exception:

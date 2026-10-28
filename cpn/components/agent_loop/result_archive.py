@@ -169,9 +169,15 @@ def _entries(lifecycle, anchor, cutoff, tool_names):
             raise ValueError("result archive history crossed its anchored loop")
         turn_ref = lifecycle.turn_ref_from_event(turn_event)
         candidates = []
-        for action_type in ("agent_action/v3", "agent_action/v2"):
-            for row in lifecycle.core.event_store.object_rows_by_logical(
-                    settled["agent_action_id"], object_type=action_type):
+        action_types = ("agent_action/v3", "agent_action/v2")
+        rows = lifecycle.core.event_store.object_rows_by_logical(
+            settled["agent_action_id"], object_types=action_types)
+        # Preserve the original v3-before-v2 validation/error order, then rowid
+        # order within each type. No candidate or integrity check is skipped.
+        for action_type in action_types:
+            for row in rows:
+                if row["object_type"] != action_type:
+                    continue
                 document = json.loads(row["metadata_json"])
                 if (action_type == "agent_action/v2"
                         and (document.get("tool_name") != "run_tool_program"
