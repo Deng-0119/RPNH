@@ -1,0 +1,7 @@
+- insert:
+    - id: rpnh-operator
+      name: dsh-rpnh-operator
+      config:
+        controlRoot: !!js process.env.RPNH_CONTROL_ROOT
+        python: !!js process.env.RPNH_PYTHON
+

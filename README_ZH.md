@@ -1,5 +1,7 @@
 # RPNH Harness
 
+**Stock DSH 插件预发布：** [RPNH operator 0.1.0-rc.3 + Python 0.1.0rc3](integrations/dsh/operator/README_ZH.md) 适配 DSH 0.2.2-alpha.2，仅手动安装，不声明 managed 升级资格。
+
 [English](README.md) | 中文
 
 [快速开始](#快速开始) · [实际 PN](#先看一次多-agent-运行) · [案例](#案例目录) · [完整案例索引](examples/README_ZH.md) ·
@@ -16,8 +18,8 @@ workspace 或恢复状态的独立所有者。
 | 概览 | 当前边界 |
 |---|---|
 | 平台 | Linux 或 WSL2，Python 3.11+ |
-| 源码候选版 | `0.1.0rc2` 开发候选版；旧公开二进制为 `v0.1.0rc1` |
-| 安装 | 源码 checkout 或 GitHub Release wheel/sdist |
+| 限定预发布 | `0.1.0rc3` Python配套 / stock DSH插件；[有限验收](docs/validation/dsh-stock-0.1.0rc3_ZH.md) |
+| 安装 | 源码 checkout；rc3 wheel + operator tgz；sdist仅旧rc1 |
 | 模型 | 用户自有 provider 与 exact-model catalog；不预选 route |
 | 执行 | 主会话，以及相互独立的 task/workflow Registry |
 | 查看 | 终端投影和本地只读 PetriNet 看板 |
@@ -53,8 +55,9 @@ workspace 或恢复状态的独立所有者。
 
 请明确选择源码或发行产物：
 
-- **当前源码：**本 checkout 是 `0.1.0rc2` 开发候选版，应从选定的源码提交构建；
-  此处不声称已经发布新的 rc2 二进制产物。
+- **当前源码：**本 checkout 是 `0.1.0rc3` 限定 stock DSH 预发布。
+  使用其[匹配资产与有限验收](docs/validation/dsh-stock-0.1.0rc3_ZH.md)；
+  不是所有前端的全产品发行认证。
 - **旧二进制：**[`v0.1.0rc1` prerelease](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc1)
   中的 wheel/sdist 来自 2026-09-29，不包含之后 `main` 新增的功能。
 - **历史 benchmark 快照：**[`benchmark-baseline-2026-10-06`](https://github.com/Deng-0119/RPNH/releases/tag/benchmark-baseline-2026-10-06)
@@ -317,7 +320,7 @@ persistence runtime，没有随包终端 TUI。官方 Web 结果与组件阶段�
 
 该历史窗口的 source 程序、网外控制动作与 target agent 分层记录；其单 parent 链不表示同 base 自动合并。`local_process` 脚本驱动从实际输入与工具返回计算，以已登记任务 agent 展示结构／协议，不声称真实模型调用或认知能力；运行结果、产物与 Viewer 证据以示例页记录为准。
 
-历史应用评分与零模型 runtime 验证见[精选结果](docs/results/README_ZH.md)。每项保留实际源码与条件；这些旧窗口不认证后续组合产品，也不代表已发布新的 rc2 二进制。
+历史应用评分与零模型 runtime 验证见[精选结果](docs/results/README_ZH.md)。每项保留实际源码与条件；这些旧窗口不认证后续组合产品，也不认证本次 rc3 stock DSH 配对。
 
 两个受控本地应用把浏览器输入接入原 Registry 与 PN：
 [双主体模拟退款审批](examples/approval_workflow/README_ZH.md)和

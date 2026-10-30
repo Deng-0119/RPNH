@@ -1,5 +1,7 @@
 # RPNH Harness
 
+**Stock DSH plugin prerelease:** [RPNH operator 0.1.0-rc.3 + Python 0.1.0rc3](integrations/dsh/operator/README.md) targets DSH 0.2.2-alpha.2; manual installation only, not managed-upgrade qualification.
+
 English | [中文](README_ZH.md)
 
 [Quick start](#quick-start) · [Actual PN](#see-a-multi-agent-run) · [Examples](#example-catalog) · [Full example index](examples/README.md) ·
@@ -18,8 +20,8 @@ runtime—not separate owners of model, workspace or recovery state.
 | At a glance | Current boundary |
 |---|---|
 | Platform | Linux or WSL2, Python 3.11+ |
-| Source candidate | `0.1.0rc2` development candidate; older public binaries are `v0.1.0rc1` |
-| Installation | Source checkout or GitHub Release wheel/sdist |
+| Scoped prerelease | `0.1.0rc3` Python companion / stock DSH operator; [limited validation](docs/validation/dsh-stock-0.1.0rc3.md) |
+| Installation | Source checkout; rc3 wheel + operator tgz; sdist only in historical rc1 |
 | Models | User-owned provider and exact-model catalog; no route is preselected |
 | Execution | Main session plus independent task/workflow Registries |
 | Observation | Terminal projections and a local read-only PetriNet dashboard |
@@ -55,8 +57,9 @@ Goal: run a local tool on Linux/WSL2 with Python 3.11+ and inspect its registere
 
 Choose the source or release deliberately:
 
-- **Current source:** this checkout is the `0.1.0rc2` development candidate. Build
-  it from the selected source commit; no new rc2 binary release is claimed here.
+- **Current source:** this checkout is the `0.1.0rc3` scoped stock DSH prerelease.
+  Use its [matching assets and limited validation](docs/validation/dsh-stock-0.1.0rc3.md);
+  this is not release-wide certification of all frontends.
 - **Older binaries:** the [`v0.1.0rc1` prerelease](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc1)
   contains the 2026-09-29 wheel/sdist. These do not contain later `main` features.
 - **Historical benchmark snapshot:** [`benchmark-baseline-2026-10-06`](https://github.com/Deng-0119/RPNH/releases/tag/benchmark-baseline-2026-10-06)
@@ -359,7 +362,7 @@ The historical zero-provider protocol entry is [agent-network co-building](examp
 
 In that historical window, source programs, external control actions and target agents remain separate; its single-parent chain does not imply automatic same-base merging. A `local_process` scripted driver computes from actual inputs and tool returns. This demonstrates structure and protocol using registered task agents. It makes no live-model or cognition claim; execution results, artifacts and Viewer evidence are reported on the example page.
 
-See [curated results](docs/results/README.md) for historical application scores and zero-model runtime checks. Each record keeps its tested source and conditions; these older windows do not certify a later combined product or a new rc2 binary release.
+See [curated results](docs/results/README.md) for historical application scores and zero-model runtime checks. Each record keeps its tested source and conditions; these older windows do not certify a later combined product or the current rc3 stock DSH pair.
 
 Two controlled local applications connect browser input to the original Registry
 and PN: [two-principal mock refund approval](examples/approval_workflow/README.md)

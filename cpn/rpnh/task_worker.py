@@ -12,6 +12,12 @@ from .task_control import claim_task_worker_launch
 
 
 def main(argv: list[str] | None = None) -> int:
+    from .update_install import lifecycle_lease
+    with lifecycle_lease():
+        return _main(argv)
+
+
+def _main(argv: list[str] | None = None) -> int:
     arguments = sys.argv[1:] if argv is None else argv
     resume = bool(arguments and arguments[0] == "--resume")
     if resume:
@@ -78,3 +84,4 @@ def main(argv: list[str] | None = None) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+

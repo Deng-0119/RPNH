@@ -420,8 +420,13 @@ class TaskControl:
             package_root,
             *(entry for entry in pythonpath if entry != package_root),
         ))
-        log = log_path.open("ab", buffering=0)
+        from .update_install import worker_lease
+        # Acquire before spawn; a detached worker retains its own lifetime lease.
+        update_lease = None
+        log = None
         try:
+            update_lease = worker_lease()
+            log = log_path.open("ab", buffering=0)
             return self._popen(
                 argv,
                 stdin=subprocess.DEVNULL,
@@ -429,13 +434,15 @@ class TaskControl:
                 stderr=subprocess.STDOUT,
                 cwd=str(self.root),
                 env=environment,
-                pass_fds=(
-                    () if launch_lock is None else
-                    (launch_lock.fileno(),)),
+                pass_fds=(() if launch_lock is None else (launch_lock.fileno(),))
+                         + (() if update_lease is None else (update_lease.fileno(),)),
                 start_new_session=True,
             )
         finally:
-            log.close()
+            if log is not None:
+                log.close()
+            if update_lease is not None:
+                update_lease.close()  # Never LOCK_UN an inherited worker lease.
             if launch_lock is not None:
                 launch_lock.close()
 
@@ -890,3 +897,4 @@ __all__ = (
     "TaskControl", "TaskHandle", "claim_task_worker_launch",
     "owner_socket_path",
 )
+
