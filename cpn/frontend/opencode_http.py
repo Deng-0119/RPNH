@@ -35,7 +35,7 @@ class _Server(ThreadingHTTPServer):
 
     def __init__(self, protocol: OpenCodeProtocol, password: str) -> None:
         self.protocol = protocol
-        self.authorization = "Basic " + base64.b64encode(("rpnh:" + password).encode()).decode()
+        self.authorization = "Basic " + base64.b64encode((getattr(protocol, "basic_username", "rpnh") + ":" + password).encode()).decode()
         self.slots = threading.BoundedSemaphore(32)
         self.stream_slots = threading.BoundedSemaphore(8)
         # Only method, bounded route shape and status. No body/header/URL query
@@ -74,10 +74,12 @@ class _Server(ThreadingHTTPServer):
                  "/global/config", "/agent", "/command", "/lsp", "/mcp", "/formatter", "/vcs", "/permission", "/question",
                  "/experimental/workspace", "/experimental/workspace/status", "/experimental/resource",
                  "/experimental/capabilities", "/experimental/console",
+                 "/api/info", "/api/event", "/api/session", "/api/session/active",
                  "/api/location", "/api/agent", "/api/provider", "/api/model",
                  "/api/command", "/api/integration", "/api/skill", "/api/reference"}
         session_route = re.fullmatch(r"/session/:session(?:/(?:message|prompt_async|abort|command|todo|diff|children))?", path)
-        route = path if path in known or session_route else "unsupported"
+        candidate_route = re.fullmatch(r"/api/session/:session(?:/(?:prompt|interrupt|message))?", path)
+        route = path if path in known or session_route or candidate_route else "unsupported"
         with self.diagnostic_lock:
             self.diagnostics.append({"method": method, "route": route, "status": status})
 
@@ -153,7 +155,9 @@ class _Handler(BaseHTTPRequestHandler):
             revision = protocol.revision()
             # Prepare the first snapshot BEFORE sending 200 so owner errors get
             # a normal error reply rather than a second status line inside SSE.
-            frames = [encode_sse(protocol.envelope({"type": "server.connected", "properties": {}}))]
+            connected = (protocol.connected_event() if hasattr(protocol, "connected_event") else
+                         protocol.envelope({"type": "server.connected", "properties": {}}))
+            frames = [encode_sse(connected)]
             frames.extend(encode_sse(event) for event in protocol.events())
             if sum(map(len, frames)) > MAX_RESPONSE:
                 raise FrontendError("projection_too_large", "Event snapshot exceeds the display bound.", 413)
@@ -182,7 +186,7 @@ class _Handler(BaseHTTPRequestHandler):
             except Exception:
                 # Headers are already sent: close the stream, never append a
                 # second HTTP response or provider exception inside SSE.
-                self.server.record("SSE", "/global/event", 500)
+                self.server.record("SSE", getattr(protocol, "event_path", "/global/event"), 500)
             finally:
                 self.close_connection = True
         finally:
@@ -193,7 +197,7 @@ class _Handler(BaseHTTPRequestHandler):
             self._validate()
             body = self._body()
             reply = self.server.protocol.route(self.command, self.path, body, dict(self.headers.items()))
-            if self.command == "GET" and urlsplit(self.path).path == "/global/event":
+            if self.command == "GET" and urlsplit(self.path).path == getattr(self.server.protocol, "event_path", "/global/event"):
                 self._stream()
             else:
                 self._reply(reply)

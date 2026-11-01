@@ -1737,9 +1737,11 @@ async def _run_codex_frontend_async(
                     socket_path, visible_to_child_process=True) as address:
                 async with websockets.unix_serve(server.handle, address):
                     socket_path.chmod(0o600)
-                    process = await asyncio.create_subprocess_exec(
-                        *codex_frontend_argv(
-                            binary, address, server.frontend_model_id))
+                    argv = codex_frontend_argv(
+                        binary, address, server.frontend_model_id)
+                    if resume:
+                        argv += ("resume", next(iter(server._threads)))
+                    process = await asyncio.create_subprocess_exec(*argv)
                     try:
                         return int(await process.wait())
                     finally:

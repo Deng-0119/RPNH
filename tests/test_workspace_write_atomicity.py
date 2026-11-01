@@ -59,7 +59,7 @@ class _WriteProductHarness(workspace.WorkspaceExecutionMixin):
         self.compiled = SimpleNamespace(ports=(port,))
         self.operation = SimpleNamespace(
             declaration=SimpleNamespace(
-                outputs=(port.name,), outcomes=(outcome,)),
+                outputs=(port.name,), outcomes=(outcome,), config={}),
         )
         self.context = SimpleNamespace(
             activation_ref=None,

@@ -38,6 +38,18 @@ business-policy decisions rather than structural integrity. Completion still
 requires registered semantic products and preserves every preceding action as
 immutable evidence.
 
+For an admitted AgentLoop `workspace` action, the child process receives
+`RPNH_INVOCATION_ID` and `RPNH_FIRING_ID` from the existing invocation and
+transition-firing **version IDs**, plus `RPNH_TOOL_CALL_ID` from the existing
+provider tool call. These are correlation data, not credentials, permissions,
+new identities, or an authorization to retry an uncertain effect. They are
+passed per call (including the namespace fallback), never read from the host
+environment or accepted as script arguments. Preflight/low-level calls without
+an explicit context receive none of these variables. The fixed environment
+allowlist, network/write confinement, Registry matching and PN admission are
+unchanged. Scripts may log these values to correlate results with existing
+evidence; external systems must still enforce their own access and idempotency.
+
 Owner interruption is a different boundary. It closes the in-progress action,
 persists the clean workspace checkpoint and leaves the run `stopped_by_owner`;
 `resume` continues that same Registry from the checkpoint without replaying the

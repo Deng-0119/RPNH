@@ -86,7 +86,8 @@
       "tests/test_frontend_boundary.py",
       "tests/test_codex_history.py",
       "tests/test_codex_0161_candidate.py",
-      "tests/test_codex_0163_current.py"
+      "tests/test_codex_0163_current.py",
+      "tests/test_codex_0166_candidate.py"
     ],
     "live_provider_calls": false
   },
@@ -134,6 +135,13 @@
       "candidate-0.161.0": {
         "version": "0.161.0",
         "reported_cli_version": "codex-cli 0.161.0",
+        "object_item_cursor": true,
+        "explicit_history_defaults": true,
+        "status": "CANDIDATE_NATIVE_CERTIFICATION_PENDING"
+      },
+      "candidate-0.166.0": {
+        "version": "0.166.0",
+        "reported_cli_version": "codex-cli 0.166.0",
         "object_item_cursor": true,
         "explicit_history_defaults": true,
         "status": "CANDIDATE_NATIVE_CERTIFICATION_PENDING"

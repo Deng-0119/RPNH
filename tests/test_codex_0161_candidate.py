@@ -47,7 +47,7 @@ def test_manifest_is_single_exact_table_and_profiles_are_immutable(candidate, mo
     server, _, _, _ = candidate
     manifest = json.loads(Path(frontend.__file__).with_name("codex_compatibility.v1.json").read_text())
     table = manifest["compatibility_profiles"]
-    assert set(table["profiles"]) == {PINNED, CANDIDATE, CURRENT}
+    assert set(table["profiles"]) == {PINNED, CANDIDATE, CURRENT, "candidate-0.166.0"}
     assert table["default"] == CURRENT
     assert frontend.CODEX_FRONTEND_VERSION == manifest["frontend"]["version"] == "0.163.0"
     assert frontend.CODEX_CLI_VERSION_TEXT == "codex-cli 0.163.0"

@@ -533,15 +533,35 @@ def _workspace_process_tree_usage(root_pid: int) -> tuple[int, int]:
     return len(visible), sum(rows[pid][1] for pid in visible)
 
 
+@dataclass(frozen=True, slots=True)
+class WorkspaceCallContext:
+    """Correlation only; these existing IDs confer no Registry authority."""
+
+    invocation_id: str
+    firing_id: str
+    tool_call_id: str
+
+    def __post_init__(self) -> None:
+        if any(not isinstance(value, str) or not value or "\0" in value
+               for value in (self.invocation_id, self.firing_id,
+                             self.tool_call_id)):
+            raise ValueError("workspace call context requires existing text IDs")
+
+
 def execute_bounded_workspace_tool(
         *, script: str, cwd: str,
         timeout_seconds: int | None, max_output_bytes: int,
         environment: ExecutionEnvironmentIdentity,
         profile: NumericalToolProfile,
+        call_context: WorkspaceCallContext | None = None,
         interruption_requested: Callable[[], bool] | None = None,
         _use_user_namespace: bool = True,
 ) -> dict[str, object]:
     """Run an opaque Bash program within one write-confined workspace."""
+
+    if (call_context is not None
+            and not isinstance(call_context, WorkspaceCallContext)):
+        raise TypeError("workspace call context is invalid")
 
     if (not isinstance(script, str)
             or not isinstance(cwd, str) or not os.path.isabs(cwd)
@@ -590,6 +610,11 @@ def execute_bounded_workspace_tool(
                 "CONDA_DEFAULT_ENV": environment.name,
                 "LANG": "C.UTF-8",
                 "LC_ALL": "C.UTF-8",
+                **({
+                    "RPNH_INVOCATION_ID": call_context.invocation_id,
+                    "RPNH_FIRING_ID": call_context.firing_id,
+                    "RPNH_TOOL_CALL_ID": call_context.tool_call_id,
+                } if call_context is not None else {}),
             },
             stdin=subprocess.DEVNULL,
             stdout=subprocess.PIPE,
@@ -718,6 +743,7 @@ def execute_bounded_workspace_tool(
             max_output_bytes=max_output_bytes,
             environment=environment,
             profile=profile,
+            call_context=call_context,
             interruption_requested=interruption_requested,
             _use_user_namespace=False,
         )
@@ -1343,6 +1369,7 @@ __all__ = [
     "BoundedNumericalExecutionError",
     "BoundedWorkspaceCommandError",
     "ExecutionEnvironmentIdentity",
+    "WorkspaceCallContext",
     "NumericalToolProfile",
     "RESEARCH_ENVIRONMENT_NAME",
     "RuntimeEnvironmentFrameworkFault",

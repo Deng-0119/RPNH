@@ -866,6 +866,9 @@ class WorkspaceExecutionMixin:
         timeout = (
             requested_timeout if profile.timeout_seconds is None else
             min(requested_timeout, profile.timeout_seconds))
+        from cpn.components.tool_executors import WorkspaceCallContext
+
+        context = execution.operation.canonical.context
         return {
             "script": validation.arguments["script"],
             "cwd": str(root),
@@ -873,6 +876,11 @@ class WorkspaceExecutionMixin:
             "max_output_bytes": 1024 * 1024,
             "environment": environment,
             "profile": profile,
+            "call_context": WorkspaceCallContext(
+                invocation_id=str(context.invocation_ref.version_id),
+                firing_id=str(
+                    execution.operation.firing.transition_firing_ref.version_id),
+                tool_call_id=action.tool_call.tool_call_id),
         }
 
     def _decoded_read(self, context, ref, arguments):

@@ -42,6 +42,15 @@ def _load_opencode_profiles() -> tuple[OpenCodeCompatibilityProfile, ...]:
             raise ValueError("Invalid OpenCode certification-only metadata")
         profiles.append(OpenCodeCompatibilityProfile(
             candidate["package_version"], candidate["commit"], True))
+    for candidate in manifest.get("protocol_candidates", []):
+        if (candidate.get("protocol") != "v2"
+                or candidate.get("status") != "certification-only"
+                or candidate.get("production_enabled") is not False
+                or candidate.get("native_g2") != "not-run"
+                or candidate.get("native_g3") != "not-run"):
+            raise ValueError("Invalid OpenCode protocol candidate metadata")
+        profiles.append(OpenCodeCompatibilityProfile(
+            candidate["package_version"], candidate["commit"], True))
     for profile in profiles:
         if (not isinstance(profile.version, str)
                 or re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+", profile.version) is None
@@ -117,6 +126,8 @@ class OpenCodeProtocol:
     def __init__(self, gateway: Any, directory: str, *,
                  profile: OpenCodeCompatibilityProfile = DEFAULT_PROFILE) -> None:
         self._profile = require_opencode_profile(profile)
+        if profile.version == "2.2.5" and type(self) is OpenCodeProtocol:
+            raise ValueError("OpenCode 2.2.5 requires its separate v2 protocol candidate")
         self.gateway, self.directory = gateway, directory
         configuration = gateway.call("configuration")
         if (not isinstance(configuration, Mapping)
@@ -160,6 +171,9 @@ class OpenCodeProtocol:
         self.default_reasoning_effort = configuration[
             "default_reasoning_effort"]
         self._condition = threading.Condition()
+        # Never hold the notification condition across an owner gateway call:
+        # the owner invokes notify before resolving the request future.
+        self._admission_lock = threading.Lock()
         self._revision, self._sequence = 0, 0
         self._epoch = uuid4().hex
         self._closed = False
@@ -382,7 +396,31 @@ class OpenCodeProtocol:
         messages.append({"info": info, "parts": [part(aid, "assistant", text, synthetic)]})
         return messages
 
+    def _checked_legacy_message_ids(self, view: Mapping[str, Any]) -> set[str]:
+        # Reserve both roles even before an answer exists, including interrupted
+        # turns whose IDs can still occur in removal events. Never rewrite IDs.
+        seen: set[str] = set()
+        for turn in view["turns"]:
+            pair = self._message_ids(view["id"], turn)
+            if len(set(pair)) != 2 or seen.intersection(pair):
+                raise FrontendError("message_identity_collision",
+                                    "Existing message identity collision requires reconciliation.", 409)
+            seen.update(pair)
+        return seen
+
+    def _check_legacy_submission_ids(self, view: Mapping[str, Any], key: str) -> None:
+        seen = self._checked_legacy_message_ids(view)
+        # Preserve original same-key owner deduplication and payload checks.
+        if any(turn.get("key") == key for turn in view["turns"]):
+            return
+        if key.startswith("explicit:msg_"):
+            uid = key.removeprefix("explicit:")
+            if seen.intersection((uid, uid + ".rpnh-answer")):
+                raise FrontendError("message_identity_collision",
+                                    "Requested message identity collision; choose another ID.", 409)
+
     def messages(self, view: Mapping[str, Any]) -> list[dict[str, Any]]:
+        self._checked_legacy_message_ids(view)
         result = [m for t in view["turns"] if t["state"] != "interrupted" for m in self._message_pair(view["id"], t)]
         with self._condition:
             result.extend(list(self._observations.get(view["id"], ())))
@@ -552,9 +590,15 @@ class OpenCodeProtocol:
             "reasoning_effort": effort}
         key = request_identity(
             text, None, identity_model, self._supplied_id(body, headers))
-        ordinal = self.gateway.call(
-            "submit", sid, text, key, selection_id=selection,
-            reasoning_effort=effort)
+        # Serialize admission checks for requests to this protocol instance.
+        # The gateway only accepts/registers work here; no model completion is
+        # awaited under this lock. Other frontends remain owner-authoritative;
+        # pre-existing cross-entry collisions fail closed during projection.
+        with self._admission_lock:
+            self._check_legacy_submission_ids(self._view(sid), key)
+            ordinal = self.gateway.call(
+                "submit", sid, text, key, selection_id=selection,
+                reasoning_effort=effort)
         self.notify()
         turn = next(t for t in self._view(sid)["turns"] if t["ordinal"] == ordinal)
         # The pinned endpoint requires an AssistantMessage response. Until a

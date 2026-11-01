@@ -56,6 +56,26 @@ def check_version(binary: str, env: Mapping[str, str], cwd: Path, *,
         raise RuntimeError(f"RPNH requires exactly OpenCode {profile.version}; version probe was rejected")
 
 
+def frontend_launch_spec(binary: str, server_url: str, password: str, directory: Path, *,
+                         profile: OpenCodeCompatibilityProfile = DEFAULT_PROFILE,
+                         resume: bool = False) -> tuple[list[str], dict[str, str]]:
+    """Fixed-version argv/auth, including an explicit unqualified v2 probe spec.
+
+    This does not start a process. The production launcher still uses DEFAULT_PROFILE.
+    No environment/version output selects the certification-only candidate.
+    """
+    require_opencode_profile(profile)
+    if profile.version == "2.2.5":
+        args = [binary, str(directory), "--server", server_url]
+        auth = {"OPENCODE_PASSWORD": password}
+    else:
+        args = [binary, "attach", server_url, "--dir", str(directory), "--username", "rpnh"]
+        auth = {"OPENCODE_SERVER_USERNAME": "rpnh", "OPENCODE_SERVER_PASSWORD": password}
+    if resume:
+        args.append("--continue")
+    return args, auth
+
+
 def run_opencode_frontend(root: Path, execution: Path, *, resume: bool = False) -> int:
     if not sys.platform.startswith("linux"):
         raise RuntimeError("OpenCode frontend currently supports Linux/WSL2 only")
@@ -81,13 +101,12 @@ def run_opencode_frontend(root: Path, execution: Path, *, resume: bool = False) 
             holder.append(protocol)
             server = OpenCodeHTTPServer(protocol)
             server.start()
-            env.update({"OPENCODE_SERVER_USERNAME": "rpnh", "OPENCODE_SERVER_PASSWORD": server.password})
+            args, auth = frontend_launch_spec(binary, server.url, server.password, display,
+                                              profile=profile, resume=resume)
+            env.update(auth)
             print("RPNH OpenCode frontend — Registry-owned execution; UI metrics unavailable.")
             print(f"main session root: {root.resolve()}")
             print("Identical unkeyed text is one request; use /rpnh-send NEW_ID TEXT for an intentional repeat.")
-            args = [binary, "attach", server.url, "--dir", str(display), "--username", "rpnh"]
-            if resume:
-                args.append("--continue")
             result = subprocess.run(args, cwd=display, env=env, check=False)
             if result.returncode:
                 print("OpenCode attach exited unsuccessfully; bounded route diagnostics:", file=sys.stderr)

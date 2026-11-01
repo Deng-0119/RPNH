@@ -32,20 +32,29 @@ export function invokeBridge(config, operation, args, signal, spawnProcess = spa
   const control = CONTROL_OPERATIONS.includes(operation)
   if (control && config.enableControl !== true) throw new Error('RPNH control tools are disabled')
   return new Promise((resolve, reject) => {
-    let child, output = '', errorOutput = '', dispatched = false, aborted = false, settled = false
-    const failure = (message) => new Error(`${message}; ${control && dispatched ? 'OUTCOME_UNKNOWN: inspect original task; do not retry automatically' : 'NO_RESULT'}`)
+    let child, killTimer, output = '', errorOutput = '', dispatched = false, aborted = false, settled = false
+    const failure = (message) => new Error(`${message}; ${!dispatched ? 'NOT_DISPATCHED' : control ? 'OUTCOME_UNKNOWN: inspect original task; do not retry automatically' : 'NO_RESULT'}`)
     const finish = (error, result) => {
       if (settled) return
       settled = true
+      clearTimeout(killTimer)
       signal.removeEventListener('abort', abort)
       if (error) reject(error)
       else resolve(result)
     }
     const abort = () => {
+      if (aborted || settled) return
       aborted = true
       // The bridge is disposable; TaskControl workers use their own sessions.
       // SIGTERM only this child, not a negative process group or owner channel.
       child?.kill('SIGTERM')
+      // Bound cancellation even if the disposable bridge ignores SIGTERM.
+      // Reap this child before settling; never address the task's process group.
+      if (child.exitCode === null && child.signalCode === null) {
+        killTimer = setTimeout(() => {
+          if (!settled && child.exitCode === null && child.signalCode === null) child.kill('SIGKILL')
+        }, 1000)
+      }
     }
     const argv = ['-I', '-m', 'cpn.dsh.operator', '--control-root', config.controlRoot]
     if (config.enableControl === true) argv.push('--allow-control')
@@ -60,6 +69,7 @@ export function invokeBridge(config, operation, args, signal, spawnProcess = spa
     child.stdout.on('data', data => { output += data })
     child.stderr.on('data', data => { errorOutput += data })
     child.on('error', error => finish(failure(`RPNH bridge failed to start: ${error.code || error.name}`)))
+    child.once('exit', () => clearTimeout(killTimer))
     child.stdin.on('error', () => { /* close determines outcome; never replay */ })
     child.on('close', (code) => {
       if (aborted) { finish(failure('RPNH wait cancelled; this is not task rollback')); return }
@@ -83,4 +93,3 @@ export function invokeBridge(config, operation, args, signal, spawnProcess = spa
     child.stdin.end(JSON.stringify({ operation, arguments: args }))
   })
 }
-

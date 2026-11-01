@@ -35,6 +35,15 @@ workspace 执行事实与任务完成事实彼此分离。已启动的 workspace
 runtime／业务策略，不是结构完整性。completion 仍要求已注册的语义产物，并保留此前每条
 action 作为不可变证据。
 
+已准入的 AgentLoop `workspace` 动作会向子进程传入
+`RPNH_INVOCATION_ID`、`RPNH_FIRING_ID`（分别来自已有 invocation 和
+transition-firing 的 **version ID**），以及来自已有 provider 工具调用的
+`RPNH_TOOL_CALL_ID`。它们只是关联数据，不是凭据、权限、新身份，也不授权重试
+结果不明的副作用。值按每次调用传递（包括 namespace fallback），不读取宿主环境，
+也不接受脚本参数提供的替代值。没有显式 context 的 preflight／底层调用不获得这些变量。
+固定环境白名单、网络／写入隔离、Registry 精确匹配与 PN 准入保持不变。
+脚本可以记录这些值以关联既有证据；外部系统仍须执行自身访问控制与幂等约束。
+
 owner interruption 是另一条边界。它关闭正在执行的动作，保存干净 workspace
 checkpoint，并令 run 停在 `stopped_by_owner`；`resume` 从该 checkpoint 在同一
 Registry 中继续，不重放已作废动作。已经完整结算的 terminal run 是不可变历史，
