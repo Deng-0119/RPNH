@@ -6,8 +6,8 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: installation_ZH.md
-  revision: "2026-10-19.3"
-  status: source-candidate-not-published
+  revision: "2026-11-02.1"
+  status: source-installation
   basis: "unified main; host differences explicitly labelled"
 ---
 
@@ -18,27 +18,64 @@ metadata:
 ## Goal and prerequisites
 Install an explicitly selected RPNH source tree or wheel without calling a model. Runtime support remains **Linux, including WSL2**; native Windows and macOS are not supported by this candidate. Python is declared as `>=3.11`; this is not a claim that every Python/platform combination was tested. The runtime uses Unix sockets, POSIX process control and Linux-specific process inspection. A basic terminal does not require Codex or Node.
 
-The current distribution is named `rpnh-harness`, version `0.1.0rc2` (development candidate, not a published release), with imports under `cpn` and user entry `rpnh`. Required libraries are `jsonschema>=4.20,<5`, `packaging>=24,<27` and `websockets>=12,<16`. There are **no `codex` or `dsh` pip extras**. Do not install differently sourced copies of `cpn` into the same environment.
+The distribution is `rpnh-harness`, with imports under `cpn` and command `rpnh`.
+Current public source declares `0.1.0rc3`. The October 30
+[v0.1.0rc3 release](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc3)
+contains a Python wheel and stock DSH operator tarball, but not the later
+November 1 source fixes. See the [source/artifact boundary](../validation/host-adapter-source-20261101.md).
+A version string alone cannot distinguish these sources: record the commit or
+artifact digest and use a fresh environment. No package-index publication or
+blanket runtime acceptance is implied.
 
-The canonical public source repository is [`Deng-0119/RPNH`](https://github.com/Deng-0119/RPNH).
-Choose one provenance before installing:
+Dependencies are `jsonschema>=4.20,<5`, `packaging>=24,<27` and
+`websockets>=12,<16`. There are no `codex` or `dsh` pip extras. Do not overlay
+differently sourced copies of `cpn` in one environment.
 
-- This reviewed source candidate: build from the exact selected checkout/commit.
-  Public `main` may be ahead of the old rc1 release, but an ordinary clone does
-  not contain unpublished candidate changes. There is no rc2 release download
-  promised by these instructions.
-- [`v0.1.0rc1`](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc1): the
-  historical 2026-09-29 wheel/sdist, without subsequent `main` changes.
-- [`benchmark-baseline-2026-10-06`](https://github.com/Deng-0119/RPNH/releases/tag/benchmark-baseline-2026-10-06):
-  source-only at `f58a0f061d1daf4c09fc96c43237c613cc43f439`, preserving the dated
-  benchmark record; it does not provide a current runtime wheel.
+## One-command source installation
 
-No package-index publication or blanket runtime acceptance is claimed. Older
-source snapshots and the published wheel both used `0.1.0rc1` despite different
-code. A version string alone cannot identify that source; `pip install --upgrade`
-can leave an already installed same-version wheel unchanged. Use a fresh
-virtual environment and record the commit or artifact digest. This source
-candidate uses rc2 so its wheel can be distinguished from the older rc1 wheel.
+Have Python 3.11+ with `venv` and pip bootstrapping, Git, curl and Bash available.
+This downloads and executes the [public installer](../../scripts/install.sh);
+review it before running. GitHub and package-index access are required, but no
+model credentials or model calls are needed.
+
+```bash
+bash -c 'set -e; installer=$(mktemp); curl -fsSL https://raw.githubusercontent.com/Deng-0119/RPNH/main/scripts/install.sh -o "$installer"; bash "$installer"; rm -- "$installer"'
+```
+
+The installer creates `$HOME/.local/share/rpnh/source` and an isolated
+`$HOME/.local/share/rpnh/venv`, installs RPNH plus the native demo plugin, and
+checks the installed CLI. It prints the exact source commit. It refuses any
+existing destination (including a symlink), uses no sudo, and does not edit
+system Python, PATH or shell startup files. A failed installation is retained
+for diagnosis; choose a fresh destination rather than overwriting it.
+
+To inspect before execution, choose another destination or pin a reviewed
+commit, download first and run separately:
+
+```bash
+INSTALLER="$(mktemp)"
+curl -fsSL https://raw.githubusercontent.com/Deng-0119/RPNH/main/scripts/install.sh -o "$INSTALLER" &&
+less "$INSTALLER" &&
+bash "$INSTALLER" --prefix "$HOME/rpnh-source-install" --ref ab5e4bfc5582870b56e23f9539ccad6a8c4be649
+```
+
+The pinned example installs that existing source commit, not a new release.
+The script itself is fetched from `main`; review the downloaded bytes. The
+one-command default installs public `main` at execution time, not unpublished
+development work.
+
+After the default install:
+
+```bash
+. "$HOME/.local/share/rpnh/venv/bin/activate"
+cd "$HOME/.local/share/rpnh/source"
+```
+
+With a custom prefix, substitute it in both paths. Run the
+[zero-model addition example](../../README.md#example-add-two-numbers-and-inspect-the-run).
+The installer does not set up providers, optional frontends, or live tasks.
+If a prerequisite is missing, install it using your normal OS procedure; this
+script does not install system packages or change security settings.
 
 ## Install from an approved source tree
 Run these Bash commands from its root (the directory containing `pyproject.toml`):
@@ -75,7 +112,7 @@ cd "$TEST_ROOT"
 "$TEST_ROOT/venv/bin/python" -c 'import cpn; from importlib.metadata import version; print(version("rpnh-harness")); print(cpn.__file__)'
 ```
 
-For this candidate, the printed version must be `0.1.0rc2`; `0.1.0rc1` identifies an older distribution. The printed package path must be in this environment's `site-packages`, not the checkout. Use `scripts/check_installed_docs.py` from the source bundle for the guarded configuration smoke described in [development](development.md). That smoke does not validate a model or an interactive terminal.
+For current source, the printed version is `0.1.0rc3`; also verify the selected source commit, because the October 30 wheel has the same version. The printed package path must be in this environment's `site-packages`, not the checkout. Use `scripts/check_installed_docs.py` from the source bundle for the guarded configuration smoke described in [development](development.md). That smoke does not validate a model or an interactive terminal.
 
 A wheel built from this source candidate contains named reusable example exports
 plus the default provider-neutral cross-host task. Exporting is a zero-model
@@ -95,55 +132,24 @@ potentially paid live operation; follow the bundle's host-specific guide. Each
 host directory includes a sanitized prior acceptance summary, not credentials
 or a substitute for validating the user's own route.
 
-## Select the installation surface
+## Optional frontends and hosts
 
-| Surface | What must be present | Entry and current limitation |
-|---|---|---|
-| Built-in terminal | Approved unified Python package | `rpnh --frontend basic`; a selected model is still required for conversation |
-| Codex presentation | Unified package plus exactly `codex-cli 0.163.0` | `rpnh --frontend codex`; TUI compatibility is version-specific |
-| OpenCode presentation | Unified package plus exactly OpenCode `1.19.3` | `rpnh --frontend opencode`; Linux/WSL2 only, and UI metrics are unavailable |
-| Plugins, onboarding and examples | Approved unified Python package | `rpnh plugins`, `rpnh init`, `rpnh doctor`, and `rpnh examples`; local checks and export do not call a model |
-| Official DSH Web | Unified package, pinned DSH `687f282` / `0.2.1-rc.2` source, Node `^22.19.0 \|\| >=24.0.0`, installed pnpm dependencies and 31 pinned official Web packages | `rpnh --frontend dsh`; Linux/WSL2, official UI with native controls for one bound RPNH MainSession |
-| Legacy DSH headless host | Unified package, bundled `integrations/dsh`, pinned source and toolchain | `rpnh-dsh`; advanced separate-root host, explicit offline numeric or configured text mode |
-| Coexistence | One unified source/wheel with applicable optional hosts | Do not overlay multiple same-name wheels in one environment |
+The basic terminal and read-only Viewer are included; basic conversation still
+requires an authorized provider and exact model. Use the [model guide](models.md).
+Optional clients are not installed by the bootstrap script.
 
-New interactive `rpnh` sessions show a frontend menu; `rpnh init` includes
-frontend setup after model setup. Resume uses that session's last frontend,
-while explicit `--frontend NAME` overrides it. Setup connects a ready client
-or installs its pinned package into RPNH's managed frontend directory. See
-[frontend setup and switching](frontends.md). Configure it without model calls:
+| Surface | Current boundary |
+|---|---|
+| Codex | Default `0.163.0`; `0.166.0` is an [explicit candidate](codex-candidate-0166.md). |
+| OpenCode | Default `1.19.4`; `2.2.5` is only a [REST/authentication/non-durable event subset](../reference/opencode-v2-candidate.md), not a complete native frontend. |
+| Stock DSH operator | Manually pair the RPNH Python companion and operator with DSH `0.2.2-alpha.2`; follow the [operator installation guide](../../integrations/dsh/operator/README.md). No managed-upgrade qualification. |
+| Earlier DSH Web/headless paths | Separate integration surfaces; follow the [DSH guide](dsh.md), not the stock operator instructions. |
 
-```bash
-rpnh frontend setup dsh
-rpnh frontend list
-rpnh frontend switch opencode --resume ./my-session
-```
-
-Preferences are stored beside the model config as its filename plus
-`.frontend.json`; `DSH_SOURCE` overrides the saved DSH path. Install pnpm
-`11.28.5` dependencies in the dedicated pinned checkout with
-`pnpm install --frozen-lockfile --ignore-scripts`. First launch downloads 31
-exact `0.2.1-rc.2` official npm packages into
-`SOURCE/rpnh-frontend/node_modules`; a complete cache can be reused offline.
-Setup creates `official.json`, `tsconfig.json`, typed Remote descriptors and a
-bound-session client under `rpnh-frontend`, leaving official UI unchanged.
-Preparation and asset preflight finish before acquiring MainSession. The
-checkout must be writable; it and the downloaded packages are not bundled in
-the wheel. The launcher prints an authenticated loopback URL and attempts to
-open a browser.
-
-Official index/client plugins and native Web transport connect through a typed
-Remote BFF to Python MainSession. Stock DSH AgentLoop, LLM, tools and persistence
-are not loaded. Support is limited to text, native model/effort selection and
-native slash-menu RPNH controls for the bound session; file uploads, arbitrary
-sessions, workspace editing and native DSH local tool execution are unsupported.
-
-See [adapters](adapters.md), [OpenCode](opencode.md) and [DSH](dsh.md) for session
-sharing, prerequisites and limits. The separate
-[unified DSH record](../validation/dsh-unified-20261019.md) separates the component milestone from official Web E2E results;
-these installation instructions do not establish live-provider, all-platform
-or wheel acceptance. The read-only Viewer and its packaged assets belong to
-the unified distribution and have their own inspection interface.
+Use [frontend setup and switching](frontends.md) for other presentation clients.
+Do not combine old DSH Web setup pins with the stock alpha.2 operator pairing.
+These are independent RPNH adaptations, not upstream endorsement or blanket
+compatibility. [Source changes and bounded validation](../validation/host-adapter-source-20261101.md)
+remain distinct from published assets and live-provider acceptance.
 
 ## Verification, update and removal
 Installation is successful only after the installed command, packaged schemas/config/static/example assets and the zero-model configuration flow work outside the checkout. A successful editable install or passing link check is insufficient. Viewer wheel validation requires the complete pinned vendor-file set and license files; an empty or self-reduced asset manifest cannot waive them. This documentation batch records wheel verification separately from its static-site checks.

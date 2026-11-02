@@ -19,35 +19,47 @@ execution or recovery logic.
 - Resume owner-stopped work or reopen a selected committed checkpoint while
   preserving prior history. This does not undo external effects.
 
-## Quick start
+## One-command installation
 
-Use **Linux or WSL2, Python 3.11+**, and a shell with local process and Unix-socket
-permissions. This source-based example runs a native addition tool without a
-model or API credential; dependency installation may access package indexes.
+Requires **Linux/WSL2, Python 3.11+ with venv, Git, curl and Bash**.
+[Review the installer](scripts/install.sh), then run:
 
 ```bash
-git clone https://github.com/Deng-0119/RPNH.git
-cd RPNH
-git rev-parse HEAD
-python3 -m venv .venv
-. .venv/bin/activate
-python -m pip install .
-python -m pip install ./examples/native_plugin
-rpnh --help
+bash -c 'set -e; installer=$(mktemp); curl -fsSL https://raw.githubusercontent.com/Deng-0119/RPNH/main/scripts/install.sh -o "$installer"; bash "$installer"; rm -- "$installer"'
+```
+
+This installs current public source and the demo plugin into
+`~/.local/share/rpnh/{source,venv}`. It refuses an existing destination, uses no
+sudo, and changes neither system Python nor shell startup files. Network access
+is needed; no model is called. [Custom directory, pinned commit and manual installation](docs/guides/installation.md).
+
+## Example: add two numbers and inspect the run
+
+After the default installation, run this zero-model example. Local subprocess
+and Unix-socket permissions are required:
+
+```bash
+cd "$HOME/.local/share/rpnh/source"
+. ../venv/bin/activate
 RUN_DIR="$(mktemp -d)/add-run"
 rpnh plugins --config examples/native_plugin/plugins.json run demo/add \
   --input examples/native_plugin/input.json --run-dir "$RUN_DIR"
 rpnh net --run "$RUN_DIR" --view --no-open
 ```
 
-The tool returns `output.value: 5` and a terminal-evidence reference. The final
-command prints a local read-only dashboard URL. Keep the generated run directory
-to inspect it again.
+The input is `2 + 3`; expected output contains `output.value: 5` and a terminal-evidence
+reference. The last command prints the local read-only Viewer URL. Keep the run
+directory for later inspection.
 
-For model-backed conversation, configure your own provider and exact model using
-the [model guide](docs/guides/models.md), then run `rpnh --frontend basic`.
-No provider is preselected. See [workflow examples](examples/workflow_patterns/README.md)
-for parallelism and joins without model credentials.
+[![Recorded native-add run in the PetriNet Viewer](examples/native_plugin/assets/native-plugin-petrinet.png)](examples/native_plugin/assets/native-plugin-petrinet.png)
+
+Existing capture of a completed native-tool run, not a model run or a new test
+of this revision. [Example details](examples/native_plugin/README.md) ·
+[More workflows](examples/workflow_patterns/README.md).
+
+For conversation, configure your provider and exact model with the
+[model guide](docs/guides/models.md), then run `rpnh --frontend basic`.
+No provider is preselected.
 
 ## Compatibility and releases
 

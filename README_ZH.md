@@ -16,32 +16,42 @@ RPNH 是不绑定特定模型服务商的 Agent 执行框架，用于组合语�
 - 续接 owner 主动停止的工作，或从指定的已提交 checkpoint 重开，并保留先前历史；
   这不会撤销外部效果。
 
-## 快速开始
+## 一键安装
 
-需要 **Linux 或 WSL2、Python 3.11+**，以及允许本地进程和 Unix socket 的 shell 环境。
-以下从源码安装并运行原生加法工具，不需要模型或 API 凭据；安装依赖时可能访问包索引。
+需要 **Linux/WSL2、Python 3.11+（含 venv）、Git、curl 和 Bash**。
+先[查看安装脚本](scripts/install.sh)，然后执行一条命令：
 
 ```bash
-git clone https://github.com/Deng-0119/RPNH.git
-cd RPNH
-git rev-parse HEAD
-python3 -m venv .venv
-. .venv/bin/activate
-python -m pip install .
-python -m pip install ./examples/native_plugin
-rpnh --help
+bash -c 'set -e; installer=$(mktemp); curl -fsSL https://raw.githubusercontent.com/Deng-0119/RPNH/main/scripts/install.sh -o "$installer"; bash "$installer"; rm -- "$installer"'
+```
+
+安装当前公开源码及演示插件到 `~/.local/share/rpnh/{source,venv}`。
+目标目录已存在时拒绝安装；不用 sudo，不改系统 Python 或 shell 启动文件。
+需要联网，不调用模型。[自定义目录、固定提交与手动安装](docs/guides/installation_ZH.md)。
+
+## 使用案例：两数相加并查看运行
+
+完成默认安装后，执行这个零模型案例；需要本地子进程与 Unix socket 权限：
+
+```bash
+cd "$HOME/.local/share/rpnh/source"
+. ../venv/bin/activate
 RUN_DIR="$(mktemp -d)/add-run"
 rpnh plugins --config examples/native_plugin/plugins.json run demo/add \
   --input examples/native_plugin/input.json --run-dir "$RUN_DIR"
 rpnh net --run "$RUN_DIR" --view --no-open
 ```
 
-工具返回 `output.value: 5` 和终态证据引用；最后一条命令输出本地只读看板地址。
-保留生成的运行目录，即可再次查看。
+输入为 `2 + 3`，预期输出包含 `output.value: 5` 和终态证据引用。
+最后一条命令打印本地只读 Viewer 地址；保留运行目录即可再次查看。
 
-如需模型对话，先按[模型指南](docs/guides/models_ZH.md)配置自己的 provider 和精确模型，
+[![PetriNet Viewer 中已记录的原生加法运行](examples/native_plugin/assets/native-plugin-petrinet.png)](examples/native_plugin/assets/native-plugin-petrinet.png)
+
+这是已有的原生工具完成运行截图，不是模型运行，也不是对本次版本的新测试。
+[案例说明](examples/native_plugin/README_ZH.md) · [更多工作流](examples/workflow_patterns/README_ZH.md)。
+
+如需对话，先按[模型指南](docs/guides/models_ZH.md)配置自己的 provider 和精确模型，
 再运行 `rpnh --frontend basic`；系统不预选 provider。
-[工作流示例](examples/workflow_patterns/README_ZH.md)可在无模型凭据时演示并行与汇合。
 
 ## 兼容与发布边界
 

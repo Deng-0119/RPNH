@@ -6,8 +6,8 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: installation.md
-  revision: "2026-10-19.3"
-  status: source-candidate-not-published
+  revision: "2026-11-02.1"
+  status: source-installation
   basis: "unified main; host differences explicitly labelled"
 ---
 
@@ -18,23 +18,56 @@ metadata:
 ## 目标与前提
 从明确指定的 RPNH 源码或 wheel 安装，不调用模型。当前运行支持范围仍是 **Linux（包括 WSL2）**，不支持原生 Windows 和 macOS。`pyproject.toml` 声明 Python `>=3.11`，不等于每个 Python/平台组合均已测试；运行时涉及 Unix socket、POSIX 进程控制和 Linux 进程检查。basic 文本前端不需要 Codex 或 Node。
 
-发行包名称是 `rpnh-harness`，版本 `0.1.0rc2`（开发候选版，尚非已发布版本），Python 导入包为 `cpn`，用户命令为 `rpnh`。依赖是 `jsonschema>=4.20,<5`、`packaging>=24,<27`、`websockets>=12,<16`。当前**不存在 `codex`、`dsh` pip extra**。不要在同一环境安装来自不同维护线的两套 `cpn`。
+发行包为 `rpnh-harness`，导入包为 `cpn`，命令为 `rpnh`。
+当前公开源码版本为 `0.1.0rc3`。10 月 30 日的
+[v0.1.0rc3 release](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc3)
+包含 Python wheel 与 stock DSH operator tarball，**不含** 11 月 1 日的源码修复；
+详见[源码与产物边界](../validation/host-adapter-source-20261101_ZH.md)。
+版本字符串不能单独区分这些源码；应记录提交或产物摘要，并使用全新环境。
+不表示包索引发布或 runtime 全面验收。
 
-Canonical 公开源码仓库是 [`Deng-0119/RPNH`](https://github.com/Deng-0119/RPNH)。
-安装前明确选择一种来源：
+依赖为 `jsonschema>=4.20,<5`、`packaging>=24,<27`、`websockets>=12,<16`。
+没有 `codex` 或 `dsh` pip extra；不要在同一环境覆盖安装不同来源的 `cpn`。
 
-- 本审查中的源码候选版：从精确选定的 checkout／提交构建。公开 `main` 可以领先旧 rc1
-  release，但普通 clone 不会包含尚未发布的候选变更。本文不承诺已有 rc2 release 下载。
-- [`v0.1.0rc1`](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc1)：
-  2026-09-29 的历史 wheel/sdist，不包含之后的 `main` 变更。
-- [`benchmark-baseline-2026-10-06`](https://github.com/Deng-0119/RPNH/releases/tag/benchmark-baseline-2026-10-06)：
-  提交 `f58a0f061d1daf4c09fc96c43237c613cc43f439` 的纯源码快照，用于保留注明日期的
-  benchmark 记录，不提供当前 runtime wheel。
+## 一键源码安装
 
-这里不声称已在包索引发布，也不声称 runtime 全面验收通过。此前不同代码的源码快照与已发布
-wheel 都使用过 `0.1.0rc1`，因此版本字符串不能单独识别源码；`pip install --upgrade` 可能
-保留已安装的同版本旧 wheel。请使用全新虚拟环境并记录提交或产物摘要。本源码候选版改用 rc2，
-使所构建 wheel 能与旧 rc1 wheel 区分。
+需预备 Python 3.11+（含 `venv` 与 pip 引导能力）、Git、curl 和 Bash。
+以下下载并执行[公开安装脚本](../../scripts/install.sh)，建议先查看脚本。
+需要访问 GitHub 与依赖包索引，不需要模型凭据，也不调用模型。
+
+```bash
+bash -c 'set -e; installer=$(mktemp); curl -fsSL https://raw.githubusercontent.com/Deng-0119/RPNH/main/scripts/install.sh -o "$installer"; bash "$installer"; rm -- "$installer"'
+```
+
+脚本创建 `$HOME/.local/share/rpnh/source` 和隔离的
+`$HOME/.local/share/rpnh/venv`，安装 RPNH 与原生演示插件，检查已安装 CLI，
+并打印精确源码提交。目标目录已存在（含符号链接）时拒绝安装；不用 sudo，
+不修改系统 Python、PATH 或 shell 启动文件。失败时保留目录用于诊断，
+请选择新目录，不覆盖重装。
+
+如需先检查脚本、自选目录或固定已审阅提交，分开下载与执行：
+
+```bash
+INSTALLER="$(mktemp)"
+curl -fsSL https://raw.githubusercontent.com/Deng-0119/RPNH/main/scripts/install.sh -o "$INSTALLER" &&
+less "$INSTALLER" &&
+bash "$INSTALLER" --prefix "$HOME/rpnh-source-install" --ref ab5e4bfc5582870b56e23f9539ccad6a8c4be649
+```
+
+固定提交示例安装的是该现有源码，不是新 release。脚本本身从 `main` 下载，
+应检查所下载的内容。一键命令默认安装执行时的公开 `main`，不包含未公开开发内容。
+
+默认安装后：
+
+```bash
+. "$HOME/.local/share/rpnh/venv/bin/activate"
+cd "$HOME/.local/share/rpnh/source"
+```
+
+自定义 prefix 时替换上述两个路径。接着可运行
+[零模型加法案例](../../README_ZH.md#使用案例两数相加并查看运行)。
+安装器不配置 provider、可选前端或真实任务。缺少前提组件时，应按通常的系统安装流程准备；
+脚本不安装系统包或修改安全设置。
 
 ## 从批准的源码安装
 在包含 `pyproject.toml` 的源码根目录运行 Bash：
@@ -71,7 +104,7 @@ cd "$TEST_ROOT"
 "$TEST_ROOT/venv/bin/python" -c 'import cpn; from importlib.metadata import version; print(version("rpnh-harness")); print(cpn.__file__)'
 ```
 
-本候选版输出版本应为 `0.1.0rc2`；若仍为 `0.1.0rc1`，说明是旧发行包。包路径应来自新环境的 `site-packages`，不能来自源码目录。[开发维护](development_ZH.md)介绍源码包内 `scripts/check_installed_docs.py` 的受限零模型配置检查；它不验证模型和交互式终端。
+当前源码输出版本应为 `0.1.0rc3`；10 月 30 日 wheel 也使用同一版本，因此还须核对选定的源码提交。包路径应来自新环境的 `site-packages`，不能来自源码目录。[开发维护](development_ZH.md)介绍源码包内 `scripts/check_installed_docs.py` 的受限零模型配置检查；它不验证模型和交互式终端。
 
 从本源码候选版构建的 wheel 包含命名可复用案例以及默认的 provider-neutral 跨宿主任务。
 导出只是零模型文件操作，不需要源码 checkout。旧 rc1 wheel 只包含 adapter 任务。当前命名
@@ -88,46 +121,23 @@ cd "$TEST_ROOT"
 宿主的说明执行。每个宿主目录包含一份既有验收的脱敏摘要，但不包含凭据，也不能替代对用户
 自有路线的验证。
 
-## 选择安装范围
+## 可选前端与宿主
 
-| 范围 | 必需内容 | 入口和当前边界 |
-|---|---|---|
-| 内置终端 | 批准的统一 Python 包 | `rpnh --frontend basic`；对话仍需选择模型 |
-| Codex 展示 | 统一包和精确 `codex-cli 0.163.0` | `rpnh --frontend codex`；兼容性绑定版本 |
-| OpenCode 展示 | 统一包和精确 OpenCode `1.19.3` | `rpnh --frontend opencode`；仅 Linux/WSL2，且无 UI 指标 |
-| 插件、引导与案例 | 批准的统一 Python 包 | `rpnh plugins`、`rpnh init`、`rpnh doctor`、`rpnh examples`；本地检查和导出不调用模型 |
-| 官方 DSH Web | 统一包、固定 DSH `687f282`／`0.2.1-rc.2` 源码、Node `^22.19.0 \|\| >=24.0.0`、已安装的 pnpm 依赖和 31 个固定官方 Web 包 | `rpnh --frontend dsh`；Linux/WSL2，官方 UI 以原生控件操作唯一绑定的 RPNH MainSession |
-| 旧版 DSH headless host | 统一包、内含 `integrations/dsh`、固定源码及工具链 | `rpnh-dsh`；使用独立 root 的高级宿主，显式离线数值或配置文本模式 |
-| 共存 | 统一源码/wheel，加所需可选宿主 | 不要在同一环境覆盖安装多份同名 wheel |
+内置 basic 终端和只读 Viewer 已包含；basic 对话仍需获准 provider 与精确模型，
+按[模型指南](models_ZH.md)配置。引导脚本不安装可选客户端。
 
-新交互 `rpnh` 显示前端菜单，`rpnh init` 在模型配置后继续前端配置。resume 使用
-该会话上次的前端，显式 `--frontend NAME` 可覆盖。setup 会连接可用客户端，或安装
-固定版本到 RPNH 管理目录。完整说明见[前端配置与切换](frontends_ZH.md)。配置不调用模型：
+| 入口 | 当前边界 |
+|---|---|
+| Codex | 默认 `0.163.0`；`0.166.0` 是[显式候选](codex-candidate-0166_ZH.md)。 |
+| OpenCode | 默认 `1.19.4`；`2.2.5` 仅为 [REST／认证／非持久化事件子集](../reference/opencode-v2-candidate_ZH.md)，不是完整原生前端。 |
+| Stock DSH operator | RPNH Python companion 与 operator 手动配对 DSH `0.2.2-alpha.2`，按[operator 安装指南](../../integrations/dsh/operator/README_ZH.md)操作；不代表托管升级验收。 |
+| 早期 DSH Web／headless 路径 | 是不同集成入口，按 [DSH 指南](dsh_ZH.md)使用，不适用 stock operator 安装步骤。 |
 
-```bash
-rpnh frontend setup dsh
-rpnh frontend list
-rpnh frontend switch opencode --resume ./my-session
-```
-
-偏好文件位于模型配置旁，文件名为原文件名加 `.frontend.json`；`DSH_SOURCE` 优先于
-保存的 DSH 路径。在独立固定 checkout 中用 pnpm `11.28.5` 执行
-`pnpm install --frozen-lockfile --ignore-scripts` 安装依赖。首次启动从 npm 下载精确
-`0.2.1-rc.2` 的 31 个官方包到 `SOURCE/rpnh-frontend/node_modules`，完整缓存可离线复用。
-Setup 在 `rpnh-frontend` 下生成 `official.json`、`tsconfig.json`、typed Remote descriptor
-和绑定会话 client，不修改官方 UI。准备及资源预检在取得 MainSession 前完成。
-checkout 必须可写；wheel 不含准备后的 checkout 或下载的包。launcher 打印带认证的
-loopback URL 并尝试打开浏览器。
-
-官方 index／client plugins 与原生 Web transport 经 typed Remote BFF 接入 Python
-MainSession，不加载 stock DSH AgentLoop、LLM、工具及 persistence。支持范围仅为绑定
-会话的文本、原生模型／effort 选择和原生 slash 菜单 RPNH 控制；不支持文件上传、任意
-会话、workspace 编辑或 DSH 原生本机工具执行。
-
-共享会话、前提与边界见[适配指南](adapters_ZH.md)、[OpenCode](opencode_ZH.md)和
-[DSH](dsh_ZH.md)。实际检查由单独的[DSH 统一前端记录](../validation/dsh-unified-20261019_ZH.md)
-区分此前组件阶段与官方 Web E2E 结果；这些安装说明不证明真实 provider、全平台或
-wheel 已验收。只读 Viewer 及其资源属于统一发行包，使用独立的检查入口。
+其他展示客户端见[前端配置与切换](frontends_ZH.md)。
+不要把旧 DSH Web 固定版本配置混入 stock alpha.2 operator 配对。
+这些是独立 RPNH 适配，不表示上游背书或任意版本兼容。
+[源码变更与限定验证](../validation/host-adapter-source-20261101_ZH.md)
+不等于已发布产物或真实 provider 验收。
 
 ## 验证、升级与卸载
 只有已安装命令、包内 schema/config/static/example 资源，以及源码目录外的零模型配置流程均通过，才可称安装验证通过。editable 安装成功或链接检查通过都不足以替代。Viewer wheel 校验要求完整的固定 vendor 文件集合及许可文件；空清单或自行缩减的 asset manifest 不能免除这些文件。本文档批次单独记录 wheel 验证和站点检查。
