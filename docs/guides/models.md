@@ -113,7 +113,7 @@ the same profile with no canonical effort. A model explicitly configured with
 the string `none` remains distinct. No provider argument or catalog value is
 added. The current Codex pin is 0.163.0. Its history projection supports the
 newer object item cursor through the same committed MainThreadRegistry;
-see the [current frontend validation](../validation/frontends-20261019.md).
+see the [frontend compatibility](compatibility.md).
 
 ## Transport, recovery and effects
 The external transport exposed by this catalog is `openai_chat_completions/v1`, not every API marketed as compatible. The alternative `local_process` adapter requires explicit `argv`, `probe_argv`, `env` and `inherit_env`; `{model}` substitution preserves the selected model. A local model that declares efforts must also place `{reasoning_effort}` in its formal `argv`; the builder materializes one immutable execution variant for every supported value. A local process or its probe may still call a paid model. Do not treat “local” as “offline”.
@@ -170,4 +170,4 @@ or establish real-provider throughput improvements.
 
 Sources: `cpn/rpnh/provider_setup.py`, `user_config.py`, `provider_catalog.py`,
 `onboarding.py`; `cpn/schemas/runtime/provider_model_catalog.v3.schema.json`.
-See [troubleshooting](troubleshooting.md) and [component reference](../reference/agents.md).
+See [troubleshooting](troubleshooting.md) and [component reference](../reference/agent-runtime.md).

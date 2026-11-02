@@ -1,0 +1,14 @@
+# Source archives contain the public software and documentation.
+AGENTS.md export-ignore
+AGENTS.local.md export-ignore
+CLAUDE.md export-ignore
+GEMINI.md export-ignore
+.agents export-ignore
+.codex export-ignore
+.claude export-ignore
+handoffs export-ignore
+logs export-ignore
+runs export-ignore
+notes export-ignore
+reports export-ignore
+docs/validation export-ignore

@@ -1,15 +1,27 @@
-include AGENTS.md setup.py
+include setup.py
 include CHANGELOG.md CHANGELOG_ZH.md
 include CONTRIBUTING.md CONTRIBUTING_ZH.md
 include LICENSE README.md README_ZH.md
 include SECURITY.md SECURITY_ZH.md
 include THIRD_PARTY_NOTICES.md
 
-recursive-include docs *.json *.md *.txt *.svg
+recursive-include docs *.json *.md *.txt *.svg *.png
 recursive-include examples *.json *.md *.png *.py *.toml *.txt *.zip *.in
 include examples/harnessaudit_office/results/*.csv
 include examples/harnessaudit_office/comparison/*.csv
-recursive-include scripts *.py
+recursive-include scripts *.py *.sh
 recursive-include tools *.py
 include tests/environment_neutral_fixture.py
 recursive-include tests/fixtures/environment_neutral *.py
+
+# Keep development sessions and machine-local data out of source distributions.
+global-exclude AGENTS.md AGENTS.local.md CLAUDE.md GEMINI.md *.log *.py[cod]
+prune .agents
+prune .codex
+prune .claude
+prune handoffs
+prune logs
+prune runs
+prune notes
+prune reports
+prune docs/validation

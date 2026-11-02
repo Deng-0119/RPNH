@@ -19,7 +19,7 @@ metadata:
 
 执行路径为 `rpnh → OpenCode attach → 回环 HTTP/SSE → 前端中立 application service → 现有 MainSession/TaskControl → Registry/Petri net`。OpenCode 仅作终端展示，不是 RPNH 的执行后端。精确模型选择、provider 调用、资源、workspace、工具、独立任务、Designer 工作流、checkpoint 和终态证据仍由 RPNH 管理；不复制上游执行循环，也不启动 OpenCode server/provider/tool 后端。
 
-当前精确目标为 **opencode-ai 1.19.4**。本指南说明兼容候选，不是正式发布或全功能认证。[2026-10-19 验证记录](../validation/opencode-20261019_ZH.md)覆盖 **1.19.3**，保留为历史证据，不代表 1.19.4 已验收。
+当前精确目标为 **opencode-ai 1.19.4**。本指南说明兼容候选，不是正式发布或全功能认证。当前版本及独立的 2.2.5 协议子集见[兼容性](compatibility_ZH.md)。
 
 稳定客户端同时使用既有 session/HTTP/SSE 和新版 `/api/*` 启动读取。RPNH 将同一组 profile、agent、命令投影为带 location 的目录响应；Console 组织、原生 integration、skill、reference 目录为空。这些读取不授予 OpenCode 模型、凭据、工具、workspace 或恢复权威。启动器仍只接受当前精确版本；旧 1.18.35 候选已退出支持集。
 
@@ -134,4 +134,4 @@ python -m pytest -q tests/test_opencode_frontend.py \
 
 `cpn/rpnh_cli.py` 负责选择入口；`cpn/rpnh/frontend_application.py` 负责中立应用 owner；`cpn/frontend/opencode_protocol.py` 负责固定 DTO 投影；`opencode_http.py` 负责有界 HTTP/SSE；`opencode_launcher.py` 隔离 attach；`opencode_compatibility.v1.json` 记录源码提取的 SDK 子集。不打包上游源码。
 
-fixture 是人工核对的子集，不是上游生成器产物，也不证明已经执行 upstream SDK/TUI。参考源码包括固定版本的 generated SDK types/client、TUI 的 `context/sync.tsx`、`context/data.tsx`、`context/project.tsx`、prompt 组件、attach 命令及 TUI/core 配置 flags。变更版本前应重新核对。非站点 `docs/validation/` 记录包含本轮实际结果和剩余验收条件。
+fixture 是人工核对的子集，不是上游生成器产物，也不证明已经执行 upstream SDK/TUI。参考源码包括固定版本的 generated SDK types/client、TUI 的 `context/sync.tsx`、`context/data.tsx`、`context/project.tsx`、prompt 组件、attach 命令及 TUI/core 配置 flags。变更版本前应重新核对。支持版本与限制见[兼容性](compatibility_ZH.md)。

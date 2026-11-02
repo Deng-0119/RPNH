@@ -37,5 +37,3 @@ The business window exited 0 with peak 1,288,105,984 bytes and OOM0. The read-on
 Original judge: NOT_RUN; official score: NOT_COMPARABLE_ADAPTED. No matched control, superiority result, production deployment, external identity federation or whole-product certification. Developer/QA optional requested historical-cut completeness remains UNKNOWN; retained terminal captures are real. The public source curation adds no new live execution claim.
 
 ## Public-entry verification
-
-[Release validation](release-validation.json) records a separate source/package check: the guide's pinned original-task retrieval and configuration work, the no-provider native preflight passes, 80 selected runtime/example checks pass without skips, and three driver control tests pass after reproducing and fixing two closeout defects. The isolated installed core also passes schema/cap-transport/CLI checks. These checks do not add model-provider calls to the historical accounting or rescore the original business episode.

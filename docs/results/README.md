@@ -1,31 +1,31 @@
 ---
 name: rpnh-curated-results
-description: "Curated historical results"
+description: "Benchmark results"
 metadata:
   document-kind: index
-  audience: operator-and-developer
+  audience: user-and-developer
   language: en
   counterpart: README_ZH.md
-  revision: "2026-10-12.1"
-  status: historical-curated-result
+  revision: "2026-11-02.1"
+  status: maintained
 ---
 
-English | [中文](README_ZH.md)
+[English](README.md) | [中文](README_ZH.md)
 
-# Curated historical results
+# Benchmark results
 
+These published application results identify their source versions, inputs,
+models, scoring methods and limitations. They retain failed and unrun cases.
+They describe historical examples, not a certification of current software.
 
-These records retain historical application scores and finite zero-model runtime results. Each identifies tested source/overlay, inputs, scorer, commands/conditions and complete score/status projections. Older windows do not certify a later combined product. This documentation rewrite ran no experiment, model or new product test. Raw diagnostics, conversations, databases and private profiles are outside these public summaries.
-
-| Record | Historical scope |
+| Example | Scope |
 |---|---|
-| [Controlled user collaboration](user-collaboration-20261012/README.md) | Three simulated identities / two real models; dev/eval 512 each; score improves while travel increases; original panoramas and static Viewer |
-| [ERP-Bench historical first-wave results](erp-first-wave-20261008/README.md) | ERP A01–A04 + H01: blocked/failed and 0/100, 21/100, 100/100 kept separate |
-| [SlopCodeBench adapted prefix 3 results](scb-prefix3-20261008/README.md) | SCB first3of5: 13/13, 25/25, 40/47; CP4/CP5 not_run |
-| [ERP synthetic native runtime validation](erp-runtime-20261008/README.md) | ERP synthetic: 65 + 4 subtests; B lifecycle / C six scenarios |
-| [Atomic-tool pipeline native validation](tool-pipeline-20261008/README.md) | Atomic tool: 32 unique / 33 executions; 2.000 kWh / 1.70 CNY |
-| [Historical H1 and H1+H2a native validation](entry-reader-20261009/README.md) | H1 39 and later H1+H2a 166; historical AF_UNIX blocks retained |
+| [ERP-Bench](erp-first-wave-20261008/README.md) | Original A01–A04 and H01 results, including failures and blocked cases |
+| [SlopCodeBench](scb-prefix3-20261008/README.md) | Three of five checkpoints: 13/13, 25/25 and 40/47; later checkpoints unrun |
+| [Controlled collaboration](user-collaboration-20261012/README.md) | Fixed 512-route development/evaluation sets; sequence score and travel-cost tradeoffs |
+| [AutomationBench](../../examples/automationbench/PUBLIC_RESULTS_20261006.md) | First18 and repair4 kept as separate conditions |
+| [HarnessAudit Office](../../examples/harnessaudit_office/README.md) | Office task results and comparison conditions |
 
-Other existing curated records: [AutomationBench first18 + repair4](../../examples/automationbench/PUBLIC_RESULTS_20261006.md) and [HarnessAudit Office](../../examples/harnessaudit_office/README.md). They retain their own cohorts, conditions and failed/blocked denominators; do not add them to these results.
-
-- [Finite product combination checks (2026-10-09)](product-validation-20261009/README.md)
+For runnable examples, start at the [example catalog](../../examples/README.md).
+For installation and supported versions, see [releases](../guides/releases.md)
+and [compatibility](../guides/compatibility.md).

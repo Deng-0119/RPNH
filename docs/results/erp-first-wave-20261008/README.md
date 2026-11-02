@@ -43,6 +43,3 @@ rpnh-erp run --upstream "$ERP_SOURCE"   --task 2000_easy_01_buy_only_baseline   
 For H01 select `2299_hard_repair_plan_hard` and a fresh world/condition. Historical build/firewall and Codex endpoint adaptations must be supplied explicitly as described in the [ERP guide](../../../examples/erp_bench/README.md); the recipe alone does not reproduce those prepared assets. No credentials or private selection is distributed. A separately cited integration-only offline window is excluded from these curated results because its command record does not identify exact tested source; it cannot certify an identified product revision.
 
 Some historical resource provenance checks failed; exact-byte recovery does not resolve that provenance. A04 control transcripts and vendor HTTP/full Codex event streams were not collected at this boundary. Scores do not establish a single failure cause, runtime superiority or complete business acceptance.
-
-
-The [distribution manifest](MANIFEST.json) identifies these rewritten summary/projection bytes, not original materials.

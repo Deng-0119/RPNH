@@ -20,8 +20,8 @@ closure, or `open_region_assembly_schema_data()` for direct Assembly/v4
 consumption. Earlier catalog functions and versioned recipes remain unchanged.
 This page describes the implemented structural interfaces and their limits.
 [Ordinary descendants](open-region-descendants.md) covers the separate explicit
-edit/copy and Assembly/v5 interfaces. See [finite validation](../guides/release-validation.md)
-for historical verification scope; interface availability is not runtime certification.
+edit/copy and Assembly/v5 interfaces. These structural interfaces do not
+authorize arbitrary runtime effects.
 
 ## Save a nonterminal selection
 

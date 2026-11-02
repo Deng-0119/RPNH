@@ -43,6 +43,3 @@ rpnh-erp run --upstream "$ERP_SOURCE"   --task 2000_easy_01_buy_only_baseline   
 H01 改用 `2299_hard_repair_plan_hard`，另建 world/condition。历史 build/firewall 与 Codex endpoint 适配须按 [ERP 指南](../../../examples/erp_bench/README_ZH.md)显式提供；此命令本身不能重现已准备资产。不分发凭据或私有 selection。另一个 integration-only 离线窗口因命令记录缺少精确受测源码，已从本精选结果撤下，不能认证指定产品版本。
 
 部分历史资源未通过 fresh-reader provenance 检查，精确字节回收不解除该边界。A04 control 文本及 vendor HTTP/完整 Codex event stream 在此证据边界没有收集。不由分数推断单一原因、runtime 优势或完整业务验收。
-
-
-[分发字节清单](MANIFEST.json)记录本摘要与投影的新字节身份，不能当作原始材料字节。

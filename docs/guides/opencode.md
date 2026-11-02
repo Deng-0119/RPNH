@@ -27,8 +27,8 @@ an OpenCode server/provider/tool loop.
 
 The current exact target is **opencode-ai 1.19.4**. This guide describes the
 compatibility candidate; it is not a release or all-feature certification.
-The [2026-10-19 validation record](../validation/opencode-20261019.md) covers
-**1.19.3** and remains historical evidence, not acceptance of 1.19.4.
+See [compatibility](compatibility.md) for current versions and the separate
+2.2.5 protocol subset.
 
 The stable client mixes legacy session/HTTP/SSE requests with newer `/api/*`
 bootstrap reads. RPNH projects the same profiles, agent and commands into
@@ -247,5 +247,4 @@ The fixture is a reviewed subset, not upstream generator output or evidence that
 the upstream SDK/TUI was executed. Source references are the pinned generated
 SDK types/client, TUI `context/sync.tsx`, `context/data.tsx`, `context/project.tsx`, prompt component,
 attach command and TUI/core configuration flags. Review them again before changing
-the version pin. The non-site `docs/validation/` record contains actual local
-results and remaining gates.
+the version pin. Supported versions and limits are listed in [compatibility](compatibility.md).

@@ -40,12 +40,11 @@ The separate `codex_subscription_bridge` **exec JSONL model endpoint is unchange
 executable or permit backend tools. The backend still permits only agent-message
 and reasoning items and rejects built-in execution items.
 
-The initial offline checks used real temporary Registry history and fake transport/lifecycle
-boundaries. The interruption/terminal case supplies deterministic fake session
-reconciliation; it is not an actual Registry or native-client race test. That initial window ran no model API, installation, stock 0.166 binary, native UI or full
-Unix-socket session. Native qualification and any promotion of the default
-require separate evidence and authorization; this candidate is not a release.
+## Reopening and limits
 
-## Later bounded native evidence
-
-Official 0.166.0 was subsequently exercised in two real PTY sessions against idle committed Registry history. The launcher now passes `resume` and the exact bound thread ID when reopening; fresh startup is unchanged. Initialization, history and cold reconnect/unsubscribe preserved one thread, two turns and four item IDs, with no new turn or model call. This is not active-task survival, business-checkpoint recovery, default 0.163 native recertification or full client qualification. See the [source validation note](../validation/host-adapter-source-20261101.md) for failures and limits.
+When reopening a session, the launcher passes `resume` and the exact bound thread
+ID to the client; fresh startup is unchanged. This restores committed history
+without submitting the old prompt again. It does not automatically resume a
+business task or establish active-task survival across client disconnects.
+See [compatibility](compatibility.md) for the default pin, candidate status and
+source/release distinction.

@@ -17,7 +17,7 @@ metadata:
 当前版本为 **Codex 0.163.0**。thread/turns/list 与 thread/items/list 从 basic
 主会话同一个 MainThreadRegistry 分页；state.turns 仅保留原 live reconciliation
 缓存职责，不作为历史 authority。旧 0.155 和 0.161 profile 保留显式测试入口，
-普通 launcher 选择 0.163.0。范围见[本次验证](../validation/frontends-20261019_ZH.md)。
+普通 launcher 选择 0.163.0。范围见[兼容性](../guides/compatibility_ZH.md)。
 
 ## 原有 owner 权限边界
 

@@ -7,7 +7,7 @@ the frontend sends no model request; submitting `task.txt` starts one logical
 main-session turn:
 
 The retained figure below comes from the earlier 0.155.0 acceptance run;
-current frontend validation is documented in `docs/validation/frontends-20261019.md`.
+current frontend compatibility is documented in `docs/guides/compatibility.md`.
 
 This is the actual settled PetriNet from the checked Codex acceptance run. It
 shows the RPNH-owned execution layer behind the Codex presentation.

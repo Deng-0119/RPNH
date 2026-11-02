@@ -518,7 +518,7 @@ than assuming those files already exist.
   process you started when inspection is complete. See the
   [dashboard guide](viewer.md).
 
-The accepted reference boundary is in [examples validation](examples-validation.md).
+The accepted reference boundary is in [examples validation](examples.md).
 It distinguishes deterministic fixtures, earlier authorized provider calls and
 current focused compatibility checks; none substitutes for validating a user's
 own route.

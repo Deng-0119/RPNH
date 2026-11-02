@@ -21,9 +21,10 @@ import xml.etree.ElementTree as ET
 
 import yaml
 from markdown_it import MarkdownIt
+from markdown_it.token import Token
 
 PARSER = MarkdownIt('commonmark', {'html': False}).enable('table')
-STATIC_DOCUMENTS = {'AGENTS.md', 'LICENSE', 'THIRD_PARTY_NOTICES.md'}
+STATIC_DOCUMENTS = {'LICENSE', 'THIRD_PARTY_NOTICES.md'}
 ROOT_PROJECT_DOCUMENTS = (
     'CHANGELOG.md', 'CHANGELOG_ZH.md',
     'CONTRIBUTING.md', 'CONTRIBUTING_ZH.md',
@@ -32,6 +33,29 @@ ROOT_PROJECT_DOCUMENTS = (
 # Public source references and input fixtures linked by the maintained guides.
 # Keep this explicit: internal files are not admitted by directory or suffix.
 PUBLIC_DOWNLOADS = {
+    # Upstream task statements contain literal placeholders, not runnable examples.
+    'examples/project_collaboration/materials/upstream/multi-source-data-merger/instruction.md',
+    'examples/tool_pipeline/multi_source/upstream/multi-source-data-merger/instruction.md',
+    'examples/hybrid_summary/graph.json',
+    'examples/multiuser_release_handoff/incident-summary.json',
+    'examples/multiuser_release_handoff/result-summary.json',
+    'examples/project_collaboration/LICENSE-RPNH',
+    'examples/project_collaboration/materials/SOURCES.json',
+    'examples/project_collaboration/materials/upstream/multi-source-data-merger/tests/test.sh',
+    'examples/project_collaboration/materials/upstream/multi-source-data-merger/tests/test_outputs.py',
+    'examples/project_collaboration/scenario/generated/seed-project.zip',
+    'examples/query_validation/sol.sql',
+    'examples/query_validation/sources.json',
+    'examples/rrsi_v06/declarations.py',
+    'examples/user_collaboration/agent_cobuild/contracts.py',
+    'examples/user_collaboration/agent_cobuild/run.py',
+    'examples/user_collaboration/agent_cobuild/scripted_model.py',
+    'examples/user_collaboration/agent_cobuild/verify.py',
+    'examples/user_collaboration/agent_cobuild/view.py',
+    'examples/user_collaboration/native_billing/SOURCES.json',
+    'tests/test_a2a_quote.py',
+
+    'scripts/install.sh',
     'cpn/rpnh/agent_tasks.py',
     'cpn/components/agent_loop/tool_catalog.py',
     'cpn/plugins/managed_scheduler.py',
@@ -47,6 +71,9 @@ PUBLIC_DOWNLOADS = {
 }
 # Frozen upstream task READMEs are supporting source material, not bilingual
 # RPNH-maintained topics. Keep this exact list; do not exempt arbitrary examples.
+PUBLIC_SUPPORT_DOCUMENTS = {
+    'tests/fixtures/codex/0.166.0/README.md',
+}
 FROZEN_SUPPORT_DOCUMENTS = {
     'examples/project_collaboration/materials/upstream/multi-source-data-merger/README.md',
     'examples/tool_pipeline/multi_source/upstream/multi-source-data-merger/README.md',
@@ -88,6 +115,27 @@ REVIEWED_REPORT_SVGS = {
     'docs/assets/technical-report/08-finite-pn-policy-zh.svg':
         '0681fbc4c9059075a41503040847d141bb4819b9e6d569c1d14c5536a8c279cc',
 }
+ADDITIONAL_REPORT_SVGS = {
+    'docs/assets/technical-report/09-storage-authority-en.svg',
+    'docs/assets/technical-report/09-storage-authority-zh.svg',
+    'docs/assets/technical-report/10-checkpoint-commit-en.svg',
+    'docs/assets/technical-report/10-checkpoint-commit-zh.svg',
+    'docs/assets/technical-report/11-checkpoint-resume-en.svg',
+    'docs/assets/technical-report/11-checkpoint-resume-zh.svg',
+}
+EXAMPLE_SVGS = {
+    'cpn/examples/iteration_profile/figures/iteration-profile/initial-petri.svg',
+
+    'examples/automationbench/figures/initial-petri.svg',
+    'examples/erp_bench/figures/initial-petri.svg',
+    'examples/harnessaudit_office/figures/initial-petri.svg',
+    'examples/net_operations/figures/compose-serial/initial-petri.svg',
+    'examples/slopcodebench/figures/initial-petri.svg',
+    'examples/user_collaboration/visuals/collaboration-relations.svg',
+    'examples/user_collaboration/visuals/collaboration-relations_ZH.svg',
+    'examples/user_collaboration/visuals/final-content-provenance.svg',
+    'examples/user_collaboration/visuals/final-content-provenance_ZH.svg',
+}
 REPORT_SVG_ELEMENTS = {
     'svg', 'title', 'desc', 'defs', 'marker', 'path', 'rect', 'g', 'text', 'circle',
 }
@@ -121,6 +169,7 @@ def pages_in(root: Path) -> list[Path]:
     paths.extend(sorted((root / 'docs' / 'results').glob('*/README*.md')))
     paths.extend(path for path in sorted((root / 'examples').glob('**/README*.md'))
                  if path.relative_to(root).as_posix() not in FROZEN_SUPPORT_DOCUMENTS)
+    paths.extend(sorted((root / 'integrations/dsh/operator').glob('README*.md')))
     return paths
 
 
@@ -131,17 +180,40 @@ def auxiliary_documents(root: Path) -> list[Path]:
 
 
 def reviewed_assets(root: Path) -> list[Path]:
-    """Return example PNGs and the explicit reviewed report SVGs."""
-    return sorted({
-        *root.glob('examples/**/assets/*.png'),
-        *root.glob('cpn/examples/**/assets/*.png'),
-        *(root / name for name in REVIEWED_REPORT_SVGS
-          if (root / name).is_file()),
-    })
+    """Static illustrations and captures used by the public documentation."""
+    pngs = [path for base in ('examples', 'cpn/examples', 'docs/results')
+            for path in (root / base).rglob('*.png')
+            if {'assets', 'figures', 'visuals'} & set(path.relative_to(root).parts)]
+    return sorted({*pngs, *(root / name for name in
+        set(REVIEWED_REPORT_SVGS) | ADDITIONAL_REPORT_SVGS | EXAMPLE_SVGS
+        if (root / name).is_file())})
 
 
 def slug(text: str) -> str:
     return re.sub(r'\s+', '-', re.sub(r'[^\w\s-]', '', text.lower())).strip('-')
+
+
+def document_tokens(text: str) -> list:
+    """Render explicit local anchors while leaving other source HTML escaped."""
+    text = re.sub(r'(?m)^(<a id="[\w-]+"></a>)$', r'\n\1\n', text)
+    tokens = PARSER.parse(text)
+    result = []
+    index = 0
+    while index < len(tokens):
+        group = tokens[index:index + 3]
+        if (len(group) == 3 and group[0].type == 'paragraph_open'
+                and group[1].type == 'inline' and group[2].type == 'paragraph_close'):
+            match = re.fullmatch(r'<a id="([\w-]+)"></a>', group[1].content)
+            if match:
+                anchor = Token('html_block', '', 0)
+                anchor.content = f'<a id="{escape(match[1])}"></a>\n'
+                anchor.meta['local_anchor'] = match[1]
+                result.append(anchor)
+                index += 3
+                continue
+        result.append(tokens[index])
+        index += 1
+    return result
 
 
 def parse_page(path: Path, *, maintained: bool = True) -> Page:
@@ -180,7 +252,7 @@ def parse_page(path: Path, *, maintained: bool = True) -> Page:
         raise ValueError(f'{path}: front matter required')
     if meta['language'] not in {'en', 'zh-CN'}:
         raise ValueError(f'{path}: unknown language')
-    tokens = PARSER.parse(text)
+    tokens = document_tokens(text)
     headings, counts, title, h1 = {}, Counter(), '', 0
     for index, token in enumerate(tokens):
         if token.type != 'heading_open':
@@ -195,6 +267,9 @@ def parse_page(path: Path, *, maintained: bool = True) -> Page:
         if token.tag == 'h1':
             h1 += 1
             title = text
+    for token in tokens:
+        if token.meta.get('local_anchor'):
+            headings[token.meta['local_anchor']] = token.meta['local_anchor']
     if maintained and h1 != 1:
         raise ValueError(f'{path}: require exactly one H1, got {h1}')
     return Page(path.resolve(), meta, tokens, title or path.stem, headings)
@@ -245,6 +320,29 @@ def validate_report_svg(payload: bytes) -> None:
         raise ValueError('missing local SVG reference')
 
 
+def validate_example_svg(payload: bytes) -> None:
+    """Accept static Viewer exports, rejecting scripts and external resources."""
+    text = payload.decode('utf-8')
+    if re.search(r'<!(?!--)|<\?', text):
+        raise ValueError('SVG declarations are forbidden')
+    root = ET.fromstring(text)
+    namespace = '{http://www.w3.org/2000/svg}'
+    allowed = REPORT_SVG_ELEMENTS | {'style', 'tspan'}
+    if root.tag != namespace + 'svg':
+        raise ValueError('SVG root namespace required')
+    for element in root.iter():
+        if element.tag not in {namespace + name for name in allowed}:
+            raise ValueError('unsupported SVG element')
+        for key, value in element.attrib.items():
+            if key.lower().startswith('on') or key.split('}')[-1] in {'href', 'src'}:
+                raise ValueError('active SVG attribute')
+            if re.search(r'(?:https?:|javascript:|data:|@import|expression\s*\(|url\(\s*[^#])', value, re.I):
+                raise ValueError('external SVG resource')
+        if element.tag == namespace + 'style' and re.search(
+                r'url\(|@import|expression\s*\(', element.text or '', re.I):
+            raise ValueError('external SVG stylesheet')
+
+
 def reviewed_image_target(page: Path, source: str, root: Path) -> Path:
     target = local_target(page, source, root)
     if target is None:
@@ -254,21 +352,26 @@ def reviewed_image_target(page: Path, source: str, root: Path) -> Path:
     reviewed_svg_digest = REVIEWED_REPORT_SVGS.get(relative.as_posix())
     allowed = (
         len(relative.parts) >= 4
-        and relative.parts[-2] == 'assets'
+        and bool({'assets', 'figures', 'visuals'} & set(relative.parts[1:-1]))
         and relative.suffix == '.png'
         and (relative.parts[0] == 'examples'
-             or relative.parts[:2] == ('cpn', 'examples'))
+             or relative.parts[:2] in {('cpn', 'examples'), ('docs', 'results')})
     )
-    if (not allowed and reviewed_svg_digest is None) or anchor:
+    report_svg = relative.as_posix() in ADDITIONAL_REPORT_SVGS
+    example_svg = relative.as_posix() in EXAMPLE_SVGS
+    if (not allowed and reviewed_svg_digest is None and not report_svg and not example_svg) or anchor:
         raise ValueError(f'{page}: image is outside reviewed asset policy: {source}')
     try:
         payload = path.read_bytes()
     except OSError as exc:
         raise ValueError(f'{page}: missing image asset {path}') from exc
-    if reviewed_svg_digest is not None:
+    if reviewed_svg_digest is not None or report_svg or example_svg:
         try:
-            validate_report_svg(payload)
-            if hashlib.sha256(payload).hexdigest() != reviewed_svg_digest:
+            if example_svg or report_svg:
+                validate_example_svg(payload)
+            else:
+                validate_report_svg(payload)
+            if reviewed_svg_digest is not None and hashlib.sha256(payload).hexdigest() != reviewed_svg_digest:
                 raise ValueError('unreviewed SVG content')
         except (UnicodeError, ET.ParseError, ValueError) as exc:
             raise ValueError(f'{page}: invalid reviewed report SVG asset {path}: {exc}') from exc
@@ -334,6 +437,9 @@ def headings_in(tokens) -> dict[str, str]:
         counts[key] += 1
         key = key if not occurrence else f'{key}-{occurrence}'
         headings[key] = text
+    for token in tokens:
+        if token.meta.get('local_anchor'):
+            headings[token.meta['local_anchor']] = token.meta['local_anchor']
     return headings
 
 
@@ -348,6 +454,7 @@ def supporting_documents(root: Path, pages: dict[Path, Page]):
                for name in sorted(FROZEN_SUPPORT_DOCUMENTS)
                if (root / name).is_file()}
     downloads = set()
+    images = set(reviewed_assets(root))
     queue = [*pages.values(), *support.values()]
     while queue:
         page = queue.pop()
@@ -363,9 +470,10 @@ def supporting_documents(root: Path, pages: dict[Path, Page]):
             relative = dest.relative_to(root)
             parts = relative.parts
             markdown = (len(parts) >= 2 and parts[0] == 'examples'
-                        and dest.suffix == '.md')
+                        and dest.suffix == '.md') or relative.as_posix() in PUBLIC_SUPPORT_DOCUMENTS
             json_document = dest.suffix == '.json' and (
-                (len(parts) == 4 and parts[0] == 'examples' and parts[2] == 'results')
+                (len(parts) >= 4 and parts[0] == 'examples'
+                 and bool({'results', 'figures', 'assets', 'visuals', 'fixtures', 'declarations', 'scenarios'} & set(parts[2:-1])))
                 or (len(parts) == 4 and parts[:2] == ('docs', 'results'))
                 or (len(parts) == 3 and parts[:2] == ('docs', 'reference'))
                 or parts[:2] == ('cpn', 'schemas'))
@@ -376,12 +484,15 @@ def supporting_documents(root: Path, pages: dict[Path, Page]):
                              and parts[0] == 'examples' and parts[2] == 'src')
             legal = dest.name in STATIC_DOCUMENTS
             public_download = relative.as_posix() in PUBLIC_DOWNLOADS
+            image_download = dest in images
             if not (markdown or json_document or csv_document or python_source
-                    or legal or public_download):
+                    or legal or public_download or image_download):
                 continue  # The link checker reports unsupported destinations.
             if not dest.is_file():
                 raise ValueError(f'{page.path}: undocumented or missing link {dest}')
-            if legal or json_document or csv_document or python_source or public_download:
+            if legal or json_document or csv_document or python_source or public_download or image_download:
+                if image_download:
+                    reviewed_image_target(page.path, token.attrGet('href'), root)
                 downloads.add(dest)
             else:
                 support[dest] = parse_page(dest, maintained=False)
@@ -473,7 +584,7 @@ def checked_documents(root: Path):
     auxiliary = {}
     for path in auxiliary_documents(root):
         resolved = path.resolve()
-        tokens = PARSER.parse(path.read_text(encoding='utf-8'))
+        tokens = document_tokens(path.read_text(encoding='utf-8'))
         auxiliary[resolved] = (tokens, headings_in(tokens))
     for path, (tokens, headings) in auxiliary.items():
         stats['auxiliary_documents'] += 1
@@ -553,11 +664,10 @@ def navigation_group(path: Path, root: Path, language: str) -> tuple[int, str]:
             'viewer', 'runtime-registry', 'DISPLAY_OBSERVATION')):
         key, order = 'observe', 2
     elif any(name in relative for name in (
-            'adapters', 'opencode', 'dsh', 'RPNH_VS_CODEX')):
+            'adapters', 'opencode', 'dsh', 'compatibility', 'RPNH_VS_CODEX')):
         key, order = 'integrations', 3
     elif any(name in relative for name in (
-            'development', 'release-validation', 'examples-validation',
-            'PROVENANCE', 'CHANGELOG',
+            'development', 'releases', 'CHANGELOG',
             'CONTRIBUTING', 'SECURITY')):
         key, order = 'project', 5
     else:

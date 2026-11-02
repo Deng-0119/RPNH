@@ -20,3 +20,18 @@ dist/
 # Dependencies stay local; lockfile-pinned viewer assets and licenses are committed
 # so an sdist can build a complete wheel without Node or network access.
 frontend/net-viewer/node_modules/
+
+# Private development instructions and generated session material.
+AGENTS.md
+AGENTS.local.md
+CLAUDE.md
+GEMINI.md
+.agents/
+.codex/
+.claude/
+/handoffs/
+/logs/
+/runs/
+/notes/
+/reports/
+/docs/validation/

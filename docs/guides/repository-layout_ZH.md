@@ -55,7 +55,7 @@ Registry 和 PN 是共用核心。业务 PN 表达 agent 操作及交接。[file
 | 界面 | Python / host 实现 | 展示资产与协议 | 操作指南 |
 |---|---|---|---|
 | Basic | [rpnh_cli.py](https://github.com/Deng-0119/RPNH/blob/b16ecce83ba603b3c15f1c770bce172d4f44f88e/cpn/rpnh_cli.py)、[main_session.py](https://github.com/Deng-0119/RPNH/blob/b16ecce83ba603b3c15f1c770bce172d4f44f88e/cpn/rpnh/main_session.py) | CLI 内的终端输入与任务控制 | [使用](usage_ZH.md) |
-| Codex/OpenCode 共用应用 | [frontend_application.py](https://github.com/Deng-0119/RPNH/blob/b16ecce83ba603b3c15f1c770bce172d4f44f88e/cpn/rpnh/frontend_application.py)、[session_access.py](https://github.com/Deng-0119/RPNH/blob/b16ecce83ba603b3c15f1c770bce172d4f44f88e/cpn/rpnh/session_access.py) | 规范会话 ownership 及前端中立命令服务 | [Agents](../reference/agents_ZH.md) |
+| Codex/OpenCode 共用应用 | [frontend_application.py](https://github.com/Deng-0119/RPNH/blob/b16ecce83ba603b3c15f1c770bce172d4f44f88e/cpn/rpnh/frontend_application.py)、[session_access.py](https://github.com/Deng-0119/RPNH/blob/b16ecce83ba603b3c15f1c770bce172d4f44f88e/cpn/rpnh/session_access.py) | 规范会话 ownership 及前端中立命令服务 | [Agents](../reference/agent-runtime_ZH.md) |
 | Codex | [codex_app_server.py](https://github.com/Deng-0119/RPNH/blob/b16ecce83ba603b3c15f1c770bce172d4f44f88e/cpn/frontend/codex_app_server.py)、[codex_history.py](https://github.com/Deng-0119/RPNH/blob/b16ecce83ba603b3c15f1c770bce172d4f44f88e/cpn/frontend/codex_history.py) | [codex_compatibility.v1.json](https://github.com/Deng-0119/RPNH/blob/b16ecce83ba603b3c15f1c770bce172d4f44f88e/cpn/frontend/codex_compatibility.v1.json)；固定外部客户端 | [适配器](adapters_ZH.md)、[历史](../reference/codex-history_ZH.md) |
 | OpenCode | [opencode_launcher.py](https://github.com/Deng-0119/RPNH/blob/b16ecce83ba603b3c15f1c770bce172d4f44f88e/cpn/frontend/opencode_launcher.py)、[opencode_http.py](https://github.com/Deng-0119/RPNH/blob/b16ecce83ba603b3c15f1c770bce172d4f44f88e/cpn/frontend/opencode_http.py)、[opencode_protocol.py](https://github.com/Deng-0119/RPNH/blob/b16ecce83ba603b3c15f1c770bce172d4f44f88e/cpn/frontend/opencode_protocol.py) | [opencode_compatibility.v1.json](https://github.com/Deng-0119/RPNH/blob/b16ecce83ba603b3c15f1c770bce172d4f44f88e/cpn/frontend/opencode_compatibility.v1.json)；固定外部客户端 | [OpenCode](opencode_ZH.md) |
 | DSH | [cpn/dsh/launcher.py](https://github.com/Deng-0119/RPNH/blob/b16ecce83ba603b3c15f1c770bce172d4f44f88e/cpn/dsh/launcher.py)、[backend.py](https://github.com/Deng-0119/RPNH/blob/b16ecce83ba603b3c15f1c770bce172d4f44f88e/cpn/dsh/backend.py) | [integrations/dsh/src/app.ts](https://github.com/Deng-0119/RPNH/blob/b16ecce83ba603b3c15f1c770bce172d4f44f88e/integrations/dsh/src/app.ts) 及随包 bridge | [DSH](dsh_ZH.md) |
@@ -74,7 +74,7 @@ Basic、Codex、OpenCode 顺序打开同一规范 MainSession 根目录，共用
 | `docs/guides/` | 按任务组织的安装、配置、操作与扩展说明 |
 | `docs/reference/` | 精确声明、运行、API、查询和版本操作契约 |
 | `docs/architecture/`、`docs/ARCHITECTURE.md` | 执行/ownership 设计说明 |
-| `docs/results/`、`docs/validation/` | 绑定精确来源与范围的有日期审核证据；[结果目录](../results/README_ZH.md) |
+| `docs/results/` | 公开应用基准结果；[结果目录](../results/README_ZH.md) |
 | `scripts/`、`tools/`、`tests/` | 已有文档、打包及确定性验证辅助工具；[开发指南](development_ZH.md) |
 | 根目录规范 | [贡献](../../CONTRIBUTING_ZH.md)、[安全](../../SECURITY_ZH.md)、[Changelog](../../CHANGELOG_ZH.md)、[许可证](../../LICENSE)、[第三方声明](../../THIRD_PARTY_NOTICES.md) |
 

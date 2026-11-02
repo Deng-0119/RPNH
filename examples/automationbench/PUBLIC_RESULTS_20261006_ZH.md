@@ -88,10 +88,7 @@ SpreadsheetBench V1与SWE-bench Verified仍因既有adapter/环境缺口BLOCKED�
 NOT_RUN；GAIA/tau2仅候选。人工审阅NOT_RUN，预训练污染UNKNOWN，强worker OS隔离UNPROVEN。
 不是全榜单、模型排名、无污染或全部机制验收。
 
-既有修复writer测试52项、独立50个不同用例，存在重叠，不能相加为102 unique；两次独立的
-installed native-host离线准备各7项通过。这些是先前证据，不是本次发布新测。
-另见[有限验收](../../docs/guides/release-validation_ZH.md)与
-[bridge配置](../../docs/guides/configuration_ZH.md)。
+配置字段见[配置指南](../../docs/guides/configuration_ZH.md)。
 
 - [任务身份与上游链接](results/public-tasks-20261006.json)
 - [按条件分离的分数](results/public-scores-20261006.json)

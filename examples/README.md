@@ -6,7 +6,7 @@ English | [中文](README_ZH.md)
 
 ## Choose your first example
 
-New to RPNH? Complete [installation and a local run](../README.md#quick-start), then choose one example and follow its own README. Run source examples from the checkout root; installed wheels export only the named examples listed below.
+New to RPNH? Complete [installation and a local run](../docs/guides/getting-started.md), then choose one example and follow its own README. Run source examples from the checkout root; installed wheels export only the named examples listed below.
 
 The installed `rpnh examples list` also discovers these source examples with links, execution boundaries and prerequisites. `exportable: false` means a source checkout and the example dependencies are required, not that the wheel contains or can directly run it. Listing starts no task or model call.
 

@@ -43,17 +43,3 @@ python -m examples.slopcodebench.run   --runner-source "$SCB" --problems-source 
 ```
 
 这只是执行说明，没有新运行，也不是 solver 镜像的完整字节重建。[示例指南](../../../examples/slopcodebench/README_ZH.md)列出准备与隔离要求。原 pytest 省略的输出和未保留 vendor wire 不重构；精确字节回收不解除已有 fresh-reader provenance 失败。不据此证明 harness 因果优势或 V6 验收。
-
-
-## 较早的合成原生窗口
-
-README 中的 59 项合成测试与原生夹具另属于 `6f8ee2e406f3c70edb73206f861e56a0202b9f15` 加未提交 SCB overlay；其历史适配器基点为 `ae09445fe1d9b973502bc5d2c961976c1d2c0163`。`results.json` 标识 11 个 package 文件、pyproject、相关测试变更和 helper 字节。na01–na04 的原 exit 1 失败保留；na05 subprocess 与 na06 固定 Docker Session 的 complete/stop 四场景为 PASS_FINITE，每个 complete/stop 分别 3/2 次脚本提交，真实 provider 为 0。complete 的 owner exit 0、有 terminal；stop exit 2、无 terminal，分别保留原 stream exit 与静止状态，不把 Docker stop 的 -1 当作制造的进程退出码。
-
-每场景调用上限 8、owner 时限 90 秒、命令 60 秒、native IPC 180 秒。镜像为最小 Python 合成 fixture、network=none，精确 image ID 与 runner/version 身份见投影；它不是一般 SCB base。complete 观察原 Snapshot 与源码延续，stop 不产生 accepted snapshot。完整 CheckpointPilot.run/CLI、timeout 场景、原 grader、官方 AgentRunner 与真实 benchmark 未跑。较早 helper 完整源码未保存，59 项 terse pytest 输出没有用例 ID，不能补造。另行提供投影标识的历史 helper、installed site 和冻结 manifest 后，可按以下参数化配方分别设置 BACKEND 为 subprocess 或 docker；本次文档任务没有执行：
-
-```sh
-python -B "$HELPER" --backend "$BACKEND" --site "$INSTALLED_SITE"   --frozen-manifest "$FROZEN_MANIFEST" --output "$NEW_OUTPUT"
-```
-
-
-[分发字节清单](MANIFEST.json)记录本摘要与投影的新字节身份，不能当作原始材料字节。

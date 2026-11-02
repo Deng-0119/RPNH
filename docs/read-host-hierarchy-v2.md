@@ -10,6 +10,8 @@ metadata:
   status: source-reviewed
 ---
 
+[English](read-host-hierarchy-v2.md) | [中文](read-host-hierarchy-v2.zh-CN.md)
+
 # Trusted local read HOST hierarchy (configuration v2)
 
 This organizes existing configured Registry sources into groups. It does not

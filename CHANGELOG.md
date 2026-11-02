@@ -6,8 +6,8 @@ metadata:
   audience: user-and-developer
   language: en
   counterpart: CHANGELOG_ZH.md
-  revision: "2026-10-19.4"
-  status: v0.1.0rc2-unreleased
+  revision: "2026-11-02.1"
+  status: maintained
 ---
 
 [English](CHANGELOG.md) | [中文](CHANGELOG_ZH.md)
@@ -15,6 +15,14 @@ metadata:
 # Changelog
 
 ## Unreleased
+
+- Organized the public repository around product source, user documentation,
+  examples and tests. Removed development-agent instructions and historical
+  engineering check records; added compatibility/release guides and distribution
+  exclusions for private development material.
+- Added source fixes for workspace-call correlation, DSH bridge cancellation,
+  Codex bound-thread reopening and OpenCode message-collision/deadlock handling.
+  These source changes are not in the October 30 rc3 artifacts.
 
 - Added a lightweight Basic terminal UI with no extra UI dependencies: a welcome
   panel with model, working directory and session, an input separator and status,
@@ -48,16 +56,14 @@ metadata:
   DSH AgentLoop, LLM, tools and persistence are not loaded. No terminal TUI is
   bundled. `rpnh-dsh` retains its legacy root, budget, frame and recovery
   contracts. See the [guide](docs/guides/dsh.md) and
-  [validation record](docs/validation/dsh-unified-20261019.md) for official Web
-  E2E results, distinct from the component milestone; no live-provider,
-  all-capability, all-platform or wheel acceptance is implied.
+  [compatibility](docs/guides/compatibility.md) for supported capabilities.
 
 - Fixed cold resumed-main-task ownership, periodic reconciliation under continuous observation, and startup checkpoint-stop while child Registry bootstrap is incomplete.
 
 - Updated optional frontend targets to Codex 0.163.0, OpenCode 1.19.3 and the
   DSH 0.2.1-rc.2 source host. Added the current Codex history profile, OpenCode
   Console discovery and the DSH current message dialect. RPNH retains execution
-  authority; see the dated [compatibility record](docs/validation/frontends-20261019.md).
+  authority; see [current compatibility](docs/guides/compatibility.md).
 
 - Added explicitly selected managed result paging, bounded pure/conflict-domain
   tool scheduling and isolated Python programs using the same owner, permissions,
@@ -148,8 +154,7 @@ metadata:
   retains bounded event/item type diagnostics. Tool allowlists and unknown
   submission semantics remain unchanged; no exact token or CLI output-cap guarantee.
 - Added curated bilingual AutomationBench first18 and repair4 public results,
-  preserving historical scores and separate conditions. See
-  [finite validation](docs/guides/release-validation.md); no full HOST/I00–I10/advanced25 claim.
+  preserving historical scores and separate conditions.
 
 - Added opt-in source-authoritative Assembly v2 for closed ordinary-v3 graph and
   plain-v1 members, with exact source/fragment provenance, explicit shared budgets,
@@ -184,6 +189,13 @@ metadata:
 - Dashboard capture now validates the terminal/final-result pair referenced by
   current authority, including append-only Registries with prior generations.
 
+## 0.1.0rc3 — 2026-10-30
+
+- Published the matching Python wheel and stock DSH operator plugin for
+  DSH 0.2.2-alpha.2. Installation is manual; this is a prerelease.
+- See [release assets](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc3)
+  and [compatibility](docs/guides/compatibility.md).
+
 ## 0.1.0rc1 — 2026-09-29
 
 First public prerelease of the unified RPNH repository.
@@ -213,6 +225,5 @@ First public prerelease of the unified RPNH repository.
 - This is a prerelease. Public declaration contracts are documented, but private
   implementation modules are not a stable SDK.
 
-Validation scope and known limitations are recorded in
-[release validation](docs/guides/release-validation.md) and
-[examples validation](docs/guides/examples-validation.md).
+Supported versions and installation choices are described in
+[compatibility](docs/guides/compatibility.md) and [releases](docs/guides/releases.md).

@@ -28,7 +28,7 @@ Set `RPNH_CODEX_BIN` to the stock executable if `codex` on `PATH` is a
 local wrapper that adds backend options. In particular, Codex 0.163.0 rejects
 `--add-dir` with `--remote`; additional workspace roots belong to the RPNH
 server. The binary override selects the client only and does not change the
-provider. See the [dated native checks](../validation/frontends-20261019.md).
+provider. See the [supported versions and limits](compatibility.md).
 
 The RPNH launcher uses its compatibility server and existing main-session authority. `rpnh --frontend codex` begins a session and may execute models after input; it is not an offline smoke command. Use `rpnh --frontend basic` for the documented RPNH-specific controls. A Codex model picker is an RPNH configuration projection, not permission to rewrite Codex provider settings or select a different route silently. The optional local-process subscription bridge is a separate provider path, not implied by choosing the TUI.
 
@@ -91,8 +91,7 @@ First launch downloads 31 exact `0.2.1-rc.2` official packages into
 Setup generates the loader configuration and bound-session bridge without
 changing official UI. Asset preflight finishes before acquiring MainSession.
 See the [DSH guide](dsh.md) for source and Node/pnpm requirements, and the
-[validation record](../validation/dsh-unified-20261019.md) for the separate
-component milestone and official Web E2E results.
+[compatibility guide](compatibility.md) for supported capabilities and limits.
 
 ## Legacy registered headless DSH host prerequisites
 

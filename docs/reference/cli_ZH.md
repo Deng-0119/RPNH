@@ -182,7 +182,7 @@ Basic、Codex、OpenCode 与 DSH Web 共用 `--session-dir`／`--resume`、Regis
 原生 Stop 请求 checkpoint stop，模型／effort 选择器使用 RPNH catalog。仅接受文本输入，
 不支持原生上传、任意会话、workspace 编辑或 DSH 原生本机工具执行；没有随包终端 TUI。
 设置与边界见 [DSH 指南](../guides/dsh_ZH.md)；
-[验证记录](../validation/dsh-unified-20261019_ZH.md)区分此前组件阶段与官方 Web E2E 结果。
+支持版本见[兼容性](../guides/compatibility_ZH.md)。
 `rpnh-dsh` 仍为独立的高级
 旧版 headless host，其 `--root`、`--session-id`、frame 与 attempt-budget 选项见该指南。
 

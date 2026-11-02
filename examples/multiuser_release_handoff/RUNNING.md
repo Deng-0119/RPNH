@@ -98,6 +98,5 @@ From the source root, the example's deterministic tests are under `examples/mult
 
 ## Validated release entry
 
-The fixed upstream download and the extraction/configuration commands above were executed successfully. The complete native preflight passed 13 registered tool calls plus the scripted reader's allowed-input/denied-path and workspace completion checks, with zero real model/provider calls. Native scripted request records are separate from real-provider usage. Eight retained runtime dependency boundaries passed 80 selected checks with the original task supplied; the fresh-driver's three control-flow tests also pass. A wheel was built and installed into an isolated target using existing dependencies, with its schema catalog, v14/v15 cap roundtrips and CLI entry checked. See [release validation](release-validation.json) for the exact scope.
 
 In a live fresh run, any nonterminal role result stops the waiting peers. `RESULT.json` reports native Source firing/request/lease-claim counts and HOST reads/pending edit; completion requires all of them empty and records Source owner-stop before the final Viewer capture. Unresolved state remains partial for supported recovery and effect reconciliation.

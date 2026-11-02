@@ -1,23 +1,22 @@
 ---
 name: rpnh-contributing
-description: "Explain how to propose and validate focused RPNH changes."
+description: "Contributing to RPNH"
 metadata:
   document-kind: project-policy
-  audience: contributor
+  audience: user-and-developer
   language: en
   counterpart: CONTRIBUTING_ZH.md
-  revision: "2026-09-29.1"
-  status: v0.1.0rc1
+  revision: "2026-11-02.1"
+  status: maintained
 ---
 
 [English](CONTRIBUTING.md) | [中文](CONTRIBUTING_ZH.md)
 
 # Contributing to RPNH
 
-RPNH accepts focused issues and pull requests against `main`. Before changing
-code, read [AGENTS.md](AGENTS.md), the
-[development guide](docs/guides/development.md) and the relevant architecture or
-interface page.
+Issues and pull requests are welcome against `main`. Read the relevant
+[architecture](docs/architecture/design.md), [API reference](docs/reference/api-index.md)
+and [development guide](docs/guides/development.md) before changing a component.
 
 ## Development environment
 
@@ -30,26 +29,29 @@ python -m pip install -e '.[test]'
 python -m pip install -r docs/requirements.txt
 ```
 
-Keep credentials, provider profiles, generated Registries, user workspaces and
-raw model transcripts outside the repository.
+## Changes and tests
 
-## Change and test scope
+- Keep changes focused and preserve compatibility with versioned declarations.
+- Keep Registry, workspace, permission and recovery authority in the shared
+  runtime. Frontends must use the existing application services.
+- Preserve provider neutrality; users select their provider and exact model.
+- Update English and Chinese documentation together.
+- Run deterministic checks for the changed boundary and describe the result in
+  the pull request. Broader runtime changes may require the complete suite.
+- Provider calls are separate opt-in checks; automated tests must not use real
+  credentials or paid services. Do not add automatic GitHub Actions push triggers.
 
-- Keep runtime authority in RPNH. Frontend or host integrations must not create
-  separate provider, Registry, workspace or recovery implementations.
-- Preserve provider neutrality. Do not bundle endpoints, credentials or a
-  preferred exact model.
-- Update English and Chinese user documentation together.
-- Add a deterministic regression for changed behavior and run the smallest test
-  set that covers the affected boundary. A full suite is appropriate for a
-  release-wide candidate or a change that can affect unrelated modules.
-- Real-provider checks require explicit authorization and never belong in the
-  automated suite.
-- Do not add GitHub Actions `push` triggers.
+Pull requests should explain the problem, resulting behavior, checks performed
+and relevant limitations. Bug reports should include the installed revision,
+platform and a minimal redacted reproduction.
 
-Format the pull request around the observed boundary, the change, the exact
-commands run and any remaining limitation. Do not claim broader validation than
-the evidence supports.
+## Repository contents
 
-Security-sensitive findings should follow [SECURITY.md](SECURITY.md), not a
-public issue.
+Commit product source, tests, reusable fixtures, user documentation and licenses.
+Keep coding-agent instruction files, session handoffs, internal review reports,
+local environment notes, raw logs, provider profiles, credentials, Registries,
+workspaces and build output outside the public repository. Public benchmark
+summaries should identify their inputs, conditions and failures without exposing
+raw transcripts. The ignore and packaging rules help enforce this separation.
+
+Security-sensitive findings should follow [SECURITY.md](SECURITY.md).

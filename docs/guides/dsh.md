@@ -84,11 +84,7 @@ backend capability. Stock DSH AgentLoop, LLM, tools and persistence runtimes
 are not loaded; execution, Registry history, workspaces and recovery stay with
 Python RPNH. The pinned upstream has no bundled terminal TUI.
 
-The [unified DSH validation record](../validation/dsh-unified-20261019.md)
-separates the earlier component milestone from official Web checks. Assess
-official Web acceptance from its own results; the component milestone does not
-establish acceptance of this path, live providers, all stock DSH capabilities,
-all platforms or wheels.
+Supported versions and operational limits are listed in [compatibility](compatibility.md).
 
 ## Prepare the pinned source
 

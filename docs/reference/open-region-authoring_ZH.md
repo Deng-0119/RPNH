@@ -19,7 +19,7 @@ metadata:
 直接 Assembly/v4 消费使用 `open_region_assembly_schema_data()`。
 既有 catalog 函数与版本化 recipe 不变。本页说明已实现的结构接口及其限制。
 [普通派生接口](open-region-descendants_ZH.md)另行说明显式 edit/copy 与 Assembly/v5。
-历史验证范围见[有限验证](../guides/release-validation_ZH.md)；接口存在不等于运行时认证。
+这些结构接口不授予任意运行时效果的执行权限。
 
 ## 保存非终结选择
 

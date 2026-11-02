@@ -137,16 +137,8 @@ root ref、seal ref 与已验证的本地 cut。旧 Workset child-seal 投影字
 server 与 JavaScript consumer 识别这两个 view 版本，拒绝不受支持或不一致的
 closure 数据。本地证明不表示跨 source Registry 的全局 cut 或完整物理交付覆盖。
 
-## 验证边界
+## 限制
 
-freeze04已有独立有限接受：normal-root跨事务retained refs/bytes、独立T01 run terminal、
-ordinary revision、旧catalog拒绝、twochild/精确replay/cold v2读取、closed-parent拒绝、
-7种损坏副本只读拒绝，以及线程attach-wins与独立child-stream CAS。R02单独验证一个明确的
-Success-wins次序。旧token分配修复“未运行”的状态已由这些限定窗口取代。
-
-writer动态64 case与R02另1 case分开；独立集成共8窗口、31执行、30不同节点，不把旧源上的
-执行重标为freeze04。HTTP/Node和mock DOM已通过，实际browser启动被root/sandbox阻断，
-未获页面/真实DOM/截图接受。详见[有限验证](../guides/release-validation_ZH.md)。
-
-不保证任意调度/child数量；不等于通用typed-call dispatch、递归child执行、TaskControl spawn、
-remote effects、跨run容量或完整I02/HOST/advanced25接受。
+本契约不提供任意调度或 child 数量、通用 typed-call dispatch、递归 child 执行、
+TaskControl spawn、远程效果或跨 run 容量。仅适用于上文显式选择的 normal-child
+闭合 profile。

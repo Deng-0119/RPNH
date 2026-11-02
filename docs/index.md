@@ -6,30 +6,22 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: index_ZH.md
-  revision: "2026-10-19.3"
+  revision: "2026-11-02.1"
   status: source-reviewed
-  basis: "current source; dated validation records retain their own scopes"
 ---
 
 [English](index.md) | [中文](index_ZH.md)
 
 # Documentation
 
-Frontend selection, automatic connection and resume: [frontend guide](guides/frontends.md).
+[Repository home](../README.md) · [Examples](../examples/README.md) ·
+[CLI](reference/cli.md) · [API](reference/api-index.md) · [Source map](guides/repository-layout.md)
 
-[Repository home](../README.md) · [Examples](../examples/README.md) · [CLI](reference/cli.md) · [API](reference/api-index.md) · [Source map](guides/repository-layout.md)
-
-RPNH uses Registry and PetriNet together to declare, execute, inspect and reuse
-agent work. Start with one small run, then choose the guide for your next task.
-These pages describe the selected public source; dated results identify the
-older exact revisions they tested.
-
-Optional client versions and earlier validation:
-[Codex, DSH and OpenCode — 2026-10-19](validation/frontends-20261019.md).
-Use the [official DSH Web guide](guides/dsh.md) for `rpnh --frontend dsh`, package
-preparation, saved preferences and native controls for one bound Python
-MainSession. The component milestone and official Web E2E results are tracked
-in a [separate record](validation/dsh-unified-20261019.md).
+RPNH uses Registry and PetriNet to declare, execute, inspect and reuse agent work.
+Start with installation and a small example, then choose a guide for your task.
+See [compatibility](guides/compatibility.md) for exact client versions and
+[releases](guides/releases.md) for the difference between current source and
+published packages.
 
 ## New to RPNH?
 
@@ -96,14 +88,15 @@ is a separate deterministic protocol example.
 | Understand Registry and the two PN layers | [Harness architecture](ARCHITECTURE.md), [closed execution design](architecture/design.md) |
 | Locate declarations, runtime, AgentLoop and extension contracts | [API reference map](reference/api-index.md), [source map](guides/repository-layout.md) |
 | Analyze a supported finite PN and interpret HOLDS / VIOLATED / UNKNOWN | [Finite PN validation](reference/pn-validation.md) |
-| Compare RPNH authority with presentation integrations | [RPNH versus Codex](RPNH_VS_CODEX.md), [source provenance](PROVENANCE.md) |
+| Compare RPNH authority with presentation integrations | [RPNH versus Codex](RPNH_VS_CODEX.md) |
 
 ## Maintain, contribute and track versions
 
 - [Development](guides/development.md): deterministic checks, package validation and contributor workflow
 - [Changelog](../CHANGELOG.md): changes by version/source; [installation](guides/installation.md) explains source candidates versus older releases
 - [Contributing](../CONTRIBUTING.md), [security](../SECURITY.md), [license](../LICENSE) and [third-party notices](../THIRD_PARTY_NOTICES.md)
-- [Release validation](guides/release-validation.md), [example validation](guides/examples-validation.md) and [curated results](results/README.md): dated evidence, tested inputs and unrun scope
+- [Releases](guides/releases.md) and [compatibility](guides/compatibility.md): package choices, supported clients and limitations
+- [Benchmark results](results/README.md): published application results with their original conditions
 
 ## Reading the reference
 
@@ -111,7 +104,7 @@ Use [CLI reference](reference/cli.md) for operator commands and
 [API reference](reference/api-index.md) for exported symbols, explicit module
 interfaces, protocol entry points and source definitions. The detailed
 [declaration](reference/declarations.md), [runtime/Registry](reference/runtime-registry.md),
-[agent/model](reference/agents.md) and [extension/observation](reference/extensions-observation.md)
+[agent/model](reference/agent-runtime.md) and [extension/observation](reference/extensions-observation.md)
 pages describe arguments, identity, effects and failure boundaries.
 
 Public facades, trusted HOST interfaces and private implementation modules are
@@ -130,30 +123,22 @@ Advanced authoring is grouped in the [API version-operation map](reference/api-i
 
 ## Exact reads and frontend protocol
 
+[Read HOST group configuration](read-host-hierarchy-v2.md)
+
 - [Static resource-lease reads](guides/static-lease-reads.md)
 - [Main-thread history at a fixed cut](reference/main-thread-history.md)
 - [Codex history projection](reference/codex-history.md)
-- [Explicit Codex 0.161 protocol candidate](CODEX_0161_CANDIDATE.md)
+- [Codex 0.166 candidate](guides/codex-candidate-0166.md)
+- [OpenCode 2.2.5 protocol subset](reference/opencode-v2-candidate.md)
 
-## Validation status
+## More examples
 
-A documentation/source check establishes what is declared and linked. Offline
-runtime checks, installed-artifact checks, browser checks and live-provider
-runs establish different things. The first-run commands are operator
-instructions, not a claim that this documentation revision re-ran them.
+[Mock refund approval](../examples/approval_workflow/README.md) ·
+[External-result quote](../examples/a2a_quote/README.md) ·
+[Published benchmark results](results/README.md)
 
-Read each result's exact commit, inputs, environment, scorer, failures and
-unrun scope before reusing its conclusion. A readable graph is not proof of
-terminal success, and a historical pass does not certify a later source tree.
-Keep raw operational data and credentials private.
-
-## Current finite validation and public results
-
-[Release validation](guides/release-validation.md) · [Example validation](guides/examples-validation.md) · [Result archive](results/README.md) · [AutomationBench first18 + repair4](../examples/automationbench/PUBLIC_RESULTS_20261006.md)
-
-For native-input application examples, see [controlled mock refund](../examples/approval_workflow/README.md)
-and [synthetic external-result quote](../examples/a2a_quote/README.md), with their
-explicitly bounded evidence and external-protocol status.
+Example results belong to the source versions and conditions stated on their
+pages. They do not certify every combination of current source and providers.
 
 ## Multi-user release handoff: independent agents and shared resources
 

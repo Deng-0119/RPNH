@@ -43,3 +43,7 @@ Declaration source: [examples/rsi_workflows/deterministic.py](https://github.com
 ![One-round failed-retain terminal binding — initial PetriNet structure](../assets/petrinet-6d4ef3a0349e89c3.png)
 
 [Figure identities](../results/figure-provenance.json).
+
+## Node details
+
+[1 round(s)](nodes/rsi_rounds_1/README.md) · [2 round(s)](nodes/rsi_rounds_2/README.md) · [3 round(s)](nodes/rsi_rounds_3/README.md) · [4 round(s)](nodes/rsi_rounds_4/README.md) · [Failed-retain terminal](nodes/rsi_one_round_failed_retain/README.md)

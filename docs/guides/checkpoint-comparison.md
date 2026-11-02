@@ -138,9 +138,7 @@ versions, unexpected nested fields and contradictory coverage are rejected.
 All display text and JSON are rendered with `textContent`; data is never HTML,
 script, a network image, a capability, or a tool instruction.
 
-## Validation scope and historical limits
-
-Focused checks:
+## Development checks
 
 ```sh
 python -m pytest -q tests/test_checkpoint_comparison.py
@@ -148,29 +146,7 @@ node --test frontend/net-viewer/tests/comparison-view.test.mjs \
   frontend/net-viewer/tests/viewer-lifecycle.test.mjs
 ```
 
-The Python suite includes a socket-free real adopted Registry read, synthetic
-source/binding replacement and disclosure failures, and two deterministic
-multi-checkpoint integration cases using the existing local-socket fixture.
-A sandbox that blocks `AF_UNIX` cannot run those latter two cases: record them as
-blocked rather than claiming they passed. To run just the socket-free cases:
-
-```sh
-python -m pytest -q tests/test_checkpoint_comparison.py \
-  -k 'not actual_registry_pair and not actual_reader_limit'
-```
-
-The shared JSON fixture is produced from the Python projection and consumed by
-Node to check wire compatibility. Related checkpoint, navigation, token-resource,
-viewer-boundary and packaging checks remain relevant. Actual browser interaction,
-visual layout and accessibility, and the local-socket multi-checkpoint cases need
-verification in an environment that supports them. In the 2026-10-06 cloud check,
-the original two multi-checkpoint tests stopped at `AF_UNIX` creation with
-`PermissionError` before assertions. The supported cloud browser could not open
-the standard local viewer (`ERR_BLOCKED_BY_CLIENT`). Both checks were blocked in that historical window;
-passing socket-free reads and synthetic lifecycle tests do not replace them. No real model API call is
-required for any comparison test. This slice adds no team execution, cross-source
-comparison, score ranking, Registry schema, or mutable viewer endpoint.
-
-This guide retains the original 2026-10-06 validation limits. It does not certify
-later source revisions, actual browser cache admission, or the combined product.
-See [release validation boundaries](release-validation.md) for separate source windows.
+The integration tests require local Unix sockets. The shared JSON fixture checks
+the Python-to-Viewer wire contract; browser interaction and accessibility require
+their own checks. No model calls are needed. Checkpoint comparison is read-only
+and does not schedule work, rank scores or change Registry state.

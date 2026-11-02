@@ -110,9 +110,7 @@ Registry 推进后可能需要重试同一个明确选择的 pair；重试不会
 未知版本、额外嵌套字段、相互矛盾的 coverage 被拒绝。所有文字和 JSON 用
 `textContent` 展示，不当作 HTML、脚本、网络图片、capability 或工具指令。
 
-## 验证范围与历史限制
-
-定向检查：
+## 开发检查
 
 ```sh
 python -m pytest -q tests/test_checkpoint_comparison.py
@@ -120,25 +118,6 @@ node --test frontend/net-viewer/tests/comparison-view.test.mjs \
   frontend/net-viewer/tests/viewer-lifecycle.test.mjs
 ```
 
-Python 测试包括不使用 socket 的真实已采用 Registry 读取、合成来源/binding 替换
-与披露失败，以及两个使用现有本地 socket fixture 的确定性多检查点集成用例。
-禁止 `AF_UNIX` 的 sandbox 无法运行后两个用例，必须记为 blocked，不能报通过。
-只运行无需 socket 的部分：
-
-```sh
-python -m pytest -q tests/test_checkpoint_comparison.py \
-  -k 'not actual_registry_pair and not actual_reader_limit'
-```
-
-共用 JSON fixture 由 Python projection 生成、由 Node 消费，核验 wire 兼容性。
-相关 checkpoint、导航、token-resource、Viewer 边界和打包检查仍适用。真实浏览器
-交互、视觉和无障碍，以及本地 socket 多检查点用例，需在支持它们的环境中验证。
-2026-10-06 云端检查中，原有两个多检查点测试在创建 `AF_UNIX` 时遇到
-`PermissionError`，尚未进入断言；受支持的云端浏览器无法打开标准本地 Viewer
-（`ERR_BLOCKED_BY_CLIENT`）。两项在该历史窗口均为 blocked；无 socket 读取和模拟生命周期
-测试通过不能替代它们。
-所有比较测试都不需要真实模型 API。本片不新增团队执行、跨来源比较、评分排名、
-Registry schema 或可变 Viewer 端点。
-
-本指南保留原 2026-10-06 验证限制，不认证后续源码版本、真实浏览器缓存准入
-或组合产品。不同源码窗口见[发布验证边界](release-validation_ZH.md)。
+集成测试需要本地 Unix socket。共享 JSON fixture 检查 Python 到 Viewer 的传输契约，
+浏览器交互与可访问性需要单独检查。无需模型调用。检查点比较只读，不调度工作、
+不排列成绩，也不修改 Registry 状态。

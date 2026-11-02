@@ -6,25 +6,20 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: index.md
-  revision: "2026-10-19.3"
+  revision: "2026-11-02.1"
   status: source-reviewed
-  basis: "current source; dated validation records retain their own scopes"
 ---
 
 [English](index.md) | [中文](index_ZH.md)
 
 # 文档导航
 
-前端选择、自动连接与沿用上次界面恢复：[前端指南](guides/frontends_ZH.md)。
+[仓库首页](../README_ZH.md) · [示例](../examples/README_ZH.md) ·
+[CLI](reference/cli_ZH.md) · [API](reference/api-index_ZH.md) · [源码导航](guides/repository-layout_ZH.md)
 
-可选客户端版本与此前验证：[Codex、DSH 与 OpenCode — 2026-10-19](validation/frontends-20261019_ZH.md)。
-`rpnh --frontend dsh`、包准备、偏好保存及绑定 Python MainSession 的原生控制见
-[官方 DSH Web 指南](guides/dsh_ZH.md)；此前组件阶段与官方 Web E2E 结果单列于
-[新记录](validation/dsh-unified-20261019_ZH.md)。
-
-[仓库首页](../README_ZH.md) · [示例](../examples/README_ZH.md) · [CLI](reference/cli_ZH.md) · [API](reference/api-index_ZH.md) · [源码地图](guides/repository-layout_ZH.md)
-
-RPNH 以 Registry 和 PetriNet 共同声明、执行、检查和复用 agent 工作。先完成一个小运行，再按下一项任务选指南。文档描述所选公共源码；有日期的结果记录明确其实际测试过的旧版本。
+RPNH 使用 Registry 与 PetriNet 声明、执行、查看和复用 agent 工作。
+先完成安装与小示例，再按任务选择指南。精确客户端版本见[兼容性](guides/compatibility_ZH.md)，
+当前源码与已发布包的区别见[版本说明](guides/releases_ZH.md)。
 
 ## 第一次使用 RPNH？
 
@@ -81,18 +76,19 @@ RPNH 以 Registry 和 PetriNet 共同声明、执行、检查和复用 agent 工
 | 理解 Registry 与双层 PN | [Harness 架构](ARCHITECTURE_ZH.md)、[封闭执行设计](architecture/design_ZH.md) |
 | 定位声明、runtime、AgentLoop 及扩展契约 | [API 参考地图](reference/api-index_ZH.md)、[源码地图](guides/repository-layout_ZH.md) |
 | 分析受支持有限 PN，解读 HOLDS / VIOLATED / UNKNOWN | [有限 PN 验证](reference/pn-validation_ZH.md) |
-| 比较 RPNH 权威与展示集成 | [RPNH 与 Codex](RPNH_VS_CODEX_ZH.md)、[源码来源](PROVENANCE_ZH.md) |
+| 比较 RPNH 权威与展示集成 | [RPNH 与 Codex](RPNH_VS_CODEX_ZH.md) |
 
 ## 维护、贡献与版本
 
 - [开发](guides/development_ZH.md)：确定性检查、包验证和贡献流程
 - [Changelog](../CHANGELOG_ZH.md)：按版本/来源查看变化；[安装](guides/installation_ZH.md)解释源码候选与旧发布的区别
 - [贡献](../CONTRIBUTING_ZH.md)、[安全](../SECURITY_ZH.md)、[许可证](../LICENSE)及[第三方声明](../THIRD_PARTY_NOTICES.md)
-- [发布验证](guides/release-validation_ZH.md)、[示例验证](guides/examples-validation_ZH.md)、[精选结果](results/README_ZH.md)：有日期的证据、测试输入及未运行范围
+- [版本说明](guides/releases_ZH.md)与[兼容性](guides/compatibility_ZH.md)：安装选择、客户端版本和限制
+- [基准结果](results/README_ZH.md)：保留原始条件的公开应用结果
 
 ## 如何阅读参考
 
-[CLI 参考](reference/cli_ZH.md)定位操作命令，[API 参考](reference/api-index_ZH.md)定位导出符号、显式模块接口、协议入口和源码定义。[声明](reference/declarations_ZH.md)、[运行/Registry](reference/runtime-registry_ZH.md)、[agent/模型](reference/agents_ZH.md)、[扩展/观察](reference/extensions-observation_ZH.md)详述参数、身份、副作用及失败边界。
+[CLI 参考](reference/cli_ZH.md)定位操作命令，[API 参考](reference/api-index_ZH.md)定位导出符号、显式模块接口、协议入口和源码定义。[声明](reference/declarations_ZH.md)、[运行/Registry](reference/runtime-registry_ZH.md)、[agent/模型](reference/agent-runtime_ZH.md)、[扩展/观察](reference/extensions-observation_ZH.md)详述参数、身份、副作用及失败边界。
 
 公共 facade、可信 HOST 接口和私有实现模块应区分。已记录的导入路径或 schema 不产生执行权限，也不承诺兼容所有后续版本。请使用与已安装产物匹配的源码版本。
 
@@ -107,22 +103,21 @@ RPNH 以 Registry 和 PetriNet 共同声明、执行、检查和复用 agent 工
 
 ## 精确读取与前端协议
 
+[只读 HOST 分组配置](read-host-hierarchy-v2.zh-CN.md)
+
 - [静态 resource-lease 读取](guides/static-lease-reads_ZH.md)
 - [固定切面的主线程历史](reference/main-thread-history_ZH.md)
 - [Codex 历史投影](reference/codex-history_ZH.md)
-- [显式 Codex 0.161 协议候选](CODEX_0161_CANDIDATE_ZH.md)
+- [Codex 0.166 候选](guides/codex-candidate-0166_ZH.md)
+- [OpenCode 2.2.5 协议子集](reference/opencode-v2-candidate_ZH.md)
 
-## 验证状态
+## 更多示例
 
-文档/源码核对证明所声明内容与链接。离线 runtime 检查、已安装产物检查、浏览器检查和真实 provider 运行分别证明不同事情。首次运行命令是操作说明，不代表此次文档修订重新执行过它们。
+[模拟退款审批](../examples/approval_workflow/README_ZH.md) ·
+[外部结果报价](../examples/a2a_quote/README_ZH.md) ·
+[公开基准结果](results/README_ZH.md)
 
-复用结果前，先核对精确 commit、输入、环境、scorer、失败及未运行范围。图可读不证明终态成功，历史通过不证明后续源码树已通过。原始运行数据和凭据保持私有。
-
-## 当前有限验收与公开结果
-
-[发布验证](guides/release-validation_ZH.md) · [示例验证](guides/examples-validation_ZH.md) · [结果归档](results/README_ZH.md) · [AutomationBench first18 + repair4](../examples/automationbench/PUBLIC_RESULTS_20261006.md)
-
-Native-input 应用示例见[受控模拟退款](../examples/approval_workflow/README_ZH.md)和[合成外部结果报价](../examples/a2a_quote/README_ZH.md)，各自保留明确的证据范围与外部协议状态。
+示例结果属于页面注明的源码版本与执行条件，不代表当前源码与任意 provider 组合均已通过验证。
 
 ## 多用户发布交接：独立智能体与共享资源
 

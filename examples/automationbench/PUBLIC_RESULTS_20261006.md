@@ -115,11 +115,7 @@ GAIA/tau2 remain candidates. Human review was NOT_RUN, pretraining contamination
 is UNKNOWN, and strong worker OS isolation is UNPROVEN. This is neither a full
 leaderboard nor model-ranking, contamination-free or full mechanism acceptance.
 
-Writer repair tests: 52; independent tests: 50 distinct cases. They overlap and
-are not 102 unique tests. Two separate installed native-host offline preparation
-windows each passed 7 cases. These are prior evidence, not new publication tests.
-See [finite validation](../../docs/guides/release-validation.md) and
-[bridge configuration](../../docs/guides/configuration.md).
+Configuration fields are described in the [configuration guide](../../docs/guides/configuration.md).
 
 - [Task identities and upstream links](results/public-tasks-20261006.json)
 - [Condition-separated scores](results/public-scores-20261006.json)

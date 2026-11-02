@@ -28,7 +28,7 @@ codex --version
 `RPNH_CODEX_BIN` 指定原生 executable。Codex 0.163.0 明确拒绝同时使用
 `--add-dir` 与 `--remote`；额外 workspace root 由 RPNH server 管理。
 这个既有覆盖选项只选择客户端，不改变 provider。
-原生检查见[本次验证](../validation/frontends-20261019_ZH.md)。
+支持版本与限制见[兼容性](compatibility_ZH.md)。
 
 RPNH launcher 使用兼容服务和既有主会话权威。`rpnh --frontend codex` 启动会话，输入后可能执行模型，不是离线 smoke。RPNH 自己的任务控制用 `rpnh --frontend basic`。Codex model picker 是 RPNH 配置投影，不授权改写 Codex 供应商设置或静默换路由。可选 local-process subscription bridge 是独立供应商路径，选择 TUI 不自动选择它。
 
@@ -78,7 +78,7 @@ RPNH catalog、Registry 历史及唯一可写 owner 继续共享。重开历史�
 首次启动下载精确 `0.2.1-rc.2` 的 31 个官方包到 `SOURCE/rpnh-frontend/node_modules`；
 完整缓存可离线复用。Setup 生成 loader 配置与绑定会话桥，不修改官方 UI；资源预检在
 取得 MainSession 前完成。源码与 Node／pnpm 前提见 [DSH 指南](dsh_ZH.md)。
-[验证记录](../validation/dsh-unified-20261019_ZH.md)区分此前组件阶段与官方 Web E2E 结果。
+支持能力与限制见[兼容性](compatibility_ZH.md)。
 
 ## 旧版 registered headless DSH host 前提
 

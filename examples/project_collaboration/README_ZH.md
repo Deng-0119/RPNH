@@ -28,7 +28,7 @@ source 完成后的 agent 简要视图：implementer → reviewer，两个 agent
 
 Agent 必须读取 JSON、CSV、Parquet，统一同义字段，按 user ID 合并，并依 A > B > C 优先级生成 `merged_users.parquet` 和 `conflicts.json`；后者列出冲突值和最终选择。实现代码和 reviewer 报告也须交付。数据来源优先级是任务规则，不能代替协作冲突解决。
 
-[scenario/generated](scenario/generated/) 提供完整 seed、精确 lock、初始 TEXT fixture 及 A/B/A-resolved 提案定义。原二进制 Parquet 保留在 materials，包内使用明确可逆的 base64 封装。不提供上游 solution 或预制 merger。
+[scenario/generated](scenario/generated/seed-project.zip) 提供完整 seed、精确 lock、初始 TEXT fixture 及 A/B/A-resolved 提案定义。原二进制 Parquet 保留在 materials，包内使用明确可逆的 base64 封装。不提供上游 solution 或预制 merger。
 
 ## 环境与源码绑定
 

@@ -451,7 +451,7 @@ owner request，而不是假设这些文件已经存在。
 - 缺少插件必填字段或空汇总列表会被声明的 schema 拒绝，不能表述为成功运行。
 - 看板只读且默认监听 loopback。查看结束后关闭自己启动的进程。详见[看板指南](viewer_ZH.md)。
 
-验收参考边界见[案例验证](examples-validation_ZH.md)。其中区分确定性 fixture、此前授权
+验收参考边界见[案例验证](examples_ZH.md)。其中区分确定性 fixture、此前授权
 的 provider 调用和当前定向兼容检查，均不能替代用户对自有 route 的验证。
 
 2026-10-06公开记录：freeze04首轮18题为5 PASS / 9 FAIL / 4 BLOCKED；独立repair四题为1 PASS / 3 FAIL。旧14道已评分题未重跑。 [2026-10-06结果](../../examples/automationbench/PUBLIC_RESULTS_20261006_ZH.md).

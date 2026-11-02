@@ -69,9 +69,7 @@ MainSession；不支持原生文件上传、任意创建会话、workspace 编�
 工具和 persistence runtime；执行、Registry 历史、workspace 与恢复仍由 Python RPNH
 负责。该固定上游没有随包终端 TUI。
 
-[DSH 统一前端验证记录](../validation/dsh-unified-20261019_ZH.md)区分此前组件阶段与官方
-Web 检查。官方 Web 验收以其独立结果为准；组件阶段不能证明本路径、真实 provider、
-全部 stock DSH 能力、全平台或 wheel 已验收。
+支持版本与运行限制见[兼容性](compatibility_ZH.md)。
 
 ## 准备固定版本源码
 

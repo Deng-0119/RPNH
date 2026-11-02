@@ -69,7 +69,7 @@ Begin with `export/conflicts.json`, entry `/conflicts/1`: user 101's email value
 
 In the actual Registry Viewer, use PetriNet, Executions, Evidence, and history to locate `merge_users.run` and the three `read_source_*.run` operations. `evidence.json` carries each product's resource/version ref, native `reference_provenance.operation_binding_ref`, producer invocation, parents, source refs, and decisions. Match the email decision's `origins` to the source/parsed resources (row 0; A `email`, B `email_address`, C `email`). Historical entry tokens locate consumed inputs even though the final marking no longer holds them.
 
-The merge publishes to `encode_parquet.merged` and `encode_conflicts.conflicts`. Follow the encoders to `finish.parquet` and `finish.conflicts`, then `finish.run` to `finish.final`. `artifact-references.json` binds both exported files to the terminal resources. The stock token-resource panel shows registration metadata; use those refs to cross-check the separate artifact/export payload. The local handoff's `CONFLICT_TRACE.json` supplies the exact run-specific resource, operation, firing, port/place, and historical checkpoint anchors for browser capture; it is not a substitute for that capture.
+The merge publishes to `encode_parquet.merged` and `encode_conflicts.conflicts`. Follow the encoders to `finish.parquet` and `finish.conflicts`, then `finish.run` to `finish.final`. `artifact-references.json` binds both exported files to the terminal resources. The stock token-resource panel shows registration metadata; use those refs to cross-check the separate artifact/export payload.
 
 ## Edge-case policy and tests
 

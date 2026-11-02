@@ -71,13 +71,12 @@ owner request，要求输入它的身份。非交互调用者使用同一 API �
 new_venv selection 明确绝对 base_executable 和尚不存在的 prefix；binding 记录实际解释器和
 prefix。即使 Python 可执行文件是符号链接，启动器也保留所选 venv 的语义。
 
-## 本地 agent／安装文档路径
+## 导出安装说明
 
 `rpnh package setup-instructions --plan PLAN.json --format text|json --output SETUP`
-生成私有接收端文档，包含相同 target、plan digest、动作、制品、失败保留规则和验收条件。
-把文档交给另一个进程或 agent 不产生授权。完成已授权操作后仍必须调用同一检查器，并在
-所选解释器内实际装配 HOST；文字声称成功或勾选 completed 不能代替观测，也不能授权运行。
-计划变化必须重新取得精确审批。
+生成私有接收端文档，包含相同 target、plan digest、动作、制品和验证条件。
+准备环境前需审阅计划。接收端仍须调用环境检查器并实际装配所选 HOST，导出的文档不能
+替代这些检查。目标环境变化后，应重新生成并审阅计划。
 
 ## 可信 HOST 与只读探针扩展
 

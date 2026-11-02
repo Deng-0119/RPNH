@@ -6,8 +6,8 @@ metadata:
   audience: user-and-developer
   language: zh-CN
   counterpart: CHANGELOG.md
-  revision: "2026-10-19.4"
-  status: v0.1.0rc2-unreleased
+  revision: "2026-11-02.1"
+  status: maintained
 ---
 
 [English](CHANGELOG.md) | [中文](CHANGELOG_ZH.md)
@@ -15,6 +15,11 @@ metadata:
 # 变更记录
 
 ## 未发布
+
+- 按产品源码、用户文档、示例和测试组织公开仓库。移除开发 agent 指令与历史工程
+  检查记录，补充兼容性／发行指南及私人开发资料的打包排除规则。
+- 源码加入 workspace 调用关联、DSH 桥接取消、Codex 绑定 thread 重开及 OpenCode
+  消息冲突／死锁修复；这些修改不包含在 10 月 30 日 rc3 发行物中。
 
 - 新增无需额外 UI 依赖的 Basic 轻量终端界面：欢迎面板显示模型、工作目录与会话，
   提供输入分隔线与状态、readline 编辑、本进程 Up/Down 输入历史、基本命令 Tab 补全，
@@ -39,15 +44,14 @@ metadata:
 - 官方 Web 仅支持绑定 MainSession 的文本、原生模型／effort 选择及原生 slash 菜单
   RPNH 控制；不支持原生上传、任意会话、workspace 编辑或 DSH 原生本机工具执行。不加载 stock
   DSH AgentLoop、LLM、工具及 persistence，没有随包终端 TUI。`rpnh-dsh` 原 root、预算、
-  frame 与恢复契约保持。见[指南](docs/guides/dsh_ZH.md)和
-  [验证记录](docs/validation/dsh-unified-20261019_ZH.md)：官方 Web E2E 结果与此前
-  组件阶段分列；不据此推称真实 provider、全部能力、全平台或 wheel 已验收。
+  frame 与恢复契约保持。支持能力见[指南](docs/guides/dsh_ZH.md)和
+  [兼容性](docs/guides/compatibility_ZH.md)。
 
 - 修复冷恢复主任务 ownership、持续状态读取下的周期结算，以及子 Registry 启动未完成时的 checkpoint 停止。
 
 - 更新可选前端到 Codex 0.163.0、OpenCode 1.19.3 与 DSH 0.2.1-rc.2 源码宿主，
   加入当前 Codex 历史 profile、OpenCode Console 发现与 DSH 当前消息 dialect。
-  执行仍由 RPNH 管理，范围见[本次兼容记录](docs/validation/frontends-20261019_ZH.md)。
+  执行仍由 RPNH 管理，当前版本见[兼容性](docs/guides/compatibility_ZH.md)。
 
 - 新增显式选择的 managed 结果分页、pure／冲突域有界调度与隔离 Python 程序，复用同一 owner、权限、真实回执及运行额度。部分程序结果按实际状态回读；未知副作用保留 owner reconciliation。
 - 新增只读结果／请求证据、来源描述与无 listener 预检、inert 插件检查及可移植作者自检。比较字段过滤与 split／fusion 导航保留已有 graph renderer。
@@ -111,7 +115,6 @@ metadata:
 - Bridge在最终渲染后检查本地声明context预算，并保留有界event/item类型诊断；不放宽工具
   allowlist、不改变unknown提交语义、不保证准确token计数或强制CLI输出cap。
 - 增加2026-10-06公开AutomationBench first18与repair4精简结果及双语文档；旧分数和条件保持分离。
-  详见[有限验证](docs/guides/release-validation_ZH.md)，不宣称全HOST/I00–I10/advanced25接受。
 
 - 增加显式启用、来源权威的 Assembly v2，组合 closed 普通 v3 graph 与 plain-v1
   成员，保留 exact source／fragment 来源、显式共享预算、final-context carrier 检查、
@@ -138,6 +141,13 @@ metadata:
 - dashboard 捕获现在验证当前 authority 引用的 terminal/final-result 对，也支持含有早期
   execution generation 的 append-only Registry。
 
+## 0.1.0rc3 — 2026-10-30
+
+- 发布配套 Python wheel 与面向 DSH 0.2.2-alpha.2 的 stock DSH operator 插件，
+  采用手动安装，属于预发布。
+- 参阅[发行物](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc3)和
+  [兼容性](docs/guides/compatibility_ZH.md)。
+
 ## 0.1.0rc1 — 2026-09-29
 
 统一 RPNH 仓库的首个公开预发布版本。
@@ -160,5 +170,4 @@ metadata:
 - Codex、OpenCode 与 DSH 集成绑定特定版本，安装前应阅读对应指南。
 - 这是预发布版。公开声明契约有文档说明，但私有实现模块不是稳定 SDK。
 
-验证范围与已知限制见[发布验证](docs/guides/release-validation_ZH.md)和
-[案例验证](docs/guides/examples-validation_ZH.md)。
+支持版本与安装选择见[兼容性](docs/guides/compatibility_ZH.md)和[版本说明](docs/guides/releases_ZH.md)。

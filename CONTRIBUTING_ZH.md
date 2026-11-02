@@ -1,25 +1,26 @@
 ---
 name: rpnh-contributing
-description: "说明如何提出并验证聚焦的 RPNH 变更。"
+description: "参与 RPNH 开发"
 metadata:
   document-kind: project-policy
-  audience: contributor
+  audience: user-and-developer
   language: zh-CN
   counterpart: CONTRIBUTING.md
-  revision: "2026-09-29.1"
-  status: v0.1.0rc1
+  revision: "2026-11-02.1"
+  status: maintained
 ---
 
 [English](CONTRIBUTING.md) | [中文](CONTRIBUTING_ZH.md)
 
 # 参与 RPNH 开发
 
-RPNH 接受针对 `main` 的聚焦 issue 与 pull request。修改代码前，请阅读
-[AGENTS.md](AGENTS.md)、[开发指南](docs/guides/development_ZH.md)和相关架构或接口页面。
+欢迎针对 `main` 提交 issue 和 pull request。修改组件前，请阅读相关
+[架构](docs/architecture/design_ZH.md)、[API 参考](docs/reference/api-index_ZH.md)
+和[开发指南](docs/guides/development_ZH.md)。
 
 ## 开发环境
 
-使用 Linux 或 WSL2，以及 Python 3.11 或更高版本：
+使用 Linux 或 WSL2，Python 3.11 或更新版本：
 
 ```bash
 python3 -m venv .venv
@@ -28,21 +29,24 @@ python -m pip install -e '.[test]'
 python -m pip install -r docs/requirements.txt
 ```
 
-凭据、provider profile、生成的 Registry、用户 workspace 和原始模型 transcript 必须保存在
-仓库之外。
+## 修改与测试
 
-## 变更与测试范围
+- 保持修改范围清晰，并保留版本化声明的兼容性。
+- Registry、workspace、权限和恢复权威归共享运行时；前端使用已有应用服务。
+- 保持 provider 中立，由用户选择 provider 和精确模型。
+- 同步更新中英文文档。
+- 执行覆盖修改边界的确定性检查，在 PR 中说明结果；广泛运行时修改可能需要完整测试套件。
+- Provider 调用属于独立可选检查，自动测试不得使用真实凭据或付费服务。
+  不添加自动触发的 GitHub Actions push 工作流。
 
-- Runtime authority 保留在 RPNH 中；前端或宿主集成不得另行实现 provider、Registry、
-  workspace 或恢复机制。
-- 保持 provider neutral，不内置 endpoint、credential 或偏好的 exact model。
-- 英文与中文用户文档同步更新。
-- 行为变化需要确定性回归测试，并运行覆盖受影响边界的最小测试集合。只有发布级候选或可能
-  影响无关模块的变更才适合运行完整套件。
-- 真实 provider 检查需要明确授权，不能进入自动测试套件。
-- 不添加 GitHub Actions `push` trigger。
+PR 应说明问题、修改后的行为、已执行检查与相关限制。缺陷报告应包含安装版本、
+平台及最小脱敏复现。
 
-Pull request 应说明观察到的边界、修改内容、实际运行的命令和剩余限制；不能作出超出证据
-范围的验收声明。
+## 仓库内容
 
-安全敏感问题按照 [SECURITY_ZH.md](SECURITY_ZH.md)报告，不使用公开 issue。
+提交产品源码、测试、可复用 fixture、用户文档与许可证。开发 agent 指令文件、
+会话交接、内部评审报告、本机环境笔记、原始日志、provider profile、凭据、
+Registry、workspace 和构建产物应保留在公开仓库之外。公开基准摘要应说明输入、
+条件和失败，不公开原始对话。忽略与打包规则用于维持这一边界。
+
+安全问题请按照 [SECURITY.md](SECURITY.md) 处理。

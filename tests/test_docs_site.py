@@ -20,6 +20,28 @@ except ModuleNotFoundError as exc:
 
 
 @unittest.skipIf(docs is None, 'Install docs/requirements.txt to run documentation checks')
+class StaticDocumentBoundaryTests(unittest.TestCase):
+    def test_named_anchor_is_rendered_without_enabling_arbitrary_html(self):
+        tokens = docs.document_tokens('<a id="local-viewer"></a>\n\n'
+                                      '<script>alert(1)</script>\n')
+        rendered = docs.PARSER.renderer.render(tokens, docs.PARSER.options, {})
+        self.assertIn('<a id="local-viewer"></a>', rendered)
+        self.assertIn('local-viewer', docs.headings_in(tokens))
+        self.assertNotIn('<script>', rendered)
+        self.assertIn('&lt;script&gt;', rendered)
+
+    def test_example_svg_rejects_active_content_and_external_resources(self):
+        opening = '<svg xmlns="http://www.w3.org/2000/svg">'
+        docs.validate_example_svg((opening + '<!-- layer --><text>Example</text></svg>').encode())
+        for body in ('<script>alert(1)</script>', '<foreignObject/>',
+                     '<path onload="alert(1)"/>', '<path href="https://example.invalid"/>',
+                     '<path fill="url(https://example.invalid)"/>',
+                     '<style>@import "https://example.invalid";</style>'):
+            with self.subTest(body=body), self.assertRaises(ValueError):
+                docs.validate_example_svg((opening + body + '</svg>').encode())
+
+
+@unittest.skipIf(docs is None, 'Install docs/requirements.txt to run documentation checks')
 class DocumentationTests(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
@@ -39,6 +61,15 @@ class DocumentationTests(unittest.TestCase):
             dest = self.root / path.relative_to(ROOT)
             dest.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(path, dest)
+            tokens = docs.document_tokens(path.read_text(encoding='utf-8'))
+            for token in docs.children(tokens):
+                if token.type != 'link_open':
+                    continue
+                target = docs.local_target(path, token.attrGet('href'), ROOT)
+                if target is not None and target[0].is_file():
+                    linked = self.root / target[0].relative_to(ROOT)
+                    linked.parent.mkdir(parents=True, exist_ok=True)
+                    shutil.copyfile(target[0], linked)
         for path in docs.reviewed_assets(ROOT):
             dest = self.root / path.relative_to(ROOT)
             dest.parent.mkdir(parents=True, exist_ok=True)
@@ -244,7 +275,7 @@ class DocumentationTests(unittest.TestCase):
             output / 'examples/workflow_patterns/assets/parallel-overview.png'
         ).is_file())
         self.assertIn(
-            'examples/workflow_patterns/assets/parallel-overview.png', home)
+            'examples/native_plugin/assets/native-plugin-petrinet.png', home)
         zh = (output / 'docs/guides/installation_ZH.html').read_text()
         self.assertIn('lang="zh-CN"', zh)
         self.assertIn('installation.html', zh)

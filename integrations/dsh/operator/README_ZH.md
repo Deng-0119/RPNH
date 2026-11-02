@@ -1,8 +1,11 @@
 ---
+name: rpnh-dsh-operator
+description: "Install and operate the stock DSH integration."
 metadata:
   document-kind: how-to
-  language: zh
+  language: zh-CN
   counterpart: README.md
+  revision: "2026-11-02.1"
   status: prerelease
 ---
 
@@ -10,7 +13,7 @@ metadata:
 
 # RPNH for DSH：既有任务操作插件
 
-**源码与发行物不同：** 当前main新增的桥接取消修复见[源码验证说明](../../../docs/validation/host-adapter-source-20261101_ZH.md)。已经上传的0.1.0rc3 wheel和0.1.0-rc.3插件tgz不会随main更新而获得修复；本次没有新发行配对或managed资格声明。
+**源码与发行物不同：** 当前main新增的桥接取消修复见[兼容性与已知限制](../../../docs/guides/compatibility_ZH.md)。已经上传的0.1.0rc3 wheel和0.1.0-rc.3插件tgz不会随main更新而获得修复；本次没有新发行配对或managed资格声明。
 
 **RPNH operator 0.1.0-rc.3 + RPNH Python 0.1.0rc3** 独立适配
 **DeepSeek Harness 0.2.2-alpha.2**，是第三方 RPNH 适配，不是 DeepSeek 官方产品
@@ -94,10 +97,9 @@ checkpoint；显式 reopen 选早期已提交切点并保留后续历史，不�
 更新仅展示匹配包的手动指引，不热安装、重启 worker、迁移数据或恢复任务。
 手动替换配套前退出对应宿主。卸载使用官方 profile 包管理流程，保留任务数据。
 
-## 验证边界
+## 支持范围
 
-[发行验证摘要](https://github.com/Deng-0119/RPNH/blob/v0.1.0rc3/docs/validation/dsh-stock-0.1.0rc3_ZH.md)仅说明最终配套的限定
-检查。空列表 Loader 检查不证明真实任务完成、UI、审批、worker恢复或模型质量。
-不据此认定 managed 冷安装、升级、回退通过。operator tarball 不含测试或私有运行记录。
+本插件采用手动配套安装，不支持 managed 自动升级或跨版本回退。运行能力与限制见
+[兼容性](../../../docs/guides/compatibility_ZH.md)。Operator tarball 只包含插件产品文件。
 
 当前源码取消桥接时只向该子进程发送SIGTERM；一秒后仍未退出才升级SIGKILL。exit/close清理timer，回收bridge后结算等待，不向worker进程组发信号。另已接受的TaskControl stop仍可正常停止worker；取消本身不是回滚，也不授权重试。

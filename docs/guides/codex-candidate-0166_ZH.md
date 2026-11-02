@@ -35,11 +35,8 @@ keyword 选择；不是自动版本范围、环境变量、CLI 偏好或客户�
 `RPNH_CODEX_BIN`选择前端，不替换配置中的后端可执行文件，也不开放后端工具。
 后端仍只允许agent-message与reasoning条目，拒绝内置执行条目。
 
-最初离线窗口使用真实临时Registry历史与模拟transport／lifecycle边界。中断／终态用例
-使用确定性的假session结算时点，不是实际Registry或原生客户端竞态测试。该最初窗口没有模型API、
-安装、stock 0.166二进制、原生UI或完整Unix-socket会话实测。原生资格验收及默认版本
-提升仍需另行证据与授权；本候选不是发行版。
+## 重开会话与限制
 
-## 后续有界原生证据
-
-随后已用正式0.166.0对闲置已提交Registry历史执行两次真实PTY会话。恢复入口现向客户端传递`resume`和精确绑定thread ID；首次启动不变。初始化、历史、冷重连及unsubscribe保持同一thread、两turn、四item，无新turn或模型调用。这不是活动任务存续、业务checkpoint恢复、默认0.163原生再认证或完整客户端资格。首失败与限制见[源码验证说明](../validation/host-adapter-source-20261101_ZH.md)。
+重开会话时，launcher 向客户端传递 `resume` 和精确绑定 thread ID；首次启动不变。
+它恢复已提交历史，不重新提交旧 prompt，也不会自动恢复业务任务或保证断连期间活动任务存续。
+默认版本、候选状态和源码／发行物区别见[兼容性](compatibility_ZH.md)。

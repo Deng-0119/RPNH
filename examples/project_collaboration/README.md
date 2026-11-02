@@ -28,7 +28,7 @@ The original task is Terminal-Bench 2 [multi-source-data-merger](https://github.
 
 Agents must read JSON, CSV and Parquet, normalize equivalent fields, merge by user ID with source priority A > B > C, and produce `merged_users.parquet` and `conflicts.json`. The latter lists conflicting values and selected values. The implementation and reviewer report are also deliverables. Data-source priority is a task rule; it does not resolve collaboration conflicts.
 
-[scenario/generated](scenario/generated/) contains the complete seed, exact lock, initial TEXT fixture and A/B/A-resolved proposal definitions. Original binary Parquet is retained in materials; its portable package representation is an explicitly reversible base64 envelope. No upstream solution or precomputed merger is provided.
+[scenario/generated](scenario/generated/seed-project.zip) contains the complete seed, exact lock, initial TEXT fixture and A/B/A-resolved proposal definitions. Original binary Parquet is retained in materials; its portable package representation is an explicitly reversible base64 envelope. No upstream solution or precomputed merger is provided.
 
 ## Environment and source binding
 

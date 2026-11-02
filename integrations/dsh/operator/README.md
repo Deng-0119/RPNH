@@ -1,8 +1,11 @@
 ---
+name: rpnh-dsh-operator
+description: "Install and operate the stock DSH integration."
 metadata:
   document-kind: how-to
   language: en
   counterpart: README_ZH.md
+  revision: "2026-11-02.1"
   status: prerelease
 ---
 
@@ -10,7 +13,7 @@ metadata:
 
 # RPNH for DSH: existing-task operator
 
-**Source versus release:** the current main source includes later bridge-cancellation fixes described in [the source validation note](../../../docs/validation/host-adapter-source-20261101.md). The already uploaded 0.1.0rc3 wheel and 0.1.0-rc.3 plugin tarball do **not** acquire these fixes when main changes. No new artifact pair or managed-release qualification is claimed.
+**Source versus release:** the current main source includes later bridge-cancellation fixes described in [compatibility and known limitations](../../../docs/guides/compatibility.md). The already uploaded 0.1.0rc3 wheel and 0.1.0-rc.3 plugin tarball do **not** acquire these fixes when main changes. No new artifact pair or managed-release qualification is claimed.
 
 **RPNH operator 0.1.0-rc.3 + RPNH Python 0.1.0rc3** is an independent,
 third-party adaptation for **DeepSeek Harness 0.2.2-alpha.2**, not an official
@@ -107,12 +110,11 @@ package instructions. It never hot-installs, restarts workers, migrates data or
 resumes tasks. Exit the affected DSH host before manually replacing the pair.
 Use the official profile package workflow for removal; preserve task data.
 
-## Validation boundary
+## Supported scope
 
-The [release validation summary](https://github.com/Deng-0119/RPNH/blob/v0.1.0rc3/docs/validation/dsh-stock-0.1.0rc3.md)
-describes only checks of the final release pair. An empty-list Loader check does
-not validate real task completion, UI, approval, worker recovery or model quality.
-This release does not qualify managed cold installation, upgrade or rollback.
-Tests and private execution records are not included in the operator tarball.
+The plugin uses manual matching-package installation. Managed automatic upgrades
+and cross-version rollback are not supported. See
+[compatibility](../../../docs/guides/compatibility.md) for operational limits.
+The operator tarball contains only plugin product files.
 
 In current source, bridge cancellation sends SIGTERM only to that child and escalates to SIGKILL after one second only if it has not exited. Exit/close clear the escalation timer; the bridge is reaped before the wait settles. This does not signal the worker process group. A separately accepted TaskControl stop may still stop its worker normally; cancellation itself is not rollback or permission to retry.

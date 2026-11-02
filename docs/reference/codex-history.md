@@ -19,7 +19,7 @@ The current client is **Codex 0.163.0**. `thread/turns/list` and
 the basic main session. `state.turns` is only a live reconciliation cache and
 is not a persisted-history source. The exact older 0.155 and 0.161 profiles
 remain explicitly selectable for their existing tests; the normal launcher
-selects 0.163.0. See the [dated validation](../validation/frontends-20261019.md).
+selects 0.163.0. See the [compatibility guide](../guides/compatibility.md).
 
 ## Existing owner boundary
 

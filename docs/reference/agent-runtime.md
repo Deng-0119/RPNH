@@ -5,13 +5,13 @@ metadata:
   document-kind: reference
   audience: operator-and-developer
   language: en
-  counterpart: agents_ZH.md
+  counterpart: agent-runtime_ZH.md
   revision: "2026-09-29.2"
   status: source-reviewed-v0.1.0rc1
   basis: "core; adapter differences explicitly labelled"
 ---
 
-[English](agents.md) | [中文](agents_ZH.md)
+[English](agent-runtime.md) | [中文](agent-runtime_ZH.md)
 
 # Session control, AgentLoop and model services
 

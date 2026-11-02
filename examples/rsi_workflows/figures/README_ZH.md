@@ -43,3 +43,7 @@
 ![单轮 failed-retain 终止绑定：初始 PetriNet 结构](../assets/petrinet-6d4ef3a0349e89c3.png)
 
 [图片身份记录](../results/figure-provenance.json)。
+
+## 节点详情
+
+[1 轮](nodes/rsi_rounds_1/README_ZH.md) · [2 轮](nodes/rsi_rounds_2/README_ZH.md) · [3 轮](nodes/rsi_rounds_3/README_ZH.md) · [4 轮](nodes/rsi_rounds_4/README_ZH.md) · [失败后保留](nodes/rsi_one_round_failed_retain/README_ZH.md)

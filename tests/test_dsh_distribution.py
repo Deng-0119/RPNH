@@ -38,13 +38,15 @@ ASSETS = {
 }
 
 PUBLIC_SOURCE_ASSETS = {
-    "AGENTS.md",
     "CHANGELOG.md",
     "CHANGELOG_ZH.md",
     "CONTRIBUTING.md",
     "CONTRIBUTING_ZH.md",
     "SECURITY.md",
     "SECURITY_ZH.md",
+    "scripts/install.sh",
+    "docs/guides/releases.md",
+    "docs/guides/compatibility.md",
     "docs/index.md",
     "docs/index_ZH.md",
     "docs/guides/installation.md",
@@ -125,6 +127,9 @@ def test_distribution_contains_runtime_and_public_source_assets(
             with tarfile.open(archive) as contents:
                 names = {name.split("/", 1)[1] for name in contents.getnames() if "/" in name}
         assert ASSETS <= names
+        assert not any(Path(name).name.upper() in {"AGENTS.MD", "CLAUDE.MD", "GEMINI.MD"}
+                       for name in names)
+        assert not any(name.startswith("docs/validation/") for name in names)
         if archive.suffix != ".whl":
             assert PUBLIC_SOURCE_ASSETS <= names
 

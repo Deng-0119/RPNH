@@ -10,6 +10,8 @@ metadata:
   status: source-reviewed
 ---
 
+[English](read-host-hierarchy-v2.md) | [中文](read-host-hierarchy-v2.zh-CN.md)
+
 # 可信本地读取 HOST 层级配置 v2
 
 本功能仅将已配置的 Registry 来源分组，不建立新的 Registry 父子权威、嵌套 SourceSet、远程认证、授权或分布式事务。每个叶节点仍走原 HOST 绑定和该来源的原权限校验；读取结果仍明确 `global_atomic_snapshot: false`。

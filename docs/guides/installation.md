@@ -22,7 +22,7 @@ The distribution is `rpnh-harness`, with imports under `cpn` and command `rpnh`.
 Current public source declares `0.1.0rc3`. The October 30
 [v0.1.0rc3 release](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc3)
 contains a Python wheel and stock DSH operator tarball, but not the later
-November 1 source fixes. See the [source/artifact boundary](../validation/host-adapter-source-20261101.md).
+November 1 source fixes. See the [source/artifact boundary](compatibility.md).
 A version string alone cannot distinguish these sources: record the commit or
 artifact digest and use a fresh environment. No package-index publication or
 blanket runtime acceptance is implied.
@@ -148,8 +148,7 @@ Optional clients are not installed by the bootstrap script.
 Use [frontend setup and switching](frontends.md) for other presentation clients.
 Do not combine old DSH Web setup pins with the stock alpha.2 operator pairing.
 These are independent RPNH adaptations, not upstream endorsement or blanket
-compatibility. [Source changes and bounded validation](../validation/host-adapter-source-20261101.md)
-remain distinct from published assets and live-provider acceptance.
+compatibility. See [compatibility and known limitations](compatibility.md) when choosing an installation.
 
 ## Verification, update and removal
 Installation is successful only after the installed command, packaged schemas/config/static/example assets and the zero-model configuration flow work outside the checkout. A successful editable install or passing link check is insufficient. Viewer wheel validation requires the complete pinned vendor-file set and license files; an empty or self-reduced asset manifest cannot waive them. This documentation batch records wheel verification separately from its static-site checks.

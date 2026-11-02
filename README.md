@@ -51,7 +51,7 @@ The input is `2 + 3`; expected output contains `output.value: 5` and a terminal-
 reference. The last command prints the local read-only Viewer URL. Keep the run
 directory for later inspection.
 
-[![Recorded native-add run in the PetriNet Viewer](examples/native_plugin/assets/native-plugin-petrinet.png)](examples/native_plugin/assets/native-plugin-petrinet.png)
+![Recorded native-add run in the PetriNet Viewer](examples/native_plugin/assets/native-plugin-petrinet.png)
 
 Existing capture of a completed native-tool run, not a model run or a new test
 of this revision. [Example details](examples/native_plugin/README.md) ·
@@ -66,7 +66,7 @@ No provider is preselected.
 Current source retains version `0.1.0rc3`, but the October 30
 [v0.1.0rc3 wheel and DSH plugin](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc3)
 do **not** include the November 1 source fixes; see the
-[source/release boundary](docs/validation/host-adapter-source-20261101.md).
+[source/release boundary](docs/guides/compatibility.md).
 
 - **Codex:** default 0.163.0; 0.166.0 is an explicitly selected candidate.
 - **OpenCode:** default 1.19.4; 2.2.5 is only an opt-in REST/authentication/non-durable events

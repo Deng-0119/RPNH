@@ -22,7 +22,7 @@ metadata:
 当前公开源码版本为 `0.1.0rc3`。10 月 30 日的
 [v0.1.0rc3 release](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc3)
 包含 Python wheel 与 stock DSH operator tarball，**不含** 11 月 1 日的源码修复；
-详见[源码与产物边界](../validation/host-adapter-source-20261101_ZH.md)。
+详见[源码与产物边界](compatibility_ZH.md)。
 版本字符串不能单独区分这些源码；应记录提交或产物摘要，并使用全新环境。
 不表示包索引发布或 runtime 全面验收。
 
@@ -136,8 +136,7 @@ cd "$TEST_ROOT"
 其他展示客户端见[前端配置与切换](frontends_ZH.md)。
 不要把旧 DSH Web 固定版本配置混入 stock alpha.2 operator 配对。
 这些是独立 RPNH 适配，不表示上游背书或任意版本兼容。
-[源码变更与限定验证](../validation/host-adapter-source-20261101_ZH.md)
-不等于已发布产物或真实 provider 验收。
+选择安装方式前请查看[兼容性与已知限制](compatibility_ZH.md)。
 
 ## 验证、升级与卸载
 只有已安装命令、包内 schema/config/static/example 资源，以及源码目录外的零模型配置流程均通过，才可称安装验证通过。editable 安装成功或链接检查通过都不足以替代。Viewer wheel 校验要求完整的固定 vendor 文件集合及许可文件；空清单或自行缩减的 asset manifest 不能免除这些文件。本文档批次单独记录 wheel 验证和站点检查。

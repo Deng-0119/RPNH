@@ -68,7 +68,4 @@ seal 后仍可接收预期结果。
 
 面板分别展示 A/O/C 精确关联。接纳 occurrence 总数保留历史；当前可用性在同一读 cut 内从当前 RunAuthority/checkpoint 得出。有活跃 firing claim 时明确 not_provided，不把 marking 成员关系当作使用许可。贡献及根完成后，原接纳 O 仍保留历史，但不在当前 marking 中。
 
-历史 HTTP/Node 与 mock-DOM 检查通过；记录中的真实 browser 启动因 root/sandbox
-BLOCKED。静态接纳 fixture 使用 mock product bytes 及拒绝执行的 callback，不能证明
-任意 child/effect 支持。见[有限验证](../guides/release-validation_ZH.md)。
-上例为语法检查的文档代码，不是已经执行的任务结果。
+Workset 接纳仍限于已声明的 child 与 output 契约。上例用于说明 API，不会执行任务。

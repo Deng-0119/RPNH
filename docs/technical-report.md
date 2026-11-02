@@ -73,8 +73,8 @@ review text. The [hybrid summary](../examples/hybrid_summary/README.md) places a
 native calculation between two Agent nodes. The
 [atomic-tool pipeline](../examples/tool_pipeline/README.md) separates usage and
 tariff preparation, billing and independent validation into ten tool transitions.
-Its [historical native result](results/tool-pipeline-20261008/README.md) preserves
-the input, source and scorer for the reported 2.000 kWh / 1.70 CNY result. That
+Its [example guide](../examples/tool_pipeline/README.md) describes the input
+and independent scorer for the 2.000 kWh / 1.70 CNY fixture. That
 specific fixture establishes a calculation and evidence path, not a general
 business-task success rate.
 
@@ -550,45 +550,13 @@ forward by the outer controller (`native_workspace_reuse=false`). Build/evaluati
 used host networking and a same-version download adaptation. Original evaluation
 ran; official `AgentRunner`, full five-checkpoint execution and quality judging
 did not. There was no grader-feedback repair, retry or resume. `any-case` allowed
-outer exit 0 despite checkpoint 3 failing. Earlier synthetic failures and blocked
-native attempts remain in the [full SCB record](results/scb-prefix3-20261008/README.md).
+outer exit 0 despite checkpoint 3 failing. Original benchmark failures remain in the
+[full SCB results](results/scb-prefix3-20261008/README.md).
 
-### Deterministic pipeline and focused runtime windows
-
-- **Atomic-tool pipeline:** `00f2d29c…` plus 16 example files, unchanged core,
-  later published at `80a17c3c…`. Real AF_UNIX owner; 32 unique pytest IDs in
-  33 executions, including unit checks. The standard fixture produced complete,
-  **2.000 kWh / 1.70 CNY**, ten firings, 12 tool products and two source resources;
-  the rounding fixture produced **0.02 CNY**. The independent integer-input
-  validator is an example scorer, not a benchmark grader. Fresh-process readback
-  preserved event ordinal/count 1001 and ten dispatch/Start counts, with zero
-  model calls. Earlier AF_UNIX-blocked attempts remain separate.
-  [Exact sources, inputs and results](results/tool-pipeline-20261008/README.md).
-- **ERP runtime:** `dbad004…` plus the overlay published at `e92b05c…`.
-  65 unique offline cases plus four subtests; installed-owner complete/stop/timeout
-  paths and six direct-owner receipt scenarios. Nine synthetic backend invocations
-  and 18 subsequent unknown-outcome probes retained the intended no-replay boundary.
-  No real provider, Odoo world or original grader; reconstruction reused the same
-  owner, so this does not certify OS-owner crash recovery.
-  [Full window](results/erp-runtime-20261008/README.md).
-- **Shared entry and exact reader:** H1 tested `674252f…` plus seven files and
-  passed 39 unique native cases. H1+H2a tested `715468d…` plus five reader files,
-  later published at `d92ff37…`: 166 unique cases/executions across eight windows,
-  including 12 independent package checks. Real AF_UNIX/SIGINT/resume used scripted
-  Agents, with no real provider. All 11 stable pipeline/readback fields matched;
-  live-only transport/stop fields were absent. Earlier blocked and baseline-failure
-  windows remain historical. These are focused checks, not whole-product acceptance.
-  [Full source and status record](results/entry-reader-20261009/README.md).
-
-The dated [AutomationBench record](../examples/automationbench/PUBLIC_RESULTS_20261006.md)
-retains freeze04 first18 at **5 PASS / 9 FAIL / 4 BLOCKED**, and separate repair4
-at **1 PASS / 3 FAIL**; the older 14 scored tasks were not rerun.
-The [product-combination record](results/product-validation-20261009/README.md)
-retains its separate source identity, split windows and original failures,
-including the deferred parity case and incomplete native/stock-client scope.
-It is not certification of later PN or origin-query commits. This update reran
-none of those windows. [Release-validation history](guides/release-validation.md)
-provides the remaining version-specific checks.
+The [AutomationBench results](../examples/automationbench/PUBLIC_RESULTS_20261006.md)
+retain first18 at **5 PASS / 9 FAIL / 4 BLOCKED** and separate repair4 at
+**1 PASS / 3 FAIL**. These are different source conditions, not a combined score.
+For supported versions and operational limits, see [compatibility](guides/compatibility.md).
 
 <a id="native-input-and-collaboration"></a>
 
@@ -653,4 +621,3 @@ For API detail, follow the topic links alongside each figure.
 [parallel-scenario]: https://github.com/Deng-0119/RPNH/blob/6cec63ff5b7a0039611713961d00941767edaaf8/examples/workflow_patterns/scenarios/parallel.json
 [parallel-runner]: https://github.com/Deng-0119/RPNH/blob/6cec63ff5b7a0039611713961d00941767edaaf8/examples/workflow_patterns/run.py
 [parallel-validation]: https://github.com/Deng-0119/RPNH/blob/6cec63ff5b7a0039611713961d00941767edaaf8/examples/workflow_patterns/validation.json
-

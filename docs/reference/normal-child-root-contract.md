@@ -160,21 +160,9 @@ JavaScript consumer recognize both view versions and reject unsupported or
 inconsistent closure data. This local proof does not establish a global cut or
 complete physical delivery coverage across source Registries.
 
-## Validation boundary
+## Limits
 
-freeze04 has independent finite acceptance for normal-root retained refs/bytes
-across transactions, separate T01 run-terminal evidence, ordinary revision,
-legacy-catalog rejection, twochild/exact replay/cold v2 reads, closed-parent
-refusal, seven damaged-copy read-only refusals, thread attach-wins and separate
-child-stream CAS. A separate R02 window establishes one explicit Success-wins
-order. These bounded windows supersede the earlier allocation-repair NOT_RUN status.
-
-The writer's dynamic 64 cases and separate R02 case remain distinct. Independent
-integration has 8 windows, 31 executions and 30 distinct nodes; earlier pins are
-not relabelled freeze04. HTTP/Node and mock DOM passed; actual browser startup
-was root/sandbox BLOCKED, with no page/real-DOM/screenshot acceptance. See
-[finite validation](../guides/release-validation.md).
-
-This does not guarantee arbitrary scheduling/child counts, general typed-call
-dispatch, recursive child execution, TaskControl spawn, remote effects,
-cross-run capacity or full I02/HOST/advanced25 acceptance.
+This contract does not provide arbitrary scheduling or child counts, general
+typed-call dispatch, recursive child execution, TaskControl spawn, remote
+effects or cross-run capacity. Apply it only to the explicit normal-child
+closure profile described above.

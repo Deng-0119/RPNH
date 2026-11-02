@@ -240,8 +240,7 @@ Native Stop requests a checkpoint stop; model/effort selectors use the RPNH
 catalog. Input is text only. Native uploads, arbitrary sessions, workspace
 editing and native DSH local tool execution are unsupported; no terminal TUI is bundled.
 See [DSH setup and limits](../guides/dsh.md) and the
-[validation record](../validation/dsh-unified-20261019.md), which distinguishes
-the component milestone from official Web E2E results.
+[compatibility guide](../guides/compatibility.md) for supported versions.
 `rpnh-dsh` remains a separate advanced legacy headless host; its `--root`,
 `--session-id`, frame and attempt-budget options are documented in that guide.
 

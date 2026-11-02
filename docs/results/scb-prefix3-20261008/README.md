@@ -43,17 +43,3 @@ python -m examples.slopcodebench.run   --runner-source "$SCB" --problems-source 
 ```
 
 This is an instruction, not a new run or a byte-complete solver-image reconstruction. The [example guide](../../../examples/slopcodebench/README.md) specifies setup and isolation requirements. Original pytest abbreviated some actual output; omitted text and unretained vendor wire are not reconstructed. Exact-byte recovery does not resolve recorded fresh-reader provenance failures. The result does not establish a causal harness advantage or validate V6.
-
-
-## Older synthetic native window
-
-The README's 59 synthetic tests and native fixtures belong separately to `6f8ee2e406f3c70edb73206f861e56a0202b9f15` plus an uncommitted SCB overlay, with historical adapter base `ae09445fe1d9b973502bc5d2c961976c1d2c0163`. `results.json` identifies 11 package files, pyproject, relevant test changes and helper bytes. Original na01–na04 exit 1 failures remain failures. The four complete/stop cases in na05 subprocess and na06 pinned Docker Session are PASS_FINITE, with 3/2 scripted submissions per complete/stop and zero real providers. Complete had owner exit 0 and a terminal; stop exit 2 without a terminal. Original stream exits and quiescence are retained; Docker stop's -1 is not presented as a manufactured process exit code.
-
-Limits were 8 calls per case, owner 90 seconds, command 60 seconds and native IPC 180 seconds. The network-none image was a minimal Python synthetic fixture, not the general SCB base; exact image ID and runner/version identities are in the projection. Complete observed the original Snapshot and source persistence; stop produced no accepted snapshot. Full CheckpointPilot.run/CLI, timeout, original grader, official AgentRunner and real benchmark were not run. Full early helper source was not snapshotted, and the terse 59-test output supplies no node IDs; neither is reconstructed. With separately supplied historical helper, installed site and frozen manifest identified in the projection, set BACKEND to subprocess or docker for this portable recipe, which this documentation task did not execute:
-
-```sh
-python -B "$HELPER" --backend "$BACKEND" --site "$INSTALLED_SITE"   --frozen-manifest "$FROZEN_MANIFEST" --output "$NEW_OUTPUT"
-```
-
-
-The [distribution manifest](MANIFEST.json) identifies these rewritten summary/projection bytes, not original materials.

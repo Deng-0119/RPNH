@@ -108,7 +108,7 @@ Codex UI 协议要求默认 effort 非空。仅对未配置 effort 的模型，�
 wire 标记 `none`，回传时还原为同一 profile 的 canonical 空值；真正配置
 字符串 `none` 的模型仍保留该字符串。不会添加 provider 参数或目录值。
 当前 Codex 固定版本为 0.163.0。新版 object item cursor 仍从同一份
-已提交 MainThreadRegistry 投影历史；验证范围见[本次前端验证](../validation/frontends-20261019_ZH.md)。
+已提交 MainThreadRegistry 投影历史；支持范围见[前端兼容性](compatibility_ZH.md)。
 
 ## 传输、恢复和外部效果
 catalog 对外暴露的协议是 `openai_chat_completions/v1`，不是所有宣称兼容的 API。另一种 `local_process` 必须声明 `argv`、`probe_argv`、`env`、`inherit_env`；`{model}` 替换保留所选模型。声明 effort 的本地模型还必须在正式 `argv` 中放置 `{reasoning_effort}`；构建器会为每个支持值生成不可变 execution variant。子进程及其 probe 仍可能调用付费模型，不能把“本地进程”等同“离线”。
@@ -153,4 +153,4 @@ profile 的 `ready: true` 只代表所需变量有值，不能证明 key 正确�
 
 代码：`cpn/rpnh/provider_setup.py`、`user_config.py`、`provider_catalog.py`、`onboarding.py`，
 以及 `cpn/schemas/runtime/provider_model_catalog.v3.schema.json`。另见
-[排障](troubleshooting_ZH.md)和[组件参考](../reference/agents_ZH.md)。
+[排障](troubleshooting_ZH.md)和[组件参考](../reference/agent-runtime_ZH.md)。

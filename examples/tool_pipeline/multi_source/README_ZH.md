@@ -64,7 +64,7 @@ env HOME="$WORK/home" TMPDIR="$WORK/tmp" XDG_CACHE_HOME="$WORK/cache" \
 
 在实际 Registry 的 Viewer 中，通过 PetriNet、Executions、Evidence、history 定位 `merge_users.run` 与三路 `read_source_*.run`。`evidence.json` 给出每个产物的 resource/version ref、原生 `reference_provenance.operation_binding_ref`、producer invocation、parents、source refs 和 decisions。将 email 决策的 `origins` 对照原输入/解析资源：零起算第 0 行，A 原字段 `email`、B `email_address`、C `email`。终态 marking 已消耗输入时，使用历史 entry token 定位。
 
-merge 发布到 `encode_parquet.merged` 和 `encode_conflicts.conflicts`，两个 encoder 继续到 `finish.parquet`、`finish.conflicts`，再由 `finish.run` 到 `finish.final`。`artifact-references.json` 将两个导出文件绑定到原终态资源。stock token-resource 面板显示注册元数据，可用引用与独立产物/export 正文交叉核对。本机交接 `CONFLICT_TRACE.json` 提供这次实际 run 的精确资源、operation、firing、port/place 和历史 checkpoint 锚点，供浏览器捕获使用，本身不替代捕获。
+merge 发布到 `encode_parquet.merged` 和 `encode_conflicts.conflicts`，两个 encoder 继续到 `finish.parquet`、`finish.conflicts`，再由 `finish.run` 到 `finish.final`。`artifact-references.json` 将两个导出文件绑定到原终态资源。stock token-resource 面板显示注册元数据，可用引用与独立产物/export 正文交叉核对。
 
 ## 单测与边界策略
 

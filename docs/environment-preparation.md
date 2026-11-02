@@ -100,15 +100,14 @@ absolute `base_executable` and absent `prefix`. A prepared binding records actua
 interpreter/prefix identity; the launcher preserves venv activation semantics even
 when the interpreter executable is a symlink.
 
-## Local-agent / setup-document route
+## Export installation instructions
 
 `rpnh package setup-instructions --plan PLAN.json --format text|json --output SETUP`
 produces a private receiver document naming the identical target, plan digest,
-actions, artifacts, failure retention and acceptance criteria. Giving this document
-to another process or agent does not authorize it. After authorized work, the
-receiver must run the same checker and actual selected-HOST assembly. An agent's
-text assertion or completed checkbox cannot replace observations or grant a run.
-A changed plan requires fresh exact approval.
+actions, artifacts and verification criteria. Review the plan before preparation.
+The receiver must run the same environment checker and selected-HOST assembly;
+the exported document does not replace those checks. Regenerate and review the
+plan if the target environment changes.
 
 ## Trusted HOST and probe extension points
 

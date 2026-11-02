@@ -30,5 +30,3 @@ This closes an adapted release-documentation and coordination task. SQL executio
 ## Use the example
 
 Follow [Run and inspect](RUNNING.md) for source prerequisites, the original upstream task, a no-provider preflight and a separately authorized fresh model run. This is a source example, not a named wheel export. A new run creates new identities/world; it does not reproduce the retained world's checkpoint recovery. Historical recovery is described above rather than offered as a portable private-state command.
-
-The [release checks](release-validation.json) cover the pinned original-input download, exact guide configuration, the 13-call no-provider native preflight, 80 runtime/example boundary checks, three fresh-driver control tests and an isolated package install. Fresh execution stops waiting peers after a nonterminal return and requires empty native Source/HOST state before reporting completion. These release checks reuse the historical episode rather than starting another paid run.

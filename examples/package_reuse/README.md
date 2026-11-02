@@ -166,7 +166,7 @@ unblocked using the complete exact local wheel closure. The approved plan
 creates that venv, installs its declared closure and runs actual installed HOST
 assembly there. It never treats the base Python as the prepared target.
 
-## 2C. Give the same plan to a person or local agent
+## 2C. Export a receiver installation plan
 
 Use another absent target so this is a separate receiver route, not reuse of a
 previous receipt:
@@ -336,4 +336,3 @@ as part of a public sharepackage.
 ## PetriNet declaration gallery
 
 The opening image shows this example’s initial PetriNet structure. The [full gallery](figures/README.md) shows the listed declaration variants and readable node details for large nets.
-

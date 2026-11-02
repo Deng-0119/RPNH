@@ -59,8 +59,8 @@ IPC 权限。真实模型 route 必须单独、显式传入。
 两个相关案例把相同结构应用到预设审核文本以外的任务。[混合汇总](../examples/hybrid_summary/README_ZH.md)
 在两个 Agent 节点之间插入原生计算；[原子工具流水线](../examples/tool_pipeline/README_ZH.md)
 则把用量与电价准备、计费和独立验证分为十个工具 transition。
-其[历史原生运行结果](results/tool-pipeline-20261008/README_ZH.md)保留了产生
-2.000 kWh / 1.70 CNY 结果的输入、源码和 scorer。该特定 fixture 证明一条计算及证据路径，
+其[示例指南](../examples/tool_pipeline/README_ZH.md)说明了
+2.000 kWh / 1.70 CNY fixture 的输入与独立 scorer。该特定 fixture 证明一条计算及证据路径，
 不能推广为一般业务任务的成功率。
 
 ## Agent 任务网与只读投影
@@ -450,34 +450,11 @@ Solver 无网络，每个 checkpoint 使用新容器，由外部 controller 传�
 （`native_workspace_reuse=false`）。Build/evaluation 使用 HOST 网络和同版本下载兼容适配。
 原 evaluator 已运行；official `AgentRunner`、完整五 checkpoint 与 quality judging 未运行。
 没有 grader-feedback 修复、retry 或 resume。`any-case` 允许 checkpoint 3 失败时 outer exit 仍为 0。
-更早的 synthetic 失败和原生阻塞尝试继续保留在[完整 SCB 记录](results/scb-prefix3-20261008/README_ZH.md)。
+原始基准失败继续保留在[完整 SCB 结果](results/scb-prefix3-20261008/README_ZH.md)。
 
-### 确定性 pipeline 与局部 runtime 窗口
-
-- **原子工具 pipeline：** 测试 `00f2d29c…` 加 16 个 example 文件，core 不变，后发布于 `80a17c3c…`。
-  使用真实 AF_UNIX owner；32 个唯一 pytest ID、33 次执行，包含 unit check。
-  标准 fixture 为 complete、**2.000 kWh / 1.70 CNY**、十次 firing、12 个工具产物和两个 source resource；
-  rounding fixture 为 **0.02 CNY**。独立整数输入 validator 是示例 scorer，不是 benchmark grader。
-  新进程 readback 保持 event ordinal/count 1001 与十次 dispatch/Start 不变，模型调用为零。
-  更早 AF_UNIX 阻塞尝试单独保留。[准确来源、输入与结果](results/tool-pipeline-20261008/README_ZH.md)。
-- **ERP runtime：** 测试 `dbad004…` 加后来发布于 `e92b05c…` 的 overlay。
-  65 个唯一 offline case 加四个 subtest，installed-owner complete/stop/timeout 路径与六个 direct-owner
-  receipt 场景。九次 synthetic backend invocation 与后续 18 次 unknown-outcome probe 保持规定的防重放边界。
-  没有真实 provider、Odoo world 或原 grader；重建复用同一个 owner，不能认证 OS-owner crash recovery。
-  [完整窗口](results/erp-runtime-20261008/README_ZH.md)。
-- **共享入口与准确 reader：** H1 测试 `674252f…` 加七个文件，通过 39 个唯一 native case。
-  H1+H2a 测试 `715468d…` 加五个 reader 文件，后发布于 `d92ff37…`：八个窗口共 166 个唯一 case/执行，
-  含 12 个独立 package check。真实 AF_UNIX/SIGINT/resume 使用脚本化 Agent，没有真实 provider。
-  Pipeline/readback 的 11 个稳定字段一致，live-only transport/stop 字段缺席。
-  更早 blocked 与 baseline-failure 窗口仍作为历史保留。这些是局部检查，不是整体产品验收。
-  [完整源码与状态记录](results/entry-reader-20261009/README_ZH.md)。
-
-带日期的 [AutomationBench 记录](../examples/automationbench/PUBLIC_RESULTS_20261006.md)保留
-freeze04 first18 的 **5 PASS / 9 FAIL / 4 BLOCKED**，以及单独 repair4 条件的 **1 PASS / 3 FAIL**；
-更早 14 个 scored task 没有重跑。[产品组合记录](results/product-validation-20261009/README_ZH.md)
-保留独立 source identity、分窗口验证和原始失败，包括延期的 parity case 与不完整的 native/stock-client 范围。
-它不认证后来的 PN 或 origin-query commit。本次更新没有重跑以上任何窗口。
-其余版本特定检查见[release-validation 历史](guides/release-validation_ZH.md)。
+[AutomationBench 结果](../examples/automationbench/PUBLIC_RESULTS_20261006_ZH.md)保留
+first18 的 **5 PASS / 9 FAIL / 4 BLOCKED** 与独立 repair4 的 **1 PASS / 3 FAIL**。
+它们对应不同源码条件，不能合为同一成绩。支持版本与运行限制见[兼容性](guides/compatibility_ZH.md)。
 
 <a id="原生输入与协作"></a>
 
@@ -540,4 +517,3 @@ API 细节见各图旁边的专题链接。
 [parallel-scenario]: https://github.com/Deng-0119/RPNH/blob/6cec63ff5b7a0039611713961d00941767edaaf8/examples/workflow_patterns/scenarios/parallel.json
 [parallel-runner]: https://github.com/Deng-0119/RPNH/blob/6cec63ff5b7a0039611713961d00941767edaaf8/examples/workflow_patterns/run.py
 [parallel-validation]: https://github.com/Deng-0119/RPNH/blob/6cec63ff5b7a0039611713961d00941767edaaf8/examples/workflow_patterns/validation.json
-

@@ -4,7 +4,7 @@ description: "说明显式 OpenCode 2.2.5 协议候选及未验证的原生边�
 metadata:
   document-kind: reference
   audience: operator-and-developer
-  language: zh
+  language: zh-CN
   counterpart: opencode-v2-candidate.md
   revision: "2026-11-01.1"
   status: offline-protocol-candidate

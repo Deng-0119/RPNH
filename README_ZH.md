@@ -45,7 +45,7 @@ rpnh net --run "$RUN_DIR" --view --no-open
 输入为 `2 + 3`，预期输出包含 `output.value: 5` 和终态证据引用。
 最后一条命令打印本地只读 Viewer 地址；保留运行目录即可再次查看。
 
-[![PetriNet Viewer 中已记录的原生加法运行](examples/native_plugin/assets/native-plugin-petrinet.png)](examples/native_plugin/assets/native-plugin-petrinet.png)
+![PetriNet Viewer 中已记录的原生加法运行](examples/native_plugin/assets/native-plugin-petrinet.png)
 
 这是已有的原生工具完成运行截图，不是模型运行，也不是对本次版本的新测试。
 [案例说明](examples/native_plugin/README_ZH.md) · [更多工作流](examples/workflow_patterns/README_ZH.md)。
@@ -57,7 +57,7 @@ rpnh net --run "$RUN_DIR" --view --no-open
 
 当前源码仍标为 `0.1.0rc3`，但 10 月 30 日发布的
 [v0.1.0rc3 wheel 与 DSH 插件](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc3)
-**不包含** 11 月 1 日的源码修复；详见[源码与发布包边界](docs/validation/host-adapter-source-20261101_ZH.md)。
+**不包含** 11 月 1 日的源码修复；详见[源码与发布包边界](docs/guides/compatibility_ZH.md)。
 
 - **Codex：**默认 0.163.0；0.166.0 是需要显式选择的候选版本。
 - **OpenCode：**默认 1.19.4；2.2.5 仅为显式启用的 REST／认证／非持久化事件子集，不是完整原生前端。

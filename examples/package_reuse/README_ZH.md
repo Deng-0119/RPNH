@@ -155,7 +155,7 @@ python "$SAMPLE/select_environment.py" --python "$CONTROL_PYTHON" \
 阻塞。批准的计划创建指定 venv、安装声明闭包，并在其中执行真正已安装 HOST 的
 装配；不会把基础 Python 当作已经准备好的目标。
 
-## 2C. 把同一计划交给人员或本地 agent
+## 2C. 导出接收端安装计划
 
 选另一个尚不存在的目标，形成独立接收方路径，而不是复用前一条路径的 receipt：
 
@@ -307,4 +307,3 @@ cmp "$SAMPLE/native-add-v2.zip" "$WORK/rebuilt-stock-package/native-add-v2.zip"
 ## PetriNet 声明图册
 
 下图展示本案例的初始 PetriNet 结构。[完整图册](figures/README_ZH.md)展示所列声明变体，并提供大网的节点局部图。
-

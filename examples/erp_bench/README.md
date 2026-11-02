@@ -56,7 +56,7 @@ Actual image digests and solver/verifier dependency versions must be recorded:
 the original image tags are mutable, and the image/verifier specify different
 `odoo-client-lib` versions (`2.0.0` versus an attempted `2.0.2`).
 
-Source reports retain the historical `base_commit`; `tested_commit` and ERP-owned working-file identities identify the actual tested source. Older measurements keep their original commits and outcomes; later integration is not a live rerun. See [curated ERP results](../../docs/results/erp-first-wave-20261008/README.md) and [synthetic native lifecycle results](../../docs/results/erp-runtime-20261008/README.md).
+Source reports retain the historical `base_commit`; `tested_commit` and ERP-owned working-file identities identify the actual tested source. Older measurements keep their original commits and outcomes; later integration is not a live rerun. See [curated ERP results](../../docs/results/erp-first-wave-20261008/README.md).
 
 ## Offline commands
 

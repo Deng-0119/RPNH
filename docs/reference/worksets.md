@@ -73,8 +73,5 @@ another firing. A sealed collection still accepts its expected results.
 
 The panel exposes A/O/C exact links separately. Accepted occurrence count preserves history; current availability is derived from the current RunAuthority/checkpoint at the same read cut. Active firing claims make availability not_provided rather than inferring that marking membership grants use. After contribution/root completion the original accepted O remains in history but is absent from the current marking.
 
-Historical HTTP/Node and mock-DOM checks passed; the recorded actual-browser
-startup was root/sandbox BLOCKED. The static acceptance fixture used mock
-product bytes and callbacks that reject execution; it does not establish
-arbitrary child/effect support. See [finite validation](../guides/release-validation.md).
-The example above is syntax-checked documentation, not an executed task result.
+Workset acceptance remains limited to the declared child and output contracts.
+The example above illustrates the API; it does not execute a task.

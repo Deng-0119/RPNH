@@ -98,6 +98,5 @@ python -m examples.multiuser_release_handoff.episode \
 
 ## 已验证的发布入口
 
-上述固定上游下载、原任务提取与配置命令已实际执行成功。完整原生预检通过13次注册工具调用，以及脚本reader的允许输入／拒绝路径和workspace完成检查，真实模型／provider调用为0；原生脚本请求记录与真实provider用量分列。八处保留依赖的80项定向检查在提供原任务后通过，新运行的三个控制流测试也通过。已用现有依赖构建wheel并隔离安装，核对schema catalog、v14/v15 cap往返与CLI入口。确切范围见[发布验证](release-validation.json)。
 
 新的正式运行中，任何非终态角色返回会停止等待者。`RESULT.json`记录原生Source的firing／请求／lease claim计数及HOST reads／pending edit；只有全部为空才报告完成，并在最终Viewer capture前记录Source owner-stop。未决状态保持partial，供受支持的恢复与效果对账处理。
