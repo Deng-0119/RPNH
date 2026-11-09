@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: ARCHITECTURE.md
-  revision: "2026-11-09.1"
+  revision: "2026-11-09.2"
   status: source-reviewed-pre-release
 ---
 
@@ -268,9 +268,9 @@ Task status 还可能独立观察进程和 owner socket；组合返回值不是�
 
 ## 仓库边界
 
-本仓库只包含可复用 harness、schemas、frontend compatibility、provider 配置工具和确定性
-离线测试，不包含项目专用 workflow、实验数据、历史 Registry、结果包、用户 profile 或
-凭据。
+本仓库包含可复用的 harness、schema、前端接入、provider 配置工具和测试，
+也包含公开示例、文档，以及选定的历史结果和 Viewer 展示材料。
+公开案例保留各自注明的执行条件与源码版本；用户 profile、凭据和私人运行目录由使用者自行管理。
 
 当前运行时仅支持 Linux（包括 WSL2）。不支持原生 Windows 和 macOS，因为执行依赖
 Unix domain socket、Linux `/proc`、`fcntl` lock 和 POSIX signal。

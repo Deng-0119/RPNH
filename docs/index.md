@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: index_ZH.md
-  revision: "2026-11-02.1"
+  revision: "2026-11-09.1"
   status: source-reviewed
 ---
 
@@ -14,7 +14,8 @@ metadata:
 
 # Documentation
 
-[Repository home](../README.md) · [Examples](../examples/README.md) ·
+[Repository home](../README.md) · [Technical report](technical-report.md) ·
+[Examples](../examples/README.md) ·
 [CLI](reference/cli.md) · [API](reference/api-index.md) · [Source map](guides/repository-layout.md)
 
 RPNH uses Registry and PetriNet to declare, execute, inspect and reuse agent work.
@@ -58,6 +59,7 @@ For a conceptual introduction before running anything, read the
 | Compare checkpoints in one Registry or exact nets across sources | [Checkpoint comparison](guides/checkpoint-comparison.md), [cross-net comparison](guides/comparison-context.md) |
 | Inspect actual controlled-user contributions | [Viewer contributions](guides/viewer-user-contributions.md) |
 | Check declaration compatibility with an already prepared HOST | [HOST readiness](guides/host-readiness.md) |
+| Read local Basic and Viewer help | [Offline frontend help](guides/frontend-help.md) |
 
 ## Build, collaborate and reuse
 
@@ -65,16 +67,18 @@ For a conceptual introduction before running anything, read the
 |---|---|
 | Edit a shipped input, graph or plugin | [Examples and copy-and-change instructions](guides/examples.md), [customization](guides/customization.md) |
 | Copy, co-create, merge, adopt and independently run a complete agent project | [Complete project example](../examples/project_collaboration/README.md), [project operator/API guide](guides/project-entry.md) |
+| Coordinate independent roles through selected versioned resources | [Multi-user release handoff](../examples/multiuser_release_handoff/README.md) |
 | Understand controlled participants, scoped permissions and protected acceptance | [User collaboration](guides/user-collaboration.md) |
 | Extract, compose, instantiate, branch or replace definitions | [Native net operations](guides/net-operations.md) |
 | Read public projections and exchange a closed definition | [Typed Registry exchange](guides/typed-registry-exchange.md) |
 | Preview/resolve a portable package and run it on a prepared receiver | [Portable packages](guides/portable-packages.md), [native-add package tutorial](guides/package-reuse-example.md) |
 | Integrate selected tools, parallel managed calls or isolated programs | [Controlled managed tools](controlled-managed-tools.md), [plugin contracts](reference/extensions-observation.md) |
 
-The current complete-project entry follows implementer/reviewer agents through
-controlled local collaboration, explicit conflict resolution, acceptance,
-owner adoption and independent receiver execution. Its example page retains
-exact evidence, limitations and original task verification. Historical
+The complete-project example first demonstrates controlled definition
+contributions, explicit conflict resolution, Branch acceptance and owner
+adoption. Implementer/reviewer agents then execute the business task, which is
+also reused by an independent receiver. Exact results, limits and original-task
+verification remain on the example page. Historical
 [agent-network co-building](../examples/user_collaboration/agent_cobuild/README.md)
 is a separate deterministic protocol example.
 
@@ -140,10 +144,9 @@ Advanced authoring is grouped in the [API version-operation map](reference/api-i
 Example results belong to the source versions and conditions stated on their
 pages. They do not certify every combination of current source and providers.
 
-## Multi-user release handoff: independent agents and shared resources
+### Multi-user release handoff: independent agents and shared resources
 
-The [complete example](../examples/multiuser_release_handoff/README.md) follows four controlled participants with independent Tasks, Registries and private agent PNs, plus a separate fifth Source Registry for resource control. Native checkpoint restoration completed v2, SQL, the QA checklist, incident and final handoffs; the final read-only audit passed 98/98 required checks. Source is not an agent. Original failures and two optional UNKNOWN history-coverage checks remain explicit.
-
-[Actual role PNs and Source details](../examples/multiuser_release_handoff/figures/README.md) · [Original task and run prerequisites](../examples/multiuser_release_handoff/RUNNING.md) · [Exact historical results and limits](../examples/multiuser_release_handoff/RESULTS.md). New model runs require authorization; this is not an official benchmark score, deployment or executed rollback validation.
-
-- [Basic and Viewer offline help](guides/frontend-help.md)
+[Complete example](../examples/multiuser_release_handoff/README.md) ·
+[Role and resource views](../examples/multiuser_release_handoff/figures/README.md) ·
+[Run prerequisites](../examples/multiuser_release_handoff/RUNNING.md) ·
+[Historical results and limits](../examples/multiuser_release_handoff/RESULTS.md)

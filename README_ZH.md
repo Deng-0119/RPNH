@@ -2,19 +2,34 @@
 
 [English](README.md) | 中文
 
-RPNH 是不绑定特定模型服务商的 Agent 执行框架，用于组合语言模型、原生工具与可复用工作流。
+RPNH 是不绑定特定模型服务商的 Agent 执行框架，用于**构建、运行和复用由语言模型与原生工具组成的工作流**。
 
-持久化的 **Registry** 记录执行与资源历史；类型化的 **PetriNet** 决定工作何时可执行：
-已声明的输入与完成结算的输出使后续步骤具备执行条件，也支持并行分支与汇合。
-前端和只读 Viewer 查看同一份运行状态，不另建执行或恢复逻辑。
+类型化的 **PetriNet** 将任务依赖与资源要求转化为执行规则：步骤只有在声明的
+前提满足后才可能执行，完成结算的输出再供后续工作使用。持久化的 **Registry**
+连接工作流定义、资源版本、执行记录与检查点。
+
+[第一次运行](docs/guides/getting-started_ZH.md) ·
+[技术报告](docs/technical-report_ZH.md) · [案例](examples/README_ZH.md) ·
+[文档](docs/index_ZH.md)
 
 ## 可以做什么
 
-- 将 Agent 与已有代码组合成显式工作流。
-- 创建独立子任务，各自保留 Registry 和结果。
-- 跟踪工作区输入、输出的版本，通过 PetriNet Viewer 查看运行。
-- 续接 owner 主动停止的工作，或从指定的已提交 checkpoint 重开，并保留先前历史；
-  这不会撤销外部效果。
+- **组合 Agent、工具与工作流模块。** 直接定义受支持的工作流，或使用内置 Designer；
+  通过类型化依赖、并行分支和全输入汇合连接已注册操作，再通过显式接口组合可复用模块。
+- **通过版本化资源协调独立任务。** 任务拥有自己的 Registry 和结果，Agent 显式获得
+  每次交接所需材料与资源版本的访问权限。
+- **审阅和合并工作流定义。** 提出并比较受支持的定义修订、解决冲突，再将选定版本
+  显式采用到运行中。
+- **打包并复用工作方法。** 分享受支持的定义、输入与环境要求，让另一个项目使用自己的
+  Registry、本地配置和授权完成准备与独立运行。
+
+[技术报告](docs/technical-report_ZH.md)进一步说明组合方式、各类定义的合并契约，
+以及修订如何进入实际执行。
+
+**检查与续接真实运行。** [只读 Viewer](docs/guides/viewer_ZH.md)展示结构、已记录输入、
+输出与工作区版本。[续接 owner 主动停止的工作](docs/guides/checkpoint-recovery_ZH.md)
+从最新已提交检查点继续，也可显式重开当前 net lineage 中的检查点。
+先前历史会保留；重开不会撤销外部效果。
 
 ## 一键安装
 
@@ -53,6 +68,20 @@ rpnh net --run "$RUN_DIR" --view --no-open
 如需对话，先按[模型指南](docs/guides/models_ZH.md)配置自己的 provider 和精确模型，
 再运行 `rpnh --frontend basic`；系统不预选 provider。
 
+## 看一个完整项目
+
+| 目标 | 案例 | 可以看到什么 |
+|---|---|---|
+| 将 Agent 与已有代码组合 | [混合汇总](examples/hybrid_summary/README_ZH.md) | Agent → 原生计算 → Agent；默认脚本化，真实模型路线需显式选择 |
+| 协作修改并复用项目 | [项目协作](examples/project_collaboration/README_ZH.md) | 受控贡献者解决定义冲突；Implementer／Reviewer Agent 执行业务，包含独立接收端运行 |
+| 让独立角色围绕共享资源协作 | [多用户发布交接](examples/multiuser_release_handoff/README_ZH.md) | 四个任务 Registry 与独立资源 Source，已记录的角色交接及资源版本 |
+
+[![项目协作案例中已记录的业务 PetriNet：Implementer 与 Reviewer](examples/project_collaboration/figures/source-petri.png)](examples/project_collaboration/figures/source-petri.png)
+
+**已记录的项目运行：**官方只读 Viewer 展示 Implementer 向 Reviewer 交接工作。
+案例说明将这次执行与定义修订、显式采用和独立接收端复用联系起来。
+这是历史截图；[完整案例](examples/project_collaboration/README_ZH.md)保留其来源与验收范围。
+
 ## 兼容与发布边界
 
 当前源码仍标为 `0.1.0rc3`，但 10 月 30 日发布的
@@ -61,14 +90,17 @@ rpnh net --run "$RUN_DIR" --view --no-open
 
 - **Codex：**默认 0.163.0；0.166.0 是需要显式选择的候选版本。
 - **OpenCode：**默认 1.19.4；2.2.5 仅为显式启用的 REST／认证／非持久化事件子集，不是完整原生前端。
-- **Stock DSH 插件：**与 DSH 0.2.2-alpha.2 手动配对，不代表通过托管升级验收；
-  使用方式见[operator 指南](integrations/dsh/operator/README_ZH.md)。
+- **DSH Web 前端：**固定 0.2.1-rc.2 官方 Web UI，绑定一个 RPNH MainSession；
+  见 [Web 指南](docs/guides/dsh_ZH.md)。
+- **Stock DSH operator 插件：**与 DSH 0.2.2-alpha.2 手动配对，查看既有 RPNH 任务并
+  可选启用控制；不代表通过托管升级验收。见 [operator 指南](integrations/dsh/operator/README_ZH.md)。
 
 这些集成只覆盖限定的兼容范围，不代表支持任意版本。
 
 ## 更多资料
 
 [文档](docs/index_ZH.md) · [案例](examples/README_ZH.md) ·
+[技术报告](docs/technical-report_ZH.md) ·
 [架构](docs/architecture/design_ZH.md) · [参与贡献](CONTRIBUTING_ZH.md)
 
 ## 许可证

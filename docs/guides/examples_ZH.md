@@ -171,8 +171,9 @@ python examples/hybrid_summary/run.py --execution "$EXECUTION_CONFIG" \
 |---|---|
 | ![文档工作流](../../examples/workflow_patterns/assets/document-flow.png) | ![长工作流](../../examples/workflow_patterns/assets/long-process-overview.png) |
 
-[工作流案例库](../../examples/workflow_patterns/README_ZH.md)还展示同一并行 run 的完整
-PetriNet 投影。
+[工作流案例库](../../examples/workflow_patterns/README_ZH.md)另提供该并行结构的初始
+PetriNet 声明，并附本地 Viewer 查看方法。该声明图与上面的历史完成态 Overview
+分别展示流程结构和一次执行记录。
 
 ```bash
 DEMO_ROOT="$(mktemp -d "${TMPDIR:-/tmp}/rpnh-patterns.XXXXXX")"

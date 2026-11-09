@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: index.md
-  revision: "2026-11-02.1"
+  revision: "2026-11-09.1"
   status: source-reviewed
 ---
 
@@ -14,7 +14,8 @@ metadata:
 
 # 文档导航
 
-[仓库首页](../README_ZH.md) · [示例](../examples/README_ZH.md) ·
+[仓库首页](../README_ZH.md) · [技术报告](technical-report_ZH.md) ·
+[示例](../examples/README_ZH.md) ·
 [CLI](reference/cli_ZH.md) · [API](reference/api-index_ZH.md) · [源码导航](guides/repository-layout_ZH.md)
 
 RPNH 使用 Registry 与 PetriNet 声明、执行、查看和复用 agent 工作。
@@ -51,6 +52,7 @@ RPNH 使用 Registry 与 PetriNet 声明、执行、查看和复用 agent 工作
 | 比较同一 Registry 的 checkpoint 或跨来源精确网 | [Checkpoint 比较](guides/checkpoint-comparison_ZH.md)、[跨网比较](guides/comparison-context_ZH.md) |
 | 查看实际受控用户贡献 | [Viewer 贡献](guides/viewer-user-contributions_ZH.md) |
 | 对已准备 HOST 检查声明兼容性 | [HOST readiness](guides/host-readiness_ZH.md) |
+| 阅读 Basic 与 Viewer 本地帮助 | [前端离线帮助](guides/frontend-help_ZH.md) |
 
 ## 构建、协作与复用
 
@@ -58,13 +60,18 @@ RPNH 使用 Registry 与 PetriNet 声明、执行、查看和复用 agent 工作
 |---|---|
 | 修改随附输入、图或插件 | [示例及复制修改流程](guides/examples_ZH.md)、[定制](guides/customization_ZH.md) |
 | 复制、共创、合并、adopt 并独立运行完整 agent 项目 | [完整项目示例](../examples/project_collaboration/README_ZH.md)、[项目操作/API 指南](guides/project-entry_ZH.md) |
+| 让独立角色通过选定的版本化资源交接 | [多用户发布交接](../examples/multiuser_release_handoff/README_ZH.md) |
 | 理解受控参与者、范围权限和受保护接受 | [用户协作](guides/user-collaboration_ZH.md) |
 | 提取、组合、实例化、branch 或替换定义 | [原生网操作](guides/net-operations_ZH.md) |
 | 读取公共投影并交换完整封闭定义 | [类型化 Registry 交换](guides/typed-registry-exchange_ZH.md) |
 | 预览/解析可移植包，在准备好的接收端运行 | [可移植包](guides/portable-packages_ZH.md)、[native-add 包教程](guides/package-reuse-example_ZH.md) |
 | 接入所选工具、并行托管调用或隔离程序 | [受控托管工具](controlled-managed-tools.zh.md)、[插件契约](reference/extensions-observation_ZH.md) |
 
-当前完整项目入口让 implementer/reviewer agent 经历受控本地协作、显式冲突解决、接受、owner adoption 及独立接收端执行。示例页保留精确证据、限制和原任务验证。历史[agent-network 共建](../examples/user_collaboration/agent_cobuild/README_ZH.md)是单独的确定性协议示例。
+完整项目示例先展示受控定义贡献、显式冲突解决、分支接纳与 owner 采用，
+再由 implementer/reviewer 执行业务任务，并在独立接收端复用。
+精确结果、限制与原任务验证见示例页。历史
+[agent-network 共建](../examples/user_collaboration/agent_cobuild/README_ZH.md)
+是单独的确定性协议示例。
 
 ## 查询与理解系统
 
@@ -119,10 +126,9 @@ RPNH 使用 Registry 与 PetriNet 声明、执行、查看和复用 agent 工作
 
 示例结果属于页面注明的源码版本与执行条件，不代表当前源码与任意 provider 组合均已通过验证。
 
-## 多用户发布交接：独立智能体与共享资源
+### 多用户发布交接：独立智能体与共享资源
 
-[完整示例](../examples/multiuser_release_handoff/README_ZH.md)展示四个受控参与者的独立 Task/Registry/私有智能体 PN，以及独立第五个 Source Registry 的资源控制 PN。原 episode 经原生检查点恢复完成 v2、SQL、QA 检查表、事件和最终交接；最终只读审计 98/98 必需检查通过。Source 不是智能体，原始故障和两项可选历史覆盖 UNKNOWN 保留。
-
-[实际角色 PN 与 Source 详情](../examples/multiuser_release_handoff/figures/README_ZH.md) · [原任务及运行依赖](../examples/multiuser_release_handoff/RUNNING_ZH.md) · [精确历史结果与边界](../examples/multiuser_release_handoff/RESULTS_ZH.md)。新模型运行需授权；这不是官方基准分数、部署或实际回滚验证。
-
-- [Basic 与 Viewer 离线帮助](guides/frontend-help_ZH.md)
+[完整示例](../examples/multiuser_release_handoff/README_ZH.md) ·
+[角色与资源视图](../examples/multiuser_release_handoff/figures/README_ZH.md) ·
+[运行前提](../examples/multiuser_release_handoff/RUNNING_ZH.md) ·
+[历史结果与限制](../examples/multiuser_release_handoff/RESULTS_ZH.md)

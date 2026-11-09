@@ -6,7 +6,7 @@ metadata:
   audience: trusted-host-developer
   language: en
   counterpart: user-collaboration_ZH.md
-  revision: "2026-10-12.4"
+  revision: "2026-11-09.1"
   status: maintained
   basis: "trusted local HOST; plain author revisions; original Registry authority"
 ---
@@ -23,7 +23,14 @@ for publication, execution and recovery.
 
 ## Agent-contract co-building entry
 
-The current collaboration entry is [agent-network co-building](../../examples/user_collaboration/agent_cobuild/README.md). Two native task-agent roles, `curator.run` and `auditor.run`, use stock `AgentStage`/default `AgentLoop` in an ordinary Module assembled from two stock single-agent declarations, with `curator.result → auditor.request`. Deterministic source programs from two controlled original principals strengthen the curator input-lineage contract and auditor reconciliation contract. The original HOST reviews exact revisions, advances a protected Branch sequentially and enables owner adoption before target execution.
+Start with [copy, co-create and reuse one agent project](../../examples/project_collaboration/README.md).
+It connects controlled definition contributions and conflict resolution with HOST
+review, Branch acceptance, separate owner adoption and independent reuse by a
+receiver. The [project operator guide](project-entry.md) provides the commands
+and API sequence.
+
+The historical [agent-network co-building](../../examples/user_collaboration/agent_cobuild/README.md)
+example retains a sequential contract-contribution route. Two native task-agent roles, `curator.run` and `auditor.run`, use stock `AgentStage`/default `AgentLoop` in an ordinary Module assembled from two stock single-agent declarations, with `curator.result → auditor.request`. Deterministic source programs from two controlled original principals strengthen the curator input-lineage contract and auditor reconciliation contract. The original HOST reviews exact revisions, advances a protected Branch sequentially and enables owner adoption before target execution.
 
 Source programs, external control actions and target agents remain separate; this single-parent chain does not imply automatic same-base merging. A `local_process` scripted driver computes from actual inputs and tool returns. This demonstrates structure and protocol using registered task agents. It makes no live-model or cognition claim; execution results, artifacts and Viewer evidence are reported on the example page.
 

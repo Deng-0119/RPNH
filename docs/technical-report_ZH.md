@@ -1,14 +1,14 @@
 ---
 name: rpnh-technical-report
-description: "以图解介绍 RPNH 的流程定义、执行权责、观察接口与历史结果。"
+description: "说明 RPNH 如何通过 PetriNet 与 Registry 构建、组合、演化和复用 Agent 与程序工作流。"
 metadata:
   document-kind: technical-report
   audience: application-developer-and-researcher
   language: zh-CN
   counterpart: technical-report.md
-  revision: "2026-10-16.1"
+  revision: "2026-11-09.1"
   status: technical-report
-  basis: "Deng-0119/RPNH at 6cec63ff5b7a0039611713961d00941767edaaf8"
+  basis: "Deng-0119/RPNH at 7e1f090f3928fcc7415483354fe830ea3dff384d; dated execution evidence retains its original source"
 ---
 
 [English](technical-report.md) | 中文 | [文档导航](index_ZH.md)
@@ -17,18 +17,43 @@ metadata:
 
 ## 面向 Agent 与程序的可执行流程
 
-**更新日期：** 2026-10-16。**实现快照：**
-[`6cec63ff5b7a0039611713961d00941767edaaf8`][snapshot]。
-历史测试分别保留自己的源码身份，见[第 10 节](#10-历史结果及其限制)。
-下方原生案例分别保留自己的执行窗口；报告原快照和历史模型／benchmark 结果仍单独标识。
+**更新日期：** 2026-11-09。**本次核对的当前源码：**
+[`7e1f090f3928fcc7415483354fe830ea3dff384d`][snapshot]。
+本次修订更新产品说明及选定实现契约，没有重新运行案例，也没有以此源码重新认证模型结果。
+历史运行、Viewer 图片及另行固定版本的存储说明分别保留原源码身份与限制；
+历史结果见[第 10 节](#10-历史结果及其限制)。
 
 ## 摘要
 
-Agent 应用需要协调工作、保留各步产物，并在恢复时区分可信的回答与真正完成的流程。
-RPNH 将这些职责显式化：类型化 PetriNet 约束执行资格，可信 HOST 绑定提供执行实现，
-持久 Registry 记录产物、结算与 checkpoint。本报告先讲解一个可运行的小案例，
-再说明它所涉及的执行与观察契约。证据分别来自脚本化演示、确定性工具，以及单独标明的
-历史真实模型评估。它们支持一套具体的执行设计，尚未建立相对其他系统的质量、速度或成本优势。
+RPNH 是不绑定特定模型服务商的执行框架，用于构建、运行和复用由语言模型与原生工具组成的工作流。
+开发者可以声明 Agent 职责与类型化交接、组合可执行方法、协调版本化资源、协作修改定义，
+再将接纳的修订显式采用到运行中。接收方也可以将受支持的 package 绑定到自己的环境，独立执行该方法。
+
+类型化 PetriNet 决定哪些工作具备执行资格；可信 HOST 绑定提供所选模型、程序与工具实现；
+持久 Registry 连接定义、资源版本、执行记录、结算与 checkpoint。这些机制使工作过程本身成为
+可以检查和修改的具体对象，同时也要求明确的声明与资源契约，并不直接证明模型业务答案的质量。
+
+本报告结合当前源码核对、脚本化演示、确定性工具及单独标明的历史真实模型评估，
+说明这套执行与协作设计；现有证据尚未建立相对其他系统的质量、速度或成本优势。
+
+## 可以用它构建什么
+
+最小的业务结构可以是 **Agent → 原生计算 → Agent**，见
+[混合汇总](../examples/hybrid_summary/README_ZH.md)。更完整的路径是
+[项目协作](../examples/project_collaboration/README_ZH.md)：受控贡献者修改工作方法、
+解决冲突、接纳并显式采用修订，再将精确的方法与输入交给独立接收方复用。
+其历史执行窗口与验收限制保留在[案例证据章节](#agent-任务网与只读投影)。
+
+| 开发者目标 | RPNH 机制 | 继续阅读 |
+|---|---|---|
+| 构建 Agent 与程序工作流 | Designer 或显式声明、类型化 PN lowering、依赖、并行分支与汇合 | [第 1 节](#1-将方法与实际执行分开)、[第 2 节](#2-执行资格来自真实-token-与-claim)、[第 5 节](#5-在已声明的执行边界组合工具) |
+| 组合可复用工作方法 | Module 接口、显式组合与固定成员修订的 Assembly | [第 4 节](#4-先创作修订再显式采用)、[net operations](guides/net-operations_ZH.md) |
+| 交接文件与其他资源 | 登记版本、声明 claim、结算时发布 workspace | [第 3 节](#3-settlement-将计算连接到持久状态)、[发布交接](../examples/multiuser_release_handoff/README_ZH.md) |
+| 协作修改执行方法 | 各定义类型专用的合并协议、受保护接纳、独立的运行采用步骤 | [第 4 节](#4-先创作修订再显式采用)、[项目指南](guides/project-entry_ZH.md) |
+| 分享方法并续接工作 | 受支持的 package 与接收方本地绑定、checkpoint、只读执行视图 | [第 9 节](#9-复用流程与选择示例)、[第 3.3 节](#33-从-checkpoint-续跑)、[Viewer](guides/viewer_ZH.md) |
+
+框架通过 Agent／runtime 接口与 authoring API 构建、修改执行定义；
+Viewer 读取形成的结构与执行状态，承担检查和展示职责。
 
 ## 先看一个可运行的案例
 
@@ -41,9 +66,9 @@ RPNH 将这些职责显式化：类型化 PetriNet 约束执行资格，可信 H
 
 **案例图 A。** 官方 Viewer 已有的脚本化完成案例 Overview。四个清晰可读的 Agent 节点
 展示审核结构；Overview 省略 PetriNet 的 place 与 arc。
-[同一案例的 PetriNet 视图和复现方法](../examples/workflow_patterns/README_ZH.md)
-给出底层表示。这是保留的历史图片，不是对本报告源码快照的新运行；拓扑本身也不能证明完成，
-或证明两条分支在实际时间上同时执行。
+[案例库与复现方法](../examples/workflow_patterns/README_ZH.md)另提供该并行结构的
+**初始 PetriNet 声明**，不含执行状态。初始声明与这里的完成态 Overview 是不同证据对象。
+这些保留图片不是对本报告源码的新运行；拓扑本身也不能证明完成，或证明两条分支在实际时间上同时执行。
 
 [运行器][parallel-runner]只有在 stop reason 为 terminal、存在 terminal-evidence 引用、
 且已登记输出等于 `Parallel workflow complete.` 时才接受该案例。Fixture 提供预设文本，
@@ -63,36 +88,6 @@ IPC 权限。真实模型 route 必须单独、显式传入。
 2.000 kWh / 1.70 CNY fixture 的输入与独立 scorer。该特定 fixture 证明一条计算及证据路径，
 不能推广为一般业务任务的成功率。
 
-## Agent 任务网与只读投影
-
-按建模对象选择：agent 工作流描述任务职责与交接，领域算法和业务系统是工具或外部环境。ERP、3-DOF、JB、HarnessAudit、AutomationBench、SlopCodeBench 与 RRSI 保留为真实 agent／角色工作流。RRSI 自定义 registered-host role PN 也可具有真实 agent 绑定，不要求一律使用 stock AgentLoop。纯工具流水线、原生输入 gate、作者 principal 和显示注释不会仅因 Registry 来源链而变成 agent。
-
-当前协作入口是[复制、共创并复用同一 Agent 项目](../examples/project_collaboration/README_ZH.md)。完整项目包含定义、输入、环境、原任务、验收器、来源与许可证；两个受控贡献者解决真实冲突并形成双 parent 修订 M。业务执行前依次采用 M → base 内容新后继 → M 内容新后继，再下载精确原 M，由新身份、独立授权的 receiver 导入。source 与 receiver 均由 implementer／reviewer 两个调用真实模型的 stock AgentLoop 职责执行同一原始多源合并任务；receiver 包不含 source 的业务答案。[操作指南](guides/project-entry_ZH.md)给出导入、审核、接纳、采用、下载和运行步骤。
-
-2026-10-13 的有界结果为 **43 次登记／42 次响应，上限 48**：source 23／22（保留 1 次 `NOT_SUBMITTED` 原失败、2 个完成业务 firing），receiver 20／20、2 个完成业务 firing。两端路径适配原断言均 **3/3 PASS**，独立完整 instruction 审阅为 **ACCEPT_BOTH**；原 `test.sh` **NOT_RUN**，grader **VISIBLE**，不称盲评官方容器成绩。全部四行／20 单元格和三项完整字段冲突经独立核对；可选 status 归一化歧义仍披露。
-
-业务 PN 建模两个 agent 的职责与交接；两端 Overview 均为 2 节点／1 边，完整业务 PN 为 5 节点／6 弧。文件物化与 workspace finalization 的真实下级执行 PN 在同一 Registry 内归属于精确业务 invocation/firing，具有分开的 token、firing 和 checkpoint；AgentLoop 日志不替代执行 PN。受支持范围是单一可信 OS 用户下的受控主体、普通 Module 贡献与显式 scoped 读取／owner 采用。业务前内容恢复不复活已消费或终态 token，也不回滚外部效果；不证明真人身份认证、活跃 token 热迁移或 graph／open-region／selected-change／assembly 的广泛交换。
-
-![实际项目 source Overview：Implementer → Reviewer。](../examples/project_collaboration/figures/source-overview.png)
-
-两端实际官方 Viewer 窗口为 source-05（101 张 PNG）与 receiver-04（28 张 PNG），均报告缺项 0。查看[完整 source 业务 PN](../examples/project_collaboration/figures/source-petri.png)、[source 文件物化执行 PN](../examples/project_collaboration/figures/source-execution-materialization.png)、[source workspace-finalization 执行 PN](../examples/project_collaboration/figures/source-execution-finalization.png)和[独立 receiver Overview](../examples/project_collaboration/figures/receiver-overview.png)。原生 Previous Net Segment 导航验证两段历史、原 M 的两个 parents 与三次采用引用；完整图见项目示例，[捕获来源](../examples/project_collaboration/figures/provenance.json)标明精确源码窗口。精选 PNG 保持捕获原字节。
-
-历史零 provider 协议入口是[Agent 任务网共建](../examples/user_collaboration/agent_cobuild/README_ZH.md)。`curator.run` 与 `auditor.run` 两个原生任务 agent 使用 stock `AgentStage`／default `AgentLoop`，由两份 stock 单 agent 声明组成同一普通 Module，连接为 `curator.result → auditor.request`。两个受控原 principal 的确定性 source 程序分别加强 curator 输入来源合同和 auditor 对账合同。原 HOST 审阅精确 revision、连续推进受保护 Branch，再由 owner 在 target 执行前采用。
-
-![实际 Agent 共建 Overview：Curator → Auditor。](../examples/user_collaboration/agent_cobuild/figures/overview-panorama.png)
-
-10月12日 UTC 的 fresh03 协议运行将两项合同保留在精确采用声明和每角色两次真实请求中。两次主任务 firing、两个原生 AgentLoop 完成四次脚本 turn、六个工具 action；独立原输入检查核对四条来源、24分钟（planning17、review7）。[实际主任务 PN](../examples/user_collaboration/agent_cobuild/figures/petri-panorama.png)为五节点六弧，原登记的文件 I/O 子网保持分开。三个官方 Viewer 捕获窗口前后 head／事件数均为 1099、writer epoch 均为 2，[捕获来源](../examples/user_collaboration/agent_cobuild/figures/provenance.json)标明各自源码窗口；不包含外部 provider 调用或认知质量主张。
-
-该历史窗口的 source 程序、网外控制动作与 target agent 分层记录；其单 parent 链不表示同 base 自动合并。`local_process` 脚本驱动从实际输入与工具返回计算，以已登记任务 agent 展示结构／协议，不声称真实模型调用或认知能力；运行结果、产物与 Viewer 证据以示例页记录为准。
-
-该历史示例使用两份 stock 单 agent 声明组装普通 Module，保留既有 plain-proposal 约束、Registry 门、adapter 与调度器。
-
-Overview 是只读 agent 投影，不是简化后可执行 PN。`registered_agent_binding` 可追到精确 executable binding 与 agent 引用；`declared_llm_executor` 仅确认声明，不证明执行；`explicit_host_annotation` 是未确认显示注释，不建立 agent 身份。角色按显式 scoped identity 分组，不能凭同名、模型名或用户账号合并。边保留原路径依据，表示通往下一 agent 的结构路径，不证明已发生顺序、guard 通过或全输入 join 满足。完整 PetriNet 与所属 Registry 保留权限、guard、join 及关联的 loop／turn／action 记录、工具和产物引用。这些运行记录不会自动新增 PN 节点。managed child／action 不计为新增 PN transition，独立 child Registry 保持独立。
-
-静态声明与运行分别标识；空概览本身不否定源码中的真实 agent 工作流，声明或已登记身份也不证明本次任务已执行。
-
-ERP／AutomationBench／HarnessAudit Office／SlopCodeBench 的静态导出分别含 1／1／4／1 个声明角色。身份导出修正保留原 frame 与图像，不重跑或重新认证这些 benchmark。
-
 ## 研究背景与阅读路径
 
 PetriNet 是描述并发、同步和状态分析的成熟方法；Murata 的综述也讨论了模型表达能力与分析
@@ -105,6 +100,22 @@ ReAct 研究交替进行语言模型推理与动作的方法 [2]。此类 Agent 
 [第 4 节](#4-先创作修订再显式采用)，测得结果及失败见[第 10 节](#10-历史结果及其限制)。
 契约章节中的编号图是概念示意，不是运行截图或完整 schema；完整契约以链接中的专题为准。
 RPNH 适用于重视持久化输出、显式协作或受控流程变更的应用，也会增加声明和状态管理工作。
+
+### 相关系统与比较范围
+
+以下一手资料核对于 2026-11-09。这些系统所处的应用层次部分重叠，但并不相同；
+这里比较设计取向，不作完整功能审计或性能排名。
+
+| 系统与一手来源 | 公开产品定位或机制 | 与 RPNH 应比较的内容 |
+|---|---|---|
+| [OpenCode](https://opencode.ai/) | 面向使用者的开源 AI coding agent，提供终端、桌面等入口及 SDK | 比较用户能完成的工作及接入边界。RPNH 固定版本的 OpenCode TUI adapter 呈现 RPNH 自己的执行，不等于支持当前 OpenCode 完整产品 |
+| [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) | 以 everything-is-a-plugin 架构组织的 Agent harness | 比较工具、运行服务和界面的扩展方式。RPNH 的 Web、operator plugin 与 headless HOST 分别具有独立契约和版本范围 |
+| [LangGraph persistence](https://docs.langchain.com/oss/python/langgraph/persistence) 与 [time travel](https://docs.langchain.com/oss/python/langgraph/use-time-travel) | 图状态 checkpoint、从所选检查点重新执行与状态分支 | 状态分支与定义修订涉及不同对象。RPNH 需要解释 PN 执行资格、资源版本、定义协作与显式运行采用，不能仅凭 checkpoint 声称独特性 |
+| [libpetri](https://github.com/debe/libpetri) | 类型化、带时间的 PetriNet 引擎，具有真实网执行、组合、可视化与验证 | PetriNet 执行本身已有先例。RPNH 有证据支持的贡献在于 Agent／程序执行与 Registry 资源、定义协作、运行采用及 package 复用的结合 |
+
+本报告关注 RPNH 如何将 Agent／程序执行、Registry 资源、定义协作、运行采用和项目复用
+连接成一套具体契约。实现与案例支持对这些机制的说明，不足以证明该组合独有或优于其他系统。
+实证比较还需统一任务、模型、工具与预算，并固定故障注入点、恢复目标和成功判定。
 
 ## 1. 将方法与实际执行分开
 
@@ -119,16 +130,35 @@ RPNH 适用于重视持久化输出、显式协作或受控流程变更的应用
   event loop、worker 与 dispatch service。
 - **观察：** 选定的 Registry 投影和 read session 保持只读。
 
+内置 MainSession Designer 可以请求单 Agent 任务或有限 Agent graph。
+Graph 声明职责、类型化端口与精确 arc，以 arc 确定依赖；lowering 创建实际的 place、
+transition 与输入条件，包括 fan-out 和全输入 join。普通 Agent graph 可以声明有界 feedback；
+包含原生插件节点的图使用另一种 schema，在该 API 中不支持 feedback。
+见 [Designer 契约][designer]与[图 lowering][graph]。
+
+Module 组合是另一项显式作者操作：连接声明接口并保留其要求。在这一较低层次，
+parallel composition 本身不会把一个 token 自动复制给多个消费者；分发与 join 必须显式声明。
+Assembly 固定成员的精确 revision 与组合计划。这些操作组合的是定义；独立任务则拥有各自的运行生命周期。
+见 [Module 组合][module-composition]。
+
 两层 PN 各有范围：**业务 PN** 建模 agent 的任务职责、工作动作和交接，“业务”指这些
 agent 操作，不是任务领域算法或流程。**执行 PN** 在同一个 Registry 内，归属于精确、
 已准入的业务 invocation/firing，建模下级 harness 执行机制。领域流程不能替代 agent 操作成为
 PN 主体；领域资料作为被 Registry 收录的 PN 资源。详见[两层架构](ARCHITECTURE_ZH.md#workflow-graph-与-petrinet-lowering)。
 
-Basic、Codex 与 OpenCode 是同一直接主会话根的不同呈现，共享 lease 防止多个可写呈现竞争。
-DSH 是受注册管理的 HOST 接入。独立子任务各自拥有 Registry、net 和 owner；从属 execution net
-则与业务网共享 Registry，用于 workspace finalization 等执行机制。Author assembly 成员关系属于定义层。
-已有独立子任务入口不等于完整的原生父子启动至父完成链；此快照尚未接通该父子 transport 的生产边界。
-见[父子执行边界][parent-child]。
+Basic、Codex、OpenCode 与集成 DSH Web 前端可在单写者 owner lease 下重新打开
+同一个 canonical MainSession 根。DSH 有三种独立入口契约：绑定单个 RPNH MainSession 的
+[官方 Web 前端接入](guides/dsh_ZH.md)、操作既有 RPNH 任务的
+[stock DSH operator 插件](../integrations/dsh/operator/README_ZH.md)，以及
+[受注册管理的 headless HOST 接入](guides/adapters_ZH.md)。
+三者的版本与功能范围须分别查阅[兼容矩阵](guides/compatibility_ZH.md)。
+前端不会替代 RPNH 的 provider catalog、执行 owner 或 Registry。
+
+独立 TaskControl 子任务各自拥有 Registry、net 和 owner；从属 execution net 则与业务网
+共享 Registry，用于 workspace finalization 等机制。可选的
+[normal-child root 契约](reference/normal-child-root-contract_ZH.md)在父 Success 中闭合
+已登记的本地 execution children，不负责派生独立任务。本次核对源码中的完整原生
+parent-bound 启动至父完成 transport 仍未接通，见[父子执行边界][parent-child]。
 
 详见：[架构](architecture/design_ZH.md)、[runtime 契约](reference/runtime-registry_ZH.md)。
 代码：[声明][module]、[注册][registration]、[编译器][compiler]、[Orchestrator][orchestrator]。
@@ -235,6 +265,26 @@ Extract、Compose、Instantiate 和 Branch 可以产生已登记的 `rpnh/module
 Author API 提供稳定元素身份、expected-head 检查、来源映射、merge analysis 与 selected-change 历史。
 Assembly 固定准确的成员修订与 lowering 映射；名称相同不足以证明身份相同。
 
+各类定义使用不同的合并协议：
+
+| 定义形式 | 受支持的作者路径 | 必须保留的范围 |
+|---|---|---|
+| 普通 closed Module | 带显式冲突选择的 plain 三方合并 | 结果仍须为普通闭合 Module；排除高层 graph wrapper |
+| 普通 workflow-graph/v3 source 与 builder recipe | 专门的 GraphMerge 分析与作者 API，重建并编译所选结果 | 本地可信 HOST 作者操作；排除 native／managed plugin contract 与外部 schema resolution，不覆盖插件 graph-v4 |
+| Flat Assembly/v2 历史及 Assembly/v6 结果或后继 | 固定成员修订、显式选择 plan 的 full-history merge | 同一 local source 与 owner；leaf 限 ordinary closed-v1、plain merge-v1 与 ordinary graph revision-v2；不递归合并成员 |
+
+详见 [plain Module merge](reference/plain-merge-result_ZH.md)、
+[Graph source merge](reference/graph-source-merge_ZH.md)与
+[Assembly full-history merge](reference/assembly-full-history-merge_ZH.md)。
+工作图语言版本与 collaboration revision 版本不同。GraphMerge 形成的 graph revision-v3
+结果可以通过另行定义的 Assembly/v8 契约组合，不表示 Assembly/v6 full-history merge
+自动接纳这类结果，见 [Graph source merge 的消费契约](reference/graph-source-merge_ZH.md)。
+
+发布合并记录的是定义修订；受保护分支接纳与实际运行采用仍是独立步骤。
+默认 Agent 工具目录不会自动开放 Extract、Compose、Replace 或 Merge；
+可信 HOST 配置必须显式提供相应作者能力。
+见 [net-operation 注册][net-components]与[默认工具目录][default-tools]。
+
 运行时变更有两条显式路径：
 
 1. **Owner replacement：** 针对当前 net 准备候选，暂停准入、排空活动 firing，检查 occurrence
@@ -310,11 +360,22 @@ SourceSet 原有的显式 query/record API 可以沿原发布契约持久化选�
 
 **图 7。** `product_origin_v1` 返回有限的元数据证据，不提供递归血缘，也不证明模型读取或使用了内容。
 
-此快照中的 `query_product_origin_v1` 是 `cpn.rpnh.collaboration` 的公开 Python session method
-及 convenience function。此快照没有安装态 origin-query CLI；comparison viewer 的 HTTP endpoint 也未提供此查询。
-输入必须是由 Invocation 产生、准确 source-qualified 的 canonical `petri_output`/`workspace_write`
-资源，或准确的 `operation_result/v1`，并提供同一 session 签发、同来源且未修改的 `SourceCut`。
-名称、路径、`latest` 和跨来源搜索都不是受支持的 root。
+产物来源查询既可使用 `cpn.rpnh.collaboration` 中公开的 Python session method／
+convenience function `query_product_origin_v1`，也可使用安装后的 CLI：
+
+```bash
+rpnh origin --read-host-config HOST.json --root ROOT.json
+```
+
+使用已配置的只读 HOST，以及支持范围内、准确 source-qualified 的 reference：
+由 Invocation 产生的 canonical `petri_output`／`workspace_write` 资源，
+或受支持的 `operation_result/v1`。
+CLI 保持单个 read session 的固定 cut，输出 canonical NDJSON pages 并关闭 session。
+可选 `--include` 关系和 `--page-size` 不会扩大 source、权限或材料读取范围。
+Python API 则接收所属 session 签发、同来源且未修改的 `SourceCut`。
+名称、路径、`latest` 和跨来源搜索都不是受支持的 root；
+comparison Viewer 的 HTTP endpoint 仍未提供此查询。
+见[安装态 CLI 契约](reference/registry-read-sessions_ZH.md)与[实现][origin-cli]。
 
 查询始终验证 `producer_execution`，可选关系为 `start_inputs` 和 `claims`。
 所需 record/index field 先经过预授权；首个成功页之前，验证生成闭包与全部所选关系的候选项和端点。
@@ -388,9 +449,48 @@ Workset 记录 contribution、delivery 与 acceptance；首次验收要求真实
 
 此快照的安装导出目录包含 `adapter_task`、`native_plugin`、`hybrid_summary`、`compose_serial`
 和 `package_reuse`。`compose_serial` 只生成定义；导出不会安装或运行代码。
-脚本化与原生示例仍需文档规定的 process/IPC 环境。源码为 `0.1.0rc2` 开发候选，
-较早的 `v0.1.0rc1` 二进制具有更早的功能集。
-详见[示例目录](guides/examples_ZH.md)与[package 指南](guides/portable-packages_ZH.md)。
+脚本化与原生示例仍需文档规定的 process/IPC 环境。本次核对的源码仍标为 `0.1.0rc3`；
+已发布的 [v0.1.0rc3 产物](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc3)
+构建自较早的 `bc7755d0a0111a0045c86ed4508b11e1cb4a38bc` 源码，不会自动包含之后的 main 变更。
+请明确选择源码或发布物；客户端版本以[兼容矩阵](guides/compatibility_ZH.md)为准，
+产物范围见[发布指南](guides/releases_ZH.md)，另见[示例目录](guides/examples_ZH.md)与
+[package 指南](guides/portable-packages_ZH.md)。
+
+## Agent 任务网与只读投影
+
+按建模对象选择：agent 工作流描述任务职责与交接，领域算法和业务系统是工具或外部环境。ERP、3-DOF、JB、HarnessAudit、AutomationBench、SlopCodeBench 与 RRSI 保留为真实 agent／角色工作流。RRSI 自定义 registered-host role PN 也可具有真实 agent 绑定，不要求一律使用 stock AgentLoop。纯工具流水线、原生输入 gate、作者 principal 和显示注释不会仅因 Registry 来源链而变成 agent。
+
+当前协作入口是[复制、共创并复用同一 Agent 项目](../examples/project_collaboration/README_ZH.md)。完整项目包含定义、输入、环境、原任务、验收器、来源与许可证；两个受控贡献者解决真实冲突并形成双 parent 修订 M。业务执行前依次采用 M → base 内容新后继 → M 内容新后继，再下载精确原 M，由新身份、独立授权的 receiver 导入。source 与 receiver 均由 implementer／reviewer 两个调用真实模型的 stock AgentLoop 职责执行同一原始多源合并任务；receiver 包不含 source 的业务答案。[操作指南](guides/project-entry_ZH.md)给出导入、审核、接纳、采用、下载和运行步骤。
+
+2026-10-13 的有界结果为 **43 次登记／42 次响应，上限 48**：source 23／22（保留 1 次 `NOT_SUBMITTED` 原失败、2 个完成业务 firing），receiver 20／20、2 个完成业务 firing。两端路径适配原断言均 **3/3 PASS**，独立完整 instruction 审阅为 **ACCEPT_BOTH**；原 `test.sh` **NOT_RUN**，grader **VISIBLE**，不称盲评官方容器成绩。全部四行／20 单元格和三项完整字段冲突经独立核对；可选 status 归一化歧义仍披露。
+
+业务 PN 建模两个 agent 的职责与交接；两端 Overview 均为 2 节点／1 边，完整业务 PN 为 5 节点／6 弧。文件物化与 workspace finalization 的真实下级执行 PN 在同一 Registry 内归属于精确业务 invocation/firing，具有分开的 token、firing 和 checkpoint；AgentLoop 日志不替代执行 PN。受支持范围是单一可信 OS 用户下的受控主体、普通 Module 贡献与显式 scoped 读取／owner 采用。业务前内容恢复不复活已消费或终态 token，也不回滚外部效果；不证明真人身份认证、活跃 token 热迁移或 graph／open-region／selected-change／assembly 的广泛交换。
+
+![实际项目 source Overview：Implementer → Reviewer。](../examples/project_collaboration/figures/source-overview.png)
+
+两端实际官方 Viewer 窗口为 source-05（101 张 PNG）与 receiver-04（28 张 PNG），均报告缺项 0。查看[完整 source 业务 PN](../examples/project_collaboration/figures/source-petri.png)、[source 文件物化执行 PN](../examples/project_collaboration/figures/source-execution-materialization.png)、[source workspace-finalization 执行 PN](../examples/project_collaboration/figures/source-execution-finalization.png)和[独立 receiver Overview](../examples/project_collaboration/figures/receiver-overview.png)。原生 Previous Net Segment 导航验证两段历史、原 M 的两个 parents 与三次采用引用；完整图见项目示例，[捕获来源](../examples/project_collaboration/figures/provenance.json)标明精确源码窗口。精选 PNG 保持捕获原字节。
+
+历史零 provider 协议入口是[Agent 任务网共建](../examples/user_collaboration/agent_cobuild/README_ZH.md)。`curator.run` 与 `auditor.run` 两个原生任务 agent 使用 stock `AgentStage`／default `AgentLoop`，由两份 stock 单 agent 声明组成同一普通 Module，连接为 `curator.result → auditor.request`。两个受控原 principal 的确定性 source 程序分别加强 curator 输入来源合同和 auditor 对账合同。原 HOST 审阅精确 revision、连续推进受保护 Branch，再由 owner 在 target 执行前采用。
+
+![实际 Agent 共建 Overview：Curator → Auditor。](../examples/user_collaboration/agent_cobuild/figures/overview-panorama.png)
+
+10月12日 UTC 的 fresh03 协议运行将两项合同保留在精确采用声明和每角色两次真实请求中。两次主任务 firing、两个原生 AgentLoop 完成四次脚本 turn、六个工具 action；独立原输入检查核对四条来源、24分钟（planning17、review7）。[实际主任务 PN](../examples/user_collaboration/agent_cobuild/figures/petri-panorama.png)为五节点六弧，原登记的文件 I/O 子网保持分开。三个官方 Viewer 捕获窗口前后 head／事件数均为 1099、writer epoch 均为 2，[捕获来源](../examples/user_collaboration/agent_cobuild/figures/provenance.json)标明各自源码窗口；不包含外部 provider 调用或认知质量主张。
+
+该历史窗口的 source 程序、网外控制动作与 target agent 分层记录；其单 parent 链不表示同 base 自动合并。`local_process` 脚本驱动从实际输入与工具返回计算，以已登记任务 agent 展示结构／协议，不声称真实模型调用或认知能力；运行结果、产物与 Viewer 证据以示例页记录为准。
+
+该历史示例使用两份 stock 单 agent 声明组装普通 Module，保留既有 plain-proposal 约束、Registry 门、adapter 与调度器。
+
+Overview 是只读 agent 投影，不是简化后可执行 PN。`registered_agent_binding` 可追到精确 executable binding 与 agent 引用；`declared_llm_executor` 仅确认声明，不证明执行；`explicit_host_annotation` 是未确认显示注释，不建立 agent 身份。角色按显式 scoped identity 分组，不能凭同名、模型名或用户账号合并。边保留原路径依据，表示通往下一 agent 的结构路径，不证明已发生顺序、guard 通过或全输入 join 满足。完整 PetriNet 与所属 Registry 保留权限、guard、join 及关联的 loop／turn／action 记录、工具和产物引用。这些运行记录不会自动新增 PN 节点。managed child／action 不计为新增 PN transition，独立 child Registry 保持独立。
+
+静态声明与运行分别标识；空概览本身不否定源码中的真实 agent 工作流，声明或已登记身份也不证明本次任务已执行。
+
+ERP／AutomationBench／HarnessAudit Office／SlopCodeBench 的静态导出分别含 1／1／4／1 个声明角色。身份导出修正保留原 frame 与图像，不重跑或重新认证这些 benchmark。
+
+## 多用户发布交接：独立智能体与共享资源
+
+[完整示例](../examples/multiuser_release_handoff/README_ZH.md)展示四个受控参与者的独立 Task/Registry/私有智能体 PN，以及独立第五个 Source Registry 的资源控制 PN。原 episode 经原生检查点恢复完成 v2、SQL、QA 检查表、事件和最终交接；最终只读审计 98/98 必需检查通过。Source 不是智能体，原始故障和两项可选历史覆盖 UNKNOWN 保留。
+
+[实际角色 PN 与 Source 详情](../examples/multiuser_release_handoff/figures/README_ZH.md) · [原任务及运行依赖](../examples/multiuser_release_handoff/RUNNING_ZH.md) · [精确历史结果与边界](../examples/multiuser_release_handoff/RESULTS_ZH.md)。新模型运行需授权；这不是官方基准分数、部署或实际回滚验证。
 
 ## 10. 历史结果及其限制
 
@@ -475,45 +575,45 @@ first18 的 **5 PASS / 9 FAIL / 4 BLOCKED** 与独立 repair4 的 **1 PASS / 3 F
 这些文献提供研究背景。RPNH 的实现与结果主张，以各节链接中的版本化源码和带日期证据为依据。
 
 
-## 多用户发布交接：独立智能体与共享资源
-
-[完整示例](../examples/multiuser_release_handoff/README_ZH.md)展示四个受控参与者的独立 Task/Registry/私有智能体 PN，以及独立第五个 Source Registry 的资源控制 PN。原 episode 经原生检查点恢复完成 v2、SQL、QA 检查表、事件和最终交接；最终只读审计 98/98 必需检查通过。Source 不是智能体，原始故障和两项可选历史覆盖 UNKNOWN 保留。
-
-[实际角色 PN 与 Source 详情](../examples/multiuser_release_handoff/figures/README_ZH.md) · [原任务及运行依赖](../examples/multiuser_release_handoff/RUNNING_ZH.md) · [精确历史结果与边界](../examples/multiuser_release_handoff/RESULTS_ZH.md)。新模型运行需授权；这不是官方基准分数、部署或实际回滚验证。
-
 ## 源码索引
 
-以下实现链接固定到本报告快照。历史结果页面分别标明不同的测试与发布版本。
+当前实现引用使用报告开头注明的源码版本；保留较早核对依据的小节单独标明其版本。
+历史执行、结果页面、场景输入与保留图片继续使用各自原有的源码身份和执行条件。
 API 细节见各图旁边的专题链接。
 
-[snapshot]: https://github.com/Deng-0119/RPNH/tree/6cec63ff5b7a0039611713961d00941767edaaf8
-[module]: https://github.com/Deng-0119/RPNH/blob/6cec63ff5b7a0039611713961d00941767edaaf8/cpn/rpnh/module.py
-[registration]: https://github.com/Deng-0119/RPNH/blob/6cec63ff5b7a0039611713961d00941767edaaf8/cpn/rpnh/registration.py
-[compiler]: https://github.com/Deng-0119/RPNH/blob/6cec63ff5b7a0039611713961d00941767edaaf8/cpn/rpnh/compiler.py
-[orchestrator]: https://github.com/Deng-0119/RPNH/blob/6cec63ff5b7a0039611713961d00941767edaaf8/cpn/orchestrator/runner.py
-[petri]: https://github.com/Deng-0119/RPNH/blob/6cec63ff5b7a0039611713961d00941767edaaf8/cpn/rpnh/petri_contracts.py
-[harness]: https://github.com/Deng-0119/RPNH/blob/6cec63ff5b7a0039611713961d00941767edaaf8/cpn/rpnh/harness.py
-[graph]: https://github.com/Deng-0119/RPNH/blob/6cec63ff5b7a0039611713961d00941767edaaf8/cpn/rpnh/agent_workflows.py
-[owner]: https://github.com/Deng-0119/RPNH/blob/6cec63ff5b7a0039611713961d00941767edaaf8/cpn/rpnh/run.py
-[commit]: https://github.com/Deng-0119/RPNH/blob/6cec63ff5b7a0039611713961d00941767edaaf8/cpn/rpnh/registry/_event_store/commit.py
-[run-reader]: https://github.com/Deng-0119/RPNH/blob/6cec63ff5b7a0039611713961d00941767edaaf8/cpn/rpnh/registry/run_authority.py
-[task-control]: https://github.com/Deng-0119/RPNH/blob/6cec63ff5b7a0039611713961d00941767edaaf8/cpn/rpnh/task_control.py
-[authors]: https://github.com/Deng-0119/RPNH/blob/6cec63ff5b7a0039611713961d00941767edaaf8/cpn/rpnh/collaboration/__init__.py
-[revision]: https://github.com/Deng-0119/RPNH/blob/6cec63ff5b7a0039611713961d00941767edaaf8/cpn/rpnh/registry/module_revision.py
-[scheduler]: https://github.com/Deng-0119/RPNH/blob/6cec63ff5b7a0039611713961d00941767edaaf8/cpn/plugins/managed_scheduler.py
-[broker]: https://github.com/Deng-0119/RPNH/blob/6cec63ff5b7a0039611713961d00941767edaaf8/cpn/components/agent_loop/program_execution.py
-[isolation]: https://github.com/Deng-0119/RPNH/blob/6cec63ff5b7a0039611713961d00941767edaaf8/cpn/plugins/controlled_script.py
+[snapshot]: https://github.com/Deng-0119/RPNH/tree/7e1f090f3928fcc7415483354fe830ea3dff384d
+[module]: https://github.com/Deng-0119/RPNH/blob/7e1f090f3928fcc7415483354fe830ea3dff384d/cpn/rpnh/module.py
+[registration]: https://github.com/Deng-0119/RPNH/blob/7e1f090f3928fcc7415483354fe830ea3dff384d/cpn/rpnh/registration.py
+[compiler]: https://github.com/Deng-0119/RPNH/blob/7e1f090f3928fcc7415483354fe830ea3dff384d/cpn/rpnh/compiler.py
+[orchestrator]: https://github.com/Deng-0119/RPNH/blob/7e1f090f3928fcc7415483354fe830ea3dff384d/cpn/orchestrator/runner.py
+[petri]: https://github.com/Deng-0119/RPNH/blob/7e1f090f3928fcc7415483354fe830ea3dff384d/cpn/rpnh/petri_contracts.py
+[harness]: https://github.com/Deng-0119/RPNH/blob/7e1f090f3928fcc7415483354fe830ea3dff384d/cpn/rpnh/harness.py
+[graph]: https://github.com/Deng-0119/RPNH/blob/7e1f090f3928fcc7415483354fe830ea3dff384d/cpn/rpnh/agent_workflows.py
+[owner]: https://github.com/Deng-0119/RPNH/blob/7e1f090f3928fcc7415483354fe830ea3dff384d/cpn/rpnh/run.py
+[commit]: https://github.com/Deng-0119/RPNH/blob/7e1f090f3928fcc7415483354fe830ea3dff384d/cpn/rpnh/registry/_event_store/commit.py
+[run-reader]: https://github.com/Deng-0119/RPNH/blob/7e1f090f3928fcc7415483354fe830ea3dff384d/cpn/rpnh/registry/run_authority.py
+[task-control]: https://github.com/Deng-0119/RPNH/blob/7e1f090f3928fcc7415483354fe830ea3dff384d/cpn/rpnh/task_control.py
+[authors]: https://github.com/Deng-0119/RPNH/blob/7e1f090f3928fcc7415483354fe830ea3dff384d/cpn/rpnh/collaboration/__init__.py
+[revision]: https://github.com/Deng-0119/RPNH/blob/7e1f090f3928fcc7415483354fe830ea3dff384d/cpn/rpnh/registry/module_revision.py
+[scheduler]: https://github.com/Deng-0119/RPNH/blob/7e1f090f3928fcc7415483354fe830ea3dff384d/cpn/plugins/managed_scheduler.py
+[broker]: https://github.com/Deng-0119/RPNH/blob/7e1f090f3928fcc7415483354fe830ea3dff384d/cpn/components/agent_loop/program_execution.py
+[isolation]: https://github.com/Deng-0119/RPNH/blob/7e1f090f3928fcc7415483354fe830ea3dff384d/cpn/plugins/controlled_script.py
 [pipeline-module]: https://github.com/Deng-0119/RPNH/blob/6cec63ff5b7a0039611713961d00941767edaaf8/examples/tool_pipeline/module.json
-[read-session]: https://github.com/Deng-0119/RPNH/blob/6cec63ff5b7a0039611713961d00941767edaaf8/cpn/rpnh/collaboration/registry_read_session.py
-[read-host]: https://github.com/Deng-0119/RPNH/blob/6cec63ff5b7a0039611713961d00941767edaaf8/cpn/rpnh/collaboration/read_host_config.py
-[origin-query]: https://github.com/Deng-0119/RPNH/blob/6cec63ff5b7a0039611713961d00941767edaaf8/cpn/rpnh/collaboration/_product_origin_query.py
-[origin-core]: https://github.com/Deng-0119/RPNH/blob/6cec63ff5b7a0039611713961d00941767edaaf8/cpn/rpnh/collaboration/_product_origin_core.py
-[origin-includes]: https://github.com/Deng-0119/RPNH/blob/6cec63ff5b7a0039611713961d00941767edaaf8/cpn/rpnh/collaboration/_product_origin_includes.py
-[pn-contracts]: https://github.com/Deng-0119/RPNH/blob/6cec63ff5b7a0039611713961d00941767edaaf8/cpn/rpnh/pn_validation/contracts.py
-[pn-policy]: https://github.com/Deng-0119/RPNH/blob/6cec63ff5b7a0039611713961d00941767edaaf8/cpn/rpnh/pn_validation/runtime_gate.py
-[pn-adoption]: https://github.com/Deng-0119/RPNH/blob/6cec63ff5b7a0039611713961d00941767edaaf8/cpn/rpnh/registry/pn_validation.py
-[parent-child]: https://github.com/Deng-0119/RPNH/blob/6cec63ff5b7a0039611713961d00941767edaaf8/cpn/rpnh/registry/parent_child.py
+[read-session]: https://github.com/Deng-0119/RPNH/blob/7e1f090f3928fcc7415483354fe830ea3dff384d/cpn/rpnh/collaboration/registry_read_session.py
+[read-host]: https://github.com/Deng-0119/RPNH/blob/7e1f090f3928fcc7415483354fe830ea3dff384d/cpn/rpnh/collaboration/read_host_config.py
+[origin-query]: https://github.com/Deng-0119/RPNH/blob/7e1f090f3928fcc7415483354fe830ea3dff384d/cpn/rpnh/collaboration/_product_origin_query.py
+[origin-core]: https://github.com/Deng-0119/RPNH/blob/7e1f090f3928fcc7415483354fe830ea3dff384d/cpn/rpnh/collaboration/_product_origin_core.py
+[origin-includes]: https://github.com/Deng-0119/RPNH/blob/7e1f090f3928fcc7415483354fe830ea3dff384d/cpn/rpnh/collaboration/_product_origin_includes.py
+[pn-contracts]: https://github.com/Deng-0119/RPNH/blob/7e1f090f3928fcc7415483354fe830ea3dff384d/cpn/rpnh/pn_validation/contracts.py
+[pn-policy]: https://github.com/Deng-0119/RPNH/blob/7e1f090f3928fcc7415483354fe830ea3dff384d/cpn/rpnh/pn_validation/runtime_gate.py
+[pn-adoption]: https://github.com/Deng-0119/RPNH/blob/7e1f090f3928fcc7415483354fe830ea3dff384d/cpn/rpnh/registry/pn_validation.py
+[parent-child]: https://github.com/Deng-0119/RPNH/blob/7e1f090f3928fcc7415483354fe830ea3dff384d/cpn/rpnh/registry/parent_child.py
 
 [parallel-scenario]: https://github.com/Deng-0119/RPNH/blob/6cec63ff5b7a0039611713961d00941767edaaf8/examples/workflow_patterns/scenarios/parallel.json
 [parallel-runner]: https://github.com/Deng-0119/RPNH/blob/6cec63ff5b7a0039611713961d00941767edaaf8/examples/workflow_patterns/run.py
 [parallel-validation]: https://github.com/Deng-0119/RPNH/blob/6cec63ff5b7a0039611713961d00941767edaaf8/examples/workflow_patterns/validation.json
+[designer]: https://github.com/Deng-0119/RPNH/blob/7e1f090f3928fcc7415483354fe830ea3dff384d/cpn/rpnh/main_session.py
+[module-composition]: https://github.com/Deng-0119/RPNH/blob/7e1f090f3928fcc7415483354fe830ea3dff384d/cpn/rpnh/net_operations/definitions.py
+[net-components]: https://github.com/Deng-0119/RPNH/blob/7e1f090f3928fcc7415483354fe830ea3dff384d/cpn/components/net_operations.py
+[default-tools]: https://github.com/Deng-0119/RPNH/blob/7e1f090f3928fcc7415483354fe830ea3dff384d/cpn/components/agent_loop/tool_catalog.py
+[origin-cli]: https://github.com/Deng-0119/RPNH/blob/7e1f090f3928fcc7415483354fe830ea3dff384d/cpn/rpnh/collaboration/origin_cli.py

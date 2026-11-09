@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: ARCHITECTURE_ZH.md
-  revision: "2026-11-09.1"
+  revision: "2026-11-09.2"
   status: source-reviewed-pre-release
 ---
 
@@ -345,10 +345,11 @@ owner-stop and resume authorization and process controls are unchanged.
 
 ## Repository boundary
 
-This repository contains the reusable harness, schemas, frontend compatibility,
-provider configuration tools, and deterministic offline tests. It does not ship
-project-specific workflows, experiment data, historical Registries, result
-bundles, user profiles, or credentials.
+This repository contains the reusable harness, schemas, frontend integrations,
+provider configuration tools and tests, together with public examples,
+documentation, and selected historical results and Viewer assets. Public case
+material retains its stated execution conditions and source versions.
+User profiles, credentials and private run directories remain user-managed.
 
 The current runtime supports Linux only, including WSL2. Native Windows and
 macOS are unsupported because execution depends on Unix domain sockets, Linux

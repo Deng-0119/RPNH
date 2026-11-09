@@ -6,7 +6,7 @@ metadata:
   audience: trusted-host-developer
   language: zh-CN
   counterpart: user-collaboration.md
-  revision: "2026-10-12.4"
+  revision: "2026-11-09.1"
   status: maintained
   basis: "trusted local HOST; plain author revisions; original Registry authority"
 ---
@@ -21,7 +21,11 @@ plain-author Branch。目标 owner 邀请贡献者、审核精确提案、接纳
 
 ## Agent 合同共建入口
 
-当前协作入口是[Agent 任务网共建](../../examples/user_collaboration/agent_cobuild/README_ZH.md)。`curator.run` 与 `auditor.run` 两个原生任务 agent 使用 stock `AgentStage`／default `AgentLoop`，由两份 stock 单 agent 声明组成同一普通 Module，连接为 `curator.result → auditor.request`。两个受控原 principal 的确定性 source 程序分别加强 curator 输入来源合同和 auditor 对账合同。原 HOST 审阅精确 revision、连续推进受保护 Branch，再由 owner 在 target 执行前采用。
+从[复制、共创并复用同一 Agent 项目](../../examples/project_collaboration/README_ZH.md)开始。
+该示例贯通受控定义贡献、冲突解决、HOST 审阅、分支接纳、独立的 owner 采用决策，
+以及接收方独立复用。[项目操作指南](project-entry_ZH.md)提供命令与 API 操作顺序。
+
+历史[Agent 任务网共建](../../examples/user_collaboration/agent_cobuild/README_ZH.md)案例保留连续合同贡献路线。`curator.run` 与 `auditor.run` 两个原生任务 agent 使用 stock `AgentStage`／default `AgentLoop`，由两份 stock 单 agent 声明组成同一普通 Module，连接为 `curator.result → auditor.request`。两个受控原 principal 的确定性 source 程序分别加强 curator 输入来源合同和 auditor 对账合同。原 HOST 审阅精确 revision、连续推进受保护 Branch，再由 owner 在 target 执行前采用。
 
 source 程序、网外控制动作与 target agent 分层记录；单 parent 链不表示同 base 自动合并。`local_process` 脚本驱动从实际输入与工具返回计算，以已登记任务 agent 展示结构／协议，不声称真实模型调用或认知能力；运行结果、产物与 Viewer 证据以示例页记录为准。
 

@@ -188,8 +188,10 @@ declaration-only diagrams:
 |---|---|
 | ![Document workflow](../../examples/workflow_patterns/assets/document-flow.png) | ![Long workflow](../../examples/workflow_patterns/assets/long-process-overview.png) |
 
-The [workflow gallery](../../examples/workflow_patterns/README.md) also shows
-the parallel run's complete PetriNet projection.
+The [workflow gallery](../../examples/workflow_patterns/README.md) also provides
+the initial PetriNet declaration for this parallel structure, with instructions
+for opening it in the local Viewer. That declaration and the completed-run
+Overview above show the structure and a historical execution, respectively.
 
 ```bash
 DEMO_ROOT="$(mktemp -d "${TMPDIR:-/tmp}/rpnh-patterns.XXXXXX")"

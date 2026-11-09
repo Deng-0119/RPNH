@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: adapters.md
-  revision: "2026-10-19.3"
+  revision: "2026-11-09.1"
   status: source-reviewed
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -61,9 +61,11 @@ rpnh --session-dir ./main-session
 rpnh --frontend basic --resume ./main-session
 ```
 
-显式 `--frontend` 优先于保存偏好；未设置时使用 `auto`，仍只自动选择兼容 Codex 或
-Basic。`DSH_SOURCE` 优先于保存的 checkout 路径。前端偏好与模型配置独立，可在设置
-模型前保存。`rpnh --frontend dsh --prompt TEXT` 会在解析模型前拒绝。
+新交互 `rpnh` 会显示前端选择菜单；`rpnh --resume ROOT` 沿用该会话上次的前端。
+显式 `--frontend` 优先于保存偏好；显式 `--frontend auto` 保留兼容 Codex／Basic
+自动选择。`DSH_SOURCE` 优先于保存的 checkout 路径。前端偏好与模型配置独立，
+可在设置模型前保存。`rpnh --frontend dsh --prompt TEXT` 会在解析模型前拒绝。
+见[前端配置](frontends_ZH.md)。
 
 launcher 打印带认证的 loopback URL 并尝试打开浏览器，通过原生 Web transport 和
 typed Remote BFF 提供官方 DSH `index.html` 与 client plugins。全部执行仍由 Python

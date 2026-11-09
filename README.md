@@ -2,22 +2,42 @@
 
 English | [中文](README_ZH.md)
 
-RPNH is a provider-neutral agent execution framework for combining language
-models, native tools and reusable workflows.
+RPNH is a provider-neutral agent execution framework for **building, running and
+reusing workflows that combine language models and native tools**.
 
-A durable **Registry** records execution and resource history. A typed
-**PetriNet** controls when work can run: declared inputs and settled outputs
-enable later steps, including parallel branches and joins. Frontends and the
-read-only Viewer inspect the same runtime state rather than owning separate
-execution or recovery logic.
+A typed **PetriNet** makes task dependencies and resource requirements executable:
+a step can run only after its declared prerequisites are satisfied, and settled
+outputs feed later work. A durable **Registry** connects workflow definitions,
+resource versions, execution records and checkpoints.
+
+[First run](docs/guides/getting-started.md) ·
+[Technical report](docs/technical-report.md) · [Examples](examples/README.md) ·
+[Documentation](docs/index.md)
 
 ## What you can do
 
-- Combine agents and existing code in explicit workflows.
-- Create independent child tasks, each with its own Registry and result.
-- Track versioned workspace inputs and outputs; inspect runs in the PetriNet Viewer.
-- Resume owner-stopped work or reopen a selected committed checkpoint while
-  preserving prior history. This does not undo external effects.
+- **Compose agents, tools and workflow modules.** Define supported workflows
+  directly or use the built-in Designer. Connect registered operations through
+  typed dependencies, parallel branches and all-input joins, and compose
+  reusable modules through explicit interfaces.
+- **Coordinate independent tasks through versioned resources.** Run tasks with
+  their own Registry and result. Give agents explicit access to the materials
+  and resource versions they need for each handoff.
+- **Review and merge workflow definitions.** Propose and compare supported
+  definition revisions, resolve conflicts, then explicitly adopt a chosen
+  revision into a run.
+- **Package and reuse a working method.** Share supported definitions with their
+  inputs and environment requirements, so another project can prepare and run
+  them with its own Registry, local configuration and authorization.
+
+The [technical report](docs/technical-report.md) explains composition,
+definition-specific merge contracts and how revisions enter execution.
+
+**Inspect and continue real runs.** The [read-only Viewer](docs/guides/viewer.md)
+shows structure, recorded inputs, outputs and workspace versions.
+[Resume owner-stopped work](docs/guides/checkpoint-recovery.md) from its latest
+committed checkpoint, or explicitly reopen a checkpoint in the active net
+lineage. Earlier history is retained; reopening does not undo external effects.
 
 ## One-command installation
 
@@ -61,6 +81,22 @@ For conversation, configure your provider and exact model with the
 [model guide](docs/guides/models.md), then run `rpnh --frontend basic`.
 No provider is preselected.
 
+## See RPNH in a complete project
+
+| Goal | Example | What to expect |
+|---|---|---|
+| Combine agents with existing code | [Hybrid summary](examples/hybrid_summary/README.md) | Agent → native calculation → Agent; scripted by default, with an explicitly selected live-model route |
+| Collaborate on and reuse a project | [Project collaboration](examples/project_collaboration/README.md) | Controlled contributors resolve a definition conflict; implementer/reviewer agents execute the task, including an independent receiver run |
+| Coordinate independent roles around shared resources | [Multi-user release handoff](examples/multiuser_release_handoff/README.md) | Four task Registries and a separate resource Source; recorded role handoffs and resource versions |
+
+[![Recorded project collaboration business PetriNet: Implementer and Reviewer](examples/project_collaboration/figures/source-petri.png)](examples/project_collaboration/figures/source-petri.png)
+
+**Recorded project run:** an Implementer hands work to a Reviewer in the official
+read-only Viewer. The walkthrough connects this execution to definition revisions,
+explicit adoption and independent receiver reuse. This is a historical capture;
+[the complete case](examples/project_collaboration/README.md) retains its
+provenance and validation scope.
+
 ## Compatibility and releases
 
 Current source retains version `0.1.0rc3`, but the October 30
@@ -71,14 +107,18 @@ do **not** include the November 1 source fixes; see the
 - **Codex:** default 0.163.0; 0.166.0 is an explicitly selected candidate.
 - **OpenCode:** default 1.19.4; 2.2.5 is only an opt-in REST/authentication/non-durable events
   subset, not a complete native frontend.
-- **Stock DSH plugin:** manual pairing with DSH 0.2.2-alpha.2; not a qualified
-  managed upgrade. Follow the [operator guide](integrations/dsh/operator/README.md).
+- **DSH Web frontend:** pinned 0.2.1-rc.2 official Web UI bound to one RPNH
+  MainSession. Follow the [Web guide](docs/guides/dsh.md).
+- **Stock DSH operator plugin:** manual pairing with DSH 0.2.2-alpha.2 to
+  inspect existing RPNH tasks, with optional controls; not a qualified managed
+  upgrade. Follow the [operator guide](integrations/dsh/operator/README.md).
 
 These integrations have bounded compatibility, not blanket support across versions.
 
 ## Learn more
 
 [Documentation](docs/index.md) · [Examples](examples/README.md) ·
+[Technical report](docs/technical-report.md) ·
 [Architecture](docs/architecture/design.md) · [Contributing](CONTRIBUTING.md)
 
 ## License

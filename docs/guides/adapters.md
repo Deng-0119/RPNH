@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: adapters_ZH.md
-  revision: "2026-10-19.3"
+  revision: "2026-11-09.1"
   status: source-reviewed
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -66,11 +66,13 @@ rpnh --session-dir ./main-session
 rpnh --frontend basic --resume ./main-session
 ```
 
-An explicit `--frontend` overrides the saved preference; unset preferences use
-`auto`, which still selects only compatible Codex or Basic. `DSH_SOURCE`
-overrides the saved checkout. Preferences are independent of model configuration
-and can be saved before model setup. `rpnh --frontend dsh --prompt TEXT` is
-rejected before model resolution.
+New interactive `rpnh` sessions open the frontend selection menu;
+`rpnh --resume ROOT` keeps that session's last frontend. An explicit `--frontend`
+overrides saved preferences. An explicit `--frontend auto` retains automatic
+selection between compatible Codex and Basic. `DSH_SOURCE` overrides the saved
+checkout. Frontend preferences are independent of model configuration and can be
+saved before model setup. `rpnh --frontend dsh --prompt TEXT` is rejected before
+model resolution. See [frontend setup](frontends.md).
 
 The launcher prints an authenticated loopback URL and attempts to open a
 browser. It serves official DSH `index.html` and client plugins through native
