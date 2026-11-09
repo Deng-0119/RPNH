@@ -20,11 +20,11 @@
 
 ## 1. 在源码目录之外开始
 
-使用 Linux/WSL2、Bash 和 CPython 3.11+。需要已经安装 **0.1.0rc2 候选版或更新版本**
-的 RPNH，以及当时安装的精确本地 wheel。旧公开 rc1 二进制不含这条路径。
-从所选 release/candidate 获取 wheel；如果使用源码，先在源码目录运行
-`python -m pip wheel --no-deps --wheel-dir dist .` 并保留生成的 wheel。
-这里不表示 rc2 已经公开发布。
+使用 Linux/WSL2、Bash 和 CPython 3.11+。已安装的兼容 RPNH 应满足
+`rpnh-harness>=0.1.0rc2,<1`，并保留实际用于该安装的本地 wheel。按
+[安装指南](https://github.com/Deng-0119/RPNH/blob/main/docs/guides/installation_ZH.md)选择发行 wheel 或源码 checkout；
+如从源码构建，先在源码目录运行 `python -m pip wheel --no-deps --wheel-dir dist .`，
+保留生成的 wheel。
 
 激活已安装 RPNH 的 Python，在新的工作目录运行以下命令。出现提示时，输入
 你实际安装的 wheel 的绝对路径：

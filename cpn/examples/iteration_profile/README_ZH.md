@@ -1,6 +1,6 @@
 [English](README.md) | [中文](README_ZH.md)
 
-# Inert iteration profile 声明便利层（R1，交付修订 2）
+# Inert iteration profile 声明便利层
 
 ## 官方 Viewer 初始声明
 
@@ -21,10 +21,8 @@ python examples/view_declaration.py iteration-profile --no-open
 `propose_evaluate_select.json` 只有一个**声明示例**，不是可运行的 RSI campaign，
 也不实现 scorer、proposer 或 selector。可选便利 API 位于现有 Module/compiler
 相邻的 `cpn.rpnh.iteration_profile`，不新增 runner、Registry 类型或调度器。
-本修订替换尚未合入的第一版 R1 交付包。旧包输出空 terminal config，Module 即使编译
-并 settlement 产物，也无法发布原生 run terminal。不要合入已撤回旧包。
-尚未发布的 candidate schema/template ID 仍为 v1；新增必填 `terminal_outcomes`
-使旧 candidate profile fail closed，不宣称 wire 向后兼容。
+v1 schema 要求显式填写 `terminal_outcomes`。早期候选中省略该字段的 profile 会被拒绝，
+其空 terminal config 不能用于当前接口。编译声明本身不执行任务，也不证明任务成功。
 
 不修改冻结的 [RRSI v0.6 示例](https://github.com/Deng-0119/RPNH/tree/main/examples/rrsi_v06)。
 
@@ -141,7 +139,7 @@ inert 返回材料包括：
 只是诊断信息，不是 source-qualified author revision。本层不铸造 Registry refs。仅 profile JSON 源被冻结；返回的 Module/compiled/budget
 容器沿用既有浅可变契约，调用者修改后必须重新编译/校验。
 
-## 明确限制与后续门槛
+## 范围与执行前提
 
 initial state 应只含已批准的 incumbent/feedback；evaluation request 意图用于 validation。
 模板没有给 proposer 提供 evaluation-request 输入。**这不是运行期数据隔离或无泄漏证明。**
@@ -152,10 +150,10 @@ unknown 结果及原 score/cost 语义。`select` 是 outcome 名称，不是比
 
 便利 API 不提供 publication 或执行入口；应用仍沿已有 `ClosedModuleAuthor`、`start_run`、Registry
 admission/budgets 与 exact terminal reader。不能忽略未满足的 binding 要求就运行 Module。
-R2 需提供可信通用 domain operations、exact resource bindings 和单 Registry 证据；
-R3 需验证完整受支持 native/scripted 生命周期与传输、中断和恢复行为。完整 RRSI
-campaign/Digester parent-child 迁移依赖原生 child 接缝；teacher/student 训练与真实模型
-需要另行实现和授权。本修订下述窄范围无 socket Registry terminal 测试不代表这些完整应用/native 门槛已通过。
+本声明例不提供完整应用所需的可信操作、精确运行期资源绑定或执行证据。下述窄范围无
+socket terminal 探针不验证完整 native/scripted 传输生命周期、中断或恢复。完整
+RRSI／Digester parent-child 迁移和 teacher/student 训练不属于已实现的 authoring 范围；
+任何真实模型使用仍需另行授权。
 
 ## 确定性检查
 

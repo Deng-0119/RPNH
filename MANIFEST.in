@@ -7,6 +7,7 @@ include THIRD_PARTY_NOTICES.md
 
 recursive-include docs *.json *.md *.txt *.svg *.png
 recursive-include examples *.json *.md *.png *.py *.toml *.txt *.zip *.in
+recursive-include examples *.svg *.html *.js *.css *.csv *.parquet *.sh *.sql LICENSE LICENSE-* Dockerfile
 include examples/harnessaudit_office/results/*.csv
 include examples/harnessaudit_office/comparison/*.csv
 recursive-include scripts *.py *.sh

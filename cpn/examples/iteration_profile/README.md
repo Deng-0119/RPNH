@@ -1,6 +1,6 @@
 [English](README.md) | [中文](README_ZH.md)
 
-# Inert iteration profile authoring (R1, delivery revision 2)
+# Inert iteration profile authoring
 
 ## Official Viewer initial declaration
 
@@ -22,12 +22,10 @@ This opens only the static declaration. Use the local Viewer to zoom and select 
 runnable RSI campaign and does not implement a scorer, proposer or selector.
 The optional authoring convenience API lives beside the existing Module/compiler
 APIs in `cpn.rpnh.iteration_profile`; it adds no runner, Registry type or scheduler.
-This delivery replaces the unmerged first R1 package. That package emitted empty
-terminal configs, so its Module could compile and settle products without
-publishing a native run terminal. Do not integrate that superseded package.
-The still-unpublished candidate schema/template IDs remain v1; the new required
-`terminal_outcomes` field means old candidate profiles are rejected. This is not
-a claim of backward wire compatibility.
+The v1 schema requires explicit `terminal_outcomes`. Profiles from the early
+candidate that omit this field are rejected; their empty terminal configuration
+cannot be used with this interface. Compiling the declaration does not execute
+it or establish a successful task result.
 
 It does not modify the frozen [RRSI v0.6 example](https://github.com/Deng-0119/RPNH/tree/main/examples/rrsi_v06).
 
@@ -171,7 +169,7 @@ source-qualified author revision. No Registry references are minted here. Only t
 returned Module/compiled/budget containers retain the existing shallow-mutability
 contracts and must be recompiled/revalidated after any caller edits.
 
-## Explicit limits and next gates
+## Scope and execution requirements
 
 The required initial state may contain only approved incumbent/feedback data,
 and evaluation requests are intended for validation. The template gives the
@@ -187,12 +185,12 @@ The convenience API provides no publication or execution entry. Applications
 still use the existing
 `ClosedModuleAuthor`, `start_run`, Registry admission/budgets and exact terminal
 reader. Do not run a prepared Module while ignoring its unresolved obligations.
-R2 must supply generic trusted domain operations, exact resource bindings and
-single-Registry evidence. R3 must establish the full supported native/scripted lifecycle and transport,
-interruption and recovery behavior. Full RRSI campaign/Digester parent-child
-migration awaits the native child seam; teacher/student training and real models
-need separate implementation and authorization. The revision's narrow socket-free Registry terminal probes below do not pass
-those complete application/native gates.
+This declaration example does not supply a complete application's trusted
+operations, exact runtime resource bindings or execution evidence. The narrow
+socket-free terminal probes below do not validate a full native/scripted
+transport lifecycle, interruption or recovery. Full RRSI/Digester parent-child
+migration and teacher/student training are outside the implemented authoring
+scope. Any real model use still requires separate authorization.
 
 ## Deterministic checks
 

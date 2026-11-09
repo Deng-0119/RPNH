@@ -6,9 +6,9 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: getting-started.md
-  revision: "2026-10-13.3"
+  revision: "2026-11-09.1"
   status: source-reviewed
-  basis: "public source b16ecce83ba603b3c15f1c770bce172d4f44f88e; not a new runtime validation"
+  basis: "workflow commands retain public source b16ecce83ba603b3c15f1c770bce172d4f44f88e; version and navigation checked at public 637be28a6ed0eb86e27f88eba8245778488a7bcd; no new runtime validation"
 ---
 
 [English](getting-started.md) | [中文](getting-started_ZH.md)
@@ -25,7 +25,7 @@ metadata:
 
 使用 **Linux 或 WSL2，Python 3.11+**。按[安装指南](installation_ZH.md)在独立虚拟环境中安装选定且已认可的 checkout，或由它构建的 wheel。Basic 不需要 Codex 或 Node。当前源码候选不支持原生 macOS、Windows。
 
-发行包名是 `rpnh-harness`，Python 导入名是 `cpn`，用户命令是 `rpnh`。源码候选声明 `0.1.0rc2`；还需记录精确 commit 或 wheel 摘要。较早发布的 rc1 wheel 不包含这里所有命令和命名导出。选择产物前先读[发布与版本说明](installation_ZH.md)。
+发行包名是 `rpnh-harness`，Python 导入名是 `cpn`，用户命令是 `rpnh`。本源码树声明 `0.1.0rc3`；请区分实际选择的源码 commit 或发行 wheel。源码 checkout、已上传发行资产和既有安装即使版本号相同，也可能包含不同修改。选择产物前先读[安装与版本说明](installation_ZH.md)。
 
 在该环境执行：
 

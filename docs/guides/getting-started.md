@@ -6,9 +6,9 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: getting-started_ZH.md
-  revision: "2026-10-13.3"
+  revision: "2026-11-09.1"
   status: source-reviewed
-  basis: "public source b16ecce83ba603b3c15f1c770bce172d4f44f88e; not a new runtime validation"
+  basis: "workflow commands retain public source b16ecce83ba603b3c15f1c770bce172d4f44f88e; version and navigation checked at public 637be28a6ed0eb86e27f88eba8245778488a7bcd; no new runtime validation"
 ---
 
 [English](getting-started.md) | [中文](getting-started_ZH.md)
@@ -32,10 +32,11 @@ virtual environment. Basic needs no Codex or Node. Native macOS and Windows
 are not supported by this source candidate.
 
 The distribution is `rpnh-harness`, Python imports use `cpn`, and the user
-command is `rpnh`. The source candidate declares `0.1.0rc2`; record the exact
-commit or wheel digest as well. The older published rc1 wheel does not contain
-all commands and named exports described here. See the [release and version
-notes](installation.md#goal-and-prerequisites) before choosing an artifact.
+command is `rpnh`. This source tree declares `0.1.0rc3`; identify the source
+commit or the release wheel you actually selected. A source checkout, an uploaded
+release asset and an existing installation can contain different changes even
+when their version labels match. See the [installation and version notes](installation.md#goal-and-prerequisites)
+before choosing an artifact.
 
 From that environment:
 

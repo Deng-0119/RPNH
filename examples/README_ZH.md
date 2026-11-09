@@ -86,8 +86,9 @@
 [包含完整依赖的导出与修改教程](../docs/guides/examples_ZH.md#导出案例并改成自己的应用)。
 命名导出包括 `native_plugin`、`hybrid_summary`、`compose_serial`、`package_reuse` 和默认
 `adapter_task`；其余仍是源码案例。[v2 原生加法教程](../docs/guides/package-reuse-example_ZH.md)
-会构建可分享包，并完整演示环境准备和真实执行。这些新导出需要本源码候选版构建的 wheel，
-旧 rc1 wheel 不包含它们。AutomationBench 另有 Python 3.13+ 与固定上游的准备要求。
+会构建可分享包，并完整演示环境准备和真实执行。用 `rpnh examples list` 查看已安装版本
+提供的导出，按[安装指南](../docs/guides/installation_ZH.md)选择对应发行 wheel 或源码
+checkout。AutomationBench 另有 Python 3.13+ 与固定上游的准备要求。
 
 安装版附加入口：[适配任务](../docs/guides/examples_ZH.md)通过全部支持宿主运行同一个语义任务，图示为 DSH 宿主下已记录的任务 PN。两层含义见[业务 PN 与执行 PN 定义](../docs/ARCHITECTURE_ZH.md#workflow-graph-与-petrinet-lowering)。
 
@@ -102,8 +103,9 @@ ERP、AutomationBench、HarnessAudit Office 与 SlopCodeBench 的静态 frame �
 模型推理能力。运行截图保留其原场景范围；初始声明图的来源与静态编译边界在各图册中说明。常规案例截图省略精确 checkpoint 标识和本地观察时间。注明日期的结果图册可在明确说明后保留原始技术运行标识；这些不是个人身份或访问凭据。
 
 中断／恢复行为请使用独立任务案例和专门的
-[checkpoint 恢复指南](../docs/guides/checkpoint-recovery_ZH.md)。Reopen 会在同一 Registry
-中追加新的执行代次，不会改写案例的最终成功图片或参考结果。
+[checkpoint 恢复指南](../docs/guides/checkpoint-recovery_ZH.md)。显式执行／checkpoint reopen
+会在同一 Registry 中追加执行代次并保留后续历史；应用只读重开终态运行不启动新代次，
+按各案例自身命令语义使用。两者都不会改写保留的最终成功图片或参考结果。
 
 请从[完整案例指南](../docs/guides/examples_ZH.md)和
 [看板指南](../docs/guides/viewer_ZH.md)开始。生成的 profile、Registry 目录和 provider

@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: ARCHITECTURE.md
-  revision: "2026-10-13.1"
+  revision: "2026-11-09.1"
   status: source-reviewed-pre-release
 ---
 
@@ -18,8 +18,8 @@ RPNH 是一个可复用的执行 harness。公开入口是 `rpnh`；stock Codex 
 PetriNet viewer 都是 RPNH-owned 状态之上的界面，而不是彼此独立的执行后端。
 
 ```text
-stock Codex TUI 0.155.0 ─┐
-OpenCode TUI 1.18.32 ────┼─> 单一 canonical MainSession Registry ─> TaskControl
+stock Codex TUI ─────────┐
+OpenCode TUI ────────────┼─> 单一 canonical MainSession Registry ─> TaskControl
 basic CLI ───────────────┤                                        │
 provider profile ────────┘                                        ├─> independent agent task
                                                                   └─> graph workflow task
@@ -216,8 +216,9 @@ adapter 在 firing 内获得 `registered_llm/v1` capability，并只在此边界
 物理 attempt 记录和结算规则。接入新宿主只需实现 host adapter/plugin 并声明 operation
 binding，不需要重新实现 provider。
 
-默认前端是精确固定的 stock `codex-cli 0.155.0`。RPNH 运行自己的 Unix-socket
-compatibility server，只实现明确声明的 protocol methods。Codex `/model` 投影并更新 RPNH
+选择 Codex 前端时，RPNH 将精确选择的 stock 客户端连接到自己的 Unix-socket
+compatibility server，只实现明确声明的 protocol methods。当前默认版本与显式 protocol
+profile 见[前端兼容与设置指南](guides/compatibility_ZH.md)。Codex `/model` 投影并更新 RPNH
 profiles，不会形成第二份 model authority。RPNH 专用 task 命令由
 `rpnh --frontend basic` 提供，因为 stock Codex client 拥有自己的 slash-command registry。
 

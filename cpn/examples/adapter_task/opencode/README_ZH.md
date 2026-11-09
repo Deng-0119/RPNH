@@ -1,8 +1,8 @@
-# OpenCode 1.19.3 宿主
+# OpenCode 1.19.4 宿主
 
 [English](README.md) | 中文
 
-安装精确的 OpenCode 1.19.3，并选择一个已授权 profile。启动前端本身不会调用模型；
+安装精确的 OpenCode 1.19.4，并选择一个已授权 profile。启动前端本身不会调用模型；
 提交 `task.txt` 会启动一个逻辑主会话 turn：
 
 下图保留自早期 1.18.32 验收运行；当前前端兼容性另见

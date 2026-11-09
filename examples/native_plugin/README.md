@@ -74,6 +74,6 @@ explains explicit renaming, versioning, full descriptors and new locks.
 
 ## PetriNet declaration gallery
 
-The opening image shows this example’s initial PetriNet structure. The [full gallery](figures/README.md) shows the listed declaration variants and readable node details for large nets.
+The image below shows this example’s initial PetriNet structure. The [full gallery](figures/README.md) shows the listed declaration variants and readable node details for large nets.
 
 [![Initial PetriNet structure](assets/petrinet-afe2f2df36c37247.png)](assets/petrinet-afe2f2df36c37247.png)

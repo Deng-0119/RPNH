@@ -21,11 +21,11 @@ extra or external service is needed. Preparation success alone is not this resul
 
 ## 1. Start outside the source checkout
 
-Use Bash on Linux/WSL2 and CPython 3.11+. You need an installed RPNH **0.1.0rc2
-candidate or later** and its exact local wheel. Older published rc1 binaries do
-not contain this workflow. Obtain the wheel from the selected release/candidate;
-if building from a source checkout, first run `python -m pip wheel --no-deps
---wheel-dir dist .` there and retain that wheel. No rc2 publication is implied.
+Use Bash on Linux/WSL2 and CPython 3.11+. Use a compatible installed RPNH
+satisfying `rpnh-harness>=0.1.0rc2,<1` and retain the actual local wheel used for
+that installation. Follow the [installation guide](https://github.com/Deng-0119/RPNH/blob/main/docs/guides/installation.md)
+to choose a release wheel or source checkout. If building from source, first run
+`python -m pip wheel --no-deps --wheel-dir dist .` there and retain the wheel.
 
 Run these commands in a fresh working directory, with the installed RPNH Python
 active. Enter the actual path to the wheel you installed when prompted:

@@ -6,7 +6,7 @@ metadata:
   audience: user-and-developer
   language: en
   counterpart: examples_ZH.md
-  revision: "2026-10-13.2"
+  revision: "2026-11-09.1"
   status: current-instructions-with-dated-evidence
   basis: "source candidate commands; deterministic runs and dated authorized live evidence explicitly separated"
 ---
@@ -279,9 +279,12 @@ Use `/task ID resume` instead when continuing the latest owner-stopped cut.
 
 ## Example 5: one installed task through every host
 
-Every wheel contains a provider-neutral semantic task plus separate instructions
-for Basic, Codex 0.155.0, pinned DSH and OpenCode 1.18.32. Exporting or listing
-it makes no provider call:
+The installed adapter bundle contains a provider-neutral semantic task plus
+separate instructions for Basic, Codex, DSH and OpenCode. Choose the frontend
+version from its host guide and the [adapter setup guide](adapters.md).
+Exporting or listing makes no provider call.
+
+The figures below retain their 2026-09-26 acceptance versions:
 
 | Basic | Codex 0.155.0 |
 |---|---|
@@ -419,9 +422,10 @@ extensions are not evidence for the historical score. It does not claim a full
 
 ## Export an example and make it yours
 
-Use a wheel built from this source candidate for the named exports below. The
-older 2026-09-29 rc1 wheel exports only the adapter task. Listing and exporting
-are local file operations; they do not install dependencies or call a model.
+Use `rpnh examples list` to check the named exports in the installed version.
+The source below defines five exports; follow the [installation guide](installation.md)
+when choosing a release wheel or building from a selected checkout. Listing and
+exporting are local file operations; they do not install dependencies or call a model.
 
 | `--example` | Exported material | What to do next |
 |---|---|---|
@@ -518,10 +522,9 @@ than assuming those files already exist.
   process you started when inspection is complete. See the
   [dashboard guide](viewer.md).
 
-The accepted reference boundary is in [examples validation](examples.md).
-It distinguishes deterministic fixtures, earlier authorized provider calls and
-current focused compatibility checks; none substitutes for validating a user's
-own route.
+Each example's linked results state its accepted scope. The dated figures and
+acceptance tables above distinguish deterministic fixtures from authorized
+provider calls; they do not validate a different installation or a user's own route.
 
 Public record dated 2026-10-06: freeze04 first18 has 5 PASS / 9 FAIL / 4 BLOCKED; separate repair4 has 1 PASS / 3 FAIL. The old 14 scored tasks were not rerun. [2026-10-06 results](../../examples/automationbench/PUBLIC_RESULTS_20261006.md).
 

@@ -1,7 +1,7 @@
 {
   "schema_version": "rpnh/live_adapter_example/v1",
   "example_id": "batch-summary-v1",
-  "purpose": "Run one provider-backed semantic task through each supported host without changing its route or model.",
+  "purpose": "Reuse one provider-neutral semantic task. host_version records the retained 2026-09-26 evidence; select current frontend versions from each host guide. Running the task requires an authorized route and model.",
   "task_file": "task.txt",
   "expected_file": "expected.json",
   "hosts": [

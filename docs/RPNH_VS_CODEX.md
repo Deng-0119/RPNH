@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: RPNH_VS_CODEX_ZH.md
-  revision: "2026-10-12.4"
+  revision: "2026-11-09.1"
   status: source-reviewed-pre-release
 ---
 
@@ -15,8 +15,8 @@ metadata:
 [中文](RPNH_VS_CODEX_ZH.md)
 
 RPNH is not a reskinned Codex client and is not another OpenAI model client.
-The current implementation reuses the fixed `codex-cli 0.155.0` terminal UI,
-but connects it to an RPNH-owned backend. Codex supplies one frontend; RPNH
+The Codex integration connects a version-matched stock terminal UI to an
+RPNH-owned backend. Codex supplies one frontend; RPNH
 supplies the harness, execution model, and evidence authority.
 
 | Dimension | Running `codex` directly | Running `rpnh` |
@@ -113,8 +113,9 @@ tokens, workspace, or final-result authority.
 
 - Runtime support is Linux-only, including WSL2; native Windows and macOS are
   not supported.
-- The Codex frontend supports exactly `codex-cli 0.155.0`; compatibility with
-  other versions is not implied.
+- The default Codex protocol selects `codex-cli 0.163.0`. Other explicit
+  profiles have their own version and feature boundaries; see the
+  [frontend guide](guides/compatibility.md). Compatibility does not extend to arbitrary versions.
 - RPNH persists thread state inside the current RPNH session and supports
   `thread/resume`; it does not import Codex-owned history or resume a paused
   firing automatically. Main-turn `/resume` and `/rollback` are explicit basic
@@ -131,7 +132,7 @@ tokens, workspace, or final-result authority.
 
 ## Inspect authority through examples
 
-The current collaboration entry is [agent-network co-building](../examples/user_collaboration/agent_cobuild/README.md). Two native task-agent roles, `curator.run` and `auditor.run`, use stock `AgentStage`/default `AgentLoop` in an ordinary Module assembled from two stock single-agent declarations, with `curator.result → auditor.request`. Deterministic source programs from two controlled original principals strengthen the curator input-lineage contract and auditor reconciliation contract. The original HOST reviews exact revisions, advances a protected Branch sequentially and enables owner adoption before target execution.
+Start the current collaboration journey with [project collaboration](../examples/project_collaboration/README.md). In the retained [agent-network co-building protocol](../examples/user_collaboration/agent_cobuild/README.md), two native task-agent roles, `curator.run` and `auditor.run`, use stock `AgentStage`/default `AgentLoop` in an ordinary Module assembled from two stock single-agent declarations, with `curator.result → auditor.request`. Deterministic source programs from two controlled original principals strengthen the curator input-lineage contract and auditor reconciliation contract. The original HOST reviews exact revisions, advances a protected Branch sequentially and enables owner adoption before target execution.
 
 Source programs, external control actions and target agents remain separate; this single-parent chain does not imply automatic same-base merging. A `local_process` scripted driver computes from actual inputs and tool returns. This demonstrates structure and protocol using registered task agents. It makes no live-model or cognition claim; execution results, artifacts and Viewer evidence are reported on the example page.
 

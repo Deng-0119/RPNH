@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: ARCHITECTURE_ZH.md
-  revision: "2026-10-13.1"
+  revision: "2026-11-09.1"
   status: source-reviewed-pre-release
 ---
 
@@ -19,8 +19,8 @@ stock Codex TUI, the basic CLI, and the PetriNet viewer are interfaces over
 RPNH-owned state rather than independent execution backends.
 
 ```text
-stock Codex TUI 0.155.0 ─┐
-OpenCode TUI 1.18.32 ────┼─> one canonical MainSession Registry ─> TaskControl
+stock Codex TUI ─────────┐
+OpenCode TUI ────────────┼─> one canonical MainSession Registry ─> TaskControl
 basic CLI ───────────────┤                                      │
 provider profile ────────┘                                      ├─> independent agent task
                                                                 └─> graph workflow task
@@ -278,9 +278,10 @@ port, physical-attempt records, and settlement rules. Supporting a new host
 requires a host adapter/plugin and declared operation bindings, not another
 provider implementation.
 
-The default frontend is the exactly pinned stock `codex-cli 0.155.0`. RPNH runs
+When Codex is selected, RPNH connects the exactly selected stock client to
 its own Unix-socket compatibility server and implements only advertised protocol
-methods. Codex `/model` projects and updates RPNH profiles; it does not create a
+methods. See the [frontend compatibility and setup guide](guides/compatibility.md) for
+current default versions and explicit protocol profiles. Codex `/model` projects and updates RPNH profiles; it does not create a
 second model authority. RPNH-specific task commands are exposed by
 `rpnh --frontend basic`, because the stock Codex client owns its slash-command
 registry.

@@ -6,7 +6,7 @@ metadata:
   audience: user-and-developer
   language: zh-CN
   counterpart: examples.md
-  revision: "2026-10-13.2"
+  revision: "2026-11-09.1"
   status: current-instructions-with-dated-evidence
   basis: "source candidate commands; deterministic runs and dated authorized live evidence explicitly separated"
 ---
@@ -255,8 +255,11 @@ rpnh --frontend basic --execution "$DEMO_ROOT/profile/execution.json" \
 
 ## 案例 5：通过每个宿主运行同一个安装版任务
 
-每个 wheel 都包含一个 provider-neutral 语义任务，以及 Basic、Codex 0.155.0、固定版本
-DSH 和 OpenCode 1.18.32 的独立说明。列出或导出任务都不会调用 provider：
+已安装 adapter bundle 包含一个 provider-neutral 语义任务，以及 Basic、Codex、DSH
+和 OpenCode 的独立说明。前端版本按对应宿主指南和[adapter 设置指南](adapters_ZH.md)
+选择。列出或导出任务都不会调用 provider。
+
+下图保留 2026-09-26 验收时实际使用的宿主版本：
 
 | Basic | Codex 0.155.0 |
 |---|---|
@@ -369,8 +372,9 @@ Basic、Codex 或 OpenCode 操作的同一权威 CLI；这些扩展不是历史�
 
 ## 导出案例并改成自己的应用
 
-以下命名导出需要从本源码候选版构建的 wheel。2026-09-29 的旧 rc1 wheel 只能导出 adapter
-任务。列举和导出都是本地文件操作，不安装依赖，也不调用模型。
+先用 `rpnh examples list` 查看已安装版本的命名导出。以下源码定义五项导出；选择发行
+wheel 或从选定 checkout 构建时，按[安装指南](installation_ZH.md)操作。列举和导出都是
+本地文件操作，不安装依赖，也不调用模型。
 
 | `--example` | 导出内容 | 下一步 |
 |---|---|---|
@@ -451,8 +455,8 @@ owner request，而不是假设这些文件已经存在。
 - 缺少插件必填字段或空汇总列表会被声明的 schema 拒绝，不能表述为成功运行。
 - 看板只读且默认监听 loopback。查看结束后关闭自己启动的进程。详见[看板指南](viewer_ZH.md)。
 
-验收参考边界见[案例验证](examples_ZH.md)。其中区分确定性 fixture、此前授权
-的 provider 调用和当前定向兼容检查，均不能替代用户对自有 route 的验证。
+各案例链接的结果说明其验收范围。上文带日期的图和验收表区分确定性 fixture 与已授权
+provider 调用，不能代替对另一安装版本或用户自有 route 的验证。
 
 2026-10-06公开记录：freeze04首轮18题为5 PASS / 9 FAIL / 4 BLOCKED；独立repair四题为1 PASS / 3 FAIL。旧14道已评分题未重跑。 [2026-10-06结果](../../examples/automationbench/PUBLIC_RESULTS_20261006_ZH.md).
 

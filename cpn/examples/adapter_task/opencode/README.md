@@ -1,8 +1,8 @@
-# OpenCode 1.19.3 host
+# OpenCode 1.19.4 host
 
 English | [中文](README_ZH.md)
 
-Install exact OpenCode 1.19.3 and select one authorized profile. Starting the
+Install exact OpenCode 1.19.4 and select one authorized profile. Starting the
 frontend sends no model request; submitting `task.txt` starts one logical
 main-session turn:
 

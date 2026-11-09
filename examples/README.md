@@ -90,8 +90,9 @@ Named exports are `native_plugin`, `hybrid_summary`, `compose_serial`,
 `package_reuse` and the default `adapter_task`; the rest remain source examples.
 The [v2 native-add tutorial](../docs/guides/package-reuse-example.md) constructs a
 shareable package and walks through environment preparation and genuine execution.
-Use this source candidate's wheel, not the historical rc1 wheel, for these new
-exports. AutomationBench has its own Python 3.13+ and pinned-upstream setup.
+Check `rpnh examples list` for the exports available in your installed version;
+use the [installation guide](../docs/guides/installation.md) to choose its release
+wheel or source checkout. AutomationBench has its own Python 3.13+ and pinned-upstream setup.
 
 Additional installed entry point: the [adapter task](../docs/guides/examples.md) runs one semantic task through every supported host; its retained illustration is the recorded task PN under the DSH host. See the [business and execution PN definitions](../docs/ARCHITECTURE.md#workflow-graph-and-petrinet-lowering).
 
@@ -108,8 +109,10 @@ Run screenshots retain their original scenario scope; declaration galleries stat
 
 For interruption/recovery behavior, use the independent-task example and the
 dedicated [checkpoint recovery guide](../docs/guides/checkpoint-recovery.md).
-Reopen appends a new execution generation to the same Registry; it does not
-rewrite the example's final-success image or reference result.
+An explicit execution/checkpoint reopen appends a generation to the same
+Registry and preserves later history. An application's read-only reopening of
+a terminal run does not start a generation; follow that example's own command
+semantics. Neither operation rewrites the retained final-success image or reference result.
 
 Start with the [complete examples guide](../docs/guides/examples.md) and the
 [dashboard guide](../docs/guides/viewer.md). Generated

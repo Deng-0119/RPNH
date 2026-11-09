@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: RPNH_VS_CODEX.md
-  revision: "2026-10-12.4"
+  revision: "2026-11-09.1"
   status: source-reviewed-pre-release
 ---
 
@@ -14,8 +14,8 @@ metadata:
 
 [English](RPNH_VS_CODEX.md)
 
-RPNH 不是 Codex 的换皮客户端，也不是另一个 OpenAI 模型客户端。当前实现复用固定版
-`codex-cli 0.155.0` 的终端界面，但会把它连接到 RPNH-owned 后端。Codex 提供一种前端；
+RPNH 不是 Codex 的换皮客户端，也不是另一个 OpenAI 模型客户端。Codex 集成把与所选协议匹配的
+stock 终端界面连接到 RPNH-owned 后端。Codex 提供一种前端；
 RPNH 提供 harness、执行模型与证据权威。
 
 | 维度 | 直接运行 `codex` | 运行 `rpnh` |
@@ -95,7 +95,7 @@ Registry；共享 owner lease 会阻止并发可写前端。每个可独立切�
 ## 当前边界
 
 - 运行时仅支持 Linux（包括 WSL2），不支持原生 Windows 和 macOS；
-- Codex 前端只支持精确的 `codex-cli 0.155.0`，不暗示兼容其他版本；
+- 默认 Codex protocol 选择精确的 `codex-cli 0.163.0`；其他显式 profile 有各自版本及功能边界，见[前端指南](guides/compatibility_ZH.md)，不暗示任意版本兼容；
 - RPNH 在当前 RPNH session 内持久化 thread state 并支持 `thread/resume`；不导入
   Codex-owned history，也不会自动恢复 paused firing。Main-turn `/resume` 与 `/rollback`
   是 basic 前端中的显式用户控制，并要求存在 clean Registry checkpoint；
@@ -109,7 +109,7 @@ Registry；共享 owner lease 会阻止并发可写前端。每个可独立切�
 
 ## 从示例检查权威边界
 
-当前协作入口是[Agent 任务网共建](../examples/user_collaboration/agent_cobuild/README_ZH.md)。`curator.run` 与 `auditor.run` 两个原生任务 agent 使用 stock `AgentStage`／default `AgentLoop`，由两份 stock 单 agent 声明组成同一普通 Module，连接为 `curator.result → auditor.request`。两个受控原 principal 的确定性 source 程序分别加强 curator 输入来源合同和 auditor 对账合同。原 HOST 审阅精确 revision、连续推进受保护 Branch，再由 owner 在 target 执行前采用。
+当前协作旅程从[项目协作](../examples/project_collaboration/README_ZH.md)开始。保留的[Agent 任务网共建协议例](../examples/user_collaboration/agent_cobuild/README_ZH.md)中，`curator.run` 与 `auditor.run` 两个原生任务 agent 使用 stock `AgentStage`／default `AgentLoop`，由两份 stock 单 agent 声明组成同一普通 Module，连接为 `curator.result → auditor.request`。两个受控原 principal 的确定性 source 程序分别加强 curator 输入来源合同和 auditor 对账合同。原 HOST 审阅精确 revision、连续推进受保护 Branch，再由 owner 在 target 执行前采用。
 
 source 程序、网外控制动作与 target agent 分层记录；单 parent 链不表示同 base 自动合并。`local_process` 脚本驱动从实际输入与工具返回计算，以已登记任务 agent 展示结构／协议，不声称真实模型调用或认知能力；运行结果、产物与 Viewer 证据以示例页记录为准。
 
