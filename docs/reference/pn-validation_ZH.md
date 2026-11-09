@@ -6,7 +6,7 @@ metadata:
   audience: developer
   language: zh-CN
   counterpart: pn-validation.md
-  revision: "2026-11-07.1"
+  revision: "2026-10-09.2"
   status: experimental
 ---
 
@@ -51,23 +51,6 @@ occurrence/outcome 数量限定。枚举内部也检查分析 deadline。复验�
 截断前缀，不重新枚举未触及的 frontier，也不启动新的语义计时。这个结构性界限
 不是固定的提交墙钟上限。初态已满足 terminal-stop 时，所请求的 enabledness
 仍保留受预算约束的点查询，独立于终态图闭合。
-
-## 完整输入与证明比较
-
-报告验证比较完整canonical输入、配置及assumed contracts，再重建有界图和属性结论。
-现有顶层 `input_digest` 仍保留在 `AnalysisReport`、producer输出、公开诊断摘要及
-`input_digest()` helper中，但不再决定输入绑定或整份报告相等，验证时也不重算该诊断SHA。
-只排除这个根字段，嵌套字段、额外未知报告字段及其它证明约束仍检查。
-
-既有有效v1报告和producer输出格式保持。诊断值缺失或错误，包括JSON形态的非字符串值，
-不再导致其它条件有效的证明被拒绝。这明确退役该断言，不代表新旧验证器对异常报告的
-接受域完全相同。完整验证器仍要求封闭canonical数据，即使诊断字段内的未知Python对象
-或非有限浮点也仍拒绝。当前完整输入仍须可编码为UTF-8；source-context字符串按原文
-精确比较，不另行解析或规范化。
-
-不引入v2格式、owner配置选项、迁移或恢复预检。已登记owner策略、同事务输入构造、
-UNKNOWN处理及checkpoint恢复保持。既有恢复读取已登记的初始报告和策略，本改动不新增
-历史证明重放。其它Registry与语义hash不受此项影响。
 
 ## 明确的 owner 策略
 

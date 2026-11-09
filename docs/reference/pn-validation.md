@@ -6,7 +6,7 @@ metadata:
   audience: developer
   language: en
   counterpart: pn-validation_ZH.md
-  revision: "2026-11-07.1"
+  revision: "2026-10-09.2"
   status: experimental
 ---
 
@@ -62,31 +62,6 @@ leaves untouched frontiers unenumerated and starts no new semantic clock.
 This structural bound is not a fixed wall-clock limit for commit. At an initial
 terminal stop, requested enabledness retains a bounded point query independent
 of terminal graph closure.
-
-## Full input and proof comparison
-
-Report verification compares the complete canonical input, configuration and
-assumed contracts, then reconstructs the bounded graph and property conclusions.
-The existing top-level `input_digest` remains in `AnalysisReport`, producer
-output, the public diagnostic summary and the `input_digest()` helper, but no
-longer decides binding or complete-report equality. Verification does not
-recompute that diagnostic SHA. Only this root field is excluded; nested fields,
-unknown extra report fields and all other proof constraints remain checked.
-
-Existing valid v1 reports and producer output retain their format. A missing or
-incorrect diagnostic value, including JSON-shaped non-string values, no longer
-rejects an otherwise valid proof. This intentionally retires that assertion; it
-is not identical acceptance of malformed reports across old and new verifiers.
-The full verifier still requires closed canonical data, so unsupported Python
-objects and nonfinite floats are rejected even in the diagnostic field. The
-canonical current input must remain UTF-8 encodable, and its source-context
-string is compared exactly rather than parsed or normalized separately.
-
-No v2 format, owner configuration option, migration or recovery preflight is
-introduced. Registered owner policy, same-transaction input construction,
-UNKNOWN handling and checkpoint recovery remain unchanged. Existing restoration
-reads the registered initial report and policy; this change does not add
-historical proof replay. Other Registry and semantic hashes are unaffected.
 
 ## Explicit owner policy
 
