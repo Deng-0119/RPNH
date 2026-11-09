@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: registry-read-sessions.md
-  revision: "2026-10-25.1"
+  revision: "2026-11-07.2"
   status: implemented
 ---
 
@@ -56,6 +56,15 @@ rpnh net --read-host-config /absolute/path/to/read-host.json --view
 Registry。它把所选来源约束到明确成员及 access path，不负责发现路径或签发
 权限。访问边界重新核对配置文件、身份和内容。打开不存在的 Registry 会失败，
 不会创建目录或数据库。
+
+配置重验直接比较完整初始文件字节，不再比较 SHA 摘要，同时保留已有的
+device/inode、大小、时间戳、权限模式和 owner 身份检查。仅修改 JSON 空白也会
+使旧绑定失效。source 与可选 SourceSet manifest 的解析前均执行同一重验，
+不代替来源 Registry 的权限检查。v1/v2 配置格式及已有的 1 MiB 文件上限不变。
+私有内存见证与文件 reader 返回的不可变字节缓冲共享同一对象。每个已加载绑定
+在 resolver 仍可达期间，最多保留 1 MiB 初始正文；若其他调用方仍持有绑定，
+关闭一个会话不会丢弃它。JSON、Registry 记录和 checkpoint 不新增见证字段。
+有意修改文件后应重新加载配置。
 
 安装后的 adapter 调用 `open_readonly_source` 与 `open_registry_session`，
 调用方不必使用 Registry 私有构造函数。定制可信 HOST 的
@@ -126,8 +135,9 @@ Viewer/HTTP 请求不能设置此可信策略。包含新 closure 字段的序�
 及 generated-correspondence 读取共享临时账本。`read_public_mapping` 两端共享
 同一账本。所有取得的不可变正文（包括 descriptor）在物理读取或 reader 缓存返回前，
 按精确 source-qualified ref 和已经验证的登记大小计入一次。重复引用不重复增加唯一
-字节量，但材料访问仍检查当前授权。原 pin、正文、digest、metadata、固定 cut 和
-语义证明校验都不变。每次新操作使用新账本，不修改 session snapshot，也不写 Registry
+字节量，但材料访问仍检查当前授权。该账本不放松 pin、正文、metadata、固定 cut 和
+语义证明要求；digest 检查保留，除非特定 reader 合同明确退役其中一项，
+如下文的 transform 公共投影分支。每次新操作使用新账本，不修改 session snapshot，也不写 Registry
 事实。Viewer 分别调用左右 projection 时仍是两个操作，不声称提供 Viewer 整体或并发
 session 配额。
 
@@ -143,6 +153,28 @@ session 配额。
 峰值堆、重复 I/O、解析工作、序列化临时空间、进程总 RSS 或并发操作。扫描及响应预算
 保持独立，不认证全部 projection 分配。调大上限不能使非法或未授权证明通过，也不会
 修补已保存 projection。
+
+## Transform公共投影的内容比较
+
+`read_public_projection` 的 transform 分支沿用既有 canonical JSON 比较，将每份
+prepared material 的完整解码 document 与 `prepared_materials[].document` 比较，
+并将完整 metadata 与 `prepared_materials[].metadata` 比较。额外的本地 raw body
+SHA 对 `prepared_materials[].sha256` 比较退役。精确 command target、带 source 的
+引用、mapping 重建、上游 dependency/projection 完整性、权限、固定 cut、正文/闭包/
+响应预算及最终交付复核均保持。
+
+这里保留解码内容合同，不保留原始序列化断言。能解码为同一 document 的既有键序、
+空白、Unicode escape 和重复键表示仍可读取。在其它保留条件均通过时，这一个本地
+prepared-material SHA 字段错误、缺失或非字符串，不再决定该分支结果。上游 dependency
+读取与后续 prepared-material 读取之间，仅序列化表示变化也可通过；解码内容或 metadata
+改变仍不能通过。固定 cut 保留 Registry 历史和 metadata，不另外冻结每份材料文件的 bytes。
+
+本项不删除 command producer 或 schema 的 `sha256` 字段，不放松独立的强 author/replay
+验证或 `read_material` 的 digest 检查。它不等于整个 transform 链无 hash，不改写历史记录，
+不授予权限，也不认证全部旧数据。聚焦测试 `tests/test_transform_projection_session.py`
+只使用临时合成 Registry，通过普通 pytest 运行，不需要对照 variant 选项；覆盖正常
+split/fusion、同 cut/重开、选定历史表示、退役 SHA 断言、原读取预算和权限复核，
+不构成全历史数据或全部编码矩阵验证。
 
 ## 固定产物来源查询
 

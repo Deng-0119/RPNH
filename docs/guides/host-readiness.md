@@ -6,16 +6,16 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: host-readiness_ZH.md
-  revision: "2026-10-06.1"
-  status: offline-validated-initial-slice
+  revision: "2026-11-09.1"
+  status: declaration-only-diagnostics
 ---
 
 [English](host-readiness.md) | [中文](host-readiness_ZH.md)
 
 # Declaration-only HOST readiness diagnostics
 
-This initial slice answers a narrow question: **do the required declaration bytes
-match a supplied inert HOST declaration snapshot?** It does not prepare, authorize,
+This diagnostic answers a narrow question: **do the SHA-256 digests of complete
+canonical declarations match those in a supplied inert HOST snapshot?** It does not prepare, authorize,
 or execute a candidate. It adds no Registry schema, graph publication, adoption,
 reservation, or execution path. Existing persisted v1/v2 readiness records retain
 their original meanings.
@@ -81,10 +81,15 @@ with `TypeError` or `ValueError`.
 Each `declaration_checks` entry has a kind/key, status, reason, and exact required
 and available declaration digests:
 
-- `matched` / `exact_declaration_match`: complete declaration content matches
+- `matched` / `exact_declaration_match`: the complete canonical declaration digests match
 - `missing` / `missing_host_declaration`: the supplied snapshot lacks this entry
-- `mismatch` / `declaration_digest_mismatch`: the same kind/key has different content
+- `mismatch` / `declaration_digest_mismatch`: the same kind/key has different declaration digests
 - `not_checked` / `no_host_snapshot`: no HOST snapshot was supplied
+
+The decision reuses the two SHA-256 digests already computed for the diagnostic
+row. It does not serialize both declarations a second time for an additional
+full-string comparison. All six row fields, digest values and API reasons remain
+unchanged.
 
 Overall `declarations_status` is `not_checked` without a snapshot; otherwise it is
 `mismatch` if any entry mismatches, `missing` if any entry is absent, or `matched`.
@@ -102,6 +107,14 @@ so `true`, `1`, and `1.0` differ. No whitespace, source-code, callable-identity,
 plugin-archive, or implementation-revision provenance claim is implied. An
 inventory with extra declarations can match every requirement while having a
 different full-inventory digest.
+
+Snapshot, aggregate, plan and package digests remain unchanged. The comparison
+uses the SHA-256 collision assumption: hypothetical different canonical
+content with an equal digest can be reported as `matched`. It is not a mathematical
+byte-equality proof or execution authorization. Canonical encoding still preserves
+JSON types, numeric representation, array order and Unicode representation; it does
+not use ordinary Python object equality. No new cache, protocol or retained full
+content is introduced by this comparison.
 
 `HostDeclarationSnapshot` and `HostReadinessDiagnostic` are frozen DTOs.
 `to_dict()` and `snapshot.registrations` return detached data: changing the input

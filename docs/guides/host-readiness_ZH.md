@@ -6,15 +6,15 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: host-readiness.md
-  revision: "2026-10-06.1"
-  status: offline-validated-initial-slice
+  revision: "2026-11-09.1"
+  status: declaration-only-diagnostics
 ---
 
 [English](host-readiness.md) | [中文](host-readiness_ZH.md)
 
 # 仅声明数据的 HOST readiness 诊断
 
-本首切片只回答一个问题：**所需声明的精确内容是否匹配提供的惰性 HOST 声明快照？**
+本诊断只回答一个问题：**所需声明完整 canonical 内容的 SHA-256 摘要，是否匹配提供的惰性 HOST 声明快照？**
 它不准备、不授权、不执行候选，不新增 Registry schema、图发布、采用、预约或执行入口。
 已有持久 v1/v2 readiness 记录的原有含义保持不变。
 
@@ -73,10 +73,13 @@ assert report["reservation"] == "not_reserved"
 
 `declaration_checks` 的每项都有 kind/key、status、reason，以及所需和已有声明的精确摘要：
 
-- `matched` / `exact_declaration_match`：完整声明内容一致
+- `matched` / `exact_declaration_match`：完整 canonical 声明的摘要一致
 - `missing` / `missing_host_declaration`：提供的快照缺少该项
-- `mismatch` / `declaration_digest_mismatch`：同一 kind/key 的内容不同
+- `mismatch` / `declaration_digest_mismatch`：同一 kind/key 的声明摘要不同
 - `not_checked` / `no_host_snapshot`：未提供 HOST 快照
+
+判定复用诊断行已经计算的两个 SHA-256 摘要，不额外对两份完整声明进行全文字符串比较。
+原六个行字段、摘要值和 API reason 均保持不变。
 
 总体 `declarations_status` 在没有快照时为 `not_checked`；否则只要有不匹配项就是
 `mismatch`，没有不匹配但有缺项则为 `missing`，全部匹配才为 `matched`。
@@ -90,6 +93,12 @@ assert report["reservation"] == "not_reserved"
 的 UTF-8 字节求摘要。对象键序规范化，数组顺序和数字表示保留，所以 `true`、`1`、`1.0`
 互不相同。摘要不证明原始空白、源码、callable 身份、插件 archive 或实现 revision 的来源。
 库存包含额外声明时，全部需求可以匹配，而两个完整库存摘要仍不同。
+
+snapshot、aggregate、plan 和 package 摘要保持不变。比较采用 SHA-256 碰撞
+假设：如果不同 canonical 内容具有相同摘要，可能被报告为 `matched`。它不是数学上
+的逐字节相等证明，也不构成执行授权。canonical 编码仍保留 JSON 类型、数字表示、
+数组顺序和 Unicode 表示，不改用普通 Python 对象相等。此比较不新增缓存、协议或
+完整正文的长期持有。
 
 `HostDeclarationSnapshot`、`HostReadinessDiagnostic` 是冻结 DTO。`to_dict()` 和
 `snapshot.registrations` 返回脱离内部状态的数据；修改原输入或返回的嵌套对象不会改变

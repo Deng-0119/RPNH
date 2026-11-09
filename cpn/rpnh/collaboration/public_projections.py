@@ -458,7 +458,7 @@ def _read_public_projection_complete(core, entry_ref, *, snapshot):
                 raise ValueError('transform exact command target differs')
             for spec in command['prepared_materials']:
                 body,metadata=payload_at(core,spec['resource_ref'],snapshot,material=True)
-                if (hashlib.sha256(body).hexdigest()!=spec['sha256'] or canonical_json(json.loads(body))!=canonical_json(spec['document'])
+                if (canonical_json(json.loads(body))!=canonical_json(spec['document'])
                         or canonical_json(metadata.metadata)!=canonical_json(spec['metadata'])):
                     raise ValueError('transform prepared command material differs')
             from .plain_transform import _mapping

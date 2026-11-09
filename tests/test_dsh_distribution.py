@@ -19,6 +19,7 @@ ROOT = Path(__file__).resolve().parents[1]
 ASSETS = {
     "cpn/examples/__init__.py",
     "cpn/examples/cli.py",
+    "cpn/examples/iteration_profile/figures/iteration-profile/initial-petri.svg",
     "cpn/examples/adapter_task/manifest.json",
     "cpn/examples/adapter_task/task.txt",
     "cpn/examples/adapter_task/expected.json",

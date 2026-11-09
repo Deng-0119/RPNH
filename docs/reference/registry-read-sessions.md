@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: registry-read-sessions_ZH.md
-  revision: "2026-10-25.1"
+  revision: "2026-11-07.2"
   status: implemented
 ---
 
@@ -63,6 +63,18 @@ SourceSet and its configured manifest Registry. It restricts the selected
 sources to explicit members and access paths. It does not discover paths or
 issue permission. The source file, identity, and content are rechecked at
 access boundaries. Opening a missing Registry fails without creating it.
+
+Configuration revalidation compares the complete original file bytes, not a
+SHA digest, together with its existing device/inode, size, timestamps, mode and
+owner identity. Whitespace-only JSON edits still invalidate the old binding.
+The same checks apply before resolving a source or the optional SourceSet
+manifest; they do not replace the source's Registry permission checks. V1 and
+v2 configuration formats and their existing 1 MiB file limit are unchanged.
+The private in-memory witness shares the immutable byte buffer returned by the
+file reader. Each loaded binding retains at most 1 MiB of original content while
+its resolver remains reachable; closing one session does not discard a binding
+that another caller still holds. No witness is added to JSON, Registry records
+or a checkpoint. Reload the configuration after an intended file change.
 
 The installed adapter calls `open_readonly_source` and
 `open_registry_session`; callers do not need private Registry constructors.
@@ -149,8 +161,10 @@ reads. `read_public_mapping` shares one ledger across both roots. Every fetched
 immutable body, including descriptors, is charged once by its exact
 source-qualified reference and verified registered size before a physical
 read or the reader's cached return. Repeated references do not add unique
-bytes, but material access still checks current authorization. Original pin,
-byte, digest, metadata, fixed-cut and semantic proof checks remain required.
+bytes, but material access still checks current authorization. This ledger does not relax pin,
+byte, metadata, fixed-cut or semantic proof requirements. Digest checks remain
+unless a reader-specific contract explicitly retires one, as described for the
+transform public-projection branch below.
 A new operation gets a fresh ledger; it does not mutate the session's snapshot
 or publish Registry facts. Separate Viewer left/right projection calls are
 separate operations, not a single Viewer-wide or concurrent-session quota.
@@ -171,6 +185,36 @@ peak Python heap, repeated I/O, parsing work, serialization scratch, total RSS,
 or concurrent operations. Scan and response limits remain independent; they
 do not certify all projection allocations. Changing ceilings never makes an
 invalid or unauthorized proof acceptable and never repairs stored projections.
+
+## Transform public-projection content comparison
+
+The transform branch of `read_public_projection` compares each prepared material's
+complete decoded JSON document with `prepared_materials[].document`, and its full
+metadata with `prepared_materials[].metadata`, using the existing canonical JSON
+comparison. Its additional local comparison of the raw body SHA with
+`prepared_materials[].sha256` is retired. Exact command target, source-qualified
+references, mapping reconstruction, upstream dependency/projection integrity,
+permissions, fixed cuts, material/closure/response limits and final delivery
+rechecks remain unchanged.
+
+This is a decoded-content contract, not a raw-serialization assertion. Existing
+key reordering, whitespace, Unicode escapes and duplicate-key forms that decode
+to the same document can still be read. A wrong, missing or non-string value in
+this local prepared-material SHA field no longer determines this branch's result
+when all retained conditions pass. A representation-only change between the
+upstream dependency read and the later prepared-material read can also pass;
+changed decoded content or metadata cannot. A fixed cut retains Registry history
+and metadata, not a separate frozen copy of every material file's bytes.
+
+This change does not remove `sha256` from the command producer or schema and does
+not relax the separate strong-author/replay validators or `read_material` digest
+checks. It does not make the complete transform chain hash-free, rewrite stored
+records, grant permissions, or certify all historical data. The focused
+`tests/test_transform_projection_session.py` tests use temporary synthetic
+Registries and ordinary pytest without a comparison-variant option. They cover
+normal split/fusion reads, same-cut/reopen behavior, selected legacy
+representations, the retired SHA assertion, preserved read limits and permission
+rechecks. They do not establish a full historical corpus or encoding matrix.
 
 ## Fixed product-origin query
 

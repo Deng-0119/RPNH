@@ -8,7 +8,6 @@ independently. This same-user boundary is not remote/multi-tenant authentication
 from __future__ import annotations
 
 from dataclasses import dataclass
-import hashlib
 import os
 from pathlib import Path
 import stat
@@ -58,7 +57,11 @@ def _local_path(value):
 
 
 def _read_owned_file(path):
-    """Read one bounded inode without following a swapped final symlink."""
+    """Read one bounded inode with a private stat-and-full-bytes witness.
+
+    The immutable payload is shared with the witness, not copied or serialized.
+    Loaded HOST bindings retain at most MAX_CONFIG_BYTES for later rechecks.
+    """
     if not hasattr(os, 'geteuid') or not hasattr(os, 'O_NOFOLLOW'):
         raise RegistryReadSessionError('UNSUPPORTED_HOST_PLATFORM')
     path = _local_path(str(path))
@@ -90,7 +93,7 @@ def _read_owned_file(path):
                 or identity(after) != identity(current)):
             raise _invalid()
         payload = bytes(data)
-        return payload, (*identity(after), hashlib.sha256(payload).hexdigest())
+        return payload, (*identity(after), payload)
     finally:
         os.close(descriptor)
 

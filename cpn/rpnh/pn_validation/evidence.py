@@ -16,7 +16,7 @@ ALGORITHM_VERSION = "exact-bfs/v1"
 
 
 def input_digest(analysis_input: AnalysisInput) -> str:
-    """Replace full re-analysis at adoption with exact input equality checking."""
+    """Return the retained diagnostic digest; verification binds full input."""
     return sha256(canonical_json(analysis_input).encode("utf-8")).hexdigest()
 
 
@@ -132,9 +132,11 @@ def verify_report_binding(report: AnalysisReport | Mapping,
                 or document.get("algorithm_version") != ALGORITHM_VERSION):
             return False
         current = canonical_data(current_input)
+        current_json = canonical_json(current)
+        # Preserve the original input encoding boundary without a digest gate.
+        current_json.encode("utf-8")
         material = document.get("input")
-        return (canonical_json(material) == canonical_json(current)
-                and document.get("input_digest") == input_digest(current_input)
+        return (canonical_json(material) == current_json
                 and canonical_json(document.get("algorithm_config")) == canonical_json(current["policy"])
                 and canonical_json(document.get("assumed_contracts")) == canonical_json({
                     key: current[key] for key in ("operation_models", "terminal_contract",
@@ -380,10 +382,13 @@ def verify_report(report: AnalysisReport | Mapping,
     if not verify_report_binding(report, current_input):
         return False
     try:
-        supplied = report.to_dict() if isinstance(report, AnalysisReport) else canonical_data(report)
+        supplied = canonical_data(report.to_dict() if isinstance(report, AnalysisReport) else report)
+        # Only this top-level diagnostic field is outside the proof comparison.
+        supplied.pop("input_digest", None)
         graph = _checked_graph(current_input, supplied["graph"])
-        expected = AnalysisReport(canonical_json(current_input), input_digest(current_input), graph,
+        expected = AnalysisReport(canonical_json(current_input), "", graph,
                                   evaluate_properties(current_input, graph)).to_dict()
+        expected.pop("input_digest")
         return canonical_json(supplied) == canonical_json(expected)
     except (ValueError, TypeError, KeyError, IndexError, AttributeError):
         return False
