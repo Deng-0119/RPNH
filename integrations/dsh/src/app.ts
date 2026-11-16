@@ -1,6 +1,6 @@
 /** Managed application using the genuine DSH factory and headless runner. */
 import { Context } from '@deepseek-ai/cordis'
-import LlmRuntime from '@deepseek-ai/dsh-llm'
+import LlmRuntime, { createUserMessage } from '@deepseek-ai/dsh-llm'
 import SessionStore, { SessionId } from '@deepseek-ai/dsh-session'
 import SessionProjectionRegistry from '@deepseek-ai/dsh-session-projection'
 import AgentRegistry from '@deepseek-ai/dsh-agent'
@@ -17,6 +17,7 @@ import { readFile } from 'node:fs/promises'
 import { isAbsolute, resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { parseArgs } from 'node:util'
+import { managedBindingsDocument, managedRequestToolNames, validManagedIdentity } from './managed-bindings-codec.ts'
 
 export async function createApplication(config: BridgeConfig): Promise<Context> {
   const ctx = new Context()
@@ -63,14 +64,32 @@ export async function resumeSession(config: BridgeConfig, id: string): Promise<R
     return result
   } finally { await ctx.fiber.dispose() }
 }
+/** Submit a new turn to an idle existing session; never infer active recovery. */
+export async function followupSession(config: BridgeConfig, id: string, task: string): Promise<Record<string, any>> {
+  const ctx = await createApplication(config)
+  try {
+    const handle = await ctx.agents.resume({ resumeSessionId: SessionId(id), agentOptions: selectedModel(config) })
+    try {
+      const agent = handle.agent as RegistryAgent
+      agent.followup(createUserMessage({ source: { kind: 'user' }, content: [{ type: 'text', text: task }] }))
+      await agent.whenIdle()
+      const result = agent.lastOutcome
+      if (!result) throw new Error('followup completed without an observed Registry outcome')
+      if (result.status === 'terminal') await ctx.sessions.flush(agent.session)
+      return result
+    } finally { await handle.dispose() }
+  } finally { await ctx.fiber.dispose() }
+}
 const usage = `Managed DSH application (experimental; provider execution is supplied by RPNH)
   --offline --root DIR --data-file NUMBERS.json --task TEXT [--deny] [--json]
-  --execution PATH --root DIR --task TEXT [--deny] [--json]
+  --execution-path /ABS/SELECTION.json --execution-profile PROFILE_JSON --root DIR --task TEXT [--deny] [--json]
     [--plugin-config /ABS/PLUGINS.json --managed-tool NAME=PLUGIN/OPERATION ...]
     [--plugin-config /ABS/PLUGINS.json --managed-bindings /ABS/BINDINGS.json]
     [--attempt-budget POSITIVE_INTEGER|unmetered]
+  --execution-path /ABS/SELECTION.json --execution-profile PROFILE_JSON --followup --root DIR --session-id ID --task TEXT
   --history --root DIR --session-id ID
-  (--offline | --execution PATH) --resume --root DIR --session-id ID
+  (--offline | --execution-path /ABS/SELECTION.json --execution-profile PROFILE_JSON) --resume --root DIR --session-id ID
+All modes require --python PYTHON. Followup requires configured execution and an idle existing session.
 History is read from the Registry. Resume uses the stored request, not a new prompt.`
 function nonempty(value: unknown, label: string): string {
   if (typeof value !== 'string' || !value || value !== value.trim()) throw new Error(`invalid ${label}`)
@@ -125,11 +144,6 @@ function configuredProfile(raw: string): PublicExecutionProfile {
     default_reasoning_effort: fallback as string | null,
   })
 }
-function validManagedIdentity(name: unknown, selector: unknown): boolean {
-  return typeof name === 'string' && typeof selector === 'string'
-    && /^[a-z][a-z0-9_]{0,47}$/.test(name)
-    && /^[a-z][a-z0-9_]{0,47}\/[a-z][a-z0-9_]{0,47}$/.test(selector)
-}
 function managedToolSelections(raw: string[] | undefined): ReadonlyArray<ManagedToolSelection> {
   const output: ManagedToolSelection[] = []
   const names = new Set<string>(); const selectors = new Set<string>()
@@ -145,49 +159,6 @@ function managedToolSelections(raw: string[] | undefined): ReadonlyArray<Managed
   }
   return Object.freeze(output)
 }
-function managedBindingsDocument(raw: string): ReadonlyArray<ManagedToolSelection> {
-  let value: unknown
-  try { value = JSON.parse(raw) } catch { throw new Error('--managed-bindings requires exact JSON') }
-  if (!value || typeof value !== 'object' || Array.isArray(value)) {
-    throw new Error('--managed-bindings requires an object')
-  }
-  const document = value as Record<string, unknown>
-  if (Object.keys(document).sort().join(',') !== 'admitted_effects,schema_version,tools'
-    || document.schema_version !== 'rpnh/dsh_managed_bindings/v1'
-    || !document.tools || typeof document.tools !== 'object' || Array.isArray(document.tools)
-    || !Array.isArray(document.admitted_effects) || document.admitted_effects.length === 0) {
-    throw new Error('invalid managed bindings document')
-  }
-  const effects = document.admitted_effects as unknown[]
-  const allowed = new Set(['pure', 'external_read', 'external_write'])
-  if (effects.some(effect => typeof effect !== 'string' || !allowed.has(effect))
-    || new Set(effects).size !== effects.length) {
-    throw new Error('invalid managed admitted effects')
-  }
-  const output: ManagedToolSelection[] = []
-  const names = new Set<string>(); const selectors = new Set<string>()
-  for (const [name, selected] of Object.entries(document.tools as Record<string, unknown>)) {
-    if (!selected || typeof selected !== 'object' || Array.isArray(selected)) {
-      throw new Error('invalid managed tool binding')
-    }
-    const binding = selected as Record<string, unknown>
-    const keys = Object.keys(binding).sort()
-    const input = binding.input_schema
-    if (keys.join(',') !== 'description,input_schema,selector'
-      || !validManagedIdentity(name, binding.selector)
-      || typeof binding.description !== 'string' || !binding.description.trim()
-      || !input || typeof input !== 'object' || Array.isArray(input)
-      || (input as Record<string, unknown>).type !== 'object'
-      || names.has(name) || selectors.has(binding.selector as string)) {
-      throw new Error('managed bindings require unique names/selectors, descriptions, and object input schemas')
-    }
-    const selector = binding.selector as string
-    names.add(name); selectors.add(selector)
-    output.push(Object.freeze({ name, selector }))
-  }
-  if (output.length === 0) throw new Error('managed bindings require at least one tool')
-  return Object.freeze(output)
-}
 function attemptBudget(raw: string | undefined): number | null | undefined {
   if (raw === undefined) return undefined
   if (raw === 'unmetered') return null
@@ -201,7 +172,7 @@ async function main(): Promise<void> {
   const { values } = parseArgs({ options: {
     offline: { type: 'boolean' }, root: { type: 'string' }, 'data-file': { type: 'string' },
     task: { type: 'string' }, deny: { type: 'boolean' }, json: { type: 'boolean' },
-    history: { type: 'boolean' }, resume: { type: 'boolean' }, 'session-id': { type: 'string' },
+    history: { type: 'boolean' }, resume: { type: 'boolean' }, followup: { type: 'boolean' }, 'session-id': { type: 'string' },
     python: { type: 'string' }, 'execution-path': { type: 'string' }, 'execution-profile': { type: 'string' },
     'plugin-config': { type: 'string' }, 'managed-tool': { type: 'string', multiple: true },
     'managed-bindings': { type: 'string' },
@@ -209,7 +180,7 @@ async function main(): Promise<void> {
     help: { type: 'boolean' },
   }, allowPositionals: false })
   if (values.help) { console.log(usage); return }
-  if (!values.root || !values.python || (values.history && values.resume)) throw new Error(usage)
+  if (!values.root || !values.python || ([values.history, values.resume, values.followup].filter(Boolean).length > 1)) throw new Error(usage)
   const base = resolve(process.env.RPNH_DSH_CALLER_CWD ?? process.cwd())
   process.chdir(base)
   const common = { root: resolve(base, values.root), python: values.python, data: [], allowRequest: true,
@@ -231,6 +202,7 @@ async function main(): Promise<void> {
     throw new Error('offline execution does not accept managed provider tools')
   }
   let config: BridgeConfig
+  let resultReader = false
   if (values.offline) config = { ...common, execution: { kind: 'offline' } }
   else {
     const executionPath = nonempty(values['execution-path'], 'execution path')
@@ -239,9 +211,10 @@ async function main(): Promise<void> {
     if (managedBindingsPath !== undefined && !isAbsolute(managedBindingsPath)) {
       throw new Error('managed bindings path must be absolute')
     }
-    const selections = managedBindingsPath === undefined
-      ? managedToolSelections(values['managed-tool'])
+    const bindings = managedBindingsPath === undefined ? undefined
       : managedBindingsDocument(await readFile(managedBindingsPath, 'utf8'))
+    const selections = bindings?.tools ?? managedToolSelections(values['managed-tool'])
+    resultReader = bindings?.resultReader ?? false
     const pluginConfigPath = values['plugin-config']
     if ((pluginConfigPath === undefined) !== (selections.length === 0)) {
       throw new Error('--plugin-config and managed tools are required together')
@@ -263,7 +236,7 @@ async function main(): Promise<void> {
     process.exitCode = ['terminal', 'idle'].includes(result.status) ? 0 : 1
     return
   }
-  if (!values.task || values['session-id']) throw new Error(usage)
+  if (!values.task || (values.followup ? (!values['session-id'] || values.offline || values['attempt-budget'] !== undefined) : values['session-id'])) throw new Error(usage)
   const budget = attemptBudget(values['attempt-budget'])
   if (budget !== undefined) config.attemptBudget = budget
   if (values.offline) {
@@ -273,10 +246,14 @@ async function main(): Promise<void> {
     config.data = data
   } else {
     if (values['data-file']) throw new Error('configured execution does not accept the offline numeric data-file')
-    config.tools = (config.managedTools ?? []).map(tool => tool.name)
+    config.tools = managedRequestToolNames(config.managedTools ?? [], resultReader)
   }
   config.allowRequest = !values.deny
-  process.exitCode = await runHeadless(config, values.task, values.json)
+  if (values.followup) {
+    const result = await followupSession(config, values['session-id']!, values.task)
+    console.log(JSON.stringify(result))
+    process.exitCode = result.status === 'terminal' ? 0 : 1
+  } else process.exitCode = await runHeadless(config, values.task, values.json)
 }
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
   void main().catch(error => { console.error(String(error)); process.exitCode = 1 })

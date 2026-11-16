@@ -11,13 +11,14 @@ import json
 import os
 from pathlib import Path
 import shlex
-import signal
 import stat
 import subprocess
 import sys
 from uuid import uuid4
 
-from cpn.update_context import MANAGED_TARGET_RE, managed_context_hint
+from cpn.update_context import (
+    MANAGED_TARGET_RE, managed_context_hint, reject_candidate_runtime,
+)
 from .updates import Offer, discover
 
 PROTOCOL = "managed-side-by-side-v1"
@@ -67,14 +68,71 @@ def _target(root: Path, name: str = "current") -> tuple[str, Path]:
     return target, directory
 
 
+def _marker_document(root: Path) -> object:
+    """Read a bounded dispatch hint; protocol-specific validators authorize it."""
+    path = root.expanduser().absolute() / "managed.json"
+    if path.is_symlink() or not path.is_file() or path.stat().st_size > 16384:
+        raise ValueError("invalid managed installation marker")
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def _v2_root(root: Path) -> bool:
+    value = _marker_document(root)
+    return isinstance(value, dict) and value.get("protocol") == "managed-side-by-side-v2"
+
+
+def _runtime_check_root(root: Path) -> Path:
+    if _v2_root(root):
+        from .install_v2 import check_root
+        return check_root(root)
+    return _check_root(root)
+
+
+def _recover_runtime_pending() -> None:
+    """Finish committed metadata before SH, never upgrade a runtime lease."""
+    reject_candidate_runtime()
+    candidate = managed_context_hint()
+    if candidate is not None and _v2_root(candidate):
+        from .install_contract import read_software_record, validate_managed
+        from .install_v2 import check_root, recover
+        root = check_root(candidate)
+        marker = validate_managed(read_software_record(root / "managed.json", limit=16384))
+        if marker["pending_activation"] is not None:
+            recover(root)
+
+
 def managed_root() -> Path | None:
+    reject_candidate_runtime()
     candidate = managed_context_hint()
     if candidate is None:
         return None
-    root = _check_root(candidate)
+    root = _runtime_check_root(candidate)
     if not os.environ.get("RPNH_MANAGED_ROOT"):
         raise ValueError("managed interpreter requires its fixed launcher context")
-    _, directory = _target(root)
+    if _v2_root(root):
+        import cpn
+        from .install_contract import read_frontend_view, read_software_record, validate_managed
+        from .install_v2 import read_target
+        marker = validate_managed(read_software_record(root / "managed.json", limit=16384))
+        if marker["pending_activation"] is not None:
+            raise ValueError("managed installation has a pending activation; recover it before runtime entry")
+        target = read_target(root)
+        if target is None:
+            raise ValueError("managed installation has no current environment")
+        _, directory, record = target
+        venv = directory / "venv"
+        if not venv.is_dir() or venv != venv.resolve():
+            raise ValueError("managed environment must contain its own real venv directory")
+        config = directory / "frontend.json"
+        if config.is_symlink() or not config.is_file() or config.stat().st_size > 16384:
+            raise ValueError("managed frontend binding is unavailable")
+        read_frontend_view(directory, expected_id=record["installation_id"],
+                           selected_entries=set(record["components"]))
+        if (record["rpnh_version"] != cpn.__version__
+                or not Path(cpn.__file__).resolve().is_relative_to(Path(sys.prefix).resolve())):
+            raise ValueError("this package does not match the managed environment version")
+    else:
+        _, directory = _target(root)
     if (not Path(__file__).resolve().is_relative_to(Path(sys.prefix).resolve())
             or Path(sys.prefix).resolve() != (directory / "venv").resolve()
             or Path(os.environ.get("RPNH_FRONTEND_CONFIG", "")).absolute()
@@ -84,7 +142,7 @@ def managed_root() -> Path | None:
 
 
 def _open_lease(root: Path, exclusive: bool):
-    _check_root(root)
+    _runtime_check_root(root)
     fd = os.open(root / "lifecycle.lock", os.O_RDWR | os.O_CREAT | os.O_NOFOLLOW, 0o600)
     try:
         fcntl.flock(fd, (fcntl.LOCK_EX if exclusive else fcntl.LOCK_SH) | fcntl.LOCK_NB)
@@ -101,9 +159,18 @@ def _open_lease(root: Path, exclusive: bool):
 
 @contextmanager
 def lifecycle_lease(root: Path | None = None, *, exclusive: bool = False):
+    reject_candidate_runtime()
+    if root is None:
+        _recover_runtime_pending()
     selected = managed_root() if root is None else root
     lease = None if selected is None else _open_lease(selected, exclusive)
     try:
+        # The launcher may have read current just before an updater took EX.
+        # Recheck the interpreter and fixed config while SH prevents another
+        # switch. Explicit-root management deliberately doesn't bind itself to
+        # current: it may be preparing or recovering an installation.
+        if root is None and selected is not None and managed_root() != selected:
+            raise ValueError("managed installation changed before the runtime lease was acquired")
         yield lease
     finally:
         if lease is not None:
@@ -112,8 +179,18 @@ def lifecycle_lease(root: Path | None = None, *, exclusive: bool = False):
 
 def worker_lease():
     """A distinct shared open-file-description, acquired before worker spawn."""
+    _recover_runtime_pending()
     root = managed_root()
-    return None if root is None else _open_lease(root, False)
+    if root is None:
+        return None
+    lease = _open_lease(root, False)
+    try:
+        if managed_root() != root:
+            raise ValueError("managed installation changed before the worker lease was acquired")
+        return lease
+    except BaseException:
+        lease.close()
+        raise
 
 
 def _run(argv: list[str], *, env: dict[str, str], capture: bool = False,
@@ -122,20 +199,50 @@ def _run(argv: list[str], *, env: dict[str, str], capture: bool = False,
         process = subprocess.Popen(argv, env=env, stdin=subprocess.DEVNULL,
             stdout=subprocess.PIPE if capture else subprocess.DEVNULL,
             stderr=subprocess.DEVNULL, text=True, start_new_session=True)
-    except OSError:
-        raise RuntimeError("Managed update command could not start; old environment retained") from None
+    except OSError as exc:
+        raise RuntimeError("Managed update command could not start; old environment retained") from exc
     try:
         output, _ = process.communicate(timeout=timeout)
     except BaseException as exc:
-        # Own process group only: timeout/cancellation must not leave a pip/npm
-        # descendant modifying a failed stage after the updater releases its lock.
-        try:
-            os.killpg(process.pid, signal.SIGKILL)
-        except ProcessLookupError:
-            pass
-        process.communicate()
+        cleanup_error = None
+        if process.returncode is None:
+            try:
+                from .install_executor import _stop_owned_process
+                _stop_owned_process(process, own_group=True)
+            except BaseException as failure:
+                cleanup_error = failure
+        # communicate may already have reaped its child before raising (in
+        # particular on KeyboardInterrupt). Never signal after that boundary
+        # or wait indefinitely for pipes possibly held by other processes.
+        output_stream = getattr(process, "stdout", None)
+        close_error = None
+        if output_stream is not None:
+            try:
+                output_stream.close()
+            except BaseException as failure:
+                close_error = failure
         if isinstance(exc, subprocess.TimeoutExpired):
-            raise RuntimeError("Managed update command timed out; old environment retained") from None
+            message = "Managed update command timed out; old environment retained"
+            if cleanup_error is not None:
+                message += ("; interrupted child cleanup is unconfirmed "
+                            f"({type(cleanup_error).__name__}: {cleanup_error})")
+            if close_error is not None:
+                message += ("; output close is unconfirmed "
+                            f"({type(close_error).__name__}: {close_error})")
+            error = RuntimeError(message)
+            if cleanup_error is not None:
+                error.cleanup_error = cleanup_error
+            if close_error is not None:
+                error.stream_close_error = close_error
+            raise error from exc
+        if cleanup_error is not None:
+            exc.add_note("Interrupted update cleanup is unconfirmed: "
+                         f"{type(cleanup_error).__name__}: {cleanup_error}")
+            exc.cleanup_error = cleanup_error
+        if close_error is not None:
+            exc.add_note("Interrupted update output close is unconfirmed: "
+                         f"{type(close_error).__name__}: {close_error}")
+            exc.stream_close_error = close_error
         raise
     if process.returncode:
         raise RuntimeError("Managed update command failed; old environment retained")
@@ -276,4 +383,3 @@ def rollback(root: Path) -> Path:
         # One commit point; repeated rollback is deliberately idempotent.
         _point(root, "current", previous)
     return root / "bin/rpnh"
-

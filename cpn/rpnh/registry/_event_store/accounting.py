@@ -70,7 +70,7 @@ def _accountable_model_call_event_sql() -> str:
         "accountable_publication.published_transaction_id "
         "WHERE accountable_member.member_kind='event' "
         "AND accountable_member.member_identity=e.event_id AND ("
-        "(accountable_publication.state IN ('PUBLISHED','SUPERSEDED') "
+        "(accountable_publication.state IN ('PUBLISHED','SUPERSEDED','REJECTED') "
         "AND accountable_publication.published_transaction_id IS NOT NULL "
         "AND accountable_settlement.status='committed') OR "
         "(accountable_publication.state='PROVISIONAL' "

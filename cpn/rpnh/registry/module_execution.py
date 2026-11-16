@@ -121,7 +121,10 @@ class ModuleFiringAdmission:
 
 def admit_module_firing(core: _RegistryCore, *, transition_id: str,
                         logical_tau: int | float | str, idempotency_key: str,
-                        prepare_admission=None) -> ModuleFiringAdmission | None:
+                        prepare_admission=None,
+                        owner_command_ref: VersionRef | None = None,
+                        stage_owner_command_admission=None,
+                        ) -> ModuleFiringAdmission | None:
     """Admit one actually enabled occurrence; dead marking remains interactive.
 
     The owner dispatches this on its single execution event stream. No executor,
@@ -129,10 +132,20 @@ def admit_module_firing(core: _RegistryCore, *, transition_id: str,
     """
     if not isinstance(core, _RegistryCore) or core.read_only:
         raise TypeError("Module admission requires the execution owner's Registry")
+    if (owner_command_ref is not None
+            and (not isinstance(owner_command_ref, VersionRef)
+                 or owner_command_ref.entity_type != "resource_version/v1"
+                 or owner_command_ref.entity_id.kind != "resource"
+                 or owner_command_ref.version_id.kind != "resource_version")):
+        raise TypeError("module owner command requires an exact resource version")
     kernel = _ResourceServiceKernel(core)
     from .run_authority import current_run_execution_authority
     _authority_ref, authority = current_run_execution_authority(core, kernel)
-    if (authority.get("status") != "running"
+    if authority.get("status") == "terminal" and authority.get("terminal_evidence_ref") is not None:
+        from .terminal_management import require_terminal_management_admission
+        require_terminal_management_admission(core, transition_id=transition_id,
+            owner_command_ref=owner_command_ref)
+    elif (authority.get("status") != "running"
             or authority.get("terminal_evidence_ref") is not None):
         raise ValueError(
             "Module admission requires the current running execution authority")
@@ -208,8 +221,10 @@ def admit_module_firing(core: _RegistryCore, *, transition_id: str,
                             else preparation.activation_ref),
         agent_ref=transition.agent_ref,
         admission_publications=(None if preparation is None else
-                                preparation.admission_publications))
-    admission = InvocationLifecycle(core).admit_firing(claim, idempotency_key=idempotency_key)
+                                preparation.admission_publications),
+        owner_command_ref=owner_command_ref)
+    admission = InvocationLifecycle(core).admit_firing(claim, idempotency_key=idempotency_key,
+        stage_owner_command_admission=stage_owner_command_admission)
     started = None
     if preparation is not None:
         canonical = canonical_invocation(core, kernel, admission.context.invocation_ref)

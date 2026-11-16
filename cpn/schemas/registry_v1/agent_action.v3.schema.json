@@ -9,7 +9,9 @@
     "nullable_ref": {"oneOf":[{"$ref":"#/definitions/ref"},{"type":"null"}]},
     "resource_ref": {"type":"object","additionalProperties":false,"properties":{"resource_id":{"type":"string","pattern":"^resource:[a-f0-9]{32}$"},"resource_version_id":{"type":"string","pattern":"^resource_version:[a-f0-9]{32}$"}},"required":["resource_id","resource_version_id"]},
     "nullable_resource_ref": {"oneOf":[{"$ref":"#/definitions/resource_ref"},{"type":"null"}]},
-    "json": {"type":["object","array","string","number","integer","boolean","null"]}
+    "json": {"type":["object","array","string","number","integer","boolean","null"]},
+    "binding_identity": {"type":"object","additionalProperties":false,"properties":{"schema_version":{"const":"rpnh/plugin_binding/v2"},"plugin_name":{"type":"string","pattern":"^[a-z][a-z0-9_]{0,47}$"},"plugin_version":{"type":"string","pattern":"^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$"},"binding_revision":{"type":"string","pattern":"^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$"}},"required":["schema_version","plugin_name","plugin_version","binding_revision"]},
+    "catalog_identity": {"type":"object","additionalProperties":false,"properties":{"schema_version":{"const":"rpnh/plugin_catalog/v2"},"revision":{"type":"string","pattern":"^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$"},"bindings":{"type":"array","uniqueItems":true,"items":{"$ref":"#/definitions/binding_identity"}}},"required":["schema_version","revision","bindings"]}
   },
   "properties": {
     "agent_action_id":{"type":"string","pattern":"^agent_action:[a-f0-9]{32}$"},
@@ -34,6 +36,8 @@
     "selector":{"type":"string","pattern":"^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$"},
     "plugin_catalog_digest":{"type":"string","pattern":"^[a-f0-9]{64}$"},
     "binding_digest":{"type":"string","pattern":"^[a-f0-9]{64}$"},
+    "plugin_catalog_identity":{"$ref":"#/definitions/catalog_identity"},
+    "binding_identity":{"$ref":"#/definitions/binding_identity"},
     "effect":{"enum":["pure","external_read","external_write"]},
     "outcome":{"enum":["returned","failed","outcome_unknown","rejected"]},
     "request_admission_receipt_ref":{"$ref":"#/definitions/nullable_resource_ref"},
@@ -48,8 +52,9 @@
     "output_size_bytes":{"type":"integer","minimum":0,"maximum":16777216},
     "error_size_bytes":{"type":"integer","minimum":0,"maximum":65536}
   },
-  "required":["agent_action_id","agent_action_version_id","agent_action_ref","agent_loop_ref","agent_turn_ref","turn_sequence","tool_call_ordinal","tool_call_id","action_identity_kind","action_identity_key","tool_name","raw_arguments","arguments","expected_revision","state","result_refs","tool_error_ref","provider_name","registration_key","selector","plugin_catalog_digest","binding_digest","effect","outcome","request_admission_receipt_ref","admitted_at_utc","started_receipt_ref","terminal_receipt_ref","model_visible_result_ref","non_delivery_reason","output","error","max_result_bytes","output_size_bytes","error_size_bytes"],
+  "required":["agent_action_id","agent_action_version_id","agent_action_ref","agent_loop_ref","agent_turn_ref","turn_sequence","tool_call_ordinal","tool_call_id","action_identity_kind","action_identity_key","tool_name","raw_arguments","arguments","expected_revision","state","result_refs","tool_error_ref","provider_name","registration_key","selector","effect","outcome","request_admission_receipt_ref","admitted_at_utc","started_receipt_ref","terminal_receipt_ref","model_visible_result_ref","non_delivery_reason","output","error","max_result_bytes","output_size_bytes","error_size_bytes"],
   "allOf":[
+    {"oneOf":[{"required":["plugin_catalog_digest","binding_digest"],"not":{"anyOf":[{"required":["plugin_catalog_identity"]},{"required":["binding_identity"]}]}},{"required":["plugin_catalog_identity","binding_identity"],"not":{"anyOf":[{"required":["plugin_catalog_digest"]},{"required":["binding_digest"]}]}}]},
     {"if":{"properties":{"outcome":{"const":"returned"}}},"then":{"properties":{"state":{"const":"ACTION_APPLIED"},"request_admission_receipt_ref":{"$ref":"#/definitions/resource_ref"},"admitted_at_utc":{"type":"string"},"started_receipt_ref":{"$ref":"#/definitions/resource_ref"},"terminal_receipt_ref":{"$ref":"#/definitions/resource_ref"},"model_visible_result_ref":{"type":"null"},"non_delivery_reason":{"const":"provider_delivery_not_recorded"},"error":{"type":"null"},"error_size_bytes":{"const":0},"tool_error_ref":{"type":"null"}}}},
     {"if":{"properties":{"outcome":{"const":"failed"}}},"then":{"properties":{"state":{"const":"ACTION_REJECTED"},"request_admission_receipt_ref":{"$ref":"#/definitions/resource_ref"},"admitted_at_utc":{"type":"string"},"started_receipt_ref":{"$ref":"#/definitions/resource_ref"},"terminal_receipt_ref":{"$ref":"#/definitions/resource_ref"},"model_visible_result_ref":{"type":"null"},"non_delivery_reason":{"const":"managed_call_failed"},"output":{"type":"null"},"output_size_bytes":{"const":0},"error":{"not":{"type":"null"}},"tool_error_ref":{"$ref":"#/definitions/ref"}}}},
     {"if":{"properties":{"outcome":{"const":"outcome_unknown"}}},"then":{"properties":{"state":{"const":"ACTION_REJECTED"},"request_admission_receipt_ref":{"$ref":"#/definitions/resource_ref"},"admitted_at_utc":{"type":"string"},"started_receipt_ref":{"$ref":"#/definitions/resource_ref"},"terminal_receipt_ref":{"$ref":"#/definitions/resource_ref"},"model_visible_result_ref":{"type":"null"},"non_delivery_reason":{"const":"outcome_unknown"},"output":{"type":"null"},"output_size_bytes":{"const":0},"error":{"not":{"type":"null"}},"tool_error_ref":{"$ref":"#/definitions/ref"}}}},

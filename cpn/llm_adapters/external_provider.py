@@ -32,6 +32,8 @@ from ._external_provider_credentials import (
     resolved_provider_headers,
 )
 from ._external_provider_protocol import (
+    ChatRequestOptions,
+    chat_request_options_from_document,
     normalize_openai_compatible_response,
     provider_request_from_envelope,
 )
@@ -44,6 +46,7 @@ from ._external_provider_recovery import (
 
 
 SCHEMA_VERSION = "external_provider_adapter_config/v3"
+REQUEST_OPTIONS_SCHEMA_VERSION = "external_provider_adapter_config/v4"
 LEGACY_SCHEMA_VERSION = "external_provider_adapter_config/v2"
 _READ_CHUNK_BYTES = 64 * 1024
 _ROUTE_FIELDS = {
@@ -59,6 +62,10 @@ _FORBIDDEN_EXTRA_HEADERS = {
     "authorization", "connection", "content-length", "content-type", "host",
     "proxy-authorization", "transfer-encoding",
 }
+
+
+class _DispatchRefused(RuntimeError):
+    """An installed host reservation failed before connection or submission."""
 
 
 def _http_failure_metadata(status: int) -> tuple[str, bool, str]:
@@ -98,6 +105,7 @@ class _ExternalProviderConfig:
     routes: tuple[_ExternalRoute, ...]
     recovery: ExternalProviderRecoveryPolicy
     reasoning_effort: str | None
+    request_options: ChatRequestOptions
 
 
 def _text(value: object, *, label: str) -> str:
@@ -199,16 +207,18 @@ def _load_config(
         raise AdapterConfigError("external adapter config fields are not current")
     version = document.get("schema_version")
     expected_fields = (
-        _CONFIG_FIELDS if version == SCHEMA_VERSION
+        _CONFIG_FIELDS | {"request_options"}
+        if version == REQUEST_OPTIONS_SCHEMA_VERSION
+        else _CONFIG_FIELDS if version == SCHEMA_VERSION
         else _LEGACY_CONFIG_FIELDS)
     if set(document) != expected_fields:
         raise AdapterConfigError("external adapter config fields are not current")
-    if (version not in {SCHEMA_VERSION, LEGACY_SCHEMA_VERSION}
+    if (version not in {SCHEMA_VERSION, LEGACY_SCHEMA_VERSION, REQUEST_OPTIONS_SCHEMA_VERSION}
             or document.get("adapter_kind") != "external_provider"
             or document.get("model_condition") != model_condition):
         raise AdapterConfigError("external adapter identity differs from selection")
     configured_effort = document.get("reasoning_effort")
-    if version == SCHEMA_VERSION:
+    if version in {SCHEMA_VERSION, REQUEST_OPTIONS_SCHEMA_VERSION}:
         if (configured_effort is not None
                 and (not isinstance(configured_effort, str)
                      or _IDENTIFIER.fullmatch(configured_effort) is None)):
@@ -220,6 +230,12 @@ def _load_config(
     elif reasoning_effort is not None:
         raise AdapterConfigError(
             "legacy external adapter cannot select a reasoning effort")
+    try:
+        request_options = (
+            chat_request_options_from_document(document["request_options"])
+            if version == REQUEST_OPTIONS_SCHEMA_VERSION else ChatRequestOptions())
+    except (TypeError, ValueError) as exc:
+        raise AdapterConfigError("external adapter request_options is invalid") from exc
     values = document.get("routes")
     if not isinstance(values, list) or len(values) != 1:
         raise AdapterConfigError(
@@ -235,7 +251,7 @@ def _load_config(
     except ExternalProviderRecoveryConfigError as exc:
         raise AdapterConfigError(str(exc)) from exc
     return _ExternalProviderConfig(
-        routes=routes, recovery=recovery,
+        routes=routes, recovery=recovery, request_options=request_options,
         reasoning_effort=(
             configured_effort if isinstance(configured_effort, str) else None),
     )
@@ -243,10 +259,11 @@ def _load_config(
 
 def _probe_request(
         route: _ExternalRoute, reasoning_effort: str | None = None,
+        request_options: ChatRequestOptions = ChatRequestOptions(),
 ) -> bytes:
     document: dict[str, object] = {
         "model": route.outbound_model,
-        "max_tokens": 8,
+        **request_options.fields(8),
         "messages": [{"role": "user", "content": "Reply with READY."}],
         "stream": False,
     }
@@ -305,6 +322,8 @@ def _remaining_seconds(deadline: float) -> float:
 
 
 def _exception_category(exc: BaseException) -> str:
+    if isinstance(exc, _DispatchRefused):
+        return "dispatch_refused"
     if isinstance(exc, CredentialResolutionError):
         return exc.code
     if isinstance(exc, (TimeoutError, socket.timeout)):
@@ -383,7 +402,11 @@ class ExternalProviderInputPort:
             config_path: Path,
             destination_run_root: Path,
             reasoning_effort: str | None = None,
+            before_dispatch: Callable[[str], None] | None = None,
     ) -> None:
+        if before_dispatch is not None and not callable(before_dispatch):
+            raise TypeError("before_dispatch must be callable or None")
+        self._before_dispatch = before_dispatch
         values = (
             max_output_tokens, timeout_seconds, max_response_bytes,
         )
@@ -400,6 +423,7 @@ class ExternalProviderInputPort:
         self._routes = config.routes
         self._recovery = config.recovery
         self._reasoning_effort = config.reasoning_effort
+        self._request_options = config.request_options
         self._audit = PrivateAttemptAudit(destination_run_root)
         active_route_id = self._audit.latest_selected_external_route_id(
             model_condition=model_condition)
@@ -421,7 +445,9 @@ class ExternalProviderInputPort:
 
     @classmethod
     def from_public(cls, selection, *, destination_run_root: Path,
-                    resolver=None, renderer=None):
+                    resolver=None, renderer=None, before_dispatch=None):
+        if before_dispatch is not None and not callable(before_dispatch):
+            raise TypeError("before_dispatch must be callable or None")
         from .config import RegisteredLLMExecutionSelection
         from .public_credentials import check_capability
         from cpn.rpnh.public_material_contracts import canonical
@@ -439,6 +465,7 @@ class ExternalProviderInputPort:
             'route_id', 'provider', 'backend', 'protocol', 'endpoint', 'outbound_model')}
             | {'credential': None, 'headers': {}})
         self = cls.__new__(cls)
+        self._before_dispatch = before_dispatch
         self._model_condition = policy['model_condition']
         self._max_output_tokens = policy['max_output_tokens']
         self._timeout_seconds = policy['timeout_seconds']
@@ -446,6 +473,8 @@ class ExternalProviderInputPort:
         self._routes = (parsed,)
         self._recovery = recovery_policy_from_document(policy['adapter_profile']['recovery'])
         self._reasoning_effort = policy['reasoning_effort']
+        # Public v1 identity has no request options: retain its legacy wire shape.
+        self._request_options = ChatRequestOptions()
         self._audit = PrivateAttemptAudit(destination_run_root)
         # Fresh public mode never reads historical private audit route selection.
         self._active_route_index = 0
@@ -466,7 +495,7 @@ class ExternalProviderInputPort:
         frozen = {'_public_identity_bytes', '_public_resolver', '_public_renderer',
                   '_public_association', '_model_condition', '_max_output_tokens',
                   '_timeout_seconds', '_max_response_bytes', '_routes', '_recovery',
-                  '_reasoning_effort'}
+                  '_reasoning_effort', '_request_options', '_before_dispatch'}
         if hasattr(self, '_public_association') and name in frozen:
             raise AttributeError('registered provider construction identity is immutable')
         object.__setattr__(self, name, value)
@@ -604,6 +633,25 @@ class ExternalProviderInputPort:
             with self._resolved_headers(route) as headers:
                 headers.update(route.headers)
                 progress("credential_resolution_complete")
+                # Optional trusted-HOST accounting applies to every physical
+                # request, including recovery probes and formal retries. It
+                # cannot grant Registry/PN permission and sees no prompt,
+                # endpoint or credential. Reserve before any connection exists;
+                # a later failure/cancellation can consume without submission.
+                if self._before_dispatch is not None:
+                    transport_phase = "dispatch_reservation"
+                    try:
+                        if self._before_dispatch(provider_request_id) is not None:
+                            raise TypeError("before_dispatch must return None")
+                    except Exception as exc:
+                        # Even a timeout/OSError from accounting is a refusal,
+                        # never a transient provider failure that permits probes.
+                        raise _DispatchRefused("dispatch reservation refused") from exc
+                    if (watch_interrupted.is_set()
+                            or (interruption_requested is not None
+                                and interruption_requested())):
+                        watch_interrupted.set()
+                        raise LLMInputPortInterrupted(submission_state="not_submitted")
                 transport_phase = "connection"
                 if route.scheme == "https":
                     connection = http.client.HTTPSConnection(
@@ -891,7 +939,8 @@ class ExternalProviderInputPort:
                 expected_model_condition=attempt.model_condition,
                 expected_max_output_tokens=self._max_output_tokens,
                 outbound_model=self._routes[0].outbound_model,
-                reasoning_effort=self._reasoning_effort)
+                reasoning_effort=self._reasoning_effort,
+                request_options=self._request_options)
         except ResponseEnvelopeError:
             self._audit.finish_external_invocation(
                 attempt, outcome="adapter_not_submitted",
@@ -957,7 +1006,8 @@ class ExternalProviderInputPort:
                 expected_model_condition=attempt.model_condition,
                 expected_max_output_tokens=self._max_output_tokens,
                 outbound_model=route.outbound_model,
-                reasoning_effort=self._reasoning_effort)
+                reasoning_effort=self._reasoning_effort,
+                request_options=self._request_options)
         except ResponseEnvelopeError:
             self._audit.finish_external_invocation(
                 attempt, outcome="request_protocol_invalid",
@@ -1068,6 +1118,7 @@ class ExternalProviderInputPort:
             probe_attempts = 0
             probe_succeeded = False
             probe_budget_exhausted = False
+            probe_dispatch_refused = False
             for _probe_ordinal in range(
                     self._recovery.max_probe_attempts):
                 if time.monotonic() >= probe_deadline:
@@ -1075,10 +1126,16 @@ class ExternalProviderInputPort:
                     break
                 probe_result = perform(
                     body=_probe_request(
-                        route, self._reasoning_effort),
+                        route, self._reasoning_effort, self._request_options),
                     call_kind="health_probe",
                     deadline=probe_deadline)
                 probe_attempts += 1
+                if probe_result.detail.get("failure_category") == "dispatch_refused":
+                    # Local reservation failure is terminal, including while
+                    # diagnosing a prior unknown formal submission. Do not call
+                    # the hook again through the remaining probe iterations.
+                    probe_dispatch_refused = True
+                    break
                 if probe_result.response_bytes is not None:
                     probe_succeeded = True
                     break
@@ -1088,6 +1145,10 @@ class ExternalProviderInputPort:
                 "probe_succeeded": probe_succeeded,
                 "probe_budget_exhausted": probe_budget_exhausted,
             })
+            if probe_dispatch_refused:
+                final_recovery_reason = "dispatch_reservation_refused"
+                final_failure_code = "external_dispatch_reservation_refused"
+                break
             if not probe_succeeded:
                 if probe_budget_exhausted:
                     final_recovery_reason = "health_probe_budget_exhausted"

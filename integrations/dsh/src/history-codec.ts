@@ -27,49 +27,65 @@ export function projectTurnEvents(turnRecord: unknown, targetRevision: unknown):
     if (converted.role !== 'user' || converted.source.kind === 'tool') return fail('new turn input must be a user/context message')
     emit('user/message', converted, true)
   }
-  let step = 0; let open = false; let pending: JsonRecord | undefined
-  const executed = new Set<string>()
+  let step = 0; let open = false
+  const pending = new Map<string, JsonRecord>()
+  const results = new Map<string, JsonRecord>()
+  const emitResults = (): void => {
+    // Historical completion order does not redefine the model's call ordinals.
+    for (const [id, tool] of pending) {
+      const message = results.get(id)
+      if (!message) continue
+      emit('tool/call', { turn, step, callId: id, name: tool.name, arguments: tool.arguments })
+      emit('tool/result', { turn, step, message }, true)
+    }
+    pending.clear(); results.clear()
+  }
   for (const call of output.calls) {
     if (!record(call) || !record(call.ticket) || !record(call.observation)) return fail('invalid committed call')
     if (call.ticket.upstream_revision !== sourceRevision) return fail('committed execution revision differs')
     const message = projectMessage(call.observation.message, sourceRevision, targetRevision)
     if (call.ticket.kind === 'model') {
-      if (pending) return fail('model step follows an unresolved tool call')
+      if (pending.size) return fail('model step follows an unresolved tool call')
       if (message.role !== 'assistant') return fail('model observation requires assistant message')
       const calls = message.content.filter((block: JsonRecord) => block.type === 'tool-call')
-      if (calls.length > 1) return fail('parallel calls are outside the managed profile')
-      if (calls.length) {
-        const tool = calls[0]
+      for (const tool of calls) {
         if (typeof tool.id !== 'string' || !tool.id || typeof tool.name !== 'string' || !tool.name
-          || typeof tool.arguments !== 'string') return fail('invalid historical tool call')
+          || typeof tool.arguments !== 'string' || pending.has(tool.id)
+          || ('raw_arguments' in tool && tool.raw_arguments !== tool.arguments)) return fail('invalid or duplicate historical tool call')
         // Validation only; never reserialize the original argument string.
         let parsed: unknown
         try { parsed = JSON.parse(tool.arguments) } catch { return fail('invalid historical tool arguments') }
         if (!record(parsed)) return fail('historical tool arguments require an object')
-        pending = { ...tool, parsed }
+        pending.set(tool.id, { ...tool, parsed })
       }
       if (open) emit('step/end', { turn, step })
       step++; open = true
       emit('step/start', { turn, step })
       emit('assistant/message', { turn, step, message, stream: [] }, true)
     } else if (call.ticket.kind === 'tool') {
-      if (!record(call.arguments) || !record(call.arguments.call) || !pending) return fail('tool result has no model call')
+      if (!record(call.arguments) || !record(call.arguments.call)) return fail('tool result has no model call')
       const tool = call.arguments.call
-      if (tool.id !== pending.id || tool.name !== pending.name || executed.has(tool.id)
-        || typeof tool.raw_arguments !== 'string' || tool.raw_arguments !== pending.arguments
-        || !isDeepStrictEqual(tool.arguments, pending.parsed)
+      const original = pending.get(tool.id)
+      if (!original || tool.name !== original.name || results.has(tool.id)
+        || typeof tool.raw_arguments !== 'string' || tool.raw_arguments !== original.arguments
+        || !isDeepStrictEqual(tool.arguments, original.parsed)
         || message.source.kind !== 'tool' || message.source.callId !== tool.id) return fail('historical tool correlation differs')
       if (call.observation.isError !== undefined) {
         const error = message.role === 'tool' ? message.isError : message.content[0].isError
         if (typeof call.observation.isError !== 'boolean' || (error ?? false) !== call.observation.isError) return fail('historical tool error status differs')
       }
-      emit('tool/call', { turn, step, callId: tool.id, name: tool.name, arguments: tool.raw_arguments })
-      emit('tool/result', { turn, step, message }, true)
-      executed.add(tool.id); pending = undefined
+      // A provider call ID belongs to this model step. Original execution
+      // identity also includes its firing/lease; a later settled step may
+      // reuse an ID without changing either call or its original arguments.
+      results.set(tool.id, message)
+      if (results.size === pending.size) emitResults()
     } else return fail('unsupported committed capability kind')
   }
   // Policy denial is a valid committed suffix without a dispatched tool result.
-  if (pending && output.status !== 'denied') return fail('completed turn has an unresolved tool call')
+  if (pending.size && output.status !== 'denied') return fail('completed turn has an unresolved tool call')
+  // Preserve already committed siblings on a denied suffix; never invent results
+  // for undispatched calls or label the incomplete batch as completed.
+  if (pending.size) emitResults()
   if (open) emit('step/end', { turn, step })
   emit('turn/end', { turn, reason: { kind: output.status === 'completed' ? 'completed' : 'blocked' } })
   return events

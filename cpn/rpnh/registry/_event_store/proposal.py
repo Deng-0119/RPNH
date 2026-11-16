@@ -200,6 +200,8 @@ class TransactionValidationContext:
 
         from .checkpoint_supersession import visibility_relations
         supersession_relations = visibility_relations(self)
+        from .material_publication_attempts import attempt_visibility_exceptions
+        material_attempt_refs = attempt_visibility_exceptions(self)
         referenced_versions: set[str] = set()
         referenced_relations: set[str] = set()
         from .source_identity import (
@@ -261,6 +263,8 @@ class TransactionValidationContext:
             }
             if (open_roots
                     and open_roots != self.proposal_owner_roots):
+                if open_roots == {material_attempt_refs.get(version_id)}:
+                    continue
                 raise RegistryConflict(
                     "authoritative payload references an object outside its "
                     "own provisional firing view")

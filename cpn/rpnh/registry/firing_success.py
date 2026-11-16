@@ -207,7 +207,8 @@ def succeed_module_operation(core: _RegistryCore, kernel: _ResourceServiceKernel
         repository, supplied: RegisteredOperationOutputsAuthority, *,
         idempotency_key: str, registration=None,
         candidate_publisher: Callable | None = None,
-        workspace_plans: tuple[Mapping[str, Any], ...] = (), workset_action=None):
+        workspace_plans: tuple[Mapping[str, Any], ...] = (), workset_action=None,
+        expected_registry_ordinal: int | None = None, material_result_stager=None):
     """Close one ordinary operation and publish exactly one real successor.
 
 The latest marking is read from the execution-owning Registry. No caller
@@ -222,7 +223,9 @@ checkpoint, executor body text, or diagnostic can grant settlement authority.
         idempotency_key=idempotency_key, registration=registration,
         candidate_publisher=candidate_publisher,
         workspace_plans=workspace_plans,
-        resource_access_writer_epoch=core.writer_epoch, workset_action=workset_action)
+        resource_access_writer_epoch=core.writer_epoch, workset_action=workset_action,
+        expected_registry_ordinal=expected_registry_ordinal,
+        material_result_stager=material_result_stager)
 
 
 def _succeed_verified_module_operation(
@@ -236,6 +239,8 @@ def _succeed_verified_module_operation(
         allow_failed_invocations: bool = False,
         authorize_stale_lease_settlement: bool = False,
         workset_action=None,
+        expected_registry_ordinal: int | None = None,
+        material_result_stager=None,
 ):
     """Project and stage Success after an ordinary or recovery-specific gate."""
 
@@ -278,6 +283,18 @@ def _succeed_verified_module_operation(
             normal_root_token_schema = load_normal_root_token_schema(
                 core.event_store, allocation_db, task_id=core.task_id, cut=allocation_cut)
         ordinary_token_ref_scheme = NORMAL_ROOT_TOKEN_SCHEME
+    elif not selected.effects:
+        from .success_token_allocation import (
+            SUCCESS_FIRING_TOKEN_SCHEME, load_success_firing_token_schema,
+        )
+        with core.event_store.connect() as allocation_db:
+            allocation_db.execute("BEGIN")
+            allocation_cut = int(allocation_db.execute(
+                "SELECT COALESCE(MAX(ordinal),0) FROM events").fetchone()[0])
+            normal_root_token_schema = load_success_firing_token_schema(
+                core.event_store, allocation_db, task_id=core.task_id, cut=allocation_cut)
+        if normal_root_token_schema is not None:
+            ordinary_token_ref_scheme = SUCCESS_FIRING_TOKEN_SCHEME
     effects = None
     if selected.effects:
         if registration is None:
@@ -337,6 +354,8 @@ def _succeed_verified_module_operation(
     context = prepared.settlement.canonical.context
     tx = core.begin(idempotency_key=idempotency_key, task_round_id=context.task_round_ref.entity_id,
         net_instance_id=executable.net_ref.entity_id)
+    if expected_registry_ordinal is not None:
+        tx.expect_registry_ordinal(expected_registry_ordinal)
     material = stage_success_material(core, kernel, tx, executable=executable, prior_marking=prior,
         projected=projected, new_tokens=new_tokens, settlement=prepared.settlement, operation_outputs=outputs,
         formal_delta=formal_delta,
@@ -369,6 +388,9 @@ def _succeed_verified_module_operation(
         operation_outputs=outputs, result_metadata=prepared.result_metadata, material=material,
         checkpoint_ref=material.checkpoint_ref, publication=publication, idempotency_key=idempotency_key,
         revision=revision)
+    if material_result_stager is not None:
+        material_result_stager(tx, outputs=outputs, publication=publication,
+                               result_metadata=prepared.result_metadata)
     if workset_action is not None:
         from ..collaboration.worksets import stage_workset_success
         stage_workset_success(core, tx, action=workset_action, outputs=outputs,

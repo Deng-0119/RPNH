@@ -53,6 +53,7 @@ class RegistryTransaction:
         self._expected_dependency_root_predecessor: dict[str, str | None] | None = None
         self._firing_publications: list[dict[str, object]] = []
         self._firing_supersessions: list[dict[str, str]] = []
+        self._firing_rejections: list[dict[str, str]] = []
         self._workspace_head_advances: list[dict[str, str]] = []
         self._initial_ordinal = event_store.max_ordinal()
         self._initial_heads: dict[str, int] = {}
@@ -285,6 +286,7 @@ class RegistryTransaction:
                 or marking_net_ref.entity_type != "net_instance/v1"
                 or self._firing_publications
                 or self._workspace_head_advances
+                or self._firing_rejections
                 or self._firing_supersessions):
             raise RuntimeError(
                 "transaction permits exactly one firing publication root")
@@ -316,7 +318,7 @@ class RegistryTransaction:
             authorization_ref: VersionRef, checkpoint_ref: VersionRef) -> None:
         """Close an orphan root only with an atomic owner checkpoint reentry."""
 
-        if self._closed or self._firing_publications:
+        if self._closed or self._firing_publications or self._firing_rejections:
             raise RuntimeError("firing supersession cannot share success publication")
         refs = (
             (firing_ref, "transition_firing/v1"),
@@ -343,6 +345,38 @@ class RegistryTransaction:
             raise RuntimeError("duplicate or conflicting firing supersession")
         self._firing_supersessions.append(command)
 
+    def reject_firing(
+            self, *, firing_ref: VersionRef, invocation_ref: VersionRef,
+            owner_command_ref: VersionRef,
+            expected_parent_checkpoint_ref: VersionRef,
+            registered_completion_event_id: str,
+            rejection_ref: VersionRef) -> None:
+        """Close one prepared material root without publishing its candidates.
+
+        The native commit validates the complete rejection closure under the
+        original write lock. This declaration grants no execution authority.
+        """
+        refs = ((firing_ref, "transition_firing/v1"),
+                (invocation_ref, "invocation/v1"),
+                (owner_command_ref, "resource_version/v1"),
+                (expected_parent_checkpoint_ref, "marking_checkpoint/v1"),
+                (rejection_ref, "firing_rejection/v1"))
+        if any(not isinstance(ref, VersionRef) or ref.entity_type != kind
+               for ref, kind in refs):
+            raise TypeError("firing rejection requires exact typed refs")
+        TypedId.parse(registered_completion_event_id, expected="event")
+        if (self._closed or self._firing_publications or self._firing_rejections
+                or self._firing_supersessions or self._workspace_head_advances):
+            raise RuntimeError("rejection requires its own exact control transaction")
+        self._firing_rejections.append({
+            "firing_version_id": str(firing_ref.version_id),
+            "invocation_version_id": str(invocation_ref.version_id),
+            "owner_command_version_id": str(owner_command_ref.version_id),
+            "expected_parent_checkpoint_version_id": str(expected_parent_checkpoint_ref.version_id),
+            "registered_completion_event_id": registered_completion_event_id,
+            "rejection_version_id": str(rejection_ref.version_id),
+        })
+
     def advance_workspace_head(
             self, *, lineage_ref: VersionRef, expected_head_ref: VersionRef,
             successor_ref: VersionRef, authority_ref: VersionRef) -> None:
@@ -351,6 +385,7 @@ class RegistryTransaction:
         workspace_refs = (lineage_ref, expected_head_ref, successor_ref)
         if (self._closed
                 or self._firing_publications
+                or self._firing_rejections
                 or any(not isinstance(ref, VersionRef)
                        or ref.entity_type != "workspace_revision/v1"
                        or ref.entity_id.kind != "workspace_lineage"
@@ -451,6 +486,7 @@ class RegistryTransaction:
                 self._expected_dependency_root_predecessor),
             firing_publications=tuple(self._firing_publications),
             firing_supersessions=tuple(self._firing_supersessions),
+            firing_rejections=tuple(self._firing_rejections),
             workspace_head_advances=tuple(self._workspace_head_advances),
             expected_registry_ordinal=self._expected_registry_ordinal,
             collaboration_action=self._collaboration_action,

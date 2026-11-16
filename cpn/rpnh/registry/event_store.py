@@ -36,6 +36,14 @@ class RegistryConflict(RuntimeError):
     pass
 
 
+class RegistryOrdinalConflict(RegistryConflict):
+    """Only the explicitly expected Registry head has moved."""
+
+
+class FiringRejectionRecoveryRequired(RegistryConflict):
+    """A prepared material firing cannot yet prove safe nonpublication closure."""
+
+
 def _closing_firing_owner_for_system_relation(
         open_endpoint_roots: set[str],
         closing_firing_versions: set[str],
@@ -864,6 +872,7 @@ def _transaction_command_material(
             str, str | None] | None,
         workspace_head_advances: Sequence[Mapping[str, str]] = (),
         firing_supersessions: Sequence[Mapping[str, object]] = (),
+        firing_rejections: Sequence[Mapping[str, object]] = (),
 ) -> Mapping[str, Any]:
     """Return the exact structural material for one Registry command."""
 
@@ -923,6 +932,8 @@ def _transaction_command_material(
     if firing_supersessions:
         material["firing_supersessions"] = [
             dict(item) for item in firing_supersessions]
+    if firing_rejections:
+        material["firing_rejections"] = [dict(item) for item in firing_rejections]
     return material
 
 
@@ -1914,6 +1925,8 @@ class EventStore:
                           Mapping[str, object]] = (),
                       firing_supersessions: Sequence[
                           Mapping[str, object]] = (),
+                      firing_rejections: Sequence[
+                          Mapping[str, object]] = (),
                       workspace_head_advances: Sequence[
                           Mapping[str, object]] = (),
                       expected_registry_ordinal: int | None = None,
@@ -1933,6 +1946,7 @@ class EventStore:
                 expected_dependency_root_predecessor),
             firing_publications=firing_publications,
             firing_supersessions=firing_supersessions,
+            firing_rejections=firing_rejections,
             workspace_head_advances=workspace_head_advances,
             expected_registry_ordinal=expected_registry_ordinal,
             collaboration_action=collaboration_action,
@@ -2202,9 +2216,9 @@ class EventStore:
         from ._event_store import views
         return views.canonical_object_rows(self, through_ordinal=through_ordinal, object_type=object_type, logical_id=logical_id)
 
-    def canonical_relation_rows(self, *, through_ordinal: int | None=None, version_id: TypedId | str | None=None) -> tuple[sqlite3.Row, ...]:
+    def canonical_relation_rows(self, *, through_ordinal: int | None=None, version_id: TypedId | str | None=None, reference: str | None=None, endpoint: str="either", relation_type: str | None=None) -> tuple[sqlite3.Row, ...]:
         from ._event_store import views
-        return views.canonical_relation_rows(self, through_ordinal=through_ordinal, version_id=version_id)
+        return views.canonical_relation_rows(self, through_ordinal=through_ordinal, version_id=version_id, reference=reference, endpoint=endpoint, relation_type=relation_type)
 
     def relation_rows_for_view(self, view: RegistryAuthorityView, *, version_id: TypedId | str | None=None, relation_type: str | None=None, endpoint: str='either') -> tuple[sqlite3.Row, ...]:
         from ._event_store import views

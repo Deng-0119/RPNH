@@ -36,6 +36,7 @@ def publish_batch(event_store: "EventStore", *, task_id: TypedId, branch_id: str
                       str, str | None] | None = None,
                   firing_publications: Sequence[Mapping[str, object]] = (),
                   firing_supersessions: Sequence[Mapping[str, object]] = (),
+                  firing_rejections: Sequence[Mapping[str, object]] = (),
                   workspace_head_advances: Sequence[Mapping[str, object]] = (),
                   expected_registry_ordinal: int | None = None,
                   collaboration_action=None,
@@ -44,6 +45,7 @@ def publish_batch(event_store: "EventStore", *, task_id: TypedId, branch_id: str
     """Validate and atomically append one complete Registry transaction."""
     from ..event_store import (
         RegistryConflict,
+        RegistryOrdinalConflict,
         RegistryCorruptError,
         StaleWriterError,
         _closing_firing_owner_for_system_relation,
@@ -66,8 +68,10 @@ def publish_batch(event_store: "EventStore", *, task_id: TypedId, branch_id: str
         if expected_dependency_root_predecessor is not None else None)
     publication_commands = tuple(dict(item) for item in firing_publications)
     supersession_commands = tuple(dict(item) for item in firing_supersessions)
-    from . import checkpoint_supersession
+    rejection_commands = tuple(dict(item) for item in firing_rejections)
+    from . import checkpoint_supersession, firing_rejection
     checkpoint_supersession.validate_commands(supersession_commands)
+    firing_rejection.validate_commands(rejection_commands)
     workspace_head_commands = tuple(
         dict(item) for item in workspace_head_advances)
     # HISTORICAL_INERT: no current caller can supply fault-mechanical
@@ -101,6 +105,11 @@ def publish_batch(event_store: "EventStore", *, task_id: TypedId, branch_id: str
                                   or dependency_root_predecessor is not None):
         raise RegistryConflict(
             "supersession cannot share an ordinary settlement or promotion")
+    if rejection_commands and (publication_commands or supersession_commands
+            or workspace_head_commands or business_settlements
+            or removed_business_terminal_events or dependency_root_predecessor is not None
+            or snapshot_predecessors):
+        raise RegistryConflict("rejection cannot share publication, reentry or business mutation")
     required_publication_fields = {
         "firing_version_id", "invocation_version_id",
         "admission_checkpoint_version_id",
@@ -445,6 +454,7 @@ def publish_batch(event_store: "EventStore", *, task_id: TypedId, branch_id: str
             dependency_root_predecessor),
         workspace_head_advances=workspace_head_commands,
         firing_supersessions=supersession_commands,
+        firing_rejections=rejection_commands,
     )
     if run_input_command is not None:
         command_material["run_input"] = run_input_command.material()
@@ -516,7 +526,7 @@ def publish_batch(event_store: "EventStore", *, task_id: TypedId, branch_id: str
             objects=objects, events=events, relations=relations,
             command_material=command_material, existing=existing,
             extra_commands=bool(snapshot_predecessors or dependency_root_predecessor
-                or publication_commands or supersession_commands or workspace_head_commands))
+                or publication_commands or supersession_commands or rejection_commands or workspace_head_commands))
         from ..parent_child import validate_parent_child_commit
         validate_parent_child_commit(event_store, db,
             task_id=task_id, branch_id=branch_id, task_round_id=task_round_id,
@@ -524,14 +534,14 @@ def publish_batch(event_store: "EventStore", *, task_id: TypedId, branch_id: str
             idempotency_key=idempotency_key, writer_epoch=writer_epoch,
             objects=objects, events=events, relations=relations, existing=existing,
             extra_commands=bool(snapshot_predecessors or dependency_root_predecessor
-                or publication_commands or supersession_commands or workspace_head_commands))
+                or publication_commands or supersession_commands or rejection_commands or workspace_head_commands))
         from ..public_materials import validate_public_material_commit
         validate_public_material_commit(event_store, db, task_id=task_id, branch_id=branch_id,
             objects=objects, events=events, relations=relations, existing=existing,
             idempotency_key=idempotency_key, transaction_id=transaction_id,
             task_round_id=task_round_id, net_instance_id=net_instance_id,
             extra_commands=bool(snapshot_predecessors or dependency_root_predecessor
-                or publication_commands or supersession_commands or workspace_head_commands))
+                or publication_commands or supersession_commands or rejection_commands or workspace_head_commands))
         if existing is not None:
             if existing["status"] not in {"committed", "aborted"}:
                 db.rollback()
@@ -553,8 +563,12 @@ def publish_batch(event_store: "EventStore", *, task_id: TypedId, branch_id: str
             }
             commanded_roots.update(
                 command["firing_version_id"] for command in supersession_commands)
+            commanded_roots.update(
+                command["firing_version_id"] for command in rejection_commands)
             checkpoint_supersession.validate_replay(
                 db, supersession_commands, existing["transaction_id"])
+            firing_rejection.validate_replay(
+                event_store, db, rejection_commands, existing["transaction_id"])
             if replay_roots != commanded_roots:
                 db.rollback()
                 raise RegistryConflict(
@@ -679,6 +693,15 @@ def publish_batch(event_store: "EventStore", *, task_id: TypedId, branch_id: str
             db.rollback()
             return tuple(event_store._row_to_envelope(row) for row in rows)
 
+        from .material_publication_attempts import validate_material_attempt_batch
+        material_attempt = validate_material_attempt_batch(event_store, db,
+            task_id=task_id, transaction_id=transaction_id, idempotency_key=idempotency_key,
+            writer_epoch=writer_epoch, task_round_id=task_round_id, net_instance_id=net_instance_id,
+            objects=objects, events=events, relations=relations,
+            publication_commands=publication_commands, rejection_commands=rejection_commands,
+            supersession_commands=supersession_commands, workspace_head_commands=workspace_head_commands,
+            expected_registry_ordinal=expected_registry_ordinal)
+
         # Compare under the same BEGIN IMMEDIATE snapshot as the ensuing append.
         # The normal exact command replay above must remain usable after head
         # advancement; a new command cannot pass by racing an earlier precheck.
@@ -686,7 +709,10 @@ def publish_batch(event_store: "EventStore", *, task_id: TypedId, branch_id: str
             current_ordinal = int(db.execute("SELECT coalesce(max(ordinal),0) FROM events").fetchone()[0])
             if current_ordinal != expected_registry_ordinal:
                 db.rollback()
-                raise RegistryConflict("expected Registry head changed")
+                if material_attempt is not None:
+                    from ..material_publication_attempts import _locked_conflict
+                    raise _locked_conflict(material_attempt, current_ordinal)
+                raise RegistryOrdinalConflict("expected Registry head changed")
 
         for command in workspace_head_commands:
             authority = db.execute(
@@ -850,6 +876,12 @@ def publish_batch(event_store: "EventStore", *, task_id: TypedId, branch_id: str
             event_store, db, task_id=task_id, net_instance_id=net_instance_id,
             writer_epoch=writer_epoch, objects=objects, events=events,
             relations=relations, commands=supersession_commands)
+        rejection_relations = firing_rejection.validate_commit(
+            event_store, db, task_id=task_id, task_round_id=task_round_id,
+            net_instance_id=net_instance_id, transaction_id=transaction_id,
+            idempotency_key=idempotency_key,
+            objects=objects, events=events, relations=relations,
+            commands=rejection_commands)
 
         if supersession_commands:
             authorization = next(item.metadata for item in objects
@@ -880,6 +912,15 @@ def publish_batch(event_store: "EventStore", *, task_id: TypedId, branch_id: str
         event_store._validate_firing_resource_settlement_atomicity(
             db, objects, events)
         event_store._validate_provider_materialization_atomicity(objects, events)
+        from .terminal_management import validate_terminal_admissions, validate_terminal_successor
+        validate_terminal_admissions(event_store, db, task_id=task_id, objects=objects)
+        if not supersession_commands and not any(event.event_type == "run_reopened/v1" for event in events):
+            # An explicitly authorized original checkpoint reentry keeps its
+            # own generation-changing validator above, including when no
+            # active firing requires supersession. Terminal management never
+            # supplies that protocol as a substitute for its normal Success.
+            validate_terminal_successor(event_store, db, task_id=task_id,
+                objects=objects, events=events, publication_commands=publication_commands)
         event_store._validate_authoritative_references(
             db, task_id=task_id, branch_id=branch_id,
             task_round_id=task_round_id, net_instance_id=net_instance_id,
@@ -971,6 +1012,13 @@ def publish_batch(event_store: "EventStore", *, task_id: TypedId, branch_id: str
                 db.rollback()
                 raise RegistryConflict(
                     f"compare-and-append conflict for {stream_id!r}: expected={expected}, actual={actual}")
+
+        # Consume the exact registered tool's one-use physical observation
+        # only after all pre-append guards, still in this original write cut.
+        # Normal idempotent replay above uses the original committed result.
+        from ...material_purge import validate_purge_tool_preparation
+        validate_purge_tool_preparation(
+            event_store, db, task_id=task_id, objects=objects)
 
         created = _now()
         db.execute("""INSERT INTO transactions(
@@ -1200,7 +1248,7 @@ def publish_batch(event_store: "EventStore", *, task_id: TypedId, branch_id: str
                 relation.source)
             target_open, target_all = provisional_endpoint_roots(
                 relation.target)
-            if str(relation.relation_id) in supersession_relations:
+            if str(relation.relation_id) in supersession_relations | rejection_relations:
                 # Only the proven owner authorization edge is canonical; the
                 # old root and all its temporary products remain noncanonical.
                 relation_firings[str(relation.relation_id)] = None
@@ -1240,6 +1288,15 @@ def publish_batch(event_store: "EventStore", *, task_id: TypedId, branch_id: str
             db.rollback()
             raise RegistryConflict(
                 "one Registry transaction cannot belong to multiple firings")
+        if rejection_commands:
+            # The locked rejection validator admitted only exact owner control,
+            # operation termination and resource seals. These facts must remain
+            # canonical while ALL previously prepared candidate members stay
+            # hidden under the REJECTED root. This is not a publication bypass
+            # for arbitrary owner/system transactions.
+            if transaction_firings - {rejection_commands[0]["firing_version_id"]}:
+                raise RegistryConflict("rejection closure includes another firing")
+            transaction_firings.clear()
         envelopes: list[EventEnvelope] = []
         task_sequence_row = db.execute(
             "SELECT sequence FROM task_control_heads WHERE task_id=?", (str(task_id),)).fetchone()
@@ -1503,6 +1560,10 @@ def publish_batch(event_store: "EventStore", *, task_id: TypedId, branch_id: str
                     envelopes[index] = replace(event, payload=settlement_payload)
                 elif event.event_id == checkpoint.event_id:
                     envelopes[index] = replace(event, payload=checkpoint_payload)
+
+        from .address_promotion import validate_address_promotions
+        validate_address_promotions(event_store, db, task_id=task_id,
+            transaction_id=transaction_id, publication_commands=publication_commands)
 
         for command in publication_commands:
             augment_settled_firing_event_record(
@@ -1804,6 +1865,14 @@ def publish_batch(event_store: "EventStore", *, task_id: TypedId, branch_id: str
                 db.rollback()
                 raise RegistryConflict(
                     "firing publication authority relations differ")
+            from .material_settlement import validate_material_success_at_promotion
+            validate_material_success_at_promotion(event_store, db,
+                task_id=task_id, root=root, publication=command,
+                transaction_id=transaction_id)
+            from .material_recovery import validate_material_recovery_at_promotion
+            validate_material_recovery_at_promotion(event_store, db,
+                task_id=task_id, root=root, publication=command,
+                transaction_id=transaction_id)
             event_store._before_firing_authority_mutation(
                 db, firing_version_id=command["firing_version_id"],
                 transaction_id=str(transaction_id))
@@ -1855,6 +1924,8 @@ def publish_batch(event_store: "EventStore", *, task_id: TypedId, branch_id: str
         checkpoint_supersession.apply(
             event_store, db, commands=supersession_commands,
             transaction_id=transaction_id)
+        firing_rejection.apply(event_store, db, commands=rejection_commands,
+                               transaction_id=transaction_id)
 
         for stream_id, sequence in stream_state.items():
             db.execute("""INSERT INTO stream_heads(stream_id,sequence,event_hash) VALUES(?,?,?)

@@ -69,9 +69,17 @@ def _read_owned_file(path):
     for parent in path.parents:
         info = parent.stat()
         sticky_root = info.st_uid == 0 and bool(info.st_mode & stat.S_ISVTX)
-        if (not stat.S_ISDIR(info.st_mode) or info.st_uid not in {0, uid}
+        if (not stat.S_ISDIR(info.st_mode)
                 or info.st_mode & 0o022 and not sticky_root):
             raise _invalid()
+        if info.st_uid not in {0, uid}:
+            # Trusted host mounts can expose ancestors with unmapped owners.
+            # This is mount immutability here, not backing-owner authentication.
+            mount_status = getattr(os, 'statvfs', None)
+            readonly_flag = getattr(os, 'ST_RDONLY', 0)
+            if (mount_status is None or not readonly_flag
+                    or not mount_status(parent).f_flag & readonly_flag):
+                raise _invalid()
     descriptor = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
     try:
         before = os.fstat(descriptor)

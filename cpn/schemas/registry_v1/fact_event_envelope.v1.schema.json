@@ -75,7 +75,11 @@
         "transaction_committed/v1",
         "transition_firing_settled/v1",
         "transition_firing_started/v1",
-        "parent_child_recorded/v1"
+        "parent_child_recorded/v1",
+        "operation_execution_rejected/v1",
+        "transition_firing_rejected/v1",
+        "material_publication_attempt_reserved/v1",
+        "material_publication_attempt_ordinal_conflicted/v1"
       ]
     },
     "event_schema_version": {

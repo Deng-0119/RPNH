@@ -3,24 +3,2269 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
   "additionalProperties": false,
-  "required": ["kind", "command_id", "source", "target", "data", "lineage"],
+  "required": [
+    "kind",
+    "command_id",
+    "source",
+    "target",
+    "data",
+    "lineage"
+  ],
   "properties": {
-    "kind": {"enum": ["command", "message", "candidate", "result", "receipt", "input_revision"]},
-    "command_id": {"type": "string", "minLength": 1},
-    "source": {"$ref": "#/definitions/ref"},
-    "target": {"type": ["string", "null"]},
-    "data": {"type": "object"},
-    "lineage": {"type": "array", "items": {"$ref": "#/definitions/ref"}}
+    "kind": {
+      "enum": [
+        "command",
+        "message",
+        "candidate",
+        "result",
+        "receipt",
+        "input_revision"
+      ]
+    },
+    "command_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source": {
+      "$ref": "#/definitions/ref"
+    },
+    "target": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "data": {
+      "type": "object"
+    },
+    "lineage": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/ref"
+      }
+    }
   },
   "definitions": {
     "ref": {
-      "type": "object", "additionalProperties": false,
-      "required": ["entity_type", "logical_id", "version_id"],
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "entity_type",
+        "logical_id",
+        "version_id"
+      ],
       "properties": {
-        "entity_type": {"type": "string", "minLength": 1},
-        "logical_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"},
-        "version_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}
+        "entity_type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "logical_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+        },
+        "version_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+        }
       }
     }
-  }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "data": {
+            "required": [
+              "protocol"
+            ],
+            "properties": {
+              "protocol": {
+                "const": "rpnh/material_command/v1"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "kind": {
+            "const": "command"
+          },
+          "data": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "protocol",
+                  "operation",
+                  "execution",
+                  "address",
+                  "expected_binding_ref",
+                  "base_resource_ref",
+                  "input_ref",
+                  "user_action"
+                ],
+                "properties": {
+                  "protocol": {
+                    "const": "rpnh/material_command/v1"
+                  },
+                  "operation": {
+                    "enum": [
+                      "create_text",
+                      "replace_text"
+                    ]
+                  },
+                  "execution": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "task_ref",
+                      "task_round_ref",
+                      "net_instance_ref"
+                    ],
+                    "properties": {
+                      "task_ref": {
+                        "allOf": [
+                          {
+                            "$ref": "#/definitions/ref"
+                          },
+                          {
+                            "properties": {
+                              "entity_type": {
+                                "const": "task/v1"
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "task_round_ref": {
+                        "allOf": [
+                          {
+                            "$ref": "#/definitions/ref"
+                          },
+                          {
+                            "properties": {
+                              "entity_type": {
+                                "const": "task_round/v1"
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "net_instance_ref": {
+                        "allOf": [
+                          {
+                            "$ref": "#/definitions/ref"
+                          },
+                          {
+                            "properties": {
+                              "entity_type": {
+                                "const": "net_instance/v1"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "address": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "scope_ref",
+                      "opaque_name"
+                    ],
+                    "properties": {
+                      "scope_ref": {
+                        "allOf": [
+                          {
+                            "$ref": "#/definitions/ref"
+                          },
+                          {
+                            "properties": {
+                              "entity_type": {
+                                "const": "task/v1"
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "opaque_name": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    }
+                  },
+                  "expected_binding_ref": {
+                    "oneOf": [
+                      {
+                        "allOf": [
+                          {
+                            "$ref": "#/definitions/ref"
+                          },
+                          {
+                            "properties": {
+                              "entity_type": {
+                                "const": "resource_address_binding/v1"
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "base_resource_ref": {
+                    "oneOf": [
+                      {
+                        "allOf": [
+                          {
+                            "$ref": "#/definitions/ref"
+                          },
+                          {
+                            "properties": {
+                              "entity_type": {
+                                "const": "resource_version/v1"
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "input_ref": {
+                    "allOf": [
+                      {
+                        "$ref": "#/definitions/ref"
+                      },
+                      {
+                        "properties": {
+                          "entity_type": {
+                            "const": "resource_version/v1"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "user_action": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "session_ref",
+                      "actor",
+                      "kind",
+                      "action_ref"
+                    ],
+                    "properties": {
+                      "session_ref": {
+                        "allOf": [
+                          {
+                            "$ref": "#/definitions/ref"
+                          },
+                          {
+                            "properties": {
+                              "entity_type": {
+                                "const": "user_collaboration_session/v1"
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "actor": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "kind": {
+                        "const": "material_submit"
+                      },
+                      "action_ref": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "protocol",
+                  "operation",
+                  "execution",
+                  "address",
+                  "expected_binding_ref",
+                  "user_action",
+                  "target_resource_ref"
+                ],
+                "properties": {
+                  "protocol": {
+                    "const": "rpnh/material_command/v1"
+                  },
+                  "operation": {
+                    "const": "bind"
+                  },
+                  "execution": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "task_ref",
+                      "task_round_ref",
+                      "net_instance_ref"
+                    ],
+                    "properties": {
+                      "task_ref": {
+                        "allOf": [
+                          {
+                            "$ref": "#/definitions/ref"
+                          },
+                          {
+                            "properties": {
+                              "entity_type": {
+                                "const": "task/v1"
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "task_round_ref": {
+                        "allOf": [
+                          {
+                            "$ref": "#/definitions/ref"
+                          },
+                          {
+                            "properties": {
+                              "entity_type": {
+                                "const": "task_round/v1"
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "net_instance_ref": {
+                        "allOf": [
+                          {
+                            "$ref": "#/definitions/ref"
+                          },
+                          {
+                            "properties": {
+                              "entity_type": {
+                                "const": "net_instance/v1"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "address": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "scope_ref",
+                      "opaque_name"
+                    ],
+                    "properties": {
+                      "scope_ref": {
+                        "allOf": [
+                          {
+                            "$ref": "#/definitions/ref"
+                          },
+                          {
+                            "properties": {
+                              "entity_type": {
+                                "const": "task/v1"
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "opaque_name": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    }
+                  },
+                  "expected_binding_ref": {
+                    "oneOf": [
+                      {
+                        "allOf": [
+                          {
+                            "$ref": "#/definitions/ref"
+                          },
+                          {
+                            "properties": {
+                              "entity_type": {
+                                "const": "resource_address_binding/v1"
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "user_action": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "session_ref",
+                      "actor",
+                      "kind",
+                      "action_ref"
+                    ],
+                    "properties": {
+                      "session_ref": {
+                        "allOf": [
+                          {
+                            "$ref": "#/definitions/ref"
+                          },
+                          {
+                            "properties": {
+                              "entity_type": {
+                                "const": "user_collaboration_session/v1"
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "actor": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "kind": {
+                        "const": "material_submit"
+                      },
+                      "action_ref": {
+                        "type": "null"
+                      }
+                    }
+                  },
+                  "target_resource_ref": {
+                    "allOf": [
+                      {
+                        "$ref": "#/definitions/ref"
+                      },
+                      {
+                        "properties": {
+                          "entity_type": {
+                            "const": "resource_version/v1"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "protocol",
+                  "operation",
+                  "execution",
+                  "address",
+                  "expected_binding_ref",
+                  "user_action"
+                ],
+                "properties": {
+                  "protocol": {
+                    "const": "rpnh/material_command/v1"
+                  },
+                  "operation": {
+                    "const": "unbind"
+                  },
+                  "execution": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "task_ref",
+                      "task_round_ref",
+                      "net_instance_ref"
+                    ],
+                    "properties": {
+                      "task_ref": {
+                        "allOf": [
+                          {
+                            "$ref": "#/definitions/ref"
+                          },
+                          {
+                            "properties": {
+                              "entity_type": {
+                                "const": "task/v1"
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "task_round_ref": {
+                        "allOf": [
+                          {
+                            "$ref": "#/definitions/ref"
+                          },
+                          {
+                            "properties": {
+                              "entity_type": {
+                                "const": "task_round/v1"
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "net_instance_ref": {
+                        "allOf": [
+                          {
+                            "$ref": "#/definitions/ref"
+                          },
+                          {
+                            "properties": {
+                              "entity_type": {
+                                "const": "net_instance/v1"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "address": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "scope_ref",
+                      "opaque_name"
+                    ],
+                    "properties": {
+                      "scope_ref": {
+                        "allOf": [
+                          {
+                            "$ref": "#/definitions/ref"
+                          },
+                          {
+                            "properties": {
+                              "entity_type": {
+                                "const": "task/v1"
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "opaque_name": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    }
+                  },
+                  "expected_binding_ref": {
+                    "allOf": [
+                      {
+                        "$ref": "#/definitions/ref"
+                      },
+                      {
+                        "properties": {
+                          "entity_type": {
+                            "const": "resource_address_binding/v1"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "user_action": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "session_ref",
+                      "actor",
+                      "kind",
+                      "action_ref"
+                    ],
+                    "properties": {
+                      "session_ref": {
+                        "allOf": [
+                          {
+                            "$ref": "#/definitions/ref"
+                          },
+                          {
+                            "properties": {
+                              "entity_type": {
+                                "const": "user_collaboration_session/v1"
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "actor": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "kind": {
+                        "const": "material_submit"
+                      },
+                      "action_ref": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "protocol",
+                  "operation",
+                  "execution",
+                  "user_action",
+                  "confirmed_plan_ref"
+                ],
+                "properties": {
+                  "protocol": {
+                    "const": "rpnh/material_command/v1"
+                  },
+                  "operation": {
+                    "const": "disable_versions"
+                  },
+                  "execution": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "task_ref",
+                      "task_round_ref",
+                      "net_instance_ref"
+                    ],
+                    "properties": {
+                      "task_ref": {
+                        "allOf": [
+                          {
+                            "$ref": "#/definitions/ref"
+                          },
+                          {
+                            "properties": {
+                              "entity_type": {
+                                "const": "task/v1"
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "task_round_ref": {
+                        "allOf": [
+                          {
+                            "$ref": "#/definitions/ref"
+                          },
+                          {
+                            "properties": {
+                              "entity_type": {
+                                "const": "task_round/v1"
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "net_instance_ref": {
+                        "allOf": [
+                          {
+                            "$ref": "#/definitions/ref"
+                          },
+                          {
+                            "properties": {
+                              "entity_type": {
+                                "const": "net_instance/v1"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "user_action": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "session_ref",
+                      "actor",
+                      "kind",
+                      "action_ref"
+                    ],
+                    "properties": {
+                      "session_ref": {
+                        "allOf": [
+                          {
+                            "$ref": "#/definitions/ref"
+                          },
+                          {
+                            "properties": {
+                              "entity_type": {
+                                "const": "user_collaboration_session/v1"
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "actor": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "kind": {
+                        "const": "material_submit"
+                      },
+                      "action_ref": {
+                        "type": "null"
+                      }
+                    }
+                  },
+                  "confirmed_plan_ref": {
+                    "allOf": [
+                      {
+                        "$ref": "#/definitions/ref"
+                      },
+                      {
+                        "properties": {
+                          "entity_type": {
+                            "const": "resource_version/v1"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "protocol",
+                  "operation",
+                  "execution",
+                  "user_action",
+                  "target_resource_ref"
+                ],
+                "properties": {
+                  "protocol": {
+                    "const": "rpnh/material_command/v1"
+                  },
+                  "operation": {
+                    "const": "read_material"
+                  },
+                  "execution": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "task_ref",
+                      "task_round_ref",
+                      "net_instance_ref"
+                    ],
+                    "properties": {
+                      "task_ref": {
+                        "allOf": [
+                          {
+                            "$ref": "#/definitions/ref"
+                          },
+                          {
+                            "properties": {
+                              "entity_type": {
+                                "const": "task/v1"
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "task_round_ref": {
+                        "allOf": [
+                          {
+                            "$ref": "#/definitions/ref"
+                          },
+                          {
+                            "properties": {
+                              "entity_type": {
+                                "const": "task_round/v1"
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "net_instance_ref": {
+                        "allOf": [
+                          {
+                            "$ref": "#/definitions/ref"
+                          },
+                          {
+                            "properties": {
+                              "entity_type": {
+                                "const": "net_instance/v1"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "user_action": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "session_ref",
+                      "actor",
+                      "kind",
+                      "action_ref"
+                    ],
+                    "properties": {
+                      "session_ref": {
+                        "allOf": [
+                          {
+                            "$ref": "#/definitions/ref"
+                          },
+                          {
+                            "properties": {
+                              "entity_type": {
+                                "const": "user_collaboration_session/v1"
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "actor": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "kind": {
+                        "const": "material_submit"
+                      },
+                      "action_ref": {
+                        "type": "null"
+                      }
+                    }
+                  },
+                  "target_resource_ref": {
+                    "allOf": [
+                      {
+                        "$ref": "#/definitions/ref"
+                      },
+                      {
+                        "properties": {
+                          "entity_type": {
+                            "const": "resource_version/v1"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "protocol",
+                  "operation",
+                  "execution",
+                  "user_action",
+                  "material_command_ref",
+                  "carrier_ref"
+                ],
+                "properties": {
+                  "protocol": {
+                    "const": "rpnh/material_command/v1"
+                  },
+                  "operation": {
+                    "const": "authorize_purge"
+                  },
+                  "execution": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "task_ref",
+                      "task_round_ref",
+                      "net_instance_ref"
+                    ],
+                    "properties": {
+                      "task_ref": {
+                        "allOf": [
+                          {
+                            "$ref": "#/definitions/ref"
+                          },
+                          {
+                            "properties": {
+                              "entity_type": {
+                                "const": "task/v1"
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "task_round_ref": {
+                        "allOf": [
+                          {
+                            "$ref": "#/definitions/ref"
+                          },
+                          {
+                            "properties": {
+                              "entity_type": {
+                                "const": "task_round/v1"
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "net_instance_ref": {
+                        "allOf": [
+                          {
+                            "$ref": "#/definitions/ref"
+                          },
+                          {
+                            "properties": {
+                              "entity_type": {
+                                "const": "net_instance/v1"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "user_action": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "session_ref",
+                      "actor",
+                      "kind",
+                      "action_ref"
+                    ],
+                    "properties": {
+                      "session_ref": {
+                        "allOf": [
+                          {
+                            "$ref": "#/definitions/ref"
+                          },
+                          {
+                            "properties": {
+                              "entity_type": {
+                                "const": "user_collaboration_session/v1"
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "actor": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "kind": {
+                        "const": "material_submit"
+                      },
+                      "action_ref": {
+                        "type": "null"
+                      }
+                    }
+                  },
+                  "material_command_ref": {
+                    "allOf": [
+                      {
+                        "$ref": "#/definitions/ref"
+                      },
+                      {
+                        "properties": {
+                          "entity_type": {
+                            "const": "resource_version/v1"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "carrier_ref": {
+                    "allOf": [
+                      {
+                        "$ref": "#/definitions/ref"
+                      },
+                      {
+                        "properties": {
+                          "entity_type": {
+                            "const": "resource_version/v1"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "protocol",
+                  "operation",
+                  "execution",
+                  "user_action",
+                  "authorization_ref"
+                ],
+                "properties": {
+                  "protocol": {
+                    "const": "rpnh/material_command/v1"
+                  },
+                  "operation": {
+                    "const": "purge_carrier"
+                  },
+                  "execution": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "task_ref",
+                      "task_round_ref",
+                      "net_instance_ref"
+                    ],
+                    "properties": {
+                      "task_ref": {
+                        "allOf": [
+                          {
+                            "$ref": "#/definitions/ref"
+                          },
+                          {
+                            "properties": {
+                              "entity_type": {
+                                "const": "task/v1"
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "task_round_ref": {
+                        "allOf": [
+                          {
+                            "$ref": "#/definitions/ref"
+                          },
+                          {
+                            "properties": {
+                              "entity_type": {
+                                "const": "task_round/v1"
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "net_instance_ref": {
+                        "allOf": [
+                          {
+                            "$ref": "#/definitions/ref"
+                          },
+                          {
+                            "properties": {
+                              "entity_type": {
+                                "const": "net_instance/v1"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "user_action": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "session_ref",
+                      "actor",
+                      "kind",
+                      "action_ref"
+                    ],
+                    "properties": {
+                      "session_ref": {
+                        "allOf": [
+                          {
+                            "$ref": "#/definitions/ref"
+                          },
+                          {
+                            "properties": {
+                              "entity_type": {
+                                "const": "user_collaboration_session/v1"
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "actor": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "kind": {
+                        "const": "material_submit"
+                      },
+                      "action_ref": {
+                        "type": "null"
+                      }
+                    }
+                  },
+                  "authorization_ref": {
+                    "allOf": [
+                      {
+                        "$ref": "#/definitions/ref"
+                      },
+                      {
+                        "properties": {
+                          "entity_type": {
+                            "const": "resource_version/v1"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "data": {
+            "required": [
+              "protocol"
+            ],
+            "properties": {
+              "protocol": {
+                "const": "rpnh/material_input_receipt/v1"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "kind": {
+            "const": "receipt"
+          },
+          "data": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "protocol",
+              "input_command_id",
+              "input_ref",
+              "status"
+            ],
+            "properties": {
+              "protocol": {
+                "const": "rpnh/material_input_receipt/v1"
+              },
+              "input_command_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "input_ref": {
+                "allOf": [
+                  {
+                    "$ref": "#/definitions/ref"
+                  },
+                  {
+                    "properties": {
+                      "entity_type": {
+                        "const": "resource_version/v1"
+                      }
+                    }
+                  }
+                ]
+              },
+              "status": {
+                "const": "INPUT_ACCEPTED"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "data": {
+            "required": [
+              "protocol"
+            ],
+            "properties": {
+              "protocol": {
+                "const": "rpnh/material_admission/v1"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "kind": {
+            "const": "receipt"
+          },
+          "data": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "protocol",
+              "command_ref",
+              "firing_ref",
+              "invocation_ref",
+              "admission_ref"
+            ],
+            "properties": {
+              "protocol": {
+                "const": "rpnh/material_admission/v1"
+              },
+              "command_ref": {
+                "allOf": [
+                  {
+                    "$ref": "#/definitions/ref"
+                  },
+                  {
+                    "properties": {
+                      "entity_type": {
+                        "const": "resource_version/v1"
+                      }
+                    }
+                  }
+                ]
+              },
+              "firing_ref": {
+                "allOf": [
+                  {
+                    "$ref": "#/definitions/ref"
+                  },
+                  {
+                    "properties": {
+                      "entity_type": {
+                        "const": "transition_firing/v1"
+                      }
+                    }
+                  }
+                ]
+              },
+              "invocation_ref": {
+                "allOf": [
+                  {
+                    "$ref": "#/definitions/ref"
+                  },
+                  {
+                    "properties": {
+                      "entity_type": {
+                        "const": "invocation/v1"
+                      }
+                    }
+                  }
+                ]
+              },
+              "admission_ref": {
+                "allOf": [
+                  {
+                    "$ref": "#/definitions/ref"
+                  },
+                  {
+                    "properties": {
+                      "entity_type": {
+                        "const": "firing_admission/v1"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "data": {
+            "required": [
+              "protocol"
+            ],
+            "properties": {
+              "protocol": {
+                "const": "rpnh/material_result/v1"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "kind": {
+            "const": "result"
+          },
+          "data": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "protocol",
+                  "command_ref",
+                  "firing_ref",
+                  "result_kind",
+                  "operation_result_ref",
+                  "completion_ref",
+                  "output_refs",
+                  "binding_refs",
+                  "error"
+                ],
+                "properties": {
+                  "protocol": {
+                    "const": "rpnh/material_result/v1"
+                  },
+                  "command_ref": {
+                    "allOf": [
+                      {
+                        "$ref": "#/definitions/ref"
+                      },
+                      {
+                        "properties": {
+                          "entity_type": {
+                            "const": "resource_version/v1"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "firing_ref": {
+                    "allOf": [
+                      {
+                        "$ref": "#/definitions/ref"
+                      },
+                      {
+                        "properties": {
+                          "entity_type": {
+                            "const": "transition_firing/v1"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "result_kind": {
+                    "const": "saved"
+                  },
+                  "operation_result_ref": {
+                    "allOf": [
+                      {
+                        "$ref": "#/definitions/ref"
+                      },
+                      {
+                        "properties": {
+                          "entity_type": {
+                            "const": "operation_result/v1"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "completion_ref": {
+                    "allOf": [
+                      {
+                        "$ref": "#/definitions/ref"
+                      },
+                      {
+                        "properties": {
+                          "entity_type": {
+                            "const": "firing_completion/v2"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "output_refs": {
+                    "type": "array",
+                    "minItems": 1,
+                    "uniqueItems": true,
+                    "items": {
+                      "allOf": [
+                        {
+                          "$ref": "#/definitions/ref"
+                        },
+                        {
+                          "properties": {
+                            "entity_type": {
+                              "const": "resource_version/v1"
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "binding_refs": {
+                    "type": "array",
+                    "minItems": 1,
+                    "uniqueItems": true,
+                    "items": {
+                      "allOf": [
+                        {
+                          "$ref": "#/definitions/ref"
+                        },
+                        {
+                          "properties": {
+                            "entity_type": {
+                              "const": "resource_address_binding/v1"
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "error": {
+                    "type": "null"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "protocol",
+                  "command_ref",
+                  "firing_ref",
+                  "result_kind",
+                  "rejection_ref",
+                  "registered_completion_event_id",
+                  "error"
+                ],
+                "properties": {
+                  "protocol": {
+                    "const": "rpnh/material_result/v1"
+                  },
+                  "command_ref": {
+                    "allOf": [
+                      {
+                        "$ref": "#/definitions/ref"
+                      },
+                      {
+                        "properties": {
+                          "entity_type": {
+                            "const": "resource_version/v1"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "firing_ref": {
+                    "allOf": [
+                      {
+                        "$ref": "#/definitions/ref"
+                      },
+                      {
+                        "properties": {
+                          "entity_type": {
+                            "const": "transition_firing/v1"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "result_kind": {
+                    "const": "publish_rejected"
+                  },
+                  "rejection_ref": {
+                    "allOf": [
+                      {
+                        "$ref": "#/definitions/ref"
+                      },
+                      {
+                        "properties": {
+                          "entity_type": {
+                            "const": "firing_rejection/v1"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "registered_completion_event_id": {
+                    "type": "string",
+                    "pattern": "^event:[a-f0-9]{32}$"
+                  },
+                  "error": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "code",
+                      "message"
+                    ],
+                    "properties": {
+                      "code": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "message": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "protocol",
+                  "command_ref",
+                  "result_kind",
+                  "rejection_transaction_id",
+                  "error"
+                ],
+                "properties": {
+                  "protocol": {
+                    "const": "rpnh/material_result/v1"
+                  },
+                  "command_ref": {
+                    "allOf": [
+                      {
+                        "$ref": "#/definitions/ref"
+                      },
+                      {
+                        "properties": {
+                          "entity_type": {
+                            "const": "resource_version/v1"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "result_kind": {
+                    "const": "not_admitted"
+                  },
+                  "rejection_transaction_id": {
+                    "type": "string",
+                    "pattern": "^transaction:[a-f0-9]{32}$"
+                  },
+                  "error": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "code",
+                      "message"
+                    ],
+                    "properties": {
+                      "code": {
+                        "enum": [
+                          "ACTOR_NOT_AUTHORIZED",
+                          "EXECUTION_CHANGED",
+                          "TARGET_UNAVAILABLE"
+                        ]
+                      },
+                      "message": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "protocol",
+                  "command_ref",
+                  "firing_ref",
+                  "result_kind",
+                  "operation_result_ref",
+                  "completion_ref",
+                  "output_refs",
+                  "binding_refs",
+                  "error"
+                ],
+                "properties": {
+                  "protocol": {
+                    "const": "rpnh/material_result/v1"
+                  },
+                  "command_ref": {
+                    "allOf": [
+                      {
+                        "$ref": "#/definitions/ref"
+                      },
+                      {
+                        "properties": {
+                          "entity_type": {
+                            "const": "resource_version/v1"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "firing_ref": {
+                    "allOf": [
+                      {
+                        "$ref": "#/definitions/ref"
+                      },
+                      {
+                        "properties": {
+                          "entity_type": {
+                            "const": "transition_firing/v1"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "result_kind": {
+                    "const": "location_changed"
+                  },
+                  "operation_result_ref": {
+                    "allOf": [
+                      {
+                        "$ref": "#/definitions/ref"
+                      },
+                      {
+                        "properties": {
+                          "entity_type": {
+                            "const": "operation_result/v1"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "completion_ref": {
+                    "allOf": [
+                      {
+                        "$ref": "#/definitions/ref"
+                      },
+                      {
+                        "properties": {
+                          "entity_type": {
+                            "const": "firing_completion/v2"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "output_refs": {
+                    "type": "array",
+                    "minItems": 0,
+                    "uniqueItems": true,
+                    "items": {
+                      "allOf": [
+                        {
+                          "$ref": "#/definitions/ref"
+                        },
+                        {
+                          "properties": {
+                            "entity_type": {
+                              "const": "resource_version/v1"
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    "maxItems": 0
+                  },
+                  "binding_refs": {
+                    "type": "array",
+                    "minItems": 1,
+                    "uniqueItems": true,
+                    "items": {
+                      "allOf": [
+                        {
+                          "$ref": "#/definitions/ref"
+                        },
+                        {
+                          "properties": {
+                            "entity_type": {
+                              "const": "resource_address_binding/v1"
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    "maxItems": 1
+                  },
+                  "error": {
+                    "type": "null"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "protocol",
+                  "command_ref",
+                  "firing_ref",
+                  "result_kind",
+                  "operation_result_ref",
+                  "completion_ref",
+                  "output_refs",
+                  "binding_refs",
+                  "error"
+                ],
+                "properties": {
+                  "protocol": {
+                    "const": "rpnh/material_result/v1"
+                  },
+                  "command_ref": {
+                    "allOf": [
+                      {
+                        "$ref": "#/definitions/ref"
+                      },
+                      {
+                        "properties": {
+                          "entity_type": {
+                            "const": "resource_version/v1"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "firing_ref": {
+                    "allOf": [
+                      {
+                        "$ref": "#/definitions/ref"
+                      },
+                      {
+                        "properties": {
+                          "entity_type": {
+                            "const": "transition_firing/v1"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "result_kind": {
+                    "const": "versions_disabled"
+                  },
+                  "operation_result_ref": {
+                    "allOf": [
+                      {
+                        "$ref": "#/definitions/ref"
+                      },
+                      {
+                        "properties": {
+                          "entity_type": {
+                            "const": "operation_result/v1"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "completion_ref": {
+                    "allOf": [
+                      {
+                        "$ref": "#/definitions/ref"
+                      },
+                      {
+                        "properties": {
+                          "entity_type": {
+                            "const": "firing_completion/v2"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "output_refs": {
+                    "type": "array",
+                    "minItems": 1,
+                    "uniqueItems": true,
+                    "items": {
+                      "allOf": [
+                        {
+                          "$ref": "#/definitions/ref"
+                        },
+                        {
+                          "properties": {
+                            "entity_type": {
+                              "const": "resource_version/v1"
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    "maxItems": 1
+                  },
+                  "binding_refs": {
+                    "type": "array",
+                    "minItems": 0,
+                    "uniqueItems": true,
+                    "items": {
+                      "allOf": [
+                        {
+                          "$ref": "#/definitions/ref"
+                        },
+                        {
+                          "properties": {
+                            "entity_type": {
+                              "const": "resource_address_binding/v1"
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    "maxItems": 0
+                  },
+                  "error": {
+                    "type": "null"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "protocol",
+                  "command_ref",
+                  "firing_ref",
+                  "result_kind",
+                  "operation_result_ref",
+                  "completion_ref",
+                  "output_refs",
+                  "binding_refs",
+                  "error"
+                ],
+                "properties": {
+                  "protocol": {
+                    "const": "rpnh/material_result/v1"
+                  },
+                  "command_ref": {
+                    "allOf": [
+                      {
+                        "$ref": "#/definitions/ref"
+                      },
+                      {
+                        "properties": {
+                          "entity_type": {
+                            "const": "resource_version/v1"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "firing_ref": {
+                    "allOf": [
+                      {
+                        "$ref": "#/definitions/ref"
+                      },
+                      {
+                        "properties": {
+                          "entity_type": {
+                            "const": "transition_firing/v1"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "result_kind": {
+                    "const": "read_completed"
+                  },
+                  "operation_result_ref": {
+                    "allOf": [
+                      {
+                        "$ref": "#/definitions/ref"
+                      },
+                      {
+                        "properties": {
+                          "entity_type": {
+                            "const": "operation_result/v1"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "completion_ref": {
+                    "allOf": [
+                      {
+                        "$ref": "#/definitions/ref"
+                      },
+                      {
+                        "properties": {
+                          "entity_type": {
+                            "const": "firing_completion/v2"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "output_refs": {
+                    "type": "array",
+                    "minItems": 0,
+                    "uniqueItems": true,
+                    "items": {
+                      "allOf": [
+                        {
+                          "$ref": "#/definitions/ref"
+                        },
+                        {
+                          "properties": {
+                            "entity_type": {
+                              "const": "resource_version/v1"
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    "maxItems": 0
+                  },
+                  "binding_refs": {
+                    "type": "array",
+                    "minItems": 0,
+                    "uniqueItems": true,
+                    "items": {
+                      "allOf": [
+                        {
+                          "$ref": "#/definitions/ref"
+                        },
+                        {
+                          "properties": {
+                            "entity_type": {
+                              "const": "resource_address_binding/v1"
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    "maxItems": 0
+                  },
+                  "error": {
+                    "type": "null"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "protocol",
+                  "command_ref",
+                  "firing_ref",
+                  "result_kind",
+                  "operation_result_ref",
+                  "completion_ref",
+                  "output_refs",
+                  "binding_refs",
+                  "error"
+                ],
+                "properties": {
+                  "protocol": {
+                    "const": "rpnh/material_result/v1"
+                  },
+                  "command_ref": {
+                    "allOf": [
+                      {
+                        "$ref": "#/definitions/ref"
+                      },
+                      {
+                        "properties": {
+                          "entity_type": {
+                            "const": "resource_version/v1"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "firing_ref": {
+                    "allOf": [
+                      {
+                        "$ref": "#/definitions/ref"
+                      },
+                      {
+                        "properties": {
+                          "entity_type": {
+                            "const": "transition_firing/v1"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "result_kind": {
+                    "const": "purge_authorized"
+                  },
+                  "operation_result_ref": {
+                    "allOf": [
+                      {
+                        "$ref": "#/definitions/ref"
+                      },
+                      {
+                        "properties": {
+                          "entity_type": {
+                            "const": "operation_result/v1"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "completion_ref": {
+                    "allOf": [
+                      {
+                        "$ref": "#/definitions/ref"
+                      },
+                      {
+                        "properties": {
+                          "entity_type": {
+                            "const": "firing_completion/v2"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "output_refs": {
+                    "type": "array",
+                    "minItems": 1,
+                    "uniqueItems": true,
+                    "items": {
+                      "allOf": [
+                        {
+                          "$ref": "#/definitions/ref"
+                        },
+                        {
+                          "properties": {
+                            "entity_type": {
+                              "const": "resource_version/v1"
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    "maxItems": 1
+                  },
+                  "binding_refs": {
+                    "type": "array",
+                    "minItems": 0,
+                    "uniqueItems": true,
+                    "items": {
+                      "allOf": [
+                        {
+                          "$ref": "#/definitions/ref"
+                        },
+                        {
+                          "properties": {
+                            "entity_type": {
+                              "const": "resource_address_binding/v1"
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    "maxItems": 0
+                  },
+                  "error": {
+                    "type": "null"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "protocol",
+                  "command_ref",
+                  "firing_ref",
+                  "result_kind",
+                  "operation_result_ref",
+                  "completion_ref",
+                  "output_refs",
+                  "binding_refs",
+                  "error"
+                ],
+                "properties": {
+                  "protocol": {
+                    "const": "rpnh/material_result/v1"
+                  },
+                  "command_ref": {
+                    "allOf": [
+                      {
+                        "$ref": "#/definitions/ref"
+                      },
+                      {
+                        "properties": {
+                          "entity_type": {
+                            "const": "resource_version/v1"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "firing_ref": {
+                    "allOf": [
+                      {
+                        "$ref": "#/definitions/ref"
+                      },
+                      {
+                        "properties": {
+                          "entity_type": {
+                            "const": "transition_firing/v1"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "result_kind": {
+                    "const": "carrier_purged"
+                  },
+                  "operation_result_ref": {
+                    "allOf": [
+                      {
+                        "$ref": "#/definitions/ref"
+                      },
+                      {
+                        "properties": {
+                          "entity_type": {
+                            "const": "operation_result/v1"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "completion_ref": {
+                    "allOf": [
+                      {
+                        "$ref": "#/definitions/ref"
+                      },
+                      {
+                        "properties": {
+                          "entity_type": {
+                            "const": "firing_completion/v2"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "output_refs": {
+                    "type": "array",
+                    "minItems": 1,
+                    "uniqueItems": true,
+                    "items": {
+                      "allOf": [
+                        {
+                          "$ref": "#/definitions/ref"
+                        },
+                        {
+                          "properties": {
+                            "entity_type": {
+                              "const": "resource_version/v1"
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    "maxItems": 1
+                  },
+                  "binding_refs": {
+                    "type": "array",
+                    "minItems": 0,
+                    "uniqueItems": true,
+                    "items": {
+                      "allOf": [
+                        {
+                          "$ref": "#/definitions/ref"
+                        },
+                        {
+                          "properties": {
+                            "entity_type": {
+                              "const": "resource_address_binding/v1"
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    "maxItems": 0
+                  },
+                  "error": {
+                    "type": "null"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "data": {
+            "required": [
+              "protocol"
+            ],
+            "properties": {
+              "protocol": {
+                "const": "rpnh/material_input_abandon/v1"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "kind": {
+            "const": "result"
+          },
+          "target": {
+            "type": "null"
+          },
+          "lineage": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 1,
+            "items": {
+              "$ref": "#/definitions/ref"
+            }
+          },
+          "data": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "protocol",
+              "input_ref",
+              "input_command_id",
+              "status",
+              "abandonment_transaction_id",
+              "user_action"
+            ],
+            "properties": {
+              "protocol": {
+                "const": "rpnh/material_input_abandon/v1"
+              },
+              "input_ref": {
+                "$ref": "#/definitions/ref"
+              },
+              "input_command_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "status": {
+                "const": "ABANDONED"
+              },
+              "abandonment_transaction_id": {
+                "type": "string",
+                "pattern": "^transaction:[a-f0-9]{32}$"
+              },
+              "user_action": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "session_ref",
+                  "actor",
+                  "kind",
+                  "action_ref"
+                ],
+                "properties": {
+                  "session_ref": {
+                    "$ref": "#/definitions/ref"
+                  },
+                  "actor": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "kind": {
+                    "const": "abandon_material_input"
+                  },
+                  "action_ref": {
+                    "type": "null"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
 }

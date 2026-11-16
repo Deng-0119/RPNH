@@ -101,17 +101,20 @@ def _private_kind(path: Path) -> str:
 
 def build_llm_input_port(
         selection: LLMExecutionSelection | RegisteredLLMExecutionSelection, *, destination_run_root: Path,
-        resolver=None, renderer=None,
+        resolver=None, renderer=None, before_dispatch=None,
 ) -> LLMInputPort:
     if type(selection) is RegisteredLLMExecutionSelection:
         from .external_provider import ExternalProviderInputPort
         port = ExternalProviderInputPort.from_public(selection,
-            destination_run_root=destination_run_root, resolver=resolver, renderer=renderer)
+            destination_run_root=destination_run_root, resolver=resolver, renderer=renderer,
+            before_dispatch=before_dispatch)
         return BoundLLMInputPort(port, selection.as_registry_policy())
     if resolver is not None or renderer is not None:
         raise TypeError('opaque capabilities require registered public selection')
     if not isinstance(selection, LLMExecutionSelection):
         raise TypeError("adapter factory requires LLMExecutionSelection")
+    if before_dispatch is not None and selection.adapter_kind != "external_provider":
+        raise TypeError("before_dispatch requires the external provider adapter")
     if not isinstance(destination_run_root, Path):
         raise TypeError("adapter factory requires a pathlib.Path run root")
     target = selection.input_target
@@ -132,7 +135,7 @@ def build_llm_input_port(
         if selection.adapter_kind == "external_provider":
             from .external_provider import ExternalProviderInputPort
             port: LLMInputPort = ExternalProviderInputPort(
-                **common)
+                **common, before_dispatch=before_dispatch)
         else:
             from .local_process import LocalProcessInputPort
             port = LocalProcessInputPort(**common)
@@ -146,11 +149,12 @@ def build_llm_input_port(
 
 
 def load_llm_input_port(
-        path: Path, *, destination_run_root: Path,
+        path: Path, *, destination_run_root: Path, before_dispatch=None,
 ) -> tuple[LLMInputTarget, LLMInputPort]:
     selection = load_llm_execution_selection(path)
     port = build_llm_input_port(
-        selection, destination_run_root=destination_run_root)
+        selection, destination_run_root=destination_run_root,
+        before_dispatch=before_dispatch)
     return selection.input_target, port
 
 

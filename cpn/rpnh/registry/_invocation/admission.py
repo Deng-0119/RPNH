@@ -227,7 +227,7 @@ def _active_claim_inputs(
                 f"active firing has no unique immutable object: {firing_id}")
         publication = lifecycle.service.event_store.firing_publication_for_member(
             "object", rows[0]["version_id"])
-        if publication is not None and publication["state"] == "SUPERSEDED":
+        if publication is not None and publication["state"] in {"SUPERSEDED", "REJECTED"}:
             continue
         metadata = json.loads(rows[0]["metadata_json"])
         try:
@@ -269,7 +269,8 @@ def _active_claim_inputs(
         active.append((firing_id, claimed, consumed))
     return active
 
-def admit_firing(lifecycle, claim: FiringClaim, *, idempotency_key: str) -> FiringAdmission:
+def admit_firing(lifecycle, claim: FiringClaim, *, idempotency_key: str,
+                 stage_owner_command_admission=None) -> FiringAdmission:
     """Atomically claim and start one independently-settled real firing."""
     from ..parent_bound import assert_bound_integrity
     assert_bound_integrity(lifecycle.service, for_execution=True, claim={
@@ -345,6 +346,14 @@ def admit_firing(lifecycle, claim: FiringClaim, *, idempotency_key: str) -> Firi
         if any(firing.get(key) != value for key, value in expected.items()):
             raise InvocationAdmissionError(
                 "firing-admission idempotency key was reused for different input")
+        recorded_admission = lifecycle._require_ref(
+            _ref_from_payload(admitted.payload["firing_admission_ref"]),
+            "firing_admission/v1", "firing_admission_version")
+        if recorded_admission.get("owner_command_ref") != (
+                _ref_payload(claim.owner_command_ref)
+                if claim.owner_command_ref is not None else None):
+            raise InvocationAdmissionError(
+                "firing-admission idempotency key changed its owner command")
         try:
             claim_delta = lifecycle._require_ref(
                 _ref_from_payload(firing["claim_marking_delta_ref"]),
@@ -360,7 +369,27 @@ def admit_firing(lifecycle, claim: FiringClaim, *, idempotency_key: str) -> Firi
             _ref_from_payload(admitted.payload["firing_admission_ref"]), context,
             _ref_from_payload(admitted.payload["claim_marking_delta_ref"]),
             admitted.event_id)
+    if claim.owner_command_ref is not None:
+        # This immutable read avoids preparing a second receipt for an already
+        # bound command, including closed unpublished roots. The original
+        # EventStore lock still enforces uniqueness against racing writers.
+        with lifecycle.service.event_store.connection_scope() as db:
+            prior = db.execute(
+                "SELECT o.metadata_json FROM objects o JOIN transactions t "
+                "ON t.transaction_id=o.transaction_id WHERE t.status='committed' "
+                "AND t.task_id=? AND o.object_type='firing_admission/v1' "
+                "AND json_extract(o.metadata_json,'$.owner_command_ref.version_id')=?",
+                (str(claim.task_ref.entity_id), str(claim.owner_command_ref.version_id))).fetchall()
+        if any(json.loads(row["metadata_json"]).get("owner_command_ref")
+               == _ref_payload(claim.owner_command_ref) for row in prior):
+            raise InvocationAdmissionError("owner material command already has a firing admission")
     binding = lifecycle._validate_claim_scope(claim)
+    if ((claim.owner_command_ref is not None
+         and not callable(stage_owner_command_admission))
+            or (claim.owner_command_ref is None
+                and stage_owner_command_admission is not None)):
+        raise InvocationAdmissionError(
+            "owner command admission requires its exact same-transaction receipt stager")
     node = lifecycle._require_ref(
         claim.node_ref, "node_declaration/v1", "node_declaration_version")
     if ((publications is None
@@ -474,6 +503,8 @@ def admit_firing(lifecycle, claim: FiringClaim, *, idempotency_key: str) -> Firi
         "logical_tau": claim.logical_tau,
         "writer_fencing_epoch": lifecycle.service.writer_epoch,
     }
+    if claim.owner_command_ref is not None:
+        admission["owner_command_ref"] = _ref_payload(claim.owner_command_ref)
     lease = {
         "operation_execution_lease_ref": _ref_payload(lease_ref),
         "invocation_ref": _ref_payload(invocation_ref),
@@ -580,6 +611,9 @@ def admit_firing(lifecycle, claim: FiringClaim, *, idempotency_key: str) -> Firi
     if claim.firing_allocation_ref is not None:
         relations.append((
             "derived_from", firing_ref, claim.firing_allocation_ref))
+    if claim.owner_command_ref is not None:
+        relations.append((
+            "derived_from", admission_ref, claim.owner_command_ref))
     if claim.agent_ref is not None:
         relations.append((
             "invocation_uses_agent", invocation_ref, claim.agent_ref))
@@ -628,6 +662,11 @@ def admit_firing(lifecycle, claim: FiringClaim, *, idempotency_key: str) -> Firi
             payload=event_payload, payload_schema_ref=f"registry_v1/{event_type}",
             task_control=True, producer_principal=str(claim.principal_ref.entity_id),
             producer_invocation_id=invocation_id))
+    if stage_owner_command_admission is not None:
+        stage_owner_command_admission(
+            transaction=tx, owner_command_ref=claim.owner_command_ref,
+            admission_ref=admission_ref, firing_ref=firing_ref,
+            invocation_ref=invocation_ref)
     try:
         committed = tx.commit()
     except RegistryConflict as exc:
@@ -638,7 +677,8 @@ def admit_firing(lifecycle, claim: FiringClaim, *, idempotency_key: str) -> Firi
             # shared claim stream. Rebuild against the new authoritative
             # head; EventStore rechecks token/resource conflicts atomically.
             return lifecycle.admit_firing(
-                claim, idempotency_key=caller_idempotency_key)
+                claim, idempotency_key=caller_idempotency_key,
+                stage_owner_command_admission=stage_owner_command_admission)
         raise
     admission_event = next(
         event for event in committed

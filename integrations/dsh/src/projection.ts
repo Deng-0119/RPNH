@@ -12,16 +12,18 @@ import { projectHistory, projectTurnEvents } from './history-codec.ts'
 export function appendTurn(session: Session, record: JsonRecord): void {
   // Fully validate this detached turn before touching the live Session.
   for (const event of projectTurnEvents(record, REVISION)) {
-    session.append(event.type as any, event.data as any,
-      event.surfaceOp === 'append' ? { surfaceOp: 'append' } : undefined)
+    const options: [] | [{ surfaceOp: 'append' }] = event.surfaceOp === 'append'
+      ? [{ surfaceOp: 'append' }] : []
+    session.append(event.type as any, event.data as any, ...options)
   }
 }
 export function project(history: JsonRecord, header: SessionHeader): SessionEvent[] {
   const view = projectHistory(history, REVISION, { header, revision: REVISION })
   const detached = Session.create(header.id, undefined, view.header as SessionHeader)
   for (const event of view.events) {
-    detached.append(event.type as any, event.data as any,
-      event.surfaceOp === 'append' ? { surfaceOp: 'append' } : undefined)
+    const options: [] | [{ surfaceOp: 'append' }] = event.surfaceOp === 'append'
+      ? [{ surfaceOp: 'append' }] : []
+    detached.append(event.type as any, event.data as any, ...options)
   }
   return detached.snapshotEvents().map((e, seq) => ({ ...e, time: view.header.createdAt + seq }))
 }
@@ -82,7 +84,7 @@ export class RegistryProjectionPersistence extends SessionPersistence {
         // DSH Session.restore adds this constructor-only replay boundary after
         // a cold read. Acknowledge that cache marker, not an execution write.
         const event = events[0]
-        if (events.length === 1 && readEnd !== undefined && event.seq === readEnd
+        if (events.length === 1 && event !== undefined && readEnd !== undefined && event.seq === readEnd
           && event.type === 'session/end-seed' && isDeepStrictEqual(event.data, {})
           && Object.keys(event).every(k => ['seq', 'time', 'type', 'data'].includes(k))) {
           readEnd = undefined

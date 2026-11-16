@@ -11,6 +11,7 @@ import json
 import os
 from pathlib import Path, PurePosixPath
 import signal
+import stat
 import subprocess
 import sys
 from typing import Any, Callable, Mapping
@@ -19,9 +20,17 @@ from uuid import uuid4
 from .agent_tasks import AgentTaskSpec, agent_task_catalog
 from .control_client import ControlClient
 from .inspection import project_registry_net
+from .process_identity import (
+    LINUX_IDENTITY, ProcessIdentityUnavailable, linux_start_ticks,
+    process_identity_matches, read_process_identity, validate_process_identity,
+)
 from .registry._registry import _RegistryCore
 from .registry.publication import _ref_payload, _version_from_payload
 from .registry.resource_service import _ResourceServiceKernel
+from .worker_runtime import (
+    WorkerCompatibilityError, observe_worker_runtime, require_launch_runtime,
+    require_worker_interoperability, validate_worker_runtime,
+)
 
 
 @dataclass(slots=True)
@@ -40,15 +49,15 @@ class TaskHandle:
     resume_checkpoint_version_id: str | None = None
     reopen_command_id: str | None = None
     reopen_reason: str | None = None
+    launch_runtime: Mapping[str, Any] | None = None
+    worker_runtime: Mapping[str, Any] | None = None
+    manifest_required: bool = False
+    spec_observation: tuple[int, int, int, int, int] | None = None
 
 
 def _process_start_ticks(pid: int) -> int | None:
-    try:
-        value = Path(f"/proc/{pid}/stat").read_text(encoding="utf-8")
-        tail = value[value.rfind(")") + 2:].split()
-        return int(tail[19])
-    except (OSError, ValueError, IndexError):
-        return None
+    """Retained Linux v1/v2 reader; observation failures are not process exit."""
+    return linux_start_ticks(pid)
 
 
 @dataclass(slots=True)
@@ -56,15 +65,38 @@ class _DetachedProcess:
     """Validated process identity for a task recovered by a later frontend."""
 
     pid: int
-    start_ticks: int
+    start_ticks: int | None = None
+    process_identity: object = None
+    _pending: bool = False
 
     def poll(self):
+        if self._pending:
+            return 1  # Internal sentinel for a not-yet-launched pending task.
+        if (isinstance(self.pid, bool) or not isinstance(self.pid, int)
+                or self.pid < 1 or self.pid > 2**31 - 1):
+            raise ProcessIdentityUnavailable("recorded task process PID is unavailable")
+        if self.process_identity is not None:
+            return None if process_identity_matches(
+                self.pid, self.process_identity) else 1
+        if (isinstance(self.start_ticks, bool)
+                or not isinstance(self.start_ticks, int) or self.start_ticks < 0):
+            raise ProcessIdentityUnavailable("recorded task process birth identity is unavailable")
         return None if _process_start_ticks(self.pid) == self.start_ticks else 1
 
     def send_signal(self, value):
         if self.poll() is not None:
             raise ProcessLookupError(self.pid)
         os.kill(self.pid, value)
+
+
+def _detached_from_manifest(value: Mapping[str, Any]) -> _DetachedProcess:
+    if value.get("launch_state", "active") == "pending":
+        return _DetachedProcess(-1, -1, _pending=True)
+    pid = value.get("pid")
+    if value.get("schema_version") == "rpnh/task_handle/v3":
+        # Missing or malformed v3 identity must not fall back to Linux ticks.
+        return _DetachedProcess(pid, process_identity=value.get("process_identity"))
+    return _DetachedProcess(pid, value.get("process_start_ticks"))
 
 
 def owner_socket_path(
@@ -125,6 +157,181 @@ def _acquire_task_launch_lock(root: Path, task_id: str):
     return inherited_lock
 
 
+class TaskAdmissionError(ValueError):
+    """A persisted task cannot be interpreted without changing its records."""
+
+
+def _task_file_observation(path: Path) -> tuple[int, int, int, int, int]:
+    observed = path.lstat()
+    if not stat.S_ISREG(observed.st_mode):
+        raise TaskAdmissionError(f"task admission requires a regular file: {path}")
+    return (observed.st_dev, observed.st_ino, observed.st_size,
+            observed.st_mtime_ns, observed.st_ctime_ns)
+
+
+def _task_document_bytes(path: Path, *, limit: int):
+    before = _task_file_observation(path)
+    if before[2] > limit:
+        raise TaskAdmissionError(f"task admission document exceeds its read budget: {path}")
+    descriptor = os.open(path, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0))
+    with os.fdopen(descriptor, "rb") as source:
+        actual = os.fstat(source.fileno())
+        if not stat.S_ISREG(actual.st_mode) or (actual.st_dev, actual.st_ino) != before[:2]:
+            raise TaskAdmissionError(f"task admission document changed: {path}")
+        raw = source.read(limit + 1)
+    if len(raw) > limit:
+        raise TaskAdmissionError(f"task admission document exceeds its read budget: {path}")
+    if _task_file_observation(path) != before:
+        raise TaskAdmissionError(f"task admission document changed while reading: {path}")
+    return raw, before
+
+
+def _read_task_document(path: Path, *, limit: int):
+    def unique_fields(pairs):
+        value = {}
+        for key, item in pairs:
+            if key in value:
+                raise ValueError("duplicate JSON field")
+            value[key] = item
+        return value
+
+    raw, observation = _task_document_bytes(path, limit=limit)
+    try:
+        value = json.loads(raw, object_pairs_hook=unique_fields)
+    except (UnicodeError, ValueError) as exc:
+        raise TaskAdmissionError(f"task admission document is invalid JSON: {path}") from exc
+    if not isinstance(value, Mapping):
+        raise TaskAdmissionError(f"task admission document must be an object: {path}")
+    return value, observation
+
+
+@dataclass(frozen=True, slots=True)
+class TaskInventory:
+    """One read-only observation of the selected controller's task records."""
+
+    root: Path
+    handles: tuple[TaskHandle, ...]
+    files: tuple[tuple[Path, tuple[int, int, int, int, int]], ...]
+    manifest_paths: tuple[Path, ...]
+
+    def assert_unchanged(self) -> None:
+        current = _task_manifest_paths(self.root)
+        if current != self.manifest_paths:
+            raise TaskAdmissionError("task admission manifest inventory changed")
+        for path, observation in self.files:
+            if _task_file_observation(path) != observation:
+                raise TaskAdmissionError(f"task admission document changed: {path}")
+
+    def require_write_compatible(self) -> None:
+        for handle in self.handles:
+            label = f"task {handle.task_id}"
+            if handle.launch_state == "pending":
+                require_launch_runtime(handle.launch_runtime, label=label)
+            elif handle.process.poll() is None:
+                require_worker_interoperability(handle.worker_runtime, label=label)
+
+
+def _task_manifest_paths(root: Path) -> tuple[Path, ...]:
+    directory = root / "manifests"
+    if directory.is_symlink():
+        raise TaskAdmissionError(f"task manifest directory must not be a symlink: {directory}")
+    if not directory.exists():
+        return ()
+    if not directory.is_dir():
+        raise TaskAdmissionError(f"task manifest directory is not a directory: {directory}")
+    # A future or malformed final record must not disappear because its name
+    # no longer matches task-*.json. Atomic-write .tmp files are not final records.
+    return tuple(sorted(directory.glob("*.json")))
+
+
+def _read_task_record(root: Path, path: Path, *, cached: TaskHandle | None = None):
+    """Parse one manifest and its exact spec without observing process liveness."""
+    try:
+        value, manifest_observation = _read_task_document(path, limit=65536)
+        task_id = value["task_id"]
+        version = value.get("schema_version")
+        common = {"schema_version", "task_id", "kind", "pid", "launch_state",
+                  "launch_mode", "resume_checkpoint_version_id", "reopen_command_id",
+                  "reopen_reason", "launch_runtime", "worker_runtime"}
+        if version in {"rpnh/task_handle/v2", "rpnh/task_handle/v3"}:
+            path_fields = {"spec_relative_path", "run_relative_path",
+                           "socket_relative_path", "log_relative_path"}
+            spec_path = _resolve_reference(root, value.get("spec_relative_path"), label="spec_relative_path")
+            run_dir = _resolve_reference(root, value.get("run_relative_path"), label="run_relative_path")
+            socket_path = _resolve_reference(run_dir, value.get("socket_relative_path"), label="socket_relative_path")
+            log_path = _resolve_reference(root, value.get("log_relative_path"), label="log_relative_path")
+        elif version == "rpnh/task_handle/v1":
+            path_fields = {"spec_path", "run_dir", "socket_path", "log_path"}
+            if any(not isinstance(value.get(key), str) or not Path(value[key]).is_absolute()
+                   for key in path_fields):
+                raise ValueError("legacy manifest paths must be absolute")
+            spec_path, run_dir = Path(value["spec_path"]).resolve(), Path(value["run_dir"]).resolve()
+            socket_path, log_path = Path(value["socket_path"]).resolve(), Path(value["log_path"]).resolve()
+        else:
+            raise ValueError("unsupported task manifest schema")
+        birth_field = "process_identity" if version == "rpnh/task_handle/v3" else "process_start_ticks"
+        if set(value) - (common | path_fields | {birth_field}):
+            raise ValueError("unknown task manifest field")
+        if (not isinstance(task_id, str) or not task_id.startswith("task-")
+                or path.name != f"{task_id}.json"
+                or spec_path != (root / "specs" / f"{task_id}.json").resolve()
+                or log_path != (root / "logs" / f"{task_id}.log").resolve()
+                or (root / "specs").is_symlink()
+                or (root / "specs" / f"{task_id}.json").is_symlink()):
+            raise ValueError("task manifest identity or spec source differs")
+        spec_observation = _task_file_observation(spec_path)
+        if cached is not None and cached.task_id == task_id and cached.spec_observation == spec_observation:
+            spec = cached.spec
+        else:
+            document, spec_observation = _read_task_document(spec_path, limit=16 * 1024 * 1024)
+            spec = AgentTaskSpec.from_worker_document(document, document_root=spec_path.parent)
+        launch_state, launch_mode = value.get("launch_state", "active"), value.get("launch_mode", "fresh")
+        reopen_values = tuple(value.get(key) for key in (
+            "resume_checkpoint_version_id", "reopen_command_id", "reopen_reason"))
+        if (launch_state not in {"pending", "active"}
+                or launch_mode not in {"fresh", "resume", "reopen"}
+                or any(item is not None and (not isinstance(item, str) or not item)
+                       for item in reopen_values)
+                or ((launch_mode == "reopen") != all(item is not None for item in reopen_values))
+                or (launch_mode != "reopen" and any(item is not None for item in reopen_values))):
+            raise ValueError("task manifest launch lifecycle is invalid")
+        runtime = {key: (None if value.get(key) is None else validate_worker_runtime(value[key]))
+                   for key in ("launch_runtime", "worker_runtime")}
+        if launch_state == "pending" and (
+                value.get("pid") is not None or value.get(birth_field) is not None
+                or runtime["worker_runtime"] is not None):
+            raise ValueError("pending task manifest retains an active process observation")
+        handle = TaskHandle(
+            task_id=task_id, kind=value["kind"], run_dir=run_dir,
+            socket_path=socket_path, log_path=log_path, spec=spec,
+            process=_detached_from_manifest(value), launch_state=launch_state,
+            launch_mode=launch_mode, resume_checkpoint_version_id=reopen_values[0],
+            reopen_command_id=reopen_values[1], reopen_reason=reopen_values[2],
+            launch_runtime=runtime["launch_runtime"], worker_runtime=runtime["worker_runtime"],
+            manifest_required=True, spec_observation=spec_observation)
+        if (handle.kind != spec.kind or handle.run_dir != spec.run_dir.resolve()
+                or handle.socket_path != (spec.owner_socket_path if spec.owner_socket_path is not None
+                                          else handle.run_dir / "owner.sock")):
+            raise ValueError("task manifest differs from its exact spec")
+        return handle, ((path, manifest_observation), (spec_path, spec_observation)), value
+    except (KeyError, OSError, TypeError, ValueError) as exc:
+        raise TaskAdmissionError(f"task admission rejected {path}: {exc}") from exc
+
+
+def inspect_task_inventory(root: Path) -> TaskInventory:
+    """Parse all final task records without a writer, launch lock or spawn."""
+    if not isinstance(root, Path):
+        raise TypeError("task inventory requires pathlib.Path")
+    root = root.resolve()
+    paths = _task_manifest_paths(root)
+    handles, files = [], []
+    for path in paths:
+        handle, observed_files, _document = _read_task_record(root, path)
+        handles.append(handle)
+        files.extend(observed_files)
+    return TaskInventory(root, tuple(handles), tuple(files), paths)
+
+
 class TaskControl:
     """Create and control independent RPNH task objects."""
 
@@ -134,6 +341,8 @@ class TaskControl:
             channel_ready: Callable[[Path], bool] | None = None,
             recover_pending_launches: bool = True,
     ) -> None:
+        from cpn.update_context import reject_candidate_runtime
+        reject_candidate_runtime()
         if not isinstance(root, Path):
             raise TypeError("TaskControl root requires pathlib.Path")
         if not isinstance(recover_pending_launches, bool):
@@ -142,9 +351,9 @@ class TaskControl:
         self._popen = popen_factory
         self._channel_ready = channel_ready or (lambda path: path.is_socket())
         self._tasks: dict[str, TaskHandle] = {}
-        self._load_persisted_tasks()
+        inventory = self._load_persisted_tasks()
         if recover_pending_launches:
-            self._recover_pending_launches()
+            self._recover_pending_launches(inventory=inventory)
 
     @property
     def _manifest_root(self) -> Path:
@@ -170,12 +379,14 @@ class TaskControl:
                 document_root=spec_path.parent), ensure_ascii=False,
                 indent=2) + "\n",
             encoding="utf-8")
+        handle.spec_observation = _task_file_observation(spec_path)
         return spec_path
 
     def _write_manifest(
             self, handle: TaskHandle, *, launch_state: str,
             launch_mode: str, pid: int | None = None,
             process_start_ticks: int | None = None,
+            process_identity: Mapping[str, Any] | None = None,
     ) -> None:
         if launch_state not in {"pending", "active"}:
             raise ValueError("task launch state is invalid")
@@ -183,12 +394,25 @@ class TaskControl:
             raise ValueError("task launch mode is invalid")
         if launch_state == "pending":
             pid = process_start_ticks = None
-        elif (not isinstance(pid, int)
-              or not isinstance(process_start_ticks, int)):
-            raise ValueError("active task manifest requires exact process identity")
+            process_identity = None
+            handle.launch_runtime = observe_worker_runtime()
+            handle.worker_runtime = None
+        else:
+            if (isinstance(pid, bool) or not isinstance(pid, int)
+                    or pid < 1 or pid > 2**31 - 1):
+                raise ValueError("active task manifest requires an exact process PID")
+            if process_identity is not None:
+                process_identity = validate_process_identity(process_identity)
+                if process_start_ticks is not None:
+                    raise ValueError("active task manifest requires only one birth identity")
+            elif (isinstance(process_start_ticks, bool)
+                  or not isinstance(process_start_ticks, int)
+                  or process_start_ticks < 0):
+                raise ValueError("active task manifest requires exact process identity")
         self._manifest_root.mkdir(parents=True, exist_ok=True)
         value = {
-            "schema_version": "rpnh/task_handle/v2",
+            "schema_version": ("rpnh/task_handle/v3" if process_identity is not None
+                               else "rpnh/task_handle/v2"),
             "task_id": handle.task_id,
             "kind": handle.kind,
             "run_relative_path": _relative_reference(
@@ -208,7 +432,12 @@ class TaskControl:
                 handle.resume_checkpoint_version_id),
             "reopen_command_id": handle.reopen_command_id,
             "reopen_reason": handle.reopen_reason,
+            "launch_runtime": handle.launch_runtime,
+            "worker_runtime": handle.worker_runtime,
         }
+        if process_identity is not None:
+            value.pop("process_start_ticks")
+            value["process_identity"] = process_identity
         path = self._manifest_root / f"{handle.task_id}.json"
         temporary = path.with_suffix(".json.tmp")
         temporary.write_text(
@@ -217,146 +446,48 @@ class TaskControl:
         os.replace(temporary, path)
         handle.launch_state = launch_state
         handle.launch_mode = launch_mode
+        handle.manifest_required = True
 
     def _refresh_handle_process(self, handle: TaskHandle) -> None:
         path = self._manifest_root / f"{handle.task_id}.json"
+        if not path.exists() and not path.is_symlink() and not handle.manifest_required:
+            return  # Existing in-memory test/embedding handles have no durable record.
         try:
-            value = json.loads(path.read_text(encoding="utf-8"))
-        except (OSError, TypeError, ValueError, json.JSONDecodeError):
-            return
-        if (not isinstance(value, Mapping)
-                or value.get("task_id") != handle.task_id):
-            return
-        launch_state = value.get("launch_state", "active")
-        launch_mode = value.get("launch_mode", "fresh")
-        if launch_state not in {"pending", "active"}:
-            return
-        if launch_mode not in {"fresh", "resume", "reopen"}:
-            return
-        handle.launch_state = launch_state
-        handle.launch_mode = launch_mode
-        checkpoint = value.get("resume_checkpoint_version_id")
-        if checkpoint is None or isinstance(checkpoint, str):
-            handle.resume_checkpoint_version_id = checkpoint
-        reopen_command_id = value.get("reopen_command_id")
-        reopen_reason = value.get("reopen_reason")
-        if reopen_command_id is None or isinstance(reopen_command_id, str):
-            handle.reopen_command_id = reopen_command_id
-        if reopen_reason is None or isinstance(reopen_reason, str):
-            handle.reopen_reason = reopen_reason
-        pid = value.get("pid")
-        ticks = value.get("process_start_ticks")
-        if (launch_state == "active" and isinstance(pid, int)
-                and isinstance(ticks, int)):
+            observed, _files, _document = _read_task_record(self.root, path, cached=handle)
+        except (OSError, TypeError, ValueError) as exc:
+            raise TaskAdmissionError(f"task manifest cannot be refreshed: {path}: {exc}") from exc
+        if (observed.task_id != handle.task_id or observed.kind != handle.kind
+                or observed.run_dir != handle.run_dir or observed.socket_path != handle.socket_path
+                or observed.log_path != handle.log_path or observed.spec != handle.spec):
+            raise TaskAdmissionError(f"task manifest source/spec binding changed: {path}")
+        for field in ("launch_state", "launch_mode", "resume_checkpoint_version_id",
+                      "reopen_command_id", "reopen_reason", "launch_runtime", "worker_runtime",
+                      "spec_observation"):
+            setattr(handle, field, getattr(observed, field))
+        if observed.launch_state == "active":
             current_pid = getattr(handle.process, "pid", None)
-            if (current_pid == pid
-                    and not isinstance(handle.process, _DetachedProcess)):
-                # A locally spawned Popen retains the exact exit code after
-                # /proc has removed the process.  Do not replace that known
-                # result with the detached observer's synthetic "gone" code.
+            if current_pid == observed.process.pid and not isinstance(handle.process, _DetachedProcess):
+                # Preserve a local Popen's known exit code after OS process removal.
                 return
-            current_ticks = (
-                _process_start_ticks(current_pid)
-                if isinstance(current_pid, int) else None)
-            if current_pid != pid or current_ticks != ticks:
-                handle.process = _DetachedProcess(pid, ticks)
+            handle.process = observed.process
 
-    def _load_persisted_tasks(self) -> None:
-        if not self._manifest_root.is_dir():
-            return
-        for path in sorted(self._manifest_root.glob("task-*.json")):
-            try:
-                value = json.loads(path.read_text(encoding="utf-8"))
-                if not isinstance(value, Mapping):
-                    raise ValueError("manifest schema")
-                task_id = value["task_id"]
-                version = value.get("schema_version")
-                if version == "rpnh/task_handle/v2":
-                    spec_path = _resolve_reference(
-                        self.root, value.get("spec_relative_path"),
-                        label="spec_relative_path")
-                    run_dir = _resolve_reference(
-                        self.root, value.get("run_relative_path"),
-                        label="run_relative_path")
-                    socket_path = _resolve_reference(
-                        run_dir, value.get("socket_relative_path"),
-                        label="socket_relative_path")
-                    log_path = _resolve_reference(
-                        self.root, value.get("log_relative_path"),
-                        label="log_relative_path")
-                elif version == "rpnh/task_handle/v1":
-                    spec_path = Path(value["spec_path"]).resolve()
-                    run_dir = Path(value["run_dir"]).resolve()
-                    socket_path = Path(value["socket_path"]).resolve()
-                    log_path = Path(value["log_path"]).resolve()
-                else:
-                    raise ValueError("manifest schema")
-                if (not isinstance(task_id, str)
-                        or path.name != f"{task_id}.json"
-                        or spec_path != (
-                            self.root / "specs" / f"{task_id}.json").resolve()
-                        or log_path != (
-                            self.root / "logs" / f"{task_id}.log").resolve()):
-                    raise ValueError("manifest identity")
-                spec = AgentTaskSpec.from_worker_document(json.loads(
-                    spec_path.read_text(encoding="utf-8")),
-                    document_root=spec_path.parent)
-                pid = value.get("pid")
-                ticks = value.get("process_start_ticks")
-                launch_state = value.get("launch_state", "active")
-                launch_mode = value.get("launch_mode", "fresh")
-                resume_checkpoint_version_id = value.get(
-                    "resume_checkpoint_version_id")
-                reopen_command_id = value.get("reopen_command_id")
-                reopen_reason = value.get("reopen_reason")
-                if (launch_state not in {"pending", "active"}
-                        or launch_mode not in {"fresh", "resume", "reopen"}
-                        or (resume_checkpoint_version_id is not None
-                            and not isinstance(
-                                resume_checkpoint_version_id, str))
-                        or (reopen_command_id is not None
-                            and not isinstance(reopen_command_id, str))
-                        or (reopen_reason is not None
-                            and not isinstance(reopen_reason, str))
-                        or (launch_mode == "reopen")
-                        != all(value is not None for value in (
-                            resume_checkpoint_version_id,
-                            reopen_command_id, reopen_reason))):
-                    raise ValueError("manifest launch lifecycle")
-                process = (
-                    _DetachedProcess(pid, ticks)
-                    if isinstance(pid, int) and isinstance(ticks, int)
-                    else _DetachedProcess(-1, -1))
-                handle = TaskHandle(
-                    task_id=task_id,
-                    kind=value["kind"],
-                    run_dir=run_dir,
-                    socket_path=socket_path,
-                    log_path=log_path,
-                    spec=spec,
-                    process=process,
-                    launch_state=launch_state,
-                    launch_mode=launch_mode,
-                    resume_checkpoint_version_id=(
-                        resume_checkpoint_version_id),
-                    reopen_command_id=reopen_command_id,
-                    reopen_reason=reopen_reason,
-                )
-                if (handle.kind != spec.kind
-                        or handle.run_dir != spec.run_dir.resolve()
-                        or (spec.owner_socket_path is not None
-                            and handle.socket_path != spec.owner_socket_path)
-                        or (spec.owner_socket_path is None
-                            and handle.socket_path
-                            != handle.run_dir / "owner.sock")):
-                    raise ValueError("manifest differs from task spec")
-                self._tasks[task_id] = handle
-            except (KeyError, OSError, TypeError, ValueError,
-                    json.JSONDecodeError):
-                continue
+    def _load_persisted_tasks(self) -> TaskInventory:
+        inventory = inspect_task_inventory(self.root)
+        self._tasks = {handle.task_id: handle for handle in inventory.handles}
+        return inventory
 
-    def _recover_pending_launches(self) -> None:
+    def _recover_pending_launches(self, *, inventory: TaskInventory | None = None) -> None:
         """Compensate durable intents without creating another task identity."""
+        # Validate the complete selected controller before touching any intent.
+        # A malformed neighbour must not be silently skipped while another task
+        # is spawned, and an unknown live worker is not a compatibility grant.
+        if inventory is None:
+            inventory = inspect_task_inventory(self.root)
+        inventory.require_write_compatible()
+        inventory.assert_unchanged()
+        for handle in self._tasks.values():
+            if handle.launch_state == "pending":
+                self._require_worker_account_provider(handle.spec)
         for handle in tuple(self._tasks.values()):
             if handle.launch_state != "pending":
                 continue
@@ -368,11 +499,12 @@ class TaskControl:
                 # launch a competing process from a stale pending snapshot.
                 self._refresh_handle_process(handle)
                 continue
-            self._refresh_handle_process(handle)
-            if handle.launch_state == "active":
-                launch_lock.close()
-                continue
             try:
+                self._refresh_handle_process(handle)
+                if handle.launch_state == "active":
+                    launch_lock.close()
+                    continue
+                require_launch_runtime(handle.launch_runtime, label=f"task {handle.task_id}")
                 self._upgrade_legacy_owner_socket(handle)
                 spec_path = self.root / "specs" / f"{handle.task_id}.json"
                 self._write_manifest(
@@ -421,7 +553,7 @@ class TaskControl:
             *(entry for entry in pythonpath if entry != package_root),
         ))
         from .update_install import worker_lease
-        # Acquire before spawn; a detached worker retains its own lifetime lease.
+        # Acquire before spawn; the worker retains its own lifetime lease.
         update_lease = None
         log = None
         try:
@@ -436,7 +568,8 @@ class TaskControl:
                 env=environment,
                 pass_fds=(() if launch_lock is None else (launch_lock.fileno(),))
                          + (() if update_lease is None else (update_lease.fileno(),)),
-                start_new_session=True,
+                # Linux workers remain in the caller's supervised process group.
+                start_new_session=not sys.platform.startswith("linux"),
             )
         finally:
             if log is not None:
@@ -446,9 +579,18 @@ class TaskControl:
             if launch_lock is not None:
                 launch_lock.close()
 
+    @staticmethod
+    def _require_worker_account_provider(spec: AgentTaskSpec) -> None:
+        if spec.managed_accounts is not None and spec.managed_account_provider is None:
+            raise ValueError("account task workers require an explicitly installed account provider")
+
     def start(self, spec: AgentTaskSpec) -> TaskHandle:
         if not isinstance(spec, AgentTaskSpec):
             raise TypeError("TaskControl.start requires AgentTaskSpec")
+        self._require_worker_account_provider(spec)
+        inventory = inspect_task_inventory(self.root)
+        inventory.require_write_compatible()
+        inventory.assert_unchanged()
         task_id = "task-" + uuid4().hex[:12]
         specs = self.root / "specs"
         logs = self.root / "logs"
@@ -466,7 +608,7 @@ class TaskControl:
             socket_path=socket_path,
             log_path=log_path,
             spec=spec,
-            process=_DetachedProcess(-1, -1),
+            process=_DetachedProcess(-1, -1, _pending=True),
             launch_state="pending",
             launch_mode="fresh",
             resume_checkpoint_version_id=None,
@@ -515,7 +657,12 @@ class TaskControl:
                 registry_status = self._read_terminal_status(handle.run_dir)
             except (OSError, RuntimeError, TypeError, ValueError):
                 registry_status = None
-        observed_return_code = handle.process.poll()
+        identity_error = None
+        try:
+            observed_return_code = handle.process.poll()
+        except ProcessIdentityUnavailable as exc:
+            observed_return_code = None
+            identity_error = str(exc)
         return_code = (
             None if isinstance(handle.process, _DetachedProcess)
             else observed_return_code)
@@ -525,6 +672,7 @@ class TaskControl:
             "STOPPED" if registry_status is not None
             and registry_status.get("execution_status") == "stopped_by_owner" else
             "STARTING" if handle.launch_state == "pending" else
+            "UNKNOWN" if identity_error is not None else
             "RUNNING" if observed_return_code is None else
             "EXITED" if observed_return_code == 0 else
             "FAILED"
@@ -538,6 +686,8 @@ class TaskControl:
             "socket_ready": self._channel_ready(handle.socket_path),
             "log_path": str(handle.log_path),
         }
+        if identity_error is not None:
+            result["process_identity_error"] = identity_error
         if self._channel_ready(handle.socket_path):
             try:
                 snapshot = ControlClient(str(handle.socket_path)).snapshot()
@@ -592,6 +742,7 @@ class TaskControl:
 
     def snapshot(self, task_id: str) -> Mapping[str, Any]:
         handle = self.get(task_id)
+        require_worker_interoperability(handle.worker_runtime, label=f"task {task_id}")
         if not self._channel_ready(handle.socket_path):
             raise RuntimeError("task owner channel is not currently available")
         return ControlClient(str(handle.socket_path)).snapshot()
@@ -633,6 +784,7 @@ class TaskControl:
             self, task_id: str, body: str, *, target: str | None = None,
     ) -> Mapping[str, Any]:
         handle = self.get(task_id)
+        require_worker_interoperability(handle.worker_runtime, label=f"task {task_id}")
         if not self._channel_ready(handle.socket_path):
             raise RuntimeError("task owner channel is not currently available")
         if target is None:
@@ -650,6 +802,9 @@ class TaskControl:
         if handle.process.poll() is not None:
             return {"task_id": task_id, "status": "ALREADY_EXITED",
                     "return_code": handle.process.poll()}
+        observation = (handle.launch_runtime if startup_safe and handle.launch_state == "pending"
+                       and not isinstance(handle.process, _DetachedProcess) else handle.worker_runtime)
+        require_worker_interoperability(observation, label=f"task {task_id}")
         if not self._channel_ready(handle.socket_path):
             if startup_safe:
                 # run_agent_task installs its SIGINT handler before creating
@@ -689,6 +844,10 @@ class TaskControl:
         handle = self.get(task_id)
         if handle.process.poll() is None:
             return {"task_id": task_id, "status": "ALREADY_RUNNING"}
+        self._require_worker_account_provider(handle.spec)
+        inventory = inspect_task_inventory(self.root)
+        inventory.require_write_compatible()
+        inventory.assert_unchanged()
         status = self._read_terminal_status(handle.run_dir)
         if status["execution_status"] == "terminal":
             return {"task_id": task_id, "status": "ALREADY_TERMINAL"}
@@ -734,6 +893,10 @@ class TaskControl:
         handle = self.get(task_id)
         if handle.process.poll() is None:
             return {"task_id": task_id, "status": "ALREADY_RUNNING"}
+        self._require_worker_account_provider(handle.spec)
+        inventory = inspect_task_inventory(self.root)
+        inventory.require_write_compatible()
+        inventory.assert_unchanged()
         core = _RegistryCore(
             handle.run_dir, create=False, read_only=True,
             catalog=agent_task_catalog())
@@ -816,6 +979,8 @@ def claim_task_worker_launch(
     The returned open file owns the advisory lock for the worker lifetime.
     ``None`` means another worker already owns the same task identity.
     """
+    from cpn.update_context import reject_candidate_runtime
+    reject_candidate_runtime()
     path = spec_path.resolve()
     root = path.parent.parent
     task_id = path.stem
@@ -842,46 +1007,52 @@ def claim_task_worker_launch(
 
     try:
         manifest_path = root / "manifests" / f"{task_id}.json"
-        value = json.loads(manifest_path.read_text(encoding="utf-8"))
+        record, _files, value = _read_task_record(root, manifest_path)
+        if record.spec != spec:
+            raise TaskAdmissionError("task worker spec changed before its launch claim")
         reopen = reopen_command_id is not None
         if reopen != (checkpoint_version_id is not None) or reopen != (
                 reopen_reason is not None) or (reopen and resume):
             raise ValueError("task worker reopen intent is incomplete")
-        expected_mode = "reopen" if reopen else (
-            "resume" if resume else "fresh")
-        if not isinstance(value, Mapping):
-            raise ValueError("task worker launch has a malformed manifest")
-        version = value.get("schema_version")
-        if version == "rpnh/task_handle/v2":
-            persisted_spec = _resolve_reference(
-                root, value.get("spec_relative_path"),
-                label="spec_relative_path")
-            persisted_run = _resolve_reference(
-                root, value.get("run_relative_path"),
-                label="run_relative_path")
-        elif version == "rpnh/task_handle/v1":
-            persisted_spec = Path(value.get("spec_path", "")).resolve()
-            persisted_run = Path(value.get("run_dir", "")).resolve()
-        else:
-            raise ValueError("task worker launch has an unknown manifest schema")
-        if (value.get("task_id") != task_id
-                or persisted_spec != path
-                or persisted_run != spec.run_dir.resolve()
-                or value.get("kind") != spec.kind
-                or value.get("launch_state") != "pending"
-                or value.get("launch_mode") != expected_mode
-                or value.get("resume_checkpoint_version_id")
-                != checkpoint_version_id
-                or value.get("reopen_command_id") != reopen_command_id
-                or value.get("reopen_reason") != reopen_reason):
+        expected_mode = "reopen" if reopen else ("resume" if resume else "fresh")
+        if (record.task_id != task_id or record.launch_state != "pending"
+                or record.launch_mode != expected_mode
+                or record.resume_checkpoint_version_id != checkpoint_version_id
+                or record.reopen_command_id != reopen_command_id
+                or record.reopen_reason != reopen_reason):
             raise ValueError("task worker launch differs from durable intent")
+        # Direct task_worker entry must obey the same unknown-pending gate as
+        # parent recovery. Old stopped tasks may still be explicitly resumed;
+        # an unqualified durable pending intent is never silently rebound here.
+        actual_runtime = require_launch_runtime(record.launch_runtime, label=f"task {task_id}")
+        version = value["schema_version"]
+        persisted_run = record.run_dir
         pid = os.getpid()
-        ticks = _process_start_ticks(pid)
-        if ticks is None:
-            raise RuntimeError("task worker process identity is unavailable")
+        if sys.platform.startswith("linux"):
+            ticks = _process_start_ticks(pid)
+            identity = (None if ticks is None else {
+                "kind": LINUX_IDENTITY, "start_ticks": ticks})
+        else:
+            identity = read_process_identity(pid)
+        if identity is None:
+            raise ProcessIdentityUnavailable("task worker process identity is unavailable")
         value["pid"] = pid
-        value["process_start_ticks"] = ticks
+        if identity["kind"] == LINUX_IDENTITY and version != "rpnh/task_handle/v3":
+            # Existing Linux runs keep their v1/v2 process metadata contract.
+            value["process_start_ticks"] = identity["start_ticks"]
+        else:
+            if version == "rpnh/task_handle/v1":
+                for old, new, base in (
+                        ("spec_path", "spec_relative_path", root),
+                        ("run_dir", "run_relative_path", root),
+                        ("log_path", "log_relative_path", root),
+                        ("socket_path", "socket_relative_path", persisted_run)):
+                    value[new] = _relative_reference(Path(value.pop(old)).resolve(), base)
+            value["schema_version"] = "rpnh/task_handle/v3"
+            value.pop("process_start_ticks", None)
+            value["process_identity"] = validate_process_identity(identity)
         value["launch_state"] = "active"
+        value["worker_runtime"] = actual_runtime
         temporary = manifest_path.with_suffix(".json.tmp")
         temporary.write_text(
             json.dumps(value, ensure_ascii=False, indent=2) + "\n",
@@ -895,6 +1066,5 @@ def claim_task_worker_launch(
 
 __all__ = (
     "TaskControl", "TaskHandle", "claim_task_worker_launch",
-    "owner_socket_path",
+    "owner_socket_path", "TaskAdmissionError", "TaskInventory", "inspect_task_inventory",
 )
-

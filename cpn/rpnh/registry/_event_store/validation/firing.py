@@ -228,6 +228,19 @@ def validate_firing_event(context, pending):
             raise RegistryConflict(
                 "firing admission does not match its immutable claim")
         requested, requested_consumed = firing_claim_sets(firing)
+        from ....material_body_policy import resolve_body_availability
+        for token_ref in firing["claimed_input_refs"]:
+            token = version_metadata(token_ref["version_id"], "petri_token/v1")
+            if token is None:
+                raise RegistryConflict("material input claim has no exact original token")
+            for resource in (token.get("resource_ref"), token.get("work_resource_ref")):
+                if resource is None:
+                    continue
+                status = resolve_body_availability(event_store, db, task_id,
+                    {"entity_type": "resource_version/v1", "logical_id": resource["resource_id"],
+                     "version_id": resource["resource_version_id"]})
+                if status["availability"] != "available":
+                    raise RegistryConflict("MATERIAL_UNAVAILABLE: new input claim requires current available body")
         active_net = db.execute(
             "SELECT e.payload_json FROM events e WHERE e.task_id=? "
             "AND e.event_type='net_adopted/v1' AND "
@@ -911,14 +924,14 @@ def validate_firing_event(context, pending):
             validate_provider_candidate_output(invocation, output_ref)
         from ...declared_effect_validation import validate_declared_effect_success
         try:
-            from ...normal_root_token_allocation import normal_root_allocation_scheme
-            ordinary_token_ref_scheme = normal_root_allocation_scheme(
+            from ...success_token_allocation import success_token_allocation_scheme
+            ordinary_token_ref_scheme = success_token_allocation_scheme(
                 objects=objects, task_id=task_id, transaction_id=transaction_id,
                 firing=firing, invocation=invocation, result=result, delta=delta,
                 completion=completion, checkpoint=checkpoint)
             if operation_revisions:
                 if ordinary_token_ref_scheme is not None:
-                    raise RegistryConflict('normal root token allocation does not support operation revision')
+                    raise RegistryConflict('firing token allocation does not support operation revision')
                 from ...module_revision import validate_operation_revision_success
                 validate_operation_revision_success(event_store, event_store.catalog, db,
                     pending=operation_revisions[0], firing=firing, invocation=invocation,
@@ -926,9 +939,32 @@ def validate_firing_event(context, pending):
                     exact=exact_ref_exists, metadata=version_metadata, events=events,
                     objects=objects, relations=relations, transaction_id=transaction_id)
             else:
+                terminal_projection = False
+                if any(item.object_type == "run_execution_authority/v1"
+                        and item.metadata.get("status") == "terminal" for item in objects):
+                    # Pending objects alone confer no capability. Repeat the
+                    # exact original admission/action proof under this same
+                    # native write lock before enabling the stricter projection.
+                    from ..material_settlement import material_admission
+                    from ..terminal_management import terminal_management_scope, require_single_terminal_firing
+                    found = material_admission(event_store, db, task_id,
+                        firing["transition_firing_ref"], current=True)
+                    if found is None:
+                        raise RegistryConflict("terminal projection lacks an original material admission")
+                    admission, command = found
+                    terminal_scope = terminal_management_scope(event_store, db, task_id,
+                        target=command["target"], operation=command["data"].get("operation"),
+                        source=command["source"], execution=command["data"]["execution"])
+                    require_single_terminal_firing(event_store, db, task_id,
+                        allowed_firing_ref=firing["transition_firing_ref"])
+                    if (terminal_scope["checkpoint"] != predecessor
+                            or admission["invocation_ref"] != invocation["invocation_ref"]):
+                        raise RegistryConflict("terminal projection differs from its exact original predecessor")
+                    terminal_projection = True
                 validate_declared_effect_success(event_store, db, firing=firing, invocation=invocation,
                     result=result, delta=delta, predecessor=predecessor, checkpoint=checkpoint,
                     exact=exact_ref_exists, metadata=version_metadata,
+                    require_terminal_management=terminal_projection,
                     ordinary_token_ref_scheme=ordinary_token_ref_scheme)
         except RegistryConflict:
             raise

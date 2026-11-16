@@ -13,6 +13,7 @@ import { resolve } from 'node:path'
 import { FRONTEND_DIR, checkOfficialAssets } from './setup.ts'
 import { installOfficialBff, type OfficialView } from './official_bff.ts'
 import type { RpcPort } from './rpc.ts'
+import { brandingRows } from './branding.ts'
 
 export async function startDshFrontend(rpc: RpcPort, options: { port?: number; cwd?: string } = {}) {
   await checkOfficialAssets()
@@ -37,7 +38,9 @@ export async function startDshFrontend(rpc: RpcPort, options: { port?: number; c
         return authorizeIndex(request, response)
       }
       view = await installOfficialBff(ctx, rpc, cwd)
-      ctx.on('webserver/index-inject', table => { table.push({ kind: 'global', name: '__RPNH_BOUND_SESSION__', value: view!.id }) })
+      ctx.on('webserver/index-inject', table => {
+        table.push({ kind: 'global', name: '__RPNH_BOUND_SESSION__', value: view!.id }, ...brandingRows())
+      })
       await ctx.plugin(WebApp, { openBrowser: false, printUrl: false, surfaceContext: false })
     })
   } catch (error) { view?.close(); rpc.close(); throw error }

@@ -183,6 +183,24 @@ class RegisteredHostLLMCallBlocked(RuntimeError):
                 "registered HOST LLM block requires one exact authority ref")
 
 
+def _private_request_options(
+        profile: Mapping[str, object],
+) -> dict[str, str | bool | None] | None:
+    """Keep v4 wire choices in the existing private execution identity."""
+    if profile.get("config_schema_version") == "external_provider_adapter_config/v4":
+        from cpn.llm_adapters._external_provider_protocol import chat_request_options_from_document
+        try:
+            return chat_request_options_from_document(
+                profile.get("request_options")).as_document()
+        except (TypeError, ValueError) as exc:
+            raise ValueError(
+                "registered HOST request options are malformed") from exc
+    if "request_options" in profile:
+        raise ValueError(
+            "registered HOST request options require external adapter v4")
+    return None
+
+
 def registered_host_execution_identity(
         execution_policy: Mapping[str, object],
 ) -> dict[str, object]:
@@ -200,7 +218,7 @@ def registered_host_execution_identity(
             "outbound_model"}
         profile_keys = {
             "config_schema_version", "config_revision", "recovery",
-            "route_count"}
+            "route_count", "request_options"}
         if (set(document) - {"normal_history_reasoning_replay"} != {
                     "schema_version", "adapter_kind", "timeout_seconds",
                     "max_output_tokens", "max_response_bytes", "routes",
@@ -217,6 +235,7 @@ def registered_host_execution_identity(
                     profile_keys)):
             raise ValueError(
                 "registered HOST execution identity is malformed")
+        _private_request_options(document["adapter_profile"])
         from cpn.llm_adapters.config import normal_history_reasoning_replay_from_policy
         normal_history_reasoning_replay_from_policy(
             document, model_condition=document["routes"][0].get("outbound_model"))
@@ -269,6 +288,9 @@ def registered_host_execution_identity(
             raise ValueError(
                 "registered HOST route count identity is malformed")
         adapter_profile["route_count"] = route_count
+    request_options = _private_request_options(profile)
+    if request_options is not None:
+        adapter_profile["request_options"] = request_options
     identity = {
         "schema_version": EXECUTION_IDENTITY_VERSION,
         "adapter_kind": document.get("adapter_kind"),

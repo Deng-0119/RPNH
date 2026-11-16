@@ -480,7 +480,8 @@ def validate_petri_firing_resource_access(
 def validate_fresh_bootstrap_reference_resource(
         context,
         item: PreparedObject, metadata: Mapping[str, Any],
-        origin: Mapping[str, Any], direct: Mapping[str, Any]) -> None:
+        origin: Mapping[str, Any], direct: Mapping[str, Any], *,
+        material_publications=None) -> None:
     branch_id = context.branch_id
     events = context.events
     idempotency_key = context.idempotency_key
@@ -499,6 +500,19 @@ def validate_fresh_bootstrap_reference_resource(
     require_canonical_producer = partial(
         provider_validation.require_canonical_producer, context)
     """Close fresh bootstrap resources without an invocation owner."""
+
+    # Only exact resources verified by the earlier sealed material action or
+    # the same-batch admission closure use an OwnerControl publication key.
+    # A scoped exception carries the actual original firing's round and net;
+    # the bootstrap resource itself still has neither execution scope.
+    publication_scope = None
+    if material_publications is not None:
+        idempotency_key, publication_scope = material_publications.get(
+            str(item.version_id), (idempotency_key, None))
+    expected_transaction_scope = publication_scope or (None, None)
+    actual_transaction_scope = (
+        None if task_round_id is None else str(task_round_id),
+        None if net_instance_id is None else str(net_instance_id))
 
     publication = direct.get("publication")
     consumer = direct.get("intended_consumer")
@@ -551,8 +565,7 @@ def validate_fresh_bootstrap_reference_resource(
             or metadata.get("branch_id") != branch_id
             or metadata.get("round_ref") is not None
             or metadata.get("net_ref") is not None
-            or task_round_id is not None
-            or net_instance_id is not None
+            or actual_transaction_scope != expected_transaction_scope
             or primary != secondary
             or metadata.get("producer_ref") != primary
             or not exact_ref_exists(primary, "bootstrap_command/v1")
@@ -1058,7 +1071,27 @@ def validate_resource_objects(context):
         agent_loop_validation.validate_current_invocation_authority, context)
     validate_direct_provider_raw_response = partial(
         provider_validation.validate_direct_provider_raw_response, context)
-    validate_fresh_bootstrap_reference_resource = partial(globals()["validate_fresh_bootstrap_reference_resource"], context)
+    from ..owner_material_commands import validate_owner_material_admissions
+    material_publications = validate_owner_material_admissions(
+        event_store, context.db, task_id=task_id, objects=objects,
+        events=events, relations=relations)
+    from ..material_not_admitted import validate_not_admitted_results
+    material_publications.update(validate_not_admitted_results(
+        event_store, context.db, task_id=task_id, transaction_id=transaction_id,
+        idempotency_key=idempotency_key, task_round_id=task_round_id,
+        net_instance_id=net_instance_id, objects=objects, events=events, relations=relations))
+    from ..material_input_lifecycle import validate_publication
+    material_publications.update(validate_publication(
+        event_store, context.db, task_id=task_id, transaction_id=transaction_id,
+        idempotency_key=idempotency_key, task_round_id=task_round_id,
+        net_instance_id=net_instance_id, objects=objects, events=events, relations=relations))
+    from ..material_settlement import validate_material_results
+    material_publications.update(validate_material_results(
+        event_store, context.db, task_id=task_id, objects=objects, events=events,
+        idempotency_key=idempotency_key))
+    validate_fresh_bootstrap_reference_resource = partial(
+        globals()["validate_fresh_bootstrap_reference_resource"], context,
+        material_publications=material_publications)
     validate_fresh_reference_resource = partial(globals()["validate_fresh_reference_resource"], context)
     for item in objects:
         if item.object_type != "resource_version/v1":
@@ -1903,6 +1936,16 @@ def validate_resource_event(context, pending):
                         str(resource_ref.get("resource_version_id", "")),
                         "resource_version/v1")):
                 raise RegistryConflict("address bind lacks an exact resource")
+            # A same-batch new product cannot already have a canonical disable
+            # effect; original resource publication validation still applies.
+            if db.execute("SELECT 1 FROM objects WHERE version_id=?",
+                    (resource_ref["resource_version_id"],)).fetchone() is not None:
+                from ....material_body_policy import resolve_body_availability
+                status = resolve_body_availability(context.event_store, db, context.task_id,
+                    {"entity_type": "resource_version/v1", "logical_id": resource_ref["resource_id"],
+                     "version_id": resource_ref["resource_version_id"]})
+                if status["availability"] != "available":
+                    raise RegistryConflict("MATERIAL_UNAVAILABLE: a new binding requires current available body")
         elif (binding.get("lifecycle_state") != "tombstoned"
               or binding.get("resource_ref") is not None):
             raise RegistryConflict("address unbind is not an immutable tombstone")
@@ -1927,6 +1970,14 @@ def validate_resource_event(context, pending):
                     "resource_version/v1")):
             raise RegistryConflict(
                 "delivery prepare does not close over exact resource authority")
+        from ..material_delivery_drain import validate_material_delivery_event
+        validate_material_delivery_event(context.event_store, db, context.task_id, event_type, payload)
+        from ..human_viewer import validate_read_delivery_event
+        validate_read_delivery_event(context.event_store, db, context.task_id, event_type, payload)
+        from ..material_control import validate_material_input_consumer
+        validate_material_input_consumer(context.event_store, db, context.task_id,
+            {"entity_type": "resource_version/v1", "logical_id": resource_ref["resource_id"],
+             "version_id": resource_ref["resource_version_id"]}, delivery["context_ref"])
 
     if event_type == "resource_release_authorized/v1":
         witness_ref = payload.get("witness_ref", {})
@@ -1944,6 +1995,15 @@ def validate_resource_event(context, pending):
                 or witness.get("expires_at") != payload.get("expires_at")):
             raise RegistryConflict(
                 "release authorization does not match its one-use witness")
+        from ..material_delivery_drain import validate_material_delivery_event
+        validate_material_delivery_event(context.event_store, db, context.task_id, event_type, payload)
+        from ..human_viewer import validate_read_delivery_event
+        validate_read_delivery_event(context.event_store, db, context.task_id, event_type, payload)
+        from ..material_control import validate_material_input_consumer
+        resource_ref = witness["resource_ref"]
+        validate_material_input_consumer(context.event_store, db, context.task_id,
+            {"entity_type": "resource_version/v1", "logical_id": resource_ref["resource_id"],
+             "version_id": resource_ref["resource_version_id"]}, witness["context_ref"])
 
     if event_type in {
             "resource_delivery_acknowledged/v1",

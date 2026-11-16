@@ -1,6 +1,6 @@
 {
   "name": "dsh-rpnh-operator",
-  "version": "0.1.0-rc.3",
+  "version": "0.1.0-rc.2",
   "description": "RPNH adaptation for DSH: native existing-task tools and visible version identity",
   "type": "module",
   "main": "index.js",

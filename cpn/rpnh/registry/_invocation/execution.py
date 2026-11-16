@@ -70,6 +70,10 @@ def revalidate_io(lifecycle, context: InvocationContext, *, boundary: str) -> No
         raise InvocationClosedError(
             f"invocation is closed to {boundary} I/O")
     if context.origin == "petri_operation":
+        publication = lifecycle.service.event_store.firing_publication_for_invocation(
+            context.invocation_ref.version_id)
+        if publication is None or publication["state"] != "PROVISIONAL":
+            raise InvocationClosedError("Petri firing is closed to " + boundary + " I/O")
         firing_events = list(lifecycle.service.event_store.list_events_by_aggregate(
             str(context.own_transition_firing_ref.entity_id),
             event_types=(

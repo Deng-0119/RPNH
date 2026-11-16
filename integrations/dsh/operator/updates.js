@@ -112,4 +112,3 @@ export function installUpdateNotice(ctx, config, invoke = runUpdateCommand) {
     }), 'rpnh-operator: owner-only update notice')
   })
 }
-

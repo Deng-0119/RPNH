@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS firing_publications (
     net_version_id TEXT NOT NULL,
     operation_binding_version_id TEXT NOT NULL,
     admission_checkpoint_version_id TEXT NOT NULL,
-    state TEXT NOT NULL CHECK(state IN ('PROVISIONAL','PUBLISHED','SUPERSEDED')),
+    state TEXT NOT NULL CHECK(state IN ('PROVISIONAL','PUBLISHED','SUPERSEDED','REJECTED')),
     opened_transaction_id TEXT NOT NULL,
     published_transaction_id TEXT,
     operation_result_version_id TEXT,
@@ -50,6 +50,13 @@ CREATE TABLE IF NOT EXISTS firing_publications (
          AND workspace_lineage_id IS NULL
          AND workspace_revision_version_id IS NULL
          AND marking_checkpoint_version_id IS NOT NULL)
+        OR
+        (state='REJECTED'
+         AND published_transaction_id IS NOT NULL
+         AND operation_result_version_id IS NULL
+         AND workspace_lineage_id IS NULL
+         AND workspace_revision_version_id IS NULL
+         AND marking_checkpoint_version_id IS NULL)
     ),
     FOREIGN KEY(opened_transaction_id)
         REFERENCES transactions(transaction_id),
@@ -189,6 +196,10 @@ def _initialize(store) -> None:
             CREATE INDEX IF NOT EXISTS relations_transaction ON relations(transaction_id);
             CREATE INDEX IF NOT EXISTS relations_type_source_version ON relations(
                 relation_type, json_extract(source_json,'$.version_id'));
+            CREATE INDEX IF NOT EXISTS relations_source_entity ON relations(
+                json_extract(source_json,'$.entity_id'));
+            CREATE INDEX IF NOT EXISTS relations_target_entity ON relations(
+                json_extract(target_json,'$.entity_id'));
             CREATE INDEX IF NOT EXISTS relations_source_version ON relations(
                 json_extract(source_json,'$.version_id'));
             CREATE INDEX IF NOT EXISTS relations_type_source_identity ON relations(
@@ -202,6 +213,22 @@ def _initialize(store) -> None:
                 relation_type, json_extract(target_json,'$.entity_type'),
                 json_extract(target_json,'$.entity_id'));
             CREATE INDEX IF NOT EXISTS objects_type_logical ON objects(object_type, logical_id);
+            CREATE INDEX IF NOT EXISTS objects_owner_control_command ON objects(
+                json_extract(metadata_json,'$.content_schema_ref'),
+                json_extract(metadata_json,'$.descriptors.owner_control_kind'),
+                json_extract(metadata_json,'$.descriptors.command_id'))
+                WHERE object_type='resource_version/v1';
+            CREATE INDEX IF NOT EXISTS objects_owner_material_input ON objects(
+                json_extract(metadata_json,'$.content_schema_ref'),
+                json_extract(metadata_json,'$.descriptors.owner_input_role'),
+                json_extract(metadata_json,'$.descriptors.owner_input_command_id'))
+                WHERE object_type='resource_version/v1';
+            CREATE INDEX IF NOT EXISTS objects_owner_material_input_command ON objects(
+                json_extract(metadata_json,'$.descriptors.owner_material_input_version_id'))
+                WHERE object_type='resource_version/v1';
+            CREATE INDEX IF NOT EXISTS objects_owner_material_admission ON objects(
+                json_extract(metadata_json,'$.owner_command_ref.version_id'))
+                WHERE object_type='firing_admission/v1';
             CREATE INDEX IF NOT EXISTS objects_producer_type ON objects(
                 producer_invocation_id, object_type);
             CREATE INDEX IF NOT EXISTS objects_invocation_id_type ON objects(
@@ -331,7 +358,7 @@ def _migrate_firing_publications(db: sqlite3.Connection) -> None:
     schema = db.execute(
         "SELECT sql FROM sqlite_master WHERE type='table' "
         "AND name='firing_publications'").fetchone()
-    if schema is None or "'SUPERSEDED'" in schema["sql"]:
+    if schema is None or "'REJECTED'" in schema["sql"]:
         return
     # SQLite ignores foreign_keys changes inside a transaction. Disable before
     # taking the writer lock so dropping the old parent cannot delete children.
@@ -342,7 +369,7 @@ def _migrate_firing_publications(db: sqlite3.Connection) -> None:
         schema = db.execute(
             "SELECT sql FROM sqlite_master WHERE type='table' "
             "AND name='firing_publications'").fetchone()
-        if "'SUPERSEDED'" not in schema["sql"]:
+        if "'REJECTED'" not in schema["sql"]:
             dependent_sql = [row["sql"] for row in db.execute(
                 "SELECT sql FROM sqlite_master WHERE tbl_name='firing_publications' "
                 "AND type IN ('index','trigger') AND sql IS NOT NULL")]

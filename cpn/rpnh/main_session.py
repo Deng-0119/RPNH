@@ -221,12 +221,27 @@ user: {user_text}
 
 
 class MainSession:
-    """Interactive controller whose reasoning turn is itself one RPNH agent."""
+    """Interactive controller borrowing its caller's original owner lease.
+
+    The caller reserves/acquires ``MainSessionOwnerLease`` and keeps it open
+    across all writing actions. This API never reacquires or releases that
+    lease. Pure history reads remain available after the caller releases it.
+    """
 
     STATE_FILE = "session_state.json"
     PROFILE_FILE = "execution_profile.json"
     REGISTRY_DIR = "main"
     OWNER_LOCK_FILE = ".main-session-owner.lock"
+
+    def _assert_owner_lease(self) -> None:
+        from .session_access import MainSessionOwnerLease
+
+        lease = self._owner_lease
+        if not isinstance(lease, MainSessionOwnerLease):
+            raise ValueError("MainSession requires its caller's live owner_lease")
+        if lease.root != self.root:
+            raise ValueError("MainSession owner_lease belongs to a different root")
+        lease.assert_held()
 
     @property
     def child_path_root(self) -> Path:
@@ -246,7 +261,15 @@ class MainSession:
             task_control: TaskControl | None = None,
             resume: bool = False,
             owner_root_reserved: bool = False,
+            owner_lease=None,
+            managed_account_resolver_factory=None,
     ) -> None:
+        from cpn.update_context import reject_candidate_runtime
+        reject_candidate_runtime()
+        if (managed_account_resolver_factory is not None
+                and not callable(managed_account_resolver_factory)):
+            raise TypeError("managed account resolver factory must be callable")
+        self._managed_account_resolver_factory = managed_account_resolver_factory
         if not isinstance(root, Path) or not isinstance(execution_config_path, Path):
             raise TypeError("MainSession paths require pathlib.Path")
         if not isinstance(owner_root_reserved, bool):
@@ -256,6 +279,8 @@ class MainSession:
                 "resume cannot initialize a reserved main-session root")
         self.root = root.resolve()
         self.execution_config_path = execution_config_path.resolve()
+        self._owner_lease = owner_lease
+        self._assert_owner_lease()
         persisted_profile = (
             self._persisted_execution_profile(self.root)
             if resume else None)
@@ -263,6 +288,26 @@ class MainSession:
             if not self.root.is_dir():
                 raise ValueError(
                     "RPNH resume requires an existing session directory")
+            # Reject an unreadable or changed profile before obtaining a
+            # Registry writer or letting TaskControl recover pending launches.
+            # Keep the existing post-open check as well: local configuration
+            # may change between these reads. This is the profile boundary,
+            # not a grant of cross-release Registry write compatibility.
+            if persisted_profile is None:
+                raise ValueError(
+                    "main-session resume has no persisted execution "
+                    "profile authority")
+            if self.execution_config_path != persisted_profile[
+                    "execution_config_path"]:
+                raise ValueError(
+                    "cannot change the execution profile when resuming a "
+                    "main session")
+            if persisted_profile["schema_version"] in {
+                    "rpnh/main_session_profile/v2",
+                    "rpnh/main_session_profile/v3"}:
+                self._assert_execution_profile_identity(persisted_profile)
+            from .business_admission import inspect_main_session_write_admission
+            inspect_main_session_write_admission(self.root)
             try:
                 self._registry_core = _RegistryCore(
                     self.root / self.REGISTRY_DIR, create=False)
@@ -270,20 +315,18 @@ class MainSession:
                 raise ValueError(
                     "RPNH session has no valid main-thread Registry") from exc
         else:
-            if owner_root_reserved:
-                lock_path = self.root / self.OWNER_LOCK_FILE
-                if (self.root.is_symlink() or not self.root.is_dir()
-                        or lock_path.is_symlink() or not lock_path.is_file()
-                        or {path.name for path in self.root.iterdir()}
-                        != {self.OWNER_LOCK_FILE}):
-                    raise ValueError(
-                        "reserved main-session root must contain only its "
-                        "owner lock")
-            else:
-                if os.path.lexists(self.root):
-                    raise ValueError(
-                        "RPNH main session requires an absent session directory")
-                self.root.mkdir(parents=True)
+            if not owner_root_reserved:
+                raise ValueError(
+                    "fresh MainSession requires reserve_for_creation and "
+                    "owner_root_reserved=True")
+            lock_path = self.root / self.OWNER_LOCK_FILE
+            if (self.root.is_symlink() or not self.root.is_dir()
+                    or lock_path.is_symlink() or not lock_path.is_file()
+                    or {path.name for path in self.root.iterdir()}
+                    != {self.OWNER_LOCK_FILE}):
+                raise ValueError(
+                    "reserved main-session root must contain only its "
+                    "owner lock")
             self._registry_core = _RegistryCore(
                 self.root / self.REGISTRY_DIR, create=True)
         self._main_thread = MainThreadRegistry(
@@ -444,6 +487,8 @@ class MainSession:
     def resume(
             cls, root: Path, execution_config_path: Path | None = None, *,
             task_control: TaskControl | None = None,
+            owner_lease=None,
+            managed_account_resolver_factory=None,
     ) -> "MainSession":
         root = root.resolve()
         selected = execution_config_path
@@ -454,7 +499,9 @@ class MainSession:
         if selected is None:
             selected = persisted
         return cls(
-            root, selected, task_control=task_control, resume=True)
+            root, selected, task_control=task_control, resume=True,
+            owner_lease=owner_lease,
+            managed_account_resolver_factory=managed_account_resolver_factory)
 
     @property
     def state_path(self) -> Path:
@@ -479,8 +526,9 @@ class MainSession:
             value: object,
     ) -> tuple[str, str | None]:
         if (not isinstance(value, Mapping)
-                or set(value) not in ({"text", "required_task_kind"},
-                                      {"text", "required_task_kind", "native_plugins"})
+                or not {"text", "required_task_kind"}.issubset(value)
+                or set(value) - {"text", "required_task_kind", "native_plugins",
+                                 "agent_task_settings"}
                 or not isinstance(value["text"], str)
                 or value["required_task_kind"] not in {None, "workflow"}):
             raise RuntimeError(
@@ -495,21 +543,69 @@ class MainSession:
         if document is None:
             return None
         catalog = load_catalog(document)
-        return {"configuration": document, "catalog_digest": catalog.digest}
+        return {"configuration": document, **(
+            {"catalog_snapshot": catalog.versioned_snapshot()} if catalog.versioned else
+            {"catalog_digest": catalog.digest})}
+
+    def _selected_task_capabilities(self, selection=None):
+        """Capture a fresh HOST selection in the existing turn input snapshot."""
+        from cpn.plugins.api import json_copy
+        if selection is None:
+            selection = load_llm_execution_selection(self.execution_config_path)
+        self._validate_account_task_settings(selection.agent_task_settings)
+        native = self._selected_plugins()
+        result = {"native_plugins": native} if native is not None else {}
+        if selection.agent_task_settings:
+            result["agent_task_settings"] = json_copy(selection.agent_task_settings)
+        return result
+
+    def _validate_account_task_settings(self, settings):
+        # The installed resolver remains in this HOST process. Worker task
+        # documents carry only the original non-secret selection plan.
+        child = settings.get("child_task", {})
+        main = settings.get("main_turn", {})
+        if (child.get("managed_accounts") is not None
+                and child.get("managed_account_provider") is None):
+            raise ValueError(
+                "child account tasks require an installed worker account provider")
+        if (main.get("managed_accounts") is not None
+                and main.get("managed_account_provider") is None
+                and self._managed_account_resolver_factory is None):
+            raise ValueError(
+                "main-turn account tools require an installed account resolver factory")
+        if (main.get("managed_account_provider") is not None
+                and self._managed_account_resolver_factory is not None):
+            raise ValueError("account provider selection and in-process factory are mutually exclusive")
 
     @staticmethod
-    def _plugin_settings(turn):
+    def _plugin_settings(turn, *, scope="main_turn"):
+        """Project exact task options from the registered input, never live files."""
         from cpn.plugins.catalog import load_catalog
-        native = turn.get("user_input", {}).get("native_plugins")
-        if native is None:
-            return {}, ()
-        if not isinstance(native, Mapping) or set(native) != {"configuration", "catalog_digest"}:
-            raise ValueError("invalid registered native plugin selection")
-        catalog = load_catalog(native["configuration"])
-        if catalog.digest != native["catalog_digest"]:
-            raise ValueError("installed plugins differ from the registered main-turn catalog")
-        return {"plugin_configuration": native["configuration"],
-                "plugin_catalog_digest": native["catalog_digest"]}, catalog.describe()
+        if scope not in {"main_turn", "child_task"}:
+            raise ValueError("unknown agent task settings scope")
+        source = turn.get("user_input", {})
+        native = source.get("native_plugins")
+        settings, operations = {}, ()
+        if native is not None:
+            if (not isinstance(native, Mapping) or set(native) not in (
+                    {"configuration", "catalog_digest"}, {"configuration", "catalog_snapshot"})):
+                raise ValueError("invalid registered native plugin selection")
+            catalog = load_catalog(native["configuration"])
+            if catalog.versioned:
+                from cpn.plugins.api import canonical
+                if ("catalog_snapshot" not in native
+                        or canonical(catalog.versioned_snapshot()) != canonical(native["catalog_snapshot"])):
+                    raise ValueError("installed plugins differ from the registered main-turn snapshot")
+                settings.update({"plugin_configuration": native["configuration"],
+                                 "plugin_catalog_snapshot": native["catalog_snapshot"]})
+            else:
+                if "catalog_digest" not in native or catalog.digest != native["catalog_digest"]:
+                    raise ValueError("installed plugins differ from the registered main-turn catalog")
+                settings.update({"plugin_configuration": native["configuration"],
+                                 "plugin_catalog_digest": native["catalog_digest"]})
+            operations = catalog.describe()
+        settings.update(source.get("agent_task_settings", {}).get(scope, {}))
+        return settings, operations
 
     @staticmethod
     def _decision_document(decision: MainDecision) -> dict[str, Any]:
@@ -683,6 +779,7 @@ class MainSession:
         Registry remains independent in either case.
         """
 
+        self._assert_owner_lease()
         snapshot = self.active_turn_snapshot()
         if snapshot is None:
             return MainTurnReconciliation("idle", None)
@@ -715,6 +812,8 @@ class MainSession:
             self, turn: Mapping[str, Any], *, user_text: str,
             required_task_kind: str | None,
     ) -> AgentTaskSpec:
+        self._validate_account_task_settings(
+            turn.get("user_input", {}).get("agent_task_settings", {}))
         relative_path = turn.get("attempt_relative_path")
         if not isinstance(relative_path, str) or not relative_path:
             raise RuntimeError("active main turn has no registered attempt")
@@ -737,14 +836,6 @@ class MainSession:
             raise RuntimeError(
                 "registered main-turn attempt escapes its parent Registry"
             ) from exc
-        try:
-            run_dir.rmdir()
-        except FileNotFoundError:
-            pass
-        except OSError:
-            # A nonempty attempt is already being initialized or has become
-            # the child Registry.  Never remove any child-owned contents.
-            pass
         plugin_settings, operations = self._plugin_settings(turn)
         from cpn.llm_adapters import load_llm_execution_selection
         runtime = load_llm_execution_selection(
@@ -768,6 +859,18 @@ class MainSession:
             owner_socket_path=owner_socket_path(
                 self.root, f"main-turn:{relative_path}", run_dir),
         )
+
+    @staticmethod
+    def _release_empty_attempt_directory(run_dir: Path) -> None:
+        """Release the empty attachment reservation before child initialization."""
+        try:
+            run_dir.rmdir()
+        except FileNotFoundError:
+            pass
+        except OSError:
+            # A nonempty attempt is already initializing or is a child Registry.
+            # Never remove any child-owned contents.
+            pass
 
     def _persist_state(self) -> None:
         document = {
@@ -794,6 +897,7 @@ class MainSession:
         os.replace(temporary, self.root / self.PROFILE_FILE)
 
     def set_execution_config(self, path: Path) -> None:
+        self._assert_owner_lease()
         if not isinstance(path, Path):
             raise TypeError("execution config path requires pathlib.Path")
         selected = path.resolve()
@@ -820,16 +924,18 @@ class MainSession:
             self, prompt: str, stages: tuple[AgentStage, ...] = (), *,
             workflow_graph: AgentWorkflowGraph | None = None,
     ) -> TaskHandle:
+        self._assert_owner_lease()
         if not isinstance(prompt, str) or not prompt.strip():
             raise ValueError("independent task prompt must be nonempty text")
         self.activate_for_execution()
         run_dir = self._main_thread.child_path_root / "tasks" / "runs" / (
             "child-" + uuid4().hex[:12])
-        native = self._selected_plugins()
-        settings, _ = self._plugin_settings({"user_input": {"native_plugins": native}})
         from cpn.llm_adapters import load_llm_execution_selection
-        runtime = load_llm_execution_selection(
-            self.execution_config_path).runtime_policy
+        selection = load_llm_execution_selection(self.execution_config_path)
+        settings, _ = self._plugin_settings(
+            {"user_input": self._selected_task_capabilities(selection)},
+            scope="child_task")
+        runtime = selection.runtime_policy
         handle = self.task_control.start(AgentTaskSpec(
             **settings,
             run_dir=run_dir,
@@ -936,7 +1042,10 @@ class MainSession:
         origin_turn = self._turn_document(self._committed_turn_ref(ordinal))
         original_user_task, _required_task_kind = self._turn_input(
             origin_turn["user_input"])
-        settings, _ = self._plugin_settings(origin_turn)
+        settings, _ = self._plugin_settings(origin_turn, scope="child_task")
+        # A committed parent already has its result. Launching its child must
+        # not reacquire the parent's process-local account provider.
+        self._validate_account_task_settings({"child_task": settings})
         from cpn.llm_adapters import load_llm_execution_selection
         runtime = load_llm_execution_selection(
             self.execution_config_path).runtime_policy
@@ -961,6 +1070,7 @@ class MainSession:
 
     def reconcile_committed_launches(self) -> dict[int, TaskHandle | None]:
         """Recover every committed child launch from Registry authority."""
+        self._assert_owner_lease()
         projection = self._refresh_from_authority()
         recovered: dict[int, TaskHandle | None] = {}
         for item in projection["committed_history"]:
@@ -973,6 +1083,7 @@ class MainSession:
     def reconcile_child_registry_links(self) -> tuple[dict[str, Any], ...]:
         """Index every session child and attach readable Registry identities."""
 
+        self._assert_owner_lease()
         projection = self._refresh_from_authority()
         origins: dict[Path, tuple[VersionRef, str]] = {}
         for item in projection["committed_history"]:
@@ -1011,8 +1122,10 @@ class MainSession:
         return links
 
     def activate_for_execution(self) -> dict[int, TaskHandle | None]:
-        """Compensate committed launches before an explicit execution action."""
+        """Recover pending workers and committed launches before explicit execution."""
 
+        self._assert_owner_lease()
+        self.task_control._recover_pending_launches()
         recovered = self.reconcile_committed_launches()
         self.reconcile_child_registry_links()
         return recovered
@@ -1160,6 +1273,7 @@ class MainSession:
         request receipts remain the caller's observational lookup, not a new
         preparation or execution.
         """
+        self._assert_owner_lease()
         if not isinstance(user_text, str) or not user_text.strip():
             raise ValueError("main-session input must be nonempty text")
         if required_task_kind not in {None, "workflow"}:
@@ -1216,21 +1330,31 @@ class MainSession:
                 turn = self._turn_document(turn_ref)
             self._refresh_from_authority()
             self._persist_state()
-            return self._task_spec(
+            spec = self._task_spec(
                 turn, user_text=user_text,
                 required_task_kind=required_task_kind)
+            self._release_empty_attempt_directory(spec.run_dir)
+            return spec
 
         self.activate_for_execution()
         self._refresh_from_authority()
         ordinal = int(self._authority_projection["next_turn_ordinal"])
-        native = self._selected_plugins()
+        capabilities = self._selected_task_capabilities()
+        user_input = {
+            **capabilities,
+            "text": user_text,
+            "required_task_kind": required_task_kind,
+        }
+        # Validate the existing task contract before publishing an active turn.
+        # The same detached input and exact prospective path are then admitted
+        # below; no execution may begin before the Registry attachment succeeds.
+        spec = self._task_spec(
+            {"user_input": user_input,
+             "attempt_relative_path": self._main_turn_path_ref(ordinal)},
+            user_text=user_text, required_task_kind=required_task_kind)
         accepted = self._main_thread.accept_turn(
             thread_ref=self._thread_ref,
-            user_input={
-                **({"native_plugins": native} if native is not None else {}),
-                "text": user_text,
-                "required_task_kind": required_task_kind,
-            },
+            user_input=user_input,
             expected_ordinal=ordinal,
             idempotency_key=(
                 idempotency_key if idempotency_key is not None else
@@ -1242,15 +1366,12 @@ class MainSession:
             attempt_relative_path=self._main_turn_path_ref(ordinal),
             idempotency_key=f"main-turn-{ordinal}:attempt",
         )
-        turn = self._turn_document(attached.turn_ref)
         self._refresh_from_authority()
         self._persist_state()
-        spec = self._task_spec(
-            turn, user_text=user_text,
-            required_task_kind=required_task_kind)
         if spec.run_dir != attached.attempt_path:
             raise RuntimeError(
                 "main-turn task path differs from Registry attachment")
+        self._release_empty_attempt_directory(spec.run_dir)
         return spec
 
     def _main_turn_path_ref(self, ordinal: int) -> str:
@@ -1291,6 +1412,7 @@ class MainSession:
         This changes only main-thread authority.  The child Registry named by
         the execution receipt is retained and is never deleted or rewound.
         """
+        self._assert_owner_lease()
         if not isinstance(user_text, str) or not user_text.strip():
             raise ValueError("main-session input must be nonempty text")
         self._refresh_from_authority()
@@ -1322,6 +1444,7 @@ class MainSession:
     def rollback_paused_turn(self) -> MainTurnReconciliation:
         """Return to the previous completed main turn without deleting child state."""
 
+        self._assert_owner_lease()
         snapshot = self.active_turn_snapshot()
         if snapshot is None or snapshot.state != "stopped_by_owner":
             raise RuntimeError(
@@ -1334,6 +1457,7 @@ class MainSession:
     ) -> tuple[MainDecision, TaskHandle | None]:
         """Resume the paused turn from its child Registry's latest checkpoint."""
 
+        self._assert_owner_lease()
         snapshot = self.active_turn_snapshot()
         if snapshot is None or snapshot.state != "stopped_by_owner":
             raise RuntimeError(
@@ -1348,6 +1472,7 @@ class MainSession:
             user_text=snapshot.user_text,
             required_task_kind=snapshot.required_task_kind,
         )
+        self._release_empty_attempt_directory(spec.run_dir)
         result = resume_agent_task(spec)
         if result.get("stop_reason") == "stopped_by_owner":
             raise MainSessionPaused(
@@ -1370,6 +1495,7 @@ class MainSession:
             required_task_kind: str | None = None,
     ) -> tuple[MainDecision, TaskHandle | None]:
         """Apply one registered main-turn output to logical session state."""
+        self._assert_owner_lease()
         if not isinstance(user_text, str) or not user_text.strip():
             raise ValueError("main-session input must be nonempty text")
         self._refresh_from_authority()
@@ -1408,6 +1534,7 @@ class MainSession:
     def fail_active_turn(self) -> MainTurnReconciliation:
         """Close a running main turn while retaining its nonterminal child."""
 
+        self._assert_owner_lease()
         snapshot = self.active_turn_snapshot()
         if snapshot is None or snapshot.state != "running":
             raise RuntimeError(
@@ -1436,9 +1563,15 @@ class MainSession:
             self, user_text: str, *,
             required_task_kind: str | None = None,
     ) -> tuple[MainDecision, TaskHandle | None]:
+        self._assert_owner_lease()
         spec = self.prepare_turn(
             user_text, required_task_kind=required_task_kind)
-        result = run_agent_task(spec)
+        if (self._managed_account_resolver_factory is None
+                or not spec.managed_bindings):
+            result = run_agent_task(spec)
+        else:
+            result = run_agent_task(
+                spec, managed_account_resolver_factory=self._managed_account_resolver_factory)
         if result.get("stop_reason") == "stopped_by_owner":
             raise MainSessionPaused(
                 "RPNH main turn is paused at its Registry checkpoint")

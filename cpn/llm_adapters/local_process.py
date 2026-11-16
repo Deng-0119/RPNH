@@ -15,6 +15,8 @@ import threading
 import time
 from typing import Any, Callable, Mapping
 
+from cpn.process_supervision import ProcessCleanupError, ProcessStartError, start_process, stop_process
+
 from cpn.rpnh.llm_contracts import (
     LLMCallAttempt,
     LLMInputPortFailure,
@@ -81,6 +83,9 @@ def _local_failure_disposition(
     be reconciled before another attempt; a process fault does not establish
     that the request was never sent.
     """
+    if failure == "cleanup_incomplete":
+        return "submission_unknown" if request_submitted else "provider_failure", (
+            "submission_unknown" if request_submitted else "not_submitted")
     if failure == "response_too_large":
         return "provider_failure", "response_observed"
     if request_submitted:
@@ -207,15 +212,39 @@ def _load_config(
     return _argv(document.get("argv"), label="argv"), env
 
 
-def _terminate(process: subprocess.Popen[bytes]) -> None:
+class _CleanupFailure(RuntimeError):
+    def __init__(self, request_submitted: bool):
+        self.request_submitted = request_submitted
+        super().__init__("cleanup_incomplete")
+
+
+def _terminate(process: subprocess.Popen[bytes], *, shared_group: bool = False) -> None:
+    if shared_group:
+        # The supervisor owns/reaps only this invocation, never the guard PGID.
+        stop_process(process)
+        return
+    # The legacy backend owns a new process group, not an adopted subtree.
+    # Retain its direct child until the group signal is sent: after reaping,
+    # the numeric PID/PGID is no longer ours to signal.
+    if process.returncode is not None:
+        raise ProcessCleanupError("legacy child was reaped before group cleanup")
+    try:
+        os.waitid(os.P_PID, process.pid, os.WEXITED | os.WNOHANG | os.WNOWAIT)
+    except (AttributeError, OSError, ValueError) as exc:
+        raise ProcessCleanupError("legacy child ownership is unavailable") from exc
+    failure = None
     try:
         os.killpg(process.pid, signal.SIGKILL)
-    except OSError:
+    except ProcessLookupError:
         pass
+    except OSError as exc:
+        failure = exc
     try:
         process.wait(timeout=1)
-    except (OSError, subprocess.TimeoutExpired):
-        pass
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        failure = failure or exc
+    if failure is not None:
+        raise ProcessCleanupError("legacy process cleanup was not confirmed") from failure
 
 
 def _wait_status_without_reaping(
@@ -226,9 +255,15 @@ def _wait_status_without_reaping(
         if (interruption_requested is not None
                 and interruption_requested()):
             return "interrupted"
-        status = os.waitid(
-            os.P_PID, process.pid,
-            os.WEXITED | os.WNOHANG | os.WNOWAIT)
+        try:
+            status = os.waitid(
+                os.P_PID, process.pid,
+                os.WEXITED | os.WNOHANG | os.WNOWAIT)
+        except AttributeError as exc:
+            # The installed runtime preflight requires these APIs (macOS
+            # Python 3.13+). Direct callers must still enter typed cleanup if
+            # that prerequisite is missing after a process has been started.
+            raise OSError("non-reaping process observation is unavailable") from exc
         if status is not None:
             return (
                 "success"
@@ -240,6 +275,8 @@ def _wait_status_without_reaping(
         time.sleep(min(0.01, remaining))
 
 
+
+
 def _run_bounded(
         argv: tuple[str, ...], env: Mapping[str, str], request_bytes: bytes,
         *, cwd: Path, timeout_seconds: int, max_stdout_bytes: int,
@@ -247,15 +284,38 @@ def _run_bounded(
 ) -> tuple[int | None, bytes | None, str | None, bytes, bool]:
     if interruption_requested is not None and interruption_requested():
         return None, None, "owner_interrupted", b"", False
+    shared_group = sys.platform == "linux"
+    deadline = time.monotonic() + timeout_seconds
     try:
-        process = subprocess.Popen(
-            argv, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE, env=dict(env), close_fds=True,
-            cwd=str(cwd), shell=False, bufsize=0, start_new_session=True)
+        if shared_group:
+            process = start_process(argv, env=env, cwd=str(cwd), stdin=subprocess.PIPE,
+                                    stdout=subprocess.PIPE, stderr=subprocess.PIPE, bufsize=0,
+                                    deadline=deadline, interrupted=interruption_requested)
+        else:
+            process = subprocess.Popen(
+                argv, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                env=dict(env), close_fds=True, cwd=str(cwd), shell=False,
+                bufsize=0, start_new_session=True)
+    except ProcessCleanupError as error:
+        raise _CleanupFailure(False) from error
+    except ProcessStartError as error:
+        return None, None, error.code, b"", False
     except (OSError, ValueError):
         return None, None, "local_process_unavailable", b"", False
+    cleanup_attempted = False
+    request_submitted = False
+    def cleanup():
+        nonlocal cleanup_attempted
+        if cleanup_attempted:
+            return
+        cleanup_attempted = True
+        try:
+            _terminate(process, shared_group=shared_group)
+        except ProcessCleanupError as error:
+            raise _CleanupFailure(request_submitted) from error
+
     if process.stdin is None or process.stdout is None or process.stderr is None:
-        _terminate(process)
+        cleanup()
         return None, None, "local_process_unavailable", b"", False
     selector = selectors.DefaultSelector()
     stdout = bytearray()
@@ -268,7 +328,6 @@ def _run_bounded(
     selector.register(process.stdout.fileno(), selectors.EVENT_READ, "stdout")
     selector.register(process.stderr.fileno(), selectors.EVENT_READ, "stderr")
     selector.register(process.stdin.fileno(), selectors.EVENT_WRITE, "stdin")
-    deadline = time.monotonic() + timeout_seconds
     failure: str | None = None
     try:
         while selector.get_map():
@@ -324,7 +383,7 @@ def _run_bounded(
             if failure is not None:
                 break
         if failure is not None:
-            _terminate(process)
+            cleanup()
             return (
                 process.returncode, None, failure, bytes(stderr_tail),
                 request_submitted,
@@ -333,7 +392,7 @@ def _run_bounded(
             process, deadline=deadline,
             interruption_requested=interruption_requested)
         if exit_status in {"timeout", "interrupted"}:
-            _terminate(process)
+            cleanup()
             return (
                 process.returncode, None,
                 ("timeout" if exit_status == "timeout"
@@ -342,18 +401,24 @@ def _run_bounded(
                 request_submitted,
             )
         if exit_status != "success":
-            _terminate(process)
+            cleanup()
             return (
                 process.returncode, None, "local_process_error",
                 bytes(stderr_tail), request_submitted,
             )
+        if not shared_group:
+            # WNOWAIT above keeps the leader identity reserved until this
+            # limited process-group cleanup has completed, including success.
+            cleanup()
         return_code = process.wait()
+        if shared_group and not process.cleanup_complete:
+            raise _CleanupFailure(request_submitted)
         return (
             return_code, bytes(stdout), None, bytes(stderr_tail),
             request_submitted,
         )
     except OSError:
-        _terminate(process)
+        cleanup()
         return (
             process.returncode, None, "local_process_error",
             bytes(stderr_tail), request_submitted,
@@ -367,7 +432,7 @@ def _run_bounded(
             except OSError:
                 pass
         if process.returncode is None:
-            _terminate(process)
+            cleanup()
 
 
 def _stderr_excerpt(stderr_tail: bytes) -> str | None:
@@ -448,14 +513,18 @@ class LocalProcessInputPort:
                 raise LLMInputPortFailure(
                     "adapter_not_submitted", submission_state="not_submitted",
                     failure_code="local_duplicate_submission_prevented")
-            return_code, stdout, failure, stderr_tail, request_submitted = (
-                _run_bounded(
-                self._argv, self._env, attempt.canonical_request_bytes,
-                cwd=self._destination_run_root,
-                timeout_seconds=self._timeout_seconds,
-                max_stdout_bytes=min(
-                    self._max_response_bytes, attempt.max_response_bytes),
-                interruption_requested=interruption_requested))
+            try:
+                return_code, stdout, failure, stderr_tail, request_submitted = (
+                    _run_bounded(
+                    self._argv, self._env, attempt.canonical_request_bytes,
+                    cwd=self._destination_run_root,
+                    timeout_seconds=self._timeout_seconds,
+                    max_stdout_bytes=min(
+                        self._max_response_bytes, attempt.max_response_bytes),
+                    interruption_requested=interruption_requested))
+            except _CleanupFailure as error:
+                return_code, stdout, failure, stderr_tail, request_submitted = (
+                    None, None, "cleanup_incomplete", b"", error.request_submitted)
             detail: dict[str, object] = {}
             if return_code is not None:
                 detail["exit_code"] = return_code

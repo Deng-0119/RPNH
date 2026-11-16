@@ -30,6 +30,9 @@
     "@deepseek-ai/dsh-client-ui-model-selection",
     "@deepseek-ai/dsh-api-settings-controller",
     "@deepseek-ai/dsh-commands",
-    "@deepseek-ai/dsh-subagent"
-  ]
+    "@deepseek-ai/dsh-subagent",
+    "@deepseek-ai/dsh-client-ui-file-drag"
+  ],
+  "version": "0.2.2-alpha.2",
+  "adaptation_version": "0.2.0-alpha.1"
 }

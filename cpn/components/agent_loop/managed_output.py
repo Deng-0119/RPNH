@@ -1,17 +1,15 @@
 """Exact managed-v3 output pages; saved managed metadata remains unchanged."""
 
 from collections.abc import Mapping
-import json
 import re
+
+from cpn.plugins.managed_output import (
+    serialized_managed_json, fit_managed_output_page as _fit_page,
+)
 
 
 MANAGED_OUTPUT_READER = "read_managed_output"
 MANAGED_OUTPUT_PAGE_KIND = "managed_output_page/v1"
-
-
-def serialized_managed_json(value):
-    return json.dumps(value, ensure_ascii=True, sort_keys=True,
-                      separators=(",", ":"), allow_nan=False)
 
 
 def validate_managed_locator(action_ref, receipt_ref):
@@ -54,37 +52,6 @@ def validate_managed_output_page(page):
                                 or not isinstance(following, int)
                                 or following != end or not page["truncated"]))):
         raise ValueError("managed output page continuation is invalid")
-
-
-def _fit_page(page, max_bytes):
-    if isinstance(max_bytes, bool) or not isinstance(max_bytes, int) or max_bytes < 1:
-        raise ValueError("managed output max_bytes must be a positive integer")
-    content = page["content"]
-
-    def candidate(count):
-        end = page["offset_chars"] + count
-        return dict(page, content=content[:count],
-                    next_offset_chars=end if end < page["total_chars"] else None,
-                    truncated=end < page["total_chars"])
-
-    def fits(value):
-        return len(serialized_managed_json(value).encode("utf-8")) <= max_bytes
-
-    if fits(page):
-        return dict(page)
-    # Test the complete page separately: EOF's null continuation has a
-    # different size from an integer. Partial-page sizes are monotone.
-    low, high = 0, len(content) - 1
-    while low < high:
-        middle = (low + high + 1) // 2
-        if fits(candidate(middle)):
-            low = middle
-        else:
-            high = middle - 1
-    value = candidate(low)
-    if not fits(value) or (not low and page["offset_chars"] < page["total_chars"]):
-        raise ValueError("managed output budget cannot fit the minimum locator envelope and one character")
-    return value
 
 
 def bound_managed_output_page(page, max_bytes):

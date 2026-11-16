@@ -1,0 +1,76 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "registry_v1/material_publication_attempt_ordinal_conflicted/v1",
+  "title": "Original material publication attempt control",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*/v[1-9][0-9]*$"
+        },
+        "logical_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+        },
+        "version_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+        }
+      },
+      "required": [
+        "entity_type",
+        "logical_id",
+        "version_id"
+      ]
+    }
+  },
+  "properties": {
+    "material_publication_attempt_ref": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/ref"
+        },
+        {
+          "properties": {
+            "entity_type": {
+              "const": "material_publication_attempt/v1"
+            }
+          }
+        }
+      ]
+    },
+    "reservation_event_id": {
+      "type": "string",
+      "pattern": "^event:[a-f0-9]{32}$"
+    },
+    "proposal_key": {
+      "type": "string",
+      "minLength": 1
+    },
+    "proposal_transaction_id": {
+      "type": "string",
+      "pattern": "^transaction:[a-f0-9]{32}$"
+    },
+    "expected_registry_ordinal": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "observed_registry_ordinal": {
+      "type": "integer",
+      "minimum": 1
+    }
+  },
+  "required": [
+    "material_publication_attempt_ref",
+    "reservation_event_id",
+    "proposal_key",
+    "proposal_transaction_id",
+    "expected_registry_ordinal",
+    "observed_registry_ordinal"
+  ]
+}

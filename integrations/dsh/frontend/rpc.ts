@@ -10,7 +10,7 @@ export interface Profile {
   default_reasoning_effort: string | null; ready: boolean
 }
 export interface Turn {
-  ordinal: number; key: string; text: string; kind: string; model: Profile
+  ordinal: number; key: string | null; text: string; kind: string; model: Profile
   state: string; created: number; updated: number; turn_ref: unknown; attempt: unknown
   model_evidence?: string
   answer: { reply: string; protocol_valid: boolean; task?: unknown } | null

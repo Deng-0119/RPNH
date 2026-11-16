@@ -625,6 +625,23 @@ def materialize_reentry_workspaces(
             or not isinstance(kernel, _ResourceServiceKernel)
             or kernel._ResourceServiceKernel__core is not core):
         raise TypeError("workspace reentry materialization requires owner services")
+    # Reentry has no active firing to keep a later disable waiting.  Serialize
+    # the actual local restoration with the same Registry writer lock, instead
+    # of treating two read checks as proof that buffered bytes are no longer in
+    # use.  This records no new state and is not an external transport receipt.
+    with core.event_store._lock, core.event_store.connection_scope() as db:
+        db.execute("BEGIN IMMEDIATE")
+        epoch = int(db.execute("SELECT value FROM registry_meta WHERE key='writer_epoch'").fetchone()[0])
+        if epoch != core.writer_epoch:
+            from .event_store import StaleWriterError
+            raise StaleWriterError("workspace reentry has a stale original writer")
+        _authority_ref, authority = current_run_execution_authority(core, kernel)
+        if authority.get("latest_checkpoint_ref") != _ref_payload(checkpoint_ref):
+            raise ResourceIntegrityFault("workspace reentry is not the current original checkpoint")
+        _materialize_reentry_workspaces_at(core, kernel, checkpoint_ref, db)
+
+
+def _materialize_reentry_workspaces_at(core, kernel, checkpoint_ref, db):
     _, checkpoint = _registered(core, checkpoint_ref, "marking_checkpoint/v1")
     authorization_payload = checkpoint.get("reentry_authorization_ref")
     if authorization_payload is None:
@@ -632,6 +649,8 @@ def materialize_reentry_workspaces(
     authorization_ref = _version_from_payload(authorization_payload)
     _registered(core, authorization_ref, "run_reopen_authorization/v1")
     from cpn.rpnh.workspace_settlement import _archive_files, _restore_tree
+    from cpn.rpnh.material_body_policy import require_workspace_material_available_at
+    restorations = []
     for revision_ref in _canonical_refs(checkpoint["workspace_revision_refs"]):
         _, revision = _registered(core, revision_ref, "workspace_revision/v1")
         if (revision.get("disposition") != "owner_reopen"
@@ -652,7 +671,13 @@ def materialize_reentry_workspaces(
             raise ResourceIntegrityFault(
                 "reentry workspace lineage has no unique registered root")
         root = _resolve_registry_workspace_root(core, next(iter(roots)))
-        _restore_tree(root, _archive_files(core, revision_ref))
+        require_workspace_material_available_at(core.event_store, db, core.task_id,
+            revision_ref, purpose="checkpoint_reentry")
+        restorations.append((root, _archive_files(core, revision_ref)))
+    # Check every member before changing any mutable tree.  The original
+    # SQLite writer lock remains held until all actual local writes finish.
+    for root, files in restorations:
+        _restore_tree(root, files)
 
 
 __all__ = (

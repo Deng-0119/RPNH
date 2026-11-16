@@ -126,8 +126,9 @@ class OpenCodeProtocol:
     def __init__(self, gateway: Any, directory: str, *,
                  profile: OpenCodeCompatibilityProfile = DEFAULT_PROFILE) -> None:
         self._profile = require_opencode_profile(profile)
-        if profile.version == "2.2.5" and type(self) is OpenCodeProtocol:
-            raise ValueError("OpenCode 2.2.5 requires its separate v2 protocol candidate")
+        if profile.version.startswith("2.") and type(self) is OpenCodeProtocol:
+            raise ValueError(
+                f"OpenCode {profile.version} requires its separate v2 protocol candidate")
         self.gateway, self.directory = gateway, directory
         configuration = gateway.call("configuration")
         if (not isinstance(configuration, Mapping)
@@ -756,5 +757,12 @@ class OpenCodeProtocol:
 
 
 def encode_sse(value: Mapping[str, Any]) -> bytes:
+    # Legacy events carry their ID in payload; the retained 2.2.5 projection
+    # carries it at the top level. SSE only frames that existing display ID.
+    payload = value.get("payload", value)
+    identity = payload.get("id") if isinstance(payload, Mapping) else None
+    if (not isinstance(identity, str) or not identity.startswith("evt_")
+            or any(character in identity for character in "\r\n\x00")):
+        raise FrontendError("invalid_event_identity", "Invalid display event identity.", 500)
     encoded = canonical(value)
-    return f"id: {stable_id(encoded)}\ndata: {encoded}\n\n".encode("utf-8")
+    return f"id: {identity}\ndata: {encoded}\n\n".encode("utf-8")

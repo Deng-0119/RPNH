@@ -19,6 +19,7 @@ from typing import Any, Callable, Mapping
 from jsonschema import Draft7Validator
 
 API_VERSION = "rpnh/plugin/v1"
+API_VERSION_V2 = "rpnh/plugin/v2"
 _SYMBOL = re.compile(r"[a-z][a-z0-9_]{0,47}\Z")
 _VERSION = re.compile(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,63}\Z")
 
@@ -69,7 +70,28 @@ def version(value: str) -> str:
     return value
 
 
-def checked_schema(value: Mapping[str, Any]) -> Mapping[str, Any]:
+def checked_account_requirement(value: Mapping[str, str] | None):
+    """Freeze an explicit required account slot; absence retains prior behavior.
+
+    The installed operation fixes only a service and supported renderer. The
+    original account plan/resolver still supplies exact account identity and
+    current-use authority; neither belongs in model arguments or this field.
+    """
+    if value is None:
+        return None
+    if not isinstance(value, Mapping) or set(value) != {"service_id", "slot"}:
+        raise PluginError("account requirement requires exact service_id and slot")
+    service = value["service_id"]
+    if (type(service) is not str or not service or service != service.strip()
+            or len(service) > 512
+            or any(ord(character) < 32 or ord(character) == 127 for character in service)):
+        raise PluginError("account requirement service_id requires bounded canonical text")
+    if type(value["slot"]) is not str or value["slot"] != "github_pat/v1":
+        raise PluginError("account requirement slot is not supported")
+    return frozen({"service_id": service, "slot": value["slot"]})
+
+
+def checked_schema(value: Mapping[str, Any], *, schema_locations_only=False) -> Mapping[str, Any]:
     document = json_copy(value)
     if not isinstance(document, dict):
         raise PluginError("schema must be a JSON object")
@@ -87,7 +109,68 @@ def checked_schema(value: Mapping[str, Any]) -> Mapping[str, Any]:
         elif isinstance(node, list):
             for item in node:
                 walk(item)
-    walk(document)
+    visited = set()
+    local_references, nested_identifiers = False, False
+    def local_target(reference):
+        # Resolve only pointers inside this already selected JSON document.
+        # A local reference may select a schema stored below an annotation;
+        # inspect that target too without enabling any remote resolver.
+        from urllib.parse import unquote
+        target = document
+        try:
+            for part in unquote(reference[2:]).split("/"):
+                if re.search(r"~(?:[^01]|$)", part):
+                    raise ValueError("invalid pointer escape")
+                part = part.replace("~1", "/").replace("~0", "~")
+                if isinstance(target, list) and re.fullmatch(r"0|[1-9][0-9]*", part):
+                    target = target[int(part)]
+                else:
+                    target = target[part]
+        except (KeyError, IndexError, TypeError, ValueError):
+            raise PluginError("local schema reference is not in the selected document") from None
+        if not isinstance(target, dict) and type(target) is not bool:
+            raise PluginError("local schema reference must select a schema")
+        return target
+
+    def walk_schema(node):
+        nonlocal local_references, nested_identifiers
+        if not isinstance(node, dict) or id(node) in visited:
+            return
+        visited.add(id(node))
+        if node.get("$schema", "http://json-schema.org/draft-07/schema#") != (
+                "http://json-schema.org/draft-07/schema#"):
+            raise PluginError("versioned plugin schemas require JSON Schema draft-07")
+        if node is not document and "$id" in node:
+            nested_identifiers = True
+        if "$ref" in node:
+            local_references = True
+            reference = node["$ref"]
+            if not isinstance(reference, str) or not reference.startswith("#/"):
+                raise PluginError("external schema references are not supported")
+            walk_schema(local_target(reference))
+        if "$dynamicRef" in node or "$recursiveRef" in node:
+            raise PluginError("unsupported schema reference dialect")
+        for key in ("properties", "patternProperties", "definitions"):
+            if isinstance(node.get(key), dict):
+                for child in node[key].values():
+                    walk_schema(child)
+        for key in ("additionalProperties", "propertyNames", "items", "additionalItems",
+                    "contains", "not", "if", "then", "else"):
+            child = node.get(key)
+            for nested in child if isinstance(child, list) else (child,):
+                walk_schema(nested)
+        for key in ("allOf", "anyOf", "oneOf"):
+            if isinstance(node.get(key), list):
+                for child in node[key]:
+                    walk_schema(child)
+        if isinstance(node.get("dependencies"), dict):
+            for child in node["dependencies"].values():
+                walk_schema(child)
+    (walk_schema if schema_locations_only else walk)(document)
+    if schema_locations_only and local_references and nested_identifiers:
+        # A nested $id can rebase a fragment pointer. This adapter supports
+        # selected-document pointers, not a second schema resolver/network path.
+        raise PluginError("versioned local references with nested identifiers are not supported")
     try:
         Draft7Validator.check_schema(document)
     except Exception as exc:
@@ -110,6 +193,7 @@ class PluginResource:
     name: str
     payload: bytes
     media_type: str = "text/plain"
+    revision: str | None = None
 
     def __post_init__(self):
         symbol(self.name)
@@ -117,14 +201,47 @@ class PluginResource:
             raise PluginError("resource payload must be nonempty immutable bytes")
         if not isinstance(self.media_type, str) or "/" not in self.media_type:
             raise PluginError("resource media type is required")
+        if self.revision is not None:
+            version(self.revision)
 
-    def descriptor(self) -> dict[str, Any]:
+    def descriptor(self, *, identity_version="v1") -> dict[str, Any]:
+        if identity_version == "v2":
+            if self.revision is None:
+                raise PluginError("versioned plugin resources require an explicit revision")
+            return {"name": self.name, "media_type": self.media_type,
+                    "size_bytes": len(self.payload), "revision": self.revision}
+        if identity_version != "v1":
+            raise PluginError("unsupported plugin resource identity version")
         return {"name": self.name, "media_type": self.media_type,
                 "size_bytes": len(self.payload),
                 "sha256": hashlib.sha256(self.payload).hexdigest()}
 
 
-def implementation_identity(handler):
+def plugin_implementation(implementation_id: str, revision: str):
+    """Declare installed code's explicit identity; this does not grant execution.
+
+    The HOST selects an installed callable and the ordinary registration contract
+    fixes its declaration. No task-supplied module locator is imported here.
+    """
+    if (not isinstance(implementation_id, str)
+            or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.:-]{0,191}", implementation_id)):
+        raise PluginError("implementation requires an explicit installed identifier")
+    version(revision)
+    def declare(handler):
+        if not inspect.isfunction(handler) or "<" in handler.__qualname__:
+            raise PluginError("handler must be an importable Python function")
+        identity = {"schema_version": "rpnh/plugin_implementation/v2",
+                    "implementation_id": implementation_id, "revision": revision,
+                    "handler": handler.__module__ + "." + handler.__qualname__}
+        previous = getattr(handler, "__rpnh_plugin_implementation__", None)
+        if previous is not None and previous != identity:
+            raise PluginError("handler already declares another implementation identity")
+        handler.__rpnh_plugin_implementation__ = frozen(identity)
+        return handler
+    return declare
+
+
+def implementation_identity(handler, *, expected=None, identity_version="v1"):
     """Pin the handler module bytes, not an executable locator from task JSON.
 
     Transitive dependencies still belong to the operator's installed environment.
@@ -132,6 +249,31 @@ def implementation_identity(handler):
     """
     if not inspect.isfunction(handler) or "<" in handler.__qualname__:
         raise PluginError("handler must be an importable Python function")
+    if expected is not None:
+        if isinstance(expected, Mapping) and "schema_version" in expected and (
+                expected["schema_version"] != "rpnh/plugin_implementation/v2"):
+            raise PluginError("unsupported plugin implementation identity version")
+        identity_version = ("v2" if isinstance(expected, Mapping)
+                            and expected.get("schema_version") == "rpnh/plugin_implementation/v2"
+                            else "v1")
+    if identity_version == "v2":
+        try:
+            pickle.dumps(handler)
+        except (TypeError, pickle.PicklingError, AttributeError) as exc:
+            raise PluginError("handler requires an installed importable module") from exc
+        identity = getattr(handler, "__rpnh_plugin_implementation__", None)
+        if (not isinstance(identity, Mapping)
+                or set(identity) != {"schema_version", "implementation_id", "revision", "handler"}
+                or identity.get("schema_version") != "rpnh/plugin_implementation/v2"
+                or identity.get("handler") != handler.__module__ + "." + handler.__qualname__):
+            raise PluginError("installed handler lacks its explicit implementation identity")
+        if (not isinstance(identity["implementation_id"], str)
+                or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.:-]{0,191}", identity["implementation_id"])):
+            raise PluginError("installed handler implementation identity is invalid")
+        version(identity["revision"])
+        return json_copy(identity)
+    if identity_version != "v1":
+        raise PluginError("unsupported plugin implementation identity version")
     try:
         pickle.dumps(handler)
         source = inspect.getsourcefile(handler)
@@ -155,6 +297,9 @@ class PluginOperation:
     effect: str = "pure"
     timeout_seconds: int = 60
     max_result_bytes: int = 1024 * 1024
+    identity_version: str = "v1"
+    declaration_revision: str | None = None
+    account_requirement: Mapping[str, str] | None = None
     implementation: Mapping[str, str] = field(init=False, repr=False)
 
     def __post_init__(self):
@@ -175,13 +320,29 @@ class PluginOperation:
             raise PluginError("operation resources must be distinct names")
         for name in self.resources:
             symbol(name)
-        object.__setattr__(self, "implementation", frozen(implementation_identity(self.handler)))
+        if self.identity_version not in {"v1", "v2"}:
+            raise PluginError("unsupported plugin operation identity version")
+        if self.identity_version == "v2":
+            version(self.declaration_revision)
+        elif self.declaration_revision is not None:
+            raise PluginError("legacy plugin operation cannot declare a versioned identity")
+        if self.account_requirement is not None and self.identity_version != "v2":
+            raise PluginError("account requirements need a versioned plugin operation")
+        object.__setattr__(self, "account_requirement", checked_account_requirement(self.account_requirement))
+        object.__setattr__(self, "implementation", frozen(implementation_identity(
+            self.handler, identity_version=self.identity_version)))
         object.__setattr__(self, "resources", tuple(sorted(self.resources)))
-        object.__setattr__(self, "input_schema", checked_schema(self.input_schema))
-        object.__setattr__(self, "output_schema", checked_schema(self.output_schema))
+        object.__setattr__(self, "input_schema", checked_schema(
+            self.input_schema, schema_locations_only=self.identity_version == "v2"))
+        object.__setattr__(self, "output_schema", checked_schema(
+            self.output_schema, schema_locations_only=self.identity_version == "v2"))
 
     def descriptor(self) -> dict[str, Any]:
         return {"name": self.name, "description": self.description,
+                **({} if self.identity_version == "v1" else {
+                    "identity_version": "v2", "declaration_revision": self.declaration_revision}),
+                **({"account_requirement": json_copy(self.account_requirement)}
+                   if self.account_requirement is not None else {}),
                 "implementation": json_copy(self.implementation),
                 "input_schema": json_copy(self.input_schema),
                 "output_schema": json_copy(self.output_schema),
@@ -204,7 +365,7 @@ class PluginDefinition:
     def __post_init__(self):
         symbol(self.name)
         version(self.version)
-        if self.api_version != API_VERSION:
+        if self.api_version not in {API_VERSION, API_VERSION_V2}:
             raise PluginError("unsupported native plugin API version")
         for items, cls, label in ((self.operations, PluginOperation, "operations"),
                                   (self.resources, PluginResource, "resources")):
@@ -213,6 +374,11 @@ class PluginDefinition:
                 raise PluginError(f"plugin {label} must have distinct typed entries")
         if not self.operations:
             raise PluginError("plugin must contribute an operation")
+        identity_version = "v2" if self.api_version == API_VERSION_V2 else "v1"
+        if any(op.identity_version != identity_version for op in self.operations):
+            raise PluginError("plugin API and operation identity versions must agree")
+        if identity_version == "v2" and any(r.revision is None for r in self.resources):
+            raise PluginError("versioned plugin resources require explicit revisions")
         available = {x.name for x in self.resources}
         if any(set(op.resources) - available for op in self.operations):
             raise PluginError("operation refers to an undeclared resource")
@@ -224,14 +390,17 @@ class PluginDefinition:
         if self.name in dependencies:
             raise PluginError("plugin cannot depend on itself")
         object.__setattr__(self, "requires", frozen(dependencies))
-        object.__setattr__(self, "config_schema", checked_schema(self.config_schema))
+        object.__setattr__(self, "config_schema", checked_schema(
+            self.config_schema, schema_locations_only=identity_version == "v2"))
 
     def descriptor(self) -> dict[str, Any]:
         return {"api_version": self.api_version, "name": self.name,
                 "version": self.version, "requires": json_copy(self.requires),
                 "config_schema": json_copy(self.config_schema),
                 "operations": [x.descriptor() for x in sorted(self.operations, key=lambda x: x.name)],
-                "resources": [x.descriptor() for x in sorted(self.resources, key=lambda x: x.name)]}
+                "resources": [x.descriptor(identity_version=(
+                    "v2" if self.api_version == API_VERSION_V2 else "v1"))
+                    for x in sorted(self.resources, key=lambda x: x.name)]}
 
 
 @dataclass(frozen=True, slots=True)
@@ -250,10 +419,10 @@ class ResourceView:
 class PluginContext:
     """Worker-local inputs and cooperative cancellation; no owner or gateway."""
     __slots__ = ("config", "resources", "operation_id", "invocation_id",
-                 "firing_id", "call_id", "_cancel", "_deadline")
+                 "firing_id", "call_id", "_cancel", "_deadline", "_child_environment")
 
     def __init__(self, *, config, resources, operation_id, invocation_id,
-                 firing_id, call_id, cancel, deadline):
+                 firing_id, call_id, cancel, deadline, private_environment=None):
         self.config = frozen(config)
         self.resources = MappingProxyType({r.name: r for r in resources})
         self.operation_id = operation_id
@@ -261,6 +430,22 @@ class PluginContext:
         self.firing_id = firing_id
         self.call_id = call_id
         self._cancel, self._deadline = cancel, deadline
+        environment = {} if private_environment is None else private_environment
+        if (not isinstance(environment, Mapping)
+                or any(not isinstance(k, str) or not k or "=" in k or "\x00" in k
+                       or not isinstance(v, str) or "\x00" in v
+                       for k, v in environment.items())):
+            raise PluginError("private child environment must contain explicit string values")
+        # The worker owns and clears this dictionary when the private FD scope
+        # ends. Keep the read-only view attached to it instead of retaining a
+        # second credential copy in the context.
+        self._child_environment = MappingProxyType(
+            environment if type(environment) is dict else dict(environment))
+
+    @property
+    def child_environment(self) -> Mapping[str, str]:
+        """Worker-private values for one selected child; never persisted config."""
+        return self._child_environment
 
     @property
     def cancelled(self) -> bool:
@@ -274,3 +459,4 @@ class PluginContext:
     def check_cancelled(self) -> None:
         if self.cancelled or self.remaining_seconds <= 0:
             raise PluginError("plugin execution cancelled or deadline exceeded")
+

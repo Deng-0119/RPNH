@@ -1,6 +1,7 @@
 import { spawn, type ChildProcessWithoutNullStreams } from 'node:child_process'
 import { randomUUID } from 'node:crypto'
 import { Context, Service } from '@deepseek-ai/cordis'
+import { ReplyFragments } from './reply-codec.ts'
 export const REVISION = '687f282e8625c6b8d11ff58211a90524be2e4317'
 export const PROTOCOL = 'rpnh/dsh/v1'
 export const MANAGED_TOOL_RESULT_LIMIT = 16 * 1024 * 1024
@@ -57,7 +58,7 @@ export type EffectHost = (request: JsonRecord, signal: AbortSignal) => Promise<J
 /** Private bidirectional pipe, never an asynchronous authority/log replica. */
 export class OwnerClient {
   readonly process: ChildProcessWithoutNullStreams
-  private pending = new Map<string, { resolve: (v: any) => void; reject: (e: Error) => void }>()
+  private pending = new Map<string, { resolve: (v: any) => void; reject: (e: Error) => void; fragments?: ReplyFragments }>()
   private buffer = Buffer.alloc(0)
   private active: AbortController | undefined
   private closed = false
@@ -130,6 +131,15 @@ export class OwnerClient {
     const id = frame.kind === 'ready' ? 'ready' : frame.id
     const pending = this.pending.get(id)
     if (!pending) { this.fail(new Error('unknown reply correlation')); return }
+    if (frame.kind === 'reply-fragment') {
+      if (frame.error !== undefined || frame.result !== undefined) throw new Error('mixed reply fragment envelope')
+      pending.fragments ??= new ReplyFragments()
+      const result = pending.fragments.append(frame.fragment)
+      if (!result.complete) return
+      this.pending.delete(id); pending.resolve(result.value)
+      return
+    }
+    if (pending.fragments || !['ready', 'reply'].includes(frame.kind)) throw new Error('reply stream changed its envelope')
     this.pending.delete(id)
     if (frame.error) pending.reject(new Error(`${frame.error.type}: ${frame.error.message}`))
     else pending.resolve(frame.result)
@@ -146,7 +156,8 @@ export class OwnerClient {
     const id = randomUUID()
     const result = await new Promise<any>((resolve, reject) => {
       this.pending.set(id, { resolve, reject })
-      try { this.write({ kind: 'command', id, method, ...(request ? { request } : {}) }) }
+      try { this.write({ kind: 'command', id, method, accept_reply_fragments: true,
+        ...(request ? { request } : {}) }) }
       catch (error) { this.pending.delete(id); reject(error) }
     })
     if (method === 'history') this.historySnapshot = result

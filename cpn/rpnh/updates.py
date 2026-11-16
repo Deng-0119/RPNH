@@ -27,7 +27,7 @@ from packaging.version import InvalidVersion, Version
 REPOSITORY = "Deng-0119/RPNH"
 RELEASES_URL = f"https://api.github.com/repos/{REPOSITORY}/releases?per_page=20"
 RAW_ROOT = f"https://raw.githubusercontent.com/{REPOSITORY}"
-ENTRIES = ("basic", "opencode", "dsh-web", "dsh-legacy", "dsh-operator")
+ENTRIES = ("basic", "codex", "opencode", "dsh-web", "dsh-legacy", "dsh-operator")
 CHANNELS = ("stable", "prerelease")
 SCHEMA = "rpnh/update_state/v1"
 TTL = 24 * 60 * 60
@@ -153,6 +153,14 @@ def get_json(url: str):
     if len(data) > 1024 * 1024:
         raise ValueError("update metadata exceeds limit")
     return json.loads(data)
+
+
+def discover_v2(root: Path, *, channel: str, check: bool = False, fetch=None,
+                now: float | None = None, planning=None, selected_release=None) -> dict:
+    """Inspect the complete v2 current selection without reading/writing v1 offers."""
+    from .published_releases import inspect_root
+    return inspect_root(root, channel=channel, check=check, fetch=fetch, now=now,
+                        planning=planning, selected_release=selected_release)
 
 
 def _version(value: object) -> Version:
@@ -384,6 +392,13 @@ def startup(entry: str, *, interactive: bool, input_fn=None, output_fn=None) -> 
     """
     if (not interactive or entry not in ENTRIES
             or os.environ.get("RPNH_UPDATES", "on") == "off"):
+        return False
+    # A v1 single-entry offer must never replace a v2 installation's complete
+    # component set or rewrite the old installation's reminder cache.
+    from cpn.update_context import managed_context_hint
+    from .update_install import _v2_root
+    context = managed_context_hint()
+    if context is not None and _v2_root(context):
         return False
     write, read = output_fn or print, input_fn or input
     try:

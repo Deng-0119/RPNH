@@ -1,3 +1,5 @@
+> 源码候选：Linux/npm 整合正在审核。[范围、证据与剩余发行工作](docs/guides/linux-npm-candidate_ZH.md)。本分支不是已发布的 npm 版本。
+
 # RPNH Harness
 
 [English](README.md) | 中文

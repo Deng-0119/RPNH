@@ -9,10 +9,11 @@ import os
 from pathlib import Path
 from typing import Any, Mapping
 
-from .api import (API_VERSION, PluginDefinition, PluginError, PluginOperation,
+from .api import (API_VERSION, API_VERSION_V2, PluginDefinition, PluginError, PluginOperation,
                   canonical, frozen, json_copy, symbol, validate, version)
 
 CONFIG_VERSION = "rpnh/plugins/v1"
+CONFIG_VERSION_V2 = "rpnh/plugins/v2"
 ENTRY_POINT_GROUP = "rpnh.plugins"
 
 
@@ -21,11 +22,16 @@ class BoundPlugin:
     definition: PluginDefinition
     config: Mapping[str, Any]
     environment: tuple[str, ...] = ()
+    binding_revision: str | None = None
 
     def __post_init__(self):
         import re
         if not isinstance(self.definition, PluginDefinition):
             raise PluginError("bound plugin requires a validated definition")
+        if self.definition.api_version == API_VERSION_V2:
+            version(self.binding_revision)
+        elif self.binding_revision is not None:
+            raise PluginError("legacy plugin binding cannot declare a versioned identity")
         if (not isinstance(self.environment, tuple)
                 or any(not isinstance(x, str) or not re.fullmatch(r"[A-Z_][A-Z0-9_]*", x)
                        for x in self.environment)
@@ -36,20 +42,45 @@ class BoundPlugin:
 
     def descriptor(self):
         return {"definition": self.definition.descriptor(), "config": json_copy(self.config),
-                "environment": list(self.environment)}
+                "environment": list(self.environment),
+                **({} if not self.versioned else {"binding_revision": self.binding_revision})}
+
+    @property
+    def versioned(self):
+        return self.definition.api_version == API_VERSION_V2
+
+    @property
+    def binding_identity(self):
+        if not self.versioned:
+            raise PluginError("legacy bindings do not have a versioned identity")
+        return {"schema_version": "rpnh/plugin_binding/v2",
+                "plugin_name": self.definition.name,
+                "plugin_version": self.definition.version,
+                "binding_revision": self.binding_revision}
+
+    def identity_fields(self):
+        return ({"binding_identity": self.binding_identity} if self.versioned else
+                {"binding_digest": self.digest})
 
     @property
     def digest(self):
+        if self.versioned:
+            raise PluginError("versioned plugin bindings use explicit revisions")
         return hashlib.sha256(canonical(self.descriptor())).hexdigest()
 
 
 class PluginCatalog:
     """Complete selected catalog. No imports from task-authored locators."""
-    def __init__(self, plugins=()):
+    def __init__(self, plugins=(), *, catalog_revision=None):
+        self.catalog_revision = catalog_revision
+        if catalog_revision is not None:
+            version(catalog_revision)
         self._plugins = {}
         for plugin in plugins:
             if not isinstance(plugin, BoundPlugin):
                 raise PluginError("catalog requires configured plugin definitions")
+            if plugin.versioned != (catalog_revision is not None):
+                raise PluginError("catalog and plugin identity versions must agree")
             name = plugin.definition.name
             if name in self._plugins:
                 raise PluginError("duplicate plugin identity")
@@ -84,17 +115,49 @@ class PluginCatalog:
 
     def operation_key(self, selector):
         plugin, operation = self.resolve(selector)
+        if self.versioned:
+            return (f"rpnh/plugin/v2/{plugin.definition.name}/{plugin.definition.version}/"
+                    f"{plugin.binding_revision}/{operation.name}/{operation.declaration_revision}")
         return (f"rpnh/plugin/{plugin.definition.name}/{plugin.definition.version}/"
                 f"{operation.name}/{plugin.digest}")
 
     def describe(self):
         return [{"selector": p.definition.name + "/" + op.name,
-                 "version": p.definition.version, "binding_digest": p.digest,
+                 "version": p.definition.version, **p.identity_fields(),
                  **op.descriptor()}
                 for p in self.plugins for op in sorted(p.definition.operations, key=lambda x: x.name)]
 
     @property
+    def versioned(self):
+        return self.catalog_revision is not None
+
+    @property
+    def catalog_identity(self):
+        if not self.versioned:
+            raise PluginError("legacy catalogs do not have a versioned identity")
+        return {"schema_version": "rpnh/plugin_catalog/v2", "revision": self.catalog_revision,
+                "bindings": [p.binding_identity for p in self.plugins]}
+
+    def identity_fields(self):
+        return ({"plugin_catalog_identity": self.catalog_identity} if self.versioned else
+                {"plugin_catalog_digest": self.digest})
+
+    def versioned_snapshot(self):
+        """Exact nonsecret HOST selection, for original task/profile persistence."""
+        import base64
+        if not self.versioned:
+            raise PluginError("legacy catalogs do not have a versioned snapshot")
+        return {"schema_version": "rpnh/plugin_catalog_snapshot/v1",
+                "identity": self.catalog_identity,
+                "bindings": [{**plugin.descriptor(), "resource_payloads": {
+                    resource.name: base64.b64encode(resource.payload).decode("ascii")
+                    for resource in sorted(plugin.definition.resources, key=lambda item: item.name)}}
+                    for plugin in self.plugins]}
+
+    @property
     def digest(self):
+        if self.versioned:
+            raise PluginError("versioned plugin catalogs use explicit revisions")
         return hashlib.sha256(canonical([p.descriptor() for p in self.plugins])).hexdigest()
 
 
@@ -107,6 +170,7 @@ def load_catalog(document=None, *, factories=None) -> PluginCatalog:
     if document is None:
         return PluginCatalog()
     rows = _selection_rows(document)
+    versioned = document["schema_version"] == CONFIG_VERSION_V2
     installed = None if factories is not None else metadata.entry_points(group=ENTRY_POINT_GROUP)
     configured = []
     for row in rows:
@@ -122,11 +186,12 @@ def load_catalog(document=None, *, factories=None) -> PluginCatalog:
         definition = factory()
         if (not isinstance(definition, PluginDefinition)
                 or definition.name != row["name"] or definition.version != row["version"]
-                or definition.api_version != API_VERSION):
+                or definition.api_version != (API_VERSION_V2 if versioned else API_VERSION)):
             raise PluginError("installed plugin differs from the selected identity/version")
         config = validate(definition.config_schema, row["config"])
-        configured.append(BoundPlugin(definition, frozen(config), tuple(sorted(row["environment"]))))
-    return PluginCatalog(configured)
+        configured.append(BoundPlugin(definition, frozen(config), tuple(sorted(row["environment"])),
+                                      row.get("binding_revision")))
+    return PluginCatalog(configured, catalog_revision=document.get("catalog_revision"))
 
 
 def read_config(path: Path | None = None):
@@ -150,20 +215,28 @@ def _selection_rows(document):
     if document is None:
         return []
     value = json_copy(document)
-    if (not isinstance(value, dict) or set(value) != {"schema_version", "plugins"}
-            or value["schema_version"] != CONFIG_VERSION or not isinstance(value["plugins"], list)):
+    versioned = isinstance(value, dict) and value.get("schema_version") == CONFIG_VERSION_V2
+    fields = {"schema_version", "plugins"} | ({"catalog_revision"} if versioned else set())
+    if (not isinstance(value, dict) or set(value) != fields
+            or value["schema_version"] not in {CONFIG_VERSION, CONFIG_VERSION_V2}
+            or not isinstance(value["plugins"], list)):
         raise PluginError("invalid plugin configuration document")
+    if versioned:
+        version(value["catalog_revision"])
     rows = value["plugins"]
     # Check the entire input before importing any selected factory.
     seen = set()
     for row in rows:
         if (not isinstance(row, dict)
-                or set(row) != {"name", "entry_point", "version", "config", "environment"}
+                or set(row) != ({"name", "entry_point", "version", "config", "environment"}
+                               | ({"binding_revision"} if versioned else set()))
                 or not isinstance(row["entry_point"], str) or not row["entry_point"]
                 or not isinstance(row["config"], dict)
                 or not isinstance(row["environment"], list)):
             raise PluginError("plugin selection requires name/entry_point/version/config/environment")
         symbol(row["name"]); version(row["version"])
+        if versioned:
+            version(row["binding_revision"])
         if row["name"] in seen:
             raise PluginError("duplicate selected plugin")
         seen.add(row["name"])
@@ -240,15 +313,17 @@ def _selection_diagnostics(selected, observations):
                 elif declaration is None:
                     reason = "selected_plugin_not_declared"
                 else:
+                    expected_api = API_VERSION_V2 if "binding_revision" in choice else API_VERSION
                     fields = [key for key, expected in (
-                        ("version", choice["version"]), ("api_contract", API_VERSION))
+                        ("version", choice["version"]), ("api_contract", expected_api))
                         if declaration[key] != expected]
                     status = "mismatch" if fields else "matched"
                     reason = "selected_declaration_mismatch" if fields else "selected_declaration_match"
         checks.append({"entry_point": choice["entry_point"], "name": choice["name"],
                        "version": choice["version"], "status": status, "reason": reason,
                        "mismatched_fields": fields})
-    return {"evidence_scope": "inert_metadata_only", "expected_api_contract": API_VERSION,
+    expected_api = API_VERSION_V2 if selected and "binding_revision" in selected[0] else API_VERSION
+    return {"evidence_scope": "inert_metadata_only", "expected_api_contract": expected_api,
             "checks": checks}
 
 
@@ -337,3 +412,4 @@ def inspect_plugin_wheel(path):
             "entry_points": entries, "inert_metadata": {"status": "unknown" if inert is None else "declared", "document": inert},
             "installed": "not_checked", "selected": "not_checked",
             "factory_loaded": "not_checked", "host_bound": "not_checked"}
+

@@ -91,6 +91,19 @@ class DshFrontendRPC:
         return selection, params.get("reasoningEffort", effort)
 
     def _dispatch(self, method: str, params: dict[str, Any]) -> Any:
+        if method == "select_model":
+            if ("selectionId" not in params
+                    or params.keys() - {"selectionId", "reasoningEffort"}
+                    or not isinstance(params["selectionId"], str)
+                    or not params["selectionId"]
+                    or ("reasoningEffort" in params and (
+                        not isinstance(params["reasoningEffort"], str)
+                        or not params["reasoningEffort"]))):
+                raise FrontendError("invalid_params", "Invalid model selection parameters.", 400)
+            return self.gateway.call(
+                "select_model", self.session_id,
+                selection_id=params["selectionId"],
+                reasoning_effort=params.get("reasoningEffort"))
         if method in {"initialize", "snapshot", "abort"}:
             if params:
                 raise FrontendError("invalid_params", "This RPC method takes no parameters.", 400)

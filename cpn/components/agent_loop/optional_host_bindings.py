@@ -30,6 +30,7 @@ from cpn.components.tool_executors import (
     capture_execution_environment_inventory,
 )
 from cpn.plugins.api import json_copy
+from .managed_identity import managed_identity_fields
 
 
 def _declared_agent_prompt(operation, target: LLMInputTarget) -> dict:
@@ -416,10 +417,14 @@ def make_optional_agent_host_bindings(llm_input_target: LLMInputTarget, *,
                         != declaration.name
                         or declared["identity"].get("selector")
                         != declaration.selector
-                        or declared["identity"].get("binding_digest")
-                        != declaration.identity["binding_digest"]
+                        or canonical_json(declared["identity"])
+                        != canonical_json(json_copy(declaration.identity))
+                        or canonical_json(declared["contracts"])
+                        != canonical_json(json_copy(declaration.contracts))
                         or declared["contracts"].get("invocation_protocol")
-                        != "rpnh/managed_native_plugin_tool_invocation/v2"):
+                        != ("rpnh/managed_native_plugin_tool_invocation/v3"
+                            if declaration.protocol_version == "v3" else
+                            "rpnh/managed_native_plugin_tool_invocation/v2")):
                     raise ValueError(
                         "optional loop tool lacks its exact HOST capability contract")
                 tools.append({
@@ -446,15 +451,18 @@ def make_optional_agent_host_bindings(llm_input_target: LLMInputTarget, *,
                         "optional_managed_tool_scheduler")
                 managed_binding = static(
                     f"managed-tools:{name}", {
-                        "schema_version": "rpnh/agent_loop_managed_tool_bindings/v1",
+                        "schema_version": ("rpnh/agent_loop_managed_tool_bindings/v2"
+                                           if managed.protocol_version == "v3" else
+                                           "rpnh/agent_loop_managed_tool_bindings/v1"),
                         "semantic_node_id": node_id,
-                        "plugin_catalog_digest": managed.plugin_catalog_digest,
+                        **managed.identity_fields(),
                         "bindings": {
                             declaration.name: {
                                 "registration_key": declaration.registration_key,
                                 "selector": declaration.selector,
-                                "binding_digest": declaration.identity[
-                                    "binding_digest"],
+                                **{key: value for key, value in managed_identity_fields(
+                                    declaration.identity).items() if key in {
+                                        "binding_digest", "binding_identity"}},
                                 "effect": declaration.effect,
                                 "max_result_bytes": declaration.max_result_bytes,
                             }

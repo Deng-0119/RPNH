@@ -286,6 +286,24 @@ def _decision(store, db, task, project, data, *, accepting=False):
 def validate_commit(store, db, *, task_id, transaction_id, idempotency_key,
                     objects, events, relations, action, existing=None):
     """Always called, including when the optional HOST inventory is absent."""
+    from .human_viewer import validate_transport_action
+    if validate_transport_action(store, db, task_id=task_id, idempotency_key=idempotency_key,
+            objects=objects, events=events, relations=relations, action=action, existing=existing):
+        return
+    from .material_availability import validate_plan_action
+    if validate_plan_action(store, db, task_id=task_id, idempotency_key=idempotency_key,
+            objects=objects, action=action, existing=existing):
+        return
+    from .material_input_lifecycle import validate_action
+    if validate_action(store, db, task_id=task_id, transaction_id=transaction_id,
+            idempotency_key=idempotency_key, objects=objects, events=events,
+            relations=relations, action=action, existing=existing):
+        return
+    from .material_control import validate_material_control
+    if validate_material_control(store, db, task_id=task_id,
+            idempotency_key=idempotency_key, objects=objects,
+            action=action, existing=existing):
+        return
     if existing is not None:
         check_replay(store, db, task_id, existing, action)
         return

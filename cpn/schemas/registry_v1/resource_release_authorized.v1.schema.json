@@ -33,7 +33,7 @@
     "witness_ref": {"$ref": "#/definitions/witness_ref"},
     "resource_ref": {"$ref": "#/definitions/resource_ref"},
     "resource_byte_count": {"type": "integer", "minimum": 0},
-    "boundary": {"enum": ["llm_prompt", "tool_result", "subprocess_read", "parent_receipt", "petri_input"]},
+    "boundary": {"enum": ["llm_prompt", "tool_result", "subprocess_read", "parent_receipt", "petri_input", "human_viewer"]},
     "expires_at": {"type": "string", "minLength": 1}
   },
   "required": ["delivery_ref", "witness_ref", "resource_ref", "resource_byte_count", "boundary", "expires_at"]

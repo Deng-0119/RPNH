@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import json
 from pathlib import Path
 import re
@@ -62,6 +62,34 @@ def _path_free_argv_profile(value: object, *, label: str) -> list[str]:
     return result
 
 
+def _agent_task_settings(value: object) -> Mapping[str, Mapping[str, Any]]:
+    """Read HOST task options; the existing AgentTaskSpec validates semantics.
+
+    The main turn and its child have different exact node identities. Keeping
+    their bindings explicit avoids filtering unknown nodes or granting a main
+    tool to an unrelated child node.
+    """
+    from cpn.plugins.api import frozen
+
+    if (not isinstance(value, Mapping)
+            or set(value) - {"main_turn", "child_task"}):
+        raise LLMExecutionConfigError(
+            "agent_task_settings requires main_turn/child_task objects")
+    fields = {"managed_bindings", "managed_tool_policy", "tool_program_policy",
+              "managed_accounts", "managed_account_provider"}
+    for scope, settings in value.items():
+        if not isinstance(settings, Mapping) or set(settings) - fields:
+            raise LLMExecutionConfigError(
+                f"agent_task_settings.{scope} contains unsupported task fields")
+        for name, setting in settings.items():
+            if (not isinstance(setting, Mapping)
+                    and not (name != "managed_bindings" and setting is None)):
+                raise LLMExecutionConfigError(
+                    f"agent_task_settings.{scope}.{name} must be an object"
+                    + (" or null" if name != "managed_bindings" else ""))
+    return frozen(value)
+
+
 @dataclass(frozen=True, slots=True)
 class LLMExecutionSelection:
     input_target: LLMInputTarget
@@ -75,6 +103,8 @@ class LLMExecutionSelection:
     supported_reasoning_efforts: tuple[str, ...] = ()
     default_reasoning_effort: str | None = None
     normal_history_reasoning_replay: bool = False
+    agent_task_settings: Mapping[str, Mapping[str, Any]] = field(
+        default_factory=dict)
 
     def as_registry_policy(self) -> dict[str, object]:
         """Return non-secret execution policy/provenance without local paths."""
@@ -150,6 +180,15 @@ class LLMExecutionSelection:
                 "route_count": len(provenance),
                 "recovery": recovery.as_document(),
             }
+            if schema_version == "external_provider_adapter_config/v4":
+                from ._external_provider_protocol import chat_request_options_from_document
+                try:
+                    adapter_profile["request_options"] = (
+                        chat_request_options_from_document(
+                            private.get("request_options")).as_document())
+                except (TypeError, ValueError) as exc:
+                    raise LLMExecutionConfigError(
+                        "external adapter request options are malformed") from exc
         else:
             env = private.get("env")
             inherited = private.get("inherit_env")
@@ -209,6 +248,9 @@ class LLMExecutionSelection:
             policy["normal_history_reasoning_replay"] = True
             normal_history_reasoning_replay_from_policy(
                 policy, model_condition=self.input_target.model_condition)
+        if self.agent_task_settings:
+            from cpn.plugins.api import json_copy
+            policy["agent_task_settings"] = json_copy(self.agent_task_settings)
         return policy
 
     @classmethod
@@ -220,7 +262,7 @@ class LLMExecutionSelection:
         }
         legacy_optional_fields = {
             "context_window_tokens", "context_compaction_retained_tokens",
-            "runtime"}
+            "runtime", "agent_task_settings"}
         current_fields = {
             "physical_profile", "logical_selection_id", "reasoning_effort",
             "supported_reasoning_efforts", "default_reasoning_effort"}
@@ -330,6 +372,8 @@ class LLMExecutionSelection:
                 if item is not None),
             default_reasoning_effort=default_reasoning_effort,
             normal_history_reasoning_replay=replay,
+            agent_task_settings=_agent_task_settings(
+                value.get("agent_task_settings", {})),
         )
 
 

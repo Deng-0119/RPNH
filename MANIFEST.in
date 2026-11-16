@@ -26,3 +26,6 @@ prune runs
 prune notes
 prune reports
 prune docs/validation
+
+# Public installation entry and export helpers.
+recursive-include packaging *.py *.md *.json *.mjs

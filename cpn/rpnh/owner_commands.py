@@ -27,11 +27,14 @@ class OwnerControl:
         self.pending_edit = None
         from .owner_edits import OwnerEdits
         self.edits = OwnerEdits(owner)
+        from .owner_materials import OwnerMaterials
+        self.materials = OwnerMaterials(owner)
 
     def edit(self, arguments, command_id):
         return self.edits.submit(arguments, command_id)
 
-    def publish(self, kind, command_id, target, data, *, lineage=(), transaction=None, suffix=""):
+    def publish(self, kind, command_id, target, data, *, lineage=(), transaction=None, suffix="",
+                descriptors=None):
         owner = self.owner
         body = {"kind": kind, "command_id": command_id, "source": ref_payload(owner.principal_ref),
                 "target": target, "data": data, "lineage": [ref_payload(ref) for ref in lineage]}
@@ -43,7 +46,7 @@ class OwnerControl:
             media_type="application/json", content_schema_ref=SCHEMA,
             summary=f"Owner {kind}", lifetime_ref=owner.bootstrap_ref,
             derived_from=resource_lineage,
-            descriptors={"owner_control_kind": kind, "command_id": command_id},
+            descriptors={**(descriptors or {}), "owner_control_kind": kind, "command_id": command_id},
             idempotency_key=f"owner:{command_id}:{kind}:{suffix}"), transaction=transaction)
 
     def records(self, kind, *, _reads=None):
@@ -131,7 +134,8 @@ class OwnerControl:
         return {"status": status, "message_ref": ref_payload(ref.as_version_ref()),
                 "result_ref": ref_payload(result.as_version_ref())}
 
-    def publish_input(self, declaration, *, command_id, derived_from=()):
+    def publish_input(self, declaration, *, command_id, derived_from=(),
+                      transaction=None, descriptors=None):
         """Explicit JSON owner input, through normal registered schema authority."""
         if (not isinstance(declaration, dict)
                 or set(declaration) != {"schema_id", "value", "summary"}
@@ -151,8 +155,8 @@ class OwnerControl:
             content_schema_authority_ref=(None if schema_id in PROTECTED_SCHEMA_REFS
                 else owner.schema_gateway.schema_refs[schema_id]),
             summary=declaration["summary"], lifetime_ref=owner.bootstrap_ref,
-            derived_from=lineage, descriptors={"owner_input_command_id": command_id},
-            idempotency_key=command_id))
+            derived_from=lineage, descriptors={**(descriptors or {}), "owner_input_command_id": command_id},
+            idempotency_key=command_id), transaction=transaction)
 
     def current_input(self):
         """Prospective authority is derived from immutable registered revisions."""

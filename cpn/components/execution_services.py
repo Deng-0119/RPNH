@@ -89,9 +89,9 @@ class _RegisteredOptionalInputBinding:
         pass
 
 
-def invoke_registered_tool(owner, kernel, repository, execution, tool_name, *,
-                           identity, contracts, args=(), kwargs=None):
-    """Exact HOST tool ABI shared by owner dispatch and synchronous boundaries."""
+def resolve_registered_tool(owner, kernel, repository, execution, tool_name, *,
+                            identity, contracts):
+    """Resolve one tool through the original exact HOST authorization gate."""
     execution = verify_operation_execution(owner._core, kernel, repository, execution)
     operation = execution.operation
     if tool_name not in operation.spec.allowed_tool_ids:
@@ -102,16 +102,23 @@ def invoke_registered_tool(owner, kernel, repository, execution, tool_name, *,
     compiled = load_compiled_net(json.loads(kernel._read_firing_registered(
         operation.canonical.context, declaration_ref)))
     declared = next(item for item in compiled.operations if item.operation_id == operation.spec.operation_id)
-    if tuple(declared.declaration.tools) != operation.spec.allowed_tool_ids:
+    if tuple(sorted(declared.declaration.tools)) != operation.spec.allowed_tool_ids:
         raise OperationAuthorityError("tool inventory differs from the admitted operation")
     registered = owner.registration.declaration("tool", tool_name)
     if (compiled.registrations["tool"].get(tool_name) != registered
             or identity != registered["identity"] or contracts != registered["contracts"]):
         raise OperationAuthorityError("tool identity/contracts differ from exact HOST registration")
+    return owner.registration.resolve("tool", tool_name)
+
+
+def invoke_registered_tool(owner, kernel, repository, execution, tool_name, *,
+                           identity, contracts, args=(), kwargs=None):
+    """Exact HOST tool ABI shared by owner dispatch and synchronous boundaries."""
+    tool = resolve_registered_tool(owner, kernel, repository, execution, tool_name,
+        identity=identity, contracts=contracts)
     if (not isinstance(args, tuple) or (kwargs is not None and (not isinstance(kwargs, Mapping)
             or any(not isinstance(key, str) for key in kwargs)))):
         raise TypeError("tool arguments require the declared positional/keyword ABI")
-    tool = owner.registration.resolve("tool", tool_name)
     return tool(*args, **({} if kwargs is None else kwargs))
 
 
@@ -126,7 +133,9 @@ class ExecutionServices:
     def __init__(self, *, owner: RunOwner, event_loop: OwnerEventLoop,
                  provider_attempts: ProviderAttemptLedger | None = None,
                  llm_input_port=None, llm_input_ports_by_transition=None,
-                 interruption_requested=None, registered_material_context=None) -> None:
+                 interruption_requested=None, registered_material_context=None,
+                 managed_operation_batches=None,
+                 managed_operation_outputs=None) -> None:
         if not isinstance(owner, RunOwner):
             raise TypeError("execution services require the existing RunOwner")
         if not isinstance(event_loop, OwnerEventLoop) or event_loop.owner is not owner:
@@ -168,6 +177,11 @@ class ExecutionServices:
             "register_operation_outputs": self._register_operation_outputs,
             "record_registered_operation_completion": (
                 self._record_registered_operation_completion),
+            "prepare_material_operation": self._prepare_material_operation,
+            "prepare_material_location_operation": self._prepare_material_location_operation,
+            "prepare_material_availability_operation": self._prepare_material_availability_operation,
+            "prepare_material_purge_operation": self._prepare_material_purge_operation,
+            "complete_human_viewer_operation": self._complete_human_viewer_operation,
             "register_operation_execution_block": self._register_operation_execution_block,
             "create_call_v2": provider_attempts.create_call_v2,
             "reserve_v2": provider_attempts.reserve_v2,
@@ -179,6 +193,18 @@ class ExecutionServices:
             "operation_interruption_requested": (
                 self._operation_interruption_requested),
         }
+        if managed_operation_batches is not None:
+            from cpn.plugins.managed_batch import ManagedOperationBatchService
+            if (not isinstance(managed_operation_batches, ManagedOperationBatchService)
+                    or managed_operation_batches.owner is not owner):
+                raise TypeError('managed batches must use this existing owner')
+            methods.update(managed_operation_batches.gateway_methods())
+        if managed_operation_outputs is not None:
+            from cpn.plugins.managed_output import ManagedOperationOutputReader
+            if (not isinstance(managed_operation_outputs, ManagedOperationOutputReader)
+                    or managed_operation_outputs.owner is not owner):
+                raise TypeError('managed output reader must use this existing owner')
+            methods.update(managed_operation_outputs.gateway_methods())
         # Native plugin operations use the same owner and verified product gateway.
         from cpn.plugins.host import NativePluginHost
         plugin_host = NativePluginHost(owner, self._kernel, self._repository)
@@ -381,6 +407,34 @@ class ExecutionServices:
         execution = self._execution(execution)
         return register_operation_outputs(self._repository, execution, outputs,
             idempotency_key=idempotency_key, selected_outcome_id=selected_outcome_id)
+
+    def _prepare_material_operation(self, execution):
+        """Prepare one started literal operation on this same Owner channel."""
+        from cpn.rpnh.material_execution import prepare_material_operation
+        execution = self._execution(execution)
+        return prepare_material_operation(self._owner, execution)
+
+    def _prepare_material_purge_operation(self, execution):
+        from cpn.rpnh.material_purge import prepare_purge_operation
+        execution = self._execution(execution)
+        return prepare_purge_operation(self._owner, execution)
+
+    def _prepare_material_availability_operation(self, execution):
+        from cpn.rpnh.material_availability import prepare_availability_operation
+        execution = self._execution(execution)
+        return prepare_availability_operation(self._owner, execution)
+
+    def _complete_human_viewer_operation(self, execution):
+        """Finish the original read only after its real transport closure."""
+        from cpn.rpnh.human_viewer import complete_human_viewer_operation
+        execution = self._execution(execution)
+        return complete_human_viewer_operation(self._owner, execution)
+
+    def _prepare_material_location_operation(self, execution):
+        """Prepare one exact location change on this existing Owner channel."""
+        from cpn.rpnh.material_locations import prepare_location_operation
+        execution = self._execution(execution)
+        return prepare_location_operation(self._owner, execution)
 
     def _record_registered_operation_completion(
             self, outputs, *, idempotency_key):

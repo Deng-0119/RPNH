@@ -38,6 +38,75 @@ def _object_ref(item):
     return _ref(item.object_type, str(item.logical_id), str(item.version_id))
 
 
+def reject_pending_purge_supersession(store, db, *, task_id, net_version_id):
+    """Retain an unfinished physical purge's exact original responsibility.
+
+    The selected-checkpoint preflight calls this before acquiring a writer;
+    validate_commit repeats it under the original final write lock.  A missing
+    completion cannot prove that the registered tool had no physical effect.
+    Only normal settlement of this same firing permits later reentry.
+    """
+    from .material_settlement import material_admission
+    from .material_purge import purge_definition
+
+    roots = db.execute(
+        "SELECT p.*,t.status AS opening_status,t.task_id AS opening_task "
+        "FROM firing_publications p JOIN transactions t "
+        "ON t.transaction_id=p.opened_transaction_id "
+        "WHERE p.net_version_id=? AND p.state='PROVISIONAL'",
+        (str(net_version_id),)).fetchall()
+    for root in roots:
+        # This immutable binding/spec lookup only selects the new finite
+        # contract. Ordinary operations retain their existing reentry path.
+        candidate = db.execute(
+            "SELECT s.metadata_json FROM objects b JOIN objects s "
+            "ON s.version_id=json_extract(b.metadata_json,'$.operation_spec_ref.version_id') "
+            "WHERE b.object_type='operation_binding/v1' AND b.version_id=? "
+            "AND s.object_type='operation_spec/v1'",
+            (root["operation_binding_version_id"],)).fetchone()
+        if (candidate is None or json.loads(candidate["metadata_json"])
+                .get("implementation_contracts", {}).get("owner_material_purge")
+                != "purge_carrier"):
+            continue
+        firing_ref = _ref("transition_firing/v1", root["firing_logical_id"],
+                          root["firing_version_id"])
+        invocation_ref = _ref("invocation/v1", root["invocation_logical_id"],
+                              root["invocation_version_id"])
+        found = material_admission(store, db, task_id, firing_ref)
+        if found is None or found[1]["data"].get("operation") != "purge_carrier":
+            raise RegistryConflict("physical purge lacks its exact original material command")
+        admission, command = found
+        firing, _binding, _spec, _defined, _config = purge_definition(
+            store, db, task_id, admission, command)
+        admission_ref = admission["firing_admission_ref"]
+        admitted = db.execute(
+            "SELECT transaction_id FROM objects WHERE object_type='firing_admission/v1' "
+            "AND logical_id=? AND version_id=?",
+            (admission_ref["logical_id"], admission_ref["version_id"])).fetchone()
+        if (root["opening_status"] != "committed"
+                or root["opening_task"] != str(task_id)
+                or admitted is None
+                or admitted["transaction_id"] != root["opened_transaction_id"]
+                or admission["transition_firing_ref"] != firing_ref
+                or admission["invocation_ref"] != invocation_ref
+                or firing["transition_firing_ref"] != firing_ref
+                or firing["firing_admission_ref"] != admission_ref
+                or firing["task_ref"]["logical_id"] != str(task_id)
+                or firing["net_instance_ref"]["version_id"] != root["net_version_id"]
+                or command["data"]["execution"]["task_ref"] != firing["task_ref"]
+                or command["data"]["execution"]["net_instance_ref"] != firing["net_instance_ref"]
+                or firing["operation_binding_ref"]["version_id"]
+                != root["operation_binding_version_id"]
+                or admission["admission_marking_checkpoint_ref"]
+                != firing["admission_marking_checkpoint_ref"]
+                or firing["admission_marking_checkpoint_ref"]["version_id"]
+                != root["admission_checkpoint_version_id"]):
+            raise RegistryConflict("physical purge supersession differs from its original firing")
+        raise RegistryConflict(
+            "RECOVERY_REQUIRED: physical purge retains its original authorization "
+            "and execution responsibility")
+
+
 def validate_commit(store, db, *, task_id, net_instance_id, writer_epoch,
                     objects, events, relations, commands):
     """Prove the complete closure before any mutation in BEGIN IMMEDIATE.
@@ -256,6 +325,8 @@ def validate_commit(store, db, *, task_id, net_instance_id, writer_epoch,
         if len(matching) != 1:
             raise RegistryConflict("supersession requires one exact system relation per root")
         allowed_relations.add(str(matching[0].relation_id))
+    reject_pending_purge_supersession(
+        store, db, task_id=task_id, net_version_id=net_ref["version_id"])
     _reject_completions(store, db, task_id, roots, lease_ids)
     return allowed_relations
 

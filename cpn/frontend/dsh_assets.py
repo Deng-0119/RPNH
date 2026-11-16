@@ -6,6 +6,7 @@ from html.parser import HTMLParser
 import importlib.resources
 import io
 import json
+import os
 from pathlib import Path, PurePosixPath
 import shutil
 import tarfile
@@ -14,11 +15,42 @@ from urllib.request import urlopen
 from urllib.parse import unquote, urlsplit
 
 
-def official_web_packages() -> tuple[str, tuple[str, ...]]:
+DSH_CANDIDATE_ENV = "RPNH_DSH_FRONTEND_CANDIDATE"
+
+
+def official_web_profile(compatibility_profile: str | None = None) -> tuple[dict, dict]:
+    selected = (os.environ.get(DSH_CANDIDATE_ENV, "")
+                if compatibility_profile is None else compatibility_profile)
     source = importlib.resources.files("integrations.dsh")
-    version = json.loads(source.joinpath("UPSTREAM.json").read_text())["version"]
-    packages = json.loads(source.joinpath("frontend/web-packages.json").read_text())["packages"]
-    return version, tuple(packages)
+    default = json.loads(source.joinpath("UPSTREAM.json").read_text(encoding="utf-8"))
+    candidate = json.loads(source.joinpath("UPSTREAM_CANDIDATE.json").read_text(encoding="utf-8"))
+    if selected in ("", default["version"]):
+        upstream, packages_name = default, "web-packages.json"
+    elif selected == candidate["version"]:
+        upstream, packages_name = candidate, "web-packages.rc1.json"
+    else:
+        raise RuntimeError(f"Unsupported DSH frontend profile: {selected}")
+    manifest = json.loads(source.joinpath("frontend", packages_name).read_text(encoding="utf-8"))
+    if upstream["version"] != manifest["version"]:
+        raise RuntimeError("DSH source and Web package versions do not match")
+    return upstream, manifest
+
+
+def official_web_packages(compatibility_profile: str | None = None) -> tuple[str, tuple[str, ...]]:
+    upstream, manifest = official_web_profile(compatibility_profile)
+    return upstream["version"], tuple(manifest["packages"])
+
+
+def check_dsh_source_version(source: Path, compatibility_profile: str | None = None) -> None:
+    upstream, _ = official_web_profile(compatibility_profile)
+    try:
+        package = json.loads((source / "package.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:
+        raise RuntimeError(f"RPNH requires DSH source package {upstream['version']}") from exc
+    if (not isinstance(package, dict)
+            or package.get("name") != "@deepseek-ai/dsh-root"
+            or package.get("version") != upstream["version"]):
+        raise RuntimeError(f"RPNH requires DSH source package {upstream['version']}")
 
 
 def _entry(value: object) -> str | None:
@@ -121,11 +153,11 @@ def _ensure_package(store: Path, name: str, version: str) -> None:
         package_root.rename(target)
 
 
-def prepare_official_web_assets(directory: Path) -> Path:
+def prepare_official_web_assets(directory: Path, compatibility_profile: str | None = None) -> Path:
     """Reuse complete pinned packages; fetch missing packages before UI startup."""
     store = directory.expanduser().resolve()
     store.mkdir(parents=True, exist_ok=True)
-    version, packages = official_web_packages()
+    version, packages = official_web_packages(compatibility_profile)
     with ThreadPoolExecutor(max_workers=4) as pool:
         list(pool.map(lambda name: _ensure_package(store, name, version), packages))
     return store

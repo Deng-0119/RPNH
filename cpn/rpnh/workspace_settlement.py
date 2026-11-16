@@ -154,6 +154,8 @@ def _restore_tree(
 
 
 def _archive_files(core, revision_ref: VersionRef) -> dict[str, tuple[bytes, int]]:
+    from .material_body_policy import require_workspace_material_available
+    governed_resources = require_workspace_material_available(core, revision_ref, purpose="workspace_archive")
     prepared = core.get_version(revision_ref.version_id)
     if (prepared.object_type != "workspace_revision/v1"
             or prepared.logical_id != revision_ref.entity_id
@@ -183,6 +185,14 @@ def _archive_files(core, revision_ref: VersionRef) -> dict[str, tuple[bytes, int
     except (tarfile.TarError, OSError) as exc:
         raise ResourceIntegrityFault(
             "workspace base revision archive is malformed") from exc
+    if governed_resources is not None:
+        if sorted(files) != sorted(governed_resources):
+            raise ResourceIntegrityFault("governed workspace archive differs from its exact registered inventory")
+        for path, resource_ref in governed_resources.items():
+            exact_payload, _summary = _exact_workspace_resource(core, resource_ref, path)
+            if files[path][0] != exact_payload:
+                raise ResourceIntegrityFault("governed workspace archive differs from its exact registered path bytes")
+    require_workspace_material_available(core, revision_ref, purpose="workspace_archive")
     return files
 
 
@@ -259,7 +269,11 @@ def _exact_workspace_resource(
             or len(summary) > _MAX_PATH_DELTA_SUMMARY_CHARS):
         raise ResourceIntegrityFault(
             "workspace history resource summary is not bounded text")
-    return core.object_store.read_registered(prepared), summary
+    from .material_body_policy import require_material_body_available
+    require_material_body_available(core, resource_ref, purpose="workspace_resource")
+    payload = core.object_store.read_registered(prepared)
+    require_material_body_available(core, resource_ref, purpose="workspace_resource")
+    return payload, summary
 
 
 def _workspace_resource_state(

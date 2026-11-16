@@ -105,8 +105,9 @@ export class RegistryAgent implements AgentMachine {
         ...(config.execution.kind === 'configured'
           ? { execution_profile: config.execution.profile }
           : {}) }
-      this.lastOutcome = await this.client.request('turn', request)
-      if (this.lastOutcome.status !== 'terminal') { this.halted = true; return }
+      const outcome: JsonRecord = await this.client.request('turn', request)
+      this.lastOutcome = outcome
+      if (outcome.status !== 'terminal') { this.halted = true; return }
       await this.refresh()
     } catch (error) {
       this.halted = true
@@ -132,7 +133,7 @@ export class RegistryAgent implements AgentMachine {
   }
 }
 export class RegistryAgentLoop extends AgentLoop {
-  static inject = [...AgentLoop.inject, 'rpnhBridge', 'rpnhCapabilities', 'sessionPersistence']
+  static override inject = [...AgentLoop.inject, 'rpnhBridge', 'rpnhCapabilities', 'sessionPersistence']
   protected override createMachine(ctx: Context, id: SessionId, options: AgentOptions, session: Session): AgentMachine {
     return new RegistryAgent(ctx, id, options, session)
   }

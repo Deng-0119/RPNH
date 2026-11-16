@@ -21,6 +21,16 @@
     "operation_execution_lease_ref": {"$ref": "#/definitions/ref"},
     "claim_marking_delta_ref": {"$ref": "#/definitions/ref"},
     "admission_marking_checkpoint_ref": {"$ref": "#/definitions/ref"},
+    "owner_command_ref": {
+      "allOf": [
+        {"$ref": "#/definitions/ref"},
+        {"properties": {
+          "entity_type": {"const": "resource_version/v1"},
+          "logical_id": {"pattern": "^resource:[a-f0-9]{32}$"},
+          "version_id": {"pattern": "^resource_version:[a-f0-9]{32}$"}
+        }}
+      ]
+    },
     "logical_tau": {"type": ["integer", "number", "string"]},
     "writer_fencing_epoch": {"type": "integer", "minimum": 1}
   },

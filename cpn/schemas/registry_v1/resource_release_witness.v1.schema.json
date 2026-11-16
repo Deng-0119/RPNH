@@ -67,7 +67,7 @@
     "delivery_ref": {"$ref": "#/definitions/delivery_ref"},
     "resource_ref": {"$ref": "#/definitions/resource_ref"},
     "resource_byte_count": {"type": "integer", "minimum": 0},
-    "boundary": {"enum": ["llm_prompt", "tool_result", "subprocess_read", "parent_receipt", "petri_input"]},
+    "boundary": {"enum": ["llm_prompt", "tool_result", "subprocess_read", "parent_receipt", "petri_input", "human_viewer"]},
     "context_ref": {"$ref": "#/definitions/invocation_ref"},
     "accounting_parent_ref": {"$ref": "#/definitions/invocation_ref"},
     "authorization_ref": {"$ref": "#/definitions/authorization_ref"},

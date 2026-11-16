@@ -14,6 +14,7 @@ import os
 from pathlib import Path
 import shutil
 import subprocess
+import sys
 import tempfile
 import time
 from types import MappingProxyType
@@ -109,6 +110,10 @@ class ActiveTurn:
     started_at: int
     task_handle: TaskHandle | None
     tracking: bool = False
+    # Presentation-only correlation and transport state. Neither is persisted
+    # as a Registry input or used to decide whether work was admitted.
+    client_user_message_id: str | None = None
+    notification_websocket: Any | None = field(default=None, repr=False)
 
 
 @dataclass(slots=True)
@@ -260,6 +265,7 @@ class CodexAppServer:
         self._threads: dict[str, ThreadState] = {}
         self._initialize_accepted_connections: set[int] = set()
         self._initialized_connections: set[int] = set()
+        self._notification_opt_outs: dict[int, frozenset[str]] = {}
         self._send_locks: dict[int, asyncio.Lock] = {}
         self._detached_threads: set[tuple[int, str]] = set()
         self._background: set[asyncio.Task[None]] = set()
@@ -425,7 +431,7 @@ class CodexAppServer:
         try:
             session = MainSession.resume(
                 record.root, record.execution_config_path,
-                task_control=object())
+                task_control=object(), owner_lease=lease)
             session.task_control = TaskControl(
                 session.child_path_root / "tasks",
                 recover_pending_launches=False,
@@ -616,6 +622,21 @@ class CodexAppServer:
             "serviceTiers": [],
         }
 
+    def _display_thread_name(self, state: ThreadState) -> str | None:
+        """Project an input excerpt as the 0.167 title without running a model.
+
+        Explicit user names remain authoritative. The fallback uses existing
+        frontend metadata or an admitted active input, never a new stored name
+        or a generated answer.
+        """
+        if (state.name is not None
+                or self.compatibility_profile.version != "0.167.0"):
+            return state.name
+        source = state.preview
+        if not source and state.active is not None:
+            source = state.active.user_text
+        return " ".join(source.split())[:36] or None
+
     def _thread_document(self, state: ThreadState) -> dict[str, Any]:
         now = _now_seconds()
         status = (
@@ -625,7 +646,7 @@ class CodexAppServer:
             "id": state.thread_id,
             "sessionId": state.thread_id,
             "preview": state.preview,
-            "name": state.name,
+            "name": self._display_thread_name(state),
             "ephemeral": False,
             "model": state.model_id,
             "modelProvider": "rpnh",
@@ -671,7 +692,8 @@ class CodexAppServer:
         })
 
     async def _notify(
-            self, websocket: Any, method: str, params: Mapping[str, Any],
+            self, websocket: Any, method: str, params: Mapping[str, Any], *,
+            still_current: Callable[[], bool] | None = None,
     ) -> None:
         thread_id = params.get("threadId")
         if thread_id is None and isinstance(params.get("thread"), Mapping):
@@ -679,10 +701,13 @@ class CodexAppServer:
         key = id(websocket)
         lock = self._send_locks.setdefault(key, asyncio.Lock())
         async with lock:
-            if (key, thread_id) not in self._detached_threads:
-                await websocket.send(json.dumps(
-                    {"method": method, "params": params},
-                    ensure_ascii=False, separators=(",", ":")))
+            if (still_current is not None and not still_current()
+                    or method in self._notification_opt_outs.get(key, ())
+                    or (key, thread_id) in self._detached_threads):
+                return
+            await websocket.send(json.dumps(
+                {"method": method, "params": params},
+                ensure_ascii=False, separators=(",", ":")))
 
     def _thread(self, thread_id: object) -> ThreadState:
         if not isinstance(thread_id, str) or thread_id not in self._threads:
@@ -907,6 +932,11 @@ class CodexAppServer:
             self, websocket: Any, request_id: object,
             params: Mapping[str, Any],
     ) -> None:
+        if (params.get("ephemeral") is True
+                or params.get("threadSource") == "thread_title"):
+            raise ValueError(
+                "RPNH does not run temporary Codex threads. "
+                "Set the main thread name explicitly instead.")
         if self._threads or self._lease is not None:
             raise ValueError(
                 "RPNH Codex frontend is already bound to its one main session")
@@ -920,7 +950,8 @@ class CodexAppServer:
         self._lease = lease
         try:
             session = MainSession(
-                self.root, profile.path, owner_root_reserved=True)
+                self.root, profile.path, owner_root_reserved=True,
+                owner_lease=lease)
             record = inspect_main_session_root(self.root)
             thread_id = codex_thread_id(stable_frontend_session_id(record))
             state = ThreadState(
@@ -972,6 +1003,9 @@ class CodexAppServer:
                 "reopen this session with --frontend basic and use /resume "
                 "or /rollback")
         user_text = _text_input(params)
+        client_id = params.get("clientUserMessageId")
+        if client_id is not None and not isinstance(client_id, str):
+            raise ValueError("clientUserMessageId must be text or null")
         requested_model = params.get("model")
         requested_effort = params.get("effort")
         model_id = state.model_id if requested_model is None else requested_model
@@ -987,6 +1021,7 @@ class CodexAppServer:
             state.session.set_execution_config(profile.path)
         state.model_id = profile.selection_id
         state.reasoning_effort = profile.reasoning_effort
+        previous_name = self._display_thread_name(state)
         spec = state.session.prepare_turn(user_text)
         snapshot = state.session.active_turn_snapshot()
         if snapshot is None:
@@ -1002,41 +1037,127 @@ class CodexAppServer:
             required_task_kind=snapshot.required_task_kind,
             started_at=_now_seconds(),
             task_handle=None,
+            client_user_message_id=client_id,
+            notification_websocket=websocket,
         )
         state.active = active
         if not state.preview:
             state.preview = user_text[:200]
         self._persist_thread(state)
         try:
-            active.task_handle = state.main_turn_control.start(spec)
-        except Exception:
-            # prepare_turn has already made this Registry turn authoritative.
-            # Keep it visible and discover a handle if start failed only after
-            # persisting/spawning the foreground task.
-            active.task_handle = self._live_main_turn_handle(
-                state.main_turn_control, snapshot.attempt_path)
+            try:
+                active.task_handle = state.main_turn_control.start(spec)
+            except Exception:
+                # prepare_turn has already made this Registry turn authoritative.
+                # Keep it visible and discover a handle if start failed only after
+                # persisting/spawning the foreground task.
+                active.task_handle = self._live_main_turn_handle(
+                    state.main_turn_control, snapshot.attempt_path)
+                self._persist_thread(state)
+                raise
             self._persist_thread(state)
-            raise
-        self._persist_thread(state)
-        turn = _turn_document(
-            active.turn_id, "inProgress", started_at=active.started_at)
-        await self._result(websocket, request_id, {"turn": turn})
-        await self._notify(websocket, "thread/status/changed", {
-            "threadId": state.thread_id,
-            "status": {"type": "active", "activeFlags": []},
-        })
+            turn = _turn_document(
+                active.turn_id, "inProgress", started_at=active.started_at)
+            await self._result(websocket, request_id, {"turn": turn})
+
+            def still_current() -> bool:
+                return (state.active is active
+                        and active.notification_websocket is websocket)
+
+            await self._notify(websocket, "thread/status/changed", {
+                "threadId": state.thread_id,
+                "status": {"type": "active", "activeFlags": []},
+            }, still_current=still_current)
+            await self._notify(websocket, "turn/started", {
+                "threadId": state.thread_id,
+                "turn": turn,
+            }, still_current=still_current)
+            user_item = self._active_user_item(state, active)
+            await self._notify(websocket, "item/started", {
+                "threadId": state.thread_id,
+                "turnId": active.turn_id,
+                "item": user_item,
+                "startedAtMs": _now_milliseconds(),
+            }, still_current=still_current)
+            display_name = self._display_thread_name(state)
+            if display_name != previous_name:
+                await self._notify(websocket, "thread/name/updated", {
+                    "threadId": state.thread_id,
+                    "threadName": display_name,
+                }, still_current=lambda: (
+                    still_current()
+                    and self._display_thread_name(state) == display_name))
+            await self._notify(websocket, "item/completed", {
+                "threadId": state.thread_id,
+                "turnId": active.turn_id,
+                "item": user_item,
+                "completedAtMs": _now_milliseconds(),
+            }, still_current=still_current)
+        finally:
+            # Accepted work outlives a failed launch receipt or UI write. Keep
+            # its existing observer, including any replacement connection that
+            # attached while the admission response was waiting to be sent.
+            if state.active is active:
+                self._ensure_active_tracking(active.notification_websocket, state)
+
+    @staticmethod
+    def _active_user_item(
+            state: ThreadState, active: ActiveTurn,
+    ) -> dict[str, Any]:
+        item = {
+            "type": "userMessage",
+            "id": _ui_id(state.thread_id, active.ordinal, "active-user"),
+            "content": [{"type": "text", "text": active.user_text}],
+        }
+        if active.client_user_message_id is not None:
+            item["clientId"] = active.client_user_message_id
+        return item
+
+    async def _replay_active_turn(self, websocket: Any, state: ThreadState) -> None:
+        # Paginated history contains committed turns only. A resumed TUI also
+        # needs the currently observed live turn ID for its stop/input controls.
+        # This notification never admits, starts or reconciles work.
+        active = state.active
+        if active is None:
+            return
+
+        def still_current() -> bool:
+            if state.active is not active:
+                return False
+            # The Registry can advance while this notification waits for the
+            # connection lock, before the presentation waiter clears active.
+            snapshot = state.session.active_turn_snapshot()
+            return (
+                snapshot is not None and snapshot.ordinal == active.ordinal
+                and snapshot.state in {"accepted", "pending_start", "running"})
+
+        if not still_current():
+            return
         await self._notify(websocket, "turn/started", {
             "threadId": state.thread_id,
-            "turn": turn,
-        })
-        self._ensure_active_tracking(websocket, state)
+            "turn": _turn_document(
+                active.turn_id, "inProgress",
+                items=[self._active_user_item(state, active)],
+                started_at=active.started_at),
+        }, still_current=still_current)
+        # Stock TUI does not consume turn/started.items as user receipts.
+        await self._notify(websocket, "item/completed", {
+            "threadId": state.thread_id,
+            "turnId": active.turn_id,
+            "item": self._active_user_item(state, active),
+            "completedAtMs": _now_milliseconds(),
+        }, still_current=still_current)
 
     def _ensure_active_tracking(
             self, websocket: Any, state: ThreadState,
     ) -> None:
         active = state.active
-        if (active is None or active.task_handle is None
-                or active.tracking):
+        if active is None:
+            return
+        # A reconnect must replace the delivery target even while the one
+        # existing process waiter is still running.
+        active.notification_websocket = websocket
+        if active.task_handle is None or active.tracking:
             return
         active.tracking = True
         task = asyncio.create_task(self._finish_turn(websocket, state, active))
@@ -1111,11 +1232,7 @@ class CodexAppServer:
             "type": "agentMessage", "id": active.item_id, "text": ""}
         item = {
             "type": "agentMessage", "id": active.item_id, "text": output}
-        user_item = {
-            "type": "userMessage",
-            "id": _ui_id(state.thread_id, active.ordinal, "active-user"),
-            "content": [{"type": "text", "text": active.user_text}],
-        }
+        user_item = self._active_user_item(state, active)
         turn = _turn_document(
             active.turn_id, status, items=[user_item, item],
             started_at=active.started_at)
@@ -1133,6 +1250,14 @@ class CodexAppServer:
         if websocket is None:
             return
         try:
+            # A reconnected client may have missed the admission receipt.
+            # Repeating this UI item never repeats Registry admission.
+            await self._notify(websocket, "item/completed", {
+                "threadId": state.thread_id,
+                "turnId": active.turn_id,
+                "item": user_item,
+                "completedAtMs": _now_milliseconds(),
+            })
             await self._notify(websocket, "item/started", {
                 "threadId": state.thread_id,
                 "turnId": active.turn_id,
@@ -1166,6 +1291,9 @@ class CodexAppServer:
             self, websocket: Any | None, state: ThreadState,
             active: ActiveTurn,
     ) -> None:
+        if not active.tracking:
+            # Direct reconciliation callers do not go through the tracker.
+            active.notification_websocket = websocket
         try:
             if active.task_handle is None:
                 return
@@ -1176,14 +1304,14 @@ class CodexAppServer:
                 state, state.session.reconcile_active_turn())
             if reconciliation.state in {"committed", "interrupted", "paused"}:
                 await self._finalize_active_turn(
-                    websocket, state, active, reconciliation)
+                    active.notification_websocket, state, active, reconciliation)
             elif reconciliation.state == "running":
                 # Process exit is not child terminal evidence.  Record the
                 # exact nonterminal child observation as a failed main turn,
                 # retaining the independent child Registry unchanged.
                 failed = state.session.fail_active_turn()
                 await self._finalize_active_turn(
-                    websocket, state, active, failed)
+                    active.notification_websocket, state, active, failed)
         finally:
             if state.active is active:
                 active.tracking = False
@@ -1243,7 +1371,9 @@ class CodexAppServer:
             await self._result(websocket, request_id, {})
             return
         requested_turn = params.get("turnId")
-        if requested_turn not in (None, active.turn_id):
+        # Stock 0.167 uses an empty ID for startup cancellation before the
+        # live turn ID is known. Nonempty stale IDs still cannot stop this turn.
+        if requested_turn not in (None, "", active.turn_id):
             raise ValueError("turn/interrupt does not match the active RPNH turn")
         reconciliation = self._resolve_idle_reconciliation(
             state, state.session.reconcile_active_turn())
@@ -1267,6 +1397,27 @@ class CodexAppServer:
         elif state.active is active:
             self._ensure_active_tracking(websocket, state)
         await self._result(websocket, request_id, {})
+
+    async def _reject_steer(
+            self, websocket: Any, request_id: object,
+            params: Mapping[str, Any],
+    ) -> None:
+        state = self._thread(params.get("threadId"))
+        # Observe only. A stale presentation cache must not cause a second
+        # admission, and this compatibility route cannot reconcile the core.
+        snapshot = state.session.active_turn_snapshot()
+        if snapshot is None and state.active is None:
+            # The stock TUI recognizes this exact completed-turn race and
+            # retries the still-unaccepted input through ordinary turn/start.
+            await self._error(
+                websocket, request_id, "no active turn to steer")
+            return
+        await self._error(
+            websocket, request_id,
+            "RPNH does not accept input through turn/steer. "
+            "This message was not accepted or queued; wait for completion "
+            "or interrupt the active turn, then submit it again.",
+        )
 
     async def _update_thread_settings(
             self, websocket: Any, request_id: object,
@@ -1407,6 +1558,9 @@ class CodexAppServer:
             params: Mapping[str, Any],
     ) -> None:
         if method == "initialize":
+            key = id(websocket)
+            if key in self._initialize_accepted_connections:
+                raise ValueError("connection has already initialized")
             client = params.get("clientInfo")
             if (not isinstance(client, Mapping)
                     or client.get("name") != "codex-tui"
@@ -1414,13 +1568,24 @@ class CodexAppServer:
                 raise ValueError(
                     "RPNH requires codex-tui "
                     f"{self.compatibility_profile.version} exactly")
+            capabilities = params.get("capabilities")
+            if capabilities is not None and not isinstance(capabilities, Mapping):
+                raise ValueError("initialize capabilities must be an object or null")
+            opt_outs = (
+                capabilities.get("optOutNotificationMethods")
+                if capabilities is not None else None)
+            if opt_outs is not None and (
+                    not isinstance(opt_outs, list)
+                    or any(not isinstance(name, str) for name in opt_outs)):
+                raise ValueError("notification opt-outs must be a list of method names")
             await self._result(websocket, request_id, {
                 "userAgent": f"rpnh/codex-compat-{self.compatibility_profile.version}",
                 "codexHome": str(self.root),
                 "platformFamily": "unix",
-                "platformOs": "linux",
+                "platformOs": "macos" if sys.platform == "darwin" else "linux",
             })
-            self._initialize_accepted_connections.add(id(websocket))
+            self._notification_opt_outs[key] = frozenset(opt_outs or ())
+            self._initialize_accepted_connections.add(key)
             return
         if id(websocket) not in self._initialized_connections:
             raise ValueError(
@@ -1527,6 +1692,7 @@ class CodexAppServer:
                 "serviceTier": None,
                 "instructionSources": [],
             })
+            await self._replay_active_turn(websocket, state)
         elif method == "thread/goal/get":
             state = self._history_state(websocket, params.get("threadId"))
             # Goals are disabled in the presentation client; RPNH tasks are
@@ -1537,6 +1703,9 @@ class CodexAppServer:
             key = (id(websocket), state.thread_id)
             status = "notSubscribed" if key in self._detached_threads else "unsubscribed"
             self._detached_threads.add(key)
+            if (state.active is not None
+                    and state.active.notification_websocket is websocket):
+                state.active.notification_websocket = None
             # Detach only this client's notifications. The owner launcher
             # retains responsibility for stopping/reconciling RPNH work.
             await self._history_result(websocket, request_id, state, {"status": status})
@@ -1587,6 +1756,8 @@ class CodexAppServer:
             await self._start_turn(websocket, request_id, params)
         elif method == "turn/interrupt":
             await self._interrupt_turn(websocket, request_id, params)
+        elif method == "turn/steer":
+            await self._reject_steer(websocket, request_id, params)
         else:
             await self._error(
                 websocket, request_id,
@@ -1639,6 +1810,11 @@ class CodexAppServer:
         finally:
             self._initialize_accepted_connections.discard(key)
             self._initialized_connections.discard(key)
+            self._notification_opt_outs.pop(key, None)
+            for state in self._threads.values():
+                if (state.active is not None
+                        and state.active.notification_websocket is websocket):
+                    state.active.notification_websocket = None
             self._send_locks.pop(key, None)
             self._detached_threads = {
                 entry for entry in self._detached_threads if entry[0] != key}
@@ -1666,21 +1842,25 @@ class CodexAppServer:
 
 def resolve_codex_binary(
         value: str | None = None, *, compatibility_profile: str | None = None,
+        environment: Mapping[str, str] | None = None, cwd: Path | None = None,
 ) -> str:
     profile = _compatibility_profile(compatibility_profile)
     selected = value or os.environ.get("RPNH_CODEX_BIN")
     if not selected:
         saved = read_frontend_preferences().codex_binary
         selected = str(saved) if saved is not None else "codex"
-    resolved = shutil.which(selected)
+    resolved = shutil.which(selected, path=(environment.get("PATH", os.defpath)
+                                           if environment is not None else None))
     if resolved is None:
         raise CodexCompatibilityError(
             "Codex frontend is not installed; install "
             f"@openai/codex@{profile.version}")
+    resolved = str(Path(resolved).resolve())
     try:
         completed = subprocess.run(
             [resolved, "--version"], check=False, text=True,
-            stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=5)
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=5,
+            env=None if environment is None else dict(environment), cwd=cwd)
     except subprocess.TimeoutExpired as exc:
         raise CodexCompatibilityError("Codex version check timed out") from exc
     reported = completed.stdout.strip()
@@ -1689,6 +1869,27 @@ def resolve_codex_binary(
             f"RPNH requires {profile.reported_cli_version}; got "
             f"{reported or completed.stderr.strip() or 'unknown'}")
     return resolved
+
+
+def isolated_codex_environment(root: Path, inherited: Mapping[str, str]) -> dict[str, str]:
+    """Give the presentation client its own writable native configuration.
+
+    RPNH retains provider/model and Registry authority. Native UI configuration,
+    credentials and plugin loaders from the user's home never enter this UI.
+    """
+    env = {name: inherited[name] for name in (
+        "PATH", "TERM", "COLORTERM", "LANG", "LC_ALL", "LC_CTYPE",
+        "TERM_PROGRAM", "TERM_PROGRAM_VERSION") if name in inherited}
+    for name, child in {
+        "HOME": "home", "CODEX_HOME": "codex", "XDG_CONFIG_HOME": "config",
+        "XDG_CACHE_HOME": "cache", "XDG_DATA_HOME": "data",
+        "XDG_STATE_HOME": "state", "TMPDIR": "tmp",
+    }.items():
+        directory = root / child
+        directory.mkdir(mode=0o700)
+        env[name] = str(directory)
+    (root / "display").mkdir(mode=0o700)
+    return env
 
 
 def codex_frontend_argv(
@@ -1710,44 +1911,67 @@ async def _run_codex_frontend_async(
         codex_binary: str | None = None, resume: bool = False,
         compatibility_profile: str | None = None,
 ) -> int:
+    from cpn.rpnh.update_install import lifecycle_lease
+    with lifecycle_lease():
+        return await _run_codex_frontend_leased(root, execution_config_path,
+            codex_binary=codex_binary, resume=resume, compatibility_profile=compatibility_profile)
+
+
+async def _run_codex_frontend_leased(
+        root: Path, execution_config_path: Path, *,
+        codex_binary: str | None = None, resume: bool = False,
+        compatibility_profile: str | None = None,
+) -> int:
     try:
         import websockets
     except ImportError as exc:
         raise CodexCompatibilityError(
             "Codex frontend requires the Python `websockets` package") from exc
-    profile = _compatibility_profile(compatibility_profile)
-    binary = (resolve_codex_binary(codex_binary) if compatibility_profile is None else
-              resolve_codex_binary(codex_binary, compatibility_profile=profile.name))
+    from cpn.rpnh.platform_support import require_platform_support
+    require_platform_support()
     root = root.resolve()
     if resume and not root.is_dir():
         raise CodexCompatibilityError(
             "RPNH Codex resume requires an existing session directory")
-    try:
-        server = CodexAppServer(root, execution_config_path, compatibility_profile=profile.name)
-    except (OSError, RuntimeError, TypeError, ValueError) as exc:
-        raise CodexCompatibilityError(str(exc)) from exc
-    if resume and not server._threads:
-        server.close()
-        raise CodexCompatibilityError(
-            "RPNH Codex resume requires one direct main-session root")
-    try:
-        with tempfile.TemporaryDirectory(prefix="rpnh-codex-socket-") as raw:
-            socket_path = Path(raw) / "app.sock"
+    with tempfile.TemporaryDirectory(prefix="rpnh-codex-ui-") as raw:
+        scratch = Path(raw)
+        environment = isolated_codex_environment(scratch, os.environ)
+        display = scratch / "display"
+        from cpn.rpnh.frontend_launch import resolve_current_launch_spec, probe_frontend_version
+        try:
+            launch = resolve_current_launch_spec("codex", explicit_binary=codex_binary,
+                compatibility_profile=compatibility_profile, environment=environment, cwd=display)
+            profile = _compatibility_profile(launch.profile)
+            probe_frontend_version(launch, environment, display)
+        except (OSError, RuntimeError, ValueError) as exc:
+            raise CodexCompatibilityError(str(exc)) from exc
+        binary = str(launch.entry_path)
+        try:
+            server = CodexAppServer(root, execution_config_path, compatibility_profile=profile.name)
+        except (OSError, RuntimeError, TypeError, ValueError) as exc:
+            raise CodexCompatibilityError(str(exc)) from exc
+        if resume and not server._threads:
+            server.close()
+            raise CodexCompatibilityError(
+                "RPNH Codex resume requires one direct main-session root")
+        try:
+            socket_path = scratch / "app.sock"
             with unix_socket_address(
                     socket_path, visible_to_child_process=True) as address:
                 async with websockets.unix_serve(server.handle, address):
                     socket_path.chmod(0o600)
-                    argv = codex_frontend_argv(
-                        binary, address, server.frontend_model_id)
+                    argv = (*launch.argv, *codex_frontend_argv(
+                        binary, address, server.frontend_model_id)[1:])
                     if resume:
                         argv += ("resume", next(iter(server._threads)))
-                    process = await asyncio.create_subprocess_exec(*argv)
+                    process = await asyncio.create_subprocess_exec(
+                        *argv, env=environment, cwd=display)
                     try:
                         return int(await process.wait())
                     finally:
                         await server.stop_active_turns()
-    finally:
-        server.close()
+        finally:
+            server.close()
 
 
 def run_codex_frontend(

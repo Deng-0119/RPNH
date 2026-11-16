@@ -36,6 +36,16 @@ _MAX_RESPONSE_BYTES = 16 * 1024 * 1024
 _MAX_GRAPH_NODES = 100000
 _MAX_GRAPH_EDGES = 200000
 _ASSETS = {
+    "/human-material-reader.mjs": ("human-material-reader.mjs", "application/javascript; charset=utf-8"),
+    "/material-editor.mjs": ("material-editor.mjs", "application/javascript; charset=utf-8"),
+    "/material-management.mjs": ("material-management.mjs", "application/javascript; charset=utf-8"),
+    "/material-locations.mjs": ("material-locations.mjs", "application/javascript; charset=utf-8"),
+    "/material-disable.mjs": ("material-disable.mjs", "application/javascript; charset=utf-8"),
+    "/material-carriers.mjs": ("material-carriers.mjs", "application/javascript; charset=utf-8"),
+    "/material-purge.mjs": ("material-purge.mjs", "application/javascript; charset=utf-8"),
+    "/registry-browser.mjs": ("registry-browser.mjs", "application/javascript; charset=utf-8"),
+    "/registry-positions.mjs": ("registry-positions.mjs", "application/javascript; charset=utf-8"),
+    "/registry-browser.css": ("registry-browser.css", "text/css; charset=utf-8"),
     "/help-catalog.json": ("help-catalog.json", "application/json; charset=utf-8"),
     "/user-contributions.mjs": ("user-contributions.mjs", "text/javascript; charset=utf-8"),
     "/source-observation.mjs": ("source-observation.mjs", "text/javascript; charset=utf-8"),
@@ -436,11 +446,13 @@ def _handle_request(
     """Handle one request synchronously without opening a socket.
 
     The callable serves v1; optional dashboard/history methods are read-only.
-    GET and HEAD use the same validated response without opening execution hosts.
+    Ordinary GET and HEAD use the same validated response without opening
+    execution hosts. Explicit carrier/cleanup proof reads accept GET only.
     """
     method = method.upper()
     path = urlsplit(target).path
-    if method not in {"GET", "HEAD"} and not (method == "POST" and path == "/api/v2/comparison-context"):
+    if method not in {"GET", "HEAD"} and not (method == "POST" and path in {
+            "/api/v2/comparison-context", "/api/material-management"}):
         return _response(
             405, "text/plain; charset=utf-8", "只支持 GET 和 HEAD".encode("utf-8"))
     if path == "/":
@@ -451,6 +463,44 @@ def _handle_request(
         if len(body) > _MAX_RESPONSE_BYTES:
             raise _ResponseLimitError
         response = _response(200, "text/html; charset=utf-8", body)
+    elif path == "/registry":
+        response = _response(200, "text/html; charset=utf-8", _static_bytes("registry-browser.html"))
+    elif path == "/api/material-management":
+        from .material_management import handle_material_request, MaterialManagementError
+        try:
+            payload = handle_material_request(provider, method, urlsplit(target).query, body)
+            response = _response(200, "application/json; charset=utf-8", _json_body(payload))
+        except MaterialManagementError as error:
+            response = _error_response(error.status, error.code)
+            if error.status == 405:
+                action = parse_qs(urlsplit(target).query).get("action", [None])[0]
+                allow = ("GET" if action in {"carrier_catalog", "read_material_carriers",
+                        "purge_catalog", "read_purge_receipt"}
+                    else "POST" if action in {"prepare_input", "submit",
+                        "purge_authorize", "purge_execute"} else "GET, HEAD")
+                response = RequestResponse(response.status, {**response.headers,
+                    "Allow": allow}, response.body)
+    elif path == "/api/registry-browser":
+        from .registry_browser import parse_query as parse_browser_query, RegistryBrowserError
+        try:
+            if body:
+                raise RegistryBrowserError("invalid_query")
+            params = parse_browser_query(urlsplit(target).query)
+            action = getattr(provider, "registry_browser", None)
+            if not callable(action):
+                raise RegistryBrowserError("unsupported")
+            payload = action(params)
+            if payload.get("schema_version") != "rpnh/registry_browser/v1":
+                raise RegistryBrowserError("read_failed")
+            response = _response(200, "application/json; charset=utf-8", _json_body(payload))
+        except RegistryBrowserError as error:
+            status = {"invalid_query": 400, "access_changed": 403, "not_disclosed": 403,
+                      "stale_observation": 409, "scope_limit": 413, "invalid_utf8": 415,
+                      "unsupported": 501, "governed_delivery_required": 409,
+                      "material_disabled": 409, "material_availability_unknown": 503}.get(error.code, 503)
+            response = _error_response(status, error.code)
+        except (ValueError, TypeError, KeyError, AttributeError, RuntimeError, OSError):
+            response = _error_response(503, "read_failed")
     elif path in _ASSETS:
         filename, content_type = _ASSETS[path]
         asset = _STATIC_ROOT / filename
@@ -782,6 +832,35 @@ class _ProjectionHandler(BaseHTTPRequestHandler):
         if self.command != "HEAD":
             self.wfile.write(response.body)
 
+    def _send_human_viewer_body(self, body) -> None:
+        from .human_viewer_transport import (
+            begin_human_viewer_http, write_human_viewer_http, fail_human_viewer_http,
+        )
+        transport = begin_human_viewer_http(self, body)
+        with self.server._requests_lock:
+            if self.request in self.server._human_viewer_transports:
+                raise RuntimeError("one native HTTP request cannot own two human deliveries")
+            self.server._human_viewer_transports[self.request] = transport
+        self._human_viewer_transport = transport
+        self.close_connection = True
+        try:
+            response = _response(200, body.media_type)
+            self.send_response(response.status)
+            for name, value in response.headers.items():
+                self.send_header(name, str(body.byte_count) if name == "Content-Length" else value)
+            self.end_headers()
+            write_human_viewer_http(transport)
+        except BaseException:
+            fail_human_viewer_http(transport, "HTTP_HANDLER_FAILED")
+            raise
+
+    def finish(self) -> None:
+        transport = getattr(self, "_human_viewer_transport", None)
+        if transport is None:
+            return super().finish()
+        from .human_viewer_transport import finish_human_viewer_streams
+        finish_human_viewer_streams(transport)
+
     def _request_boundary(
             self,
     ) -> tuple[RequestResponse | None, str | None]:
@@ -796,8 +875,8 @@ class _ProjectionHandler(BaseHTTPRequestHandler):
             )
 
         lengths = self.headers.get_all("Content-Length", [])
-        comparison_post = (self.command == "POST"
-                           and urlsplit(raw_target).path == "/api/v2/comparison-context")
+        comparison_post = (self.command == "POST" and urlsplit(raw_target).path in {
+            "/api/v2/comparison-context", "/api/material-management", "/api/material-delivery"})
         if (self.headers.get_all("Transfer-Encoding", []) or len(lengths) > 1
                 or (not comparison_post and lengths and lengths[0] != "0")):
             return _error_response(400, "request_body_not_allowed"), None
@@ -826,7 +905,7 @@ class _ProjectionHandler(BaseHTTPRequestHandler):
             )
         return None, raw_target
 
-    def _read_comparison_body(self) -> bytes | RequestResponse:
+    def _read_comparison_body(self, maximum=None) -> bytes | RequestResponse:
         # Reject framing/size before allocating or reading the declared body.
         from .comparison_context import _host_limits
         lengths = self.headers.get_all("Content-Length", [])
@@ -836,7 +915,8 @@ class _ProjectionHandler(BaseHTTPRequestHandler):
                 or len(content_types) != 1 or self.headers.get_content_type() != "application/json"):
             return _response(400, "application/json; charset=utf-8", b'{"error":"invalid_query"}')
         try:
-            maximum = _host_limits(getattr(self.server.provider, "host_limits", None))["max_request_bytes"]
+            if maximum is None:
+                maximum = _host_limits(getattr(self.server.provider, "host_limits", None))["max_request_bytes"]
             # Comparing decimal lengths also avoids allocating an unbounded integer.
             length_text = lengths[0].lstrip("0") or "0"
             bound = str(maximum)
@@ -856,12 +936,47 @@ class _ProjectionHandler(BaseHTTPRequestHandler):
             return
         assert target is not None
         body = b""
-        if self.command == "POST" and urlsplit(target).path == "/api/v2/comparison-context":
-            body = self._read_comparison_body()
+        if self.command == "POST" and urlsplit(target).path in {
+                "/api/v2/comparison-context", "/api/material-management", "/api/material-delivery"}:
+            if urlsplit(target).path in {"/api/material-management", "/api/material-delivery"}:
+                from .material_management import MAX_REQUEST_BYTES
+                body = self._read_comparison_body(MAX_REQUEST_BYTES)
+            else:
+                body = self._read_comparison_body()
             if isinstance(body, RequestResponse):
                 self.close_connection = True
                 self._send_response(body)
                 return
+        if urlsplit(target).path == "/api/material-delivery":
+            if self.command != "POST":
+                self._send_response(_error_response(405, "explicit_read_required"))
+                return
+            from .material_management import handle_material_delivery_request, MaterialManagementError
+            from .human_viewer_transport import require_native_http_handler, HumanViewerHTTPBody
+            delivery = None
+            try:
+                require_native_http_handler(self)
+                delivery = handle_material_delivery_request(
+                    self.server.provider, urlsplit(target).query, body)
+                if type(delivery) is HumanViewerHTTPBody:
+                    self._send_human_viewer_body(delivery)
+                else:
+                    self._send_response(_response(202, "application/json; charset=utf-8", _json_body(delivery)))
+            except MaterialManagementError as exc:
+                self._send_response(_error_response(exc.status, exc.code))
+            except Exception:
+                # A witness may already have been consumed. Retain its exact
+                # original responsibility; never replace it with another read.
+                if (type(delivery) is HumanViewerHTTPBody
+                        and getattr(self, "_human_viewer_transport", None) is None):
+                    try:
+                        delivery.on_closed(None, "HTTP_HANDLER_FAILED")
+                    except Exception:
+                        pass
+                if getattr(self, "_human_viewer_transport", None) is None:
+                    self._send_response(_error_response(503, "result_unknown"))
+                self.close_connection = True
+            return
         response = handle_request(
             self.server.provider,
             self.command,
@@ -923,6 +1038,9 @@ class _ProjectionHTTPServer(ThreadingHTTPServer):
         self._slots = threading.BoundedSemaphore(max_connections)
         self._requests_lock = threading.Lock()
         self._requests: dict[socket.socket, float] = {}
+        # Ephemeral socket observations only; business state remains in the
+        # original command/delivery/receipt transactions.
+        self._human_viewer_transports: dict[socket.socket, object] = {}
         self._started_at = time.monotonic()
         self.expired = False
         self.max_connections = max_connections
@@ -979,6 +1097,36 @@ class _ProjectionHTTPServer(ThreadingHTTPServer):
         # Unexpected transport failures must not print provider internals.
         return
 
+    def _fail_human_viewer_transport(self, request, reason) -> None:
+        with self._requests_lock:
+            transport = self._human_viewer_transports.get(request)
+        if transport is not None:
+            from .human_viewer_transport import fail_human_viewer_http
+            fail_human_viewer_http(transport, reason)
+
+    def shutdown_request(self, request: socket.socket) -> None:
+        with self._requests_lock:
+            transport = self._human_viewer_transports.pop(request, None)
+        if transport is None:
+            return super().shutdown_request(request)
+        from .human_viewer_transport import fail_human_viewer_http, finish_human_viewer_socket
+        try:
+            request.shutdown(socket.SHUT_WR)
+        except OSError:
+            fail_human_viewer_http(transport, "HTTP_SOCKET_CLOSE_FAILED")
+        finally:
+            try:
+                self.close_request(request)
+            except OSError:
+                fail_human_viewer_http(transport, "HTTP_SOCKET_CLOSE_FAILED")
+        try:
+            finish_human_viewer_socket(transport)
+        except Exception:
+            # The bytes are no longer in an active HTTP writer. If the Owner
+            # callback failed, its original outcome remains pending/unknown;
+            # no synthetic receipt or replacement transfer is generated here.
+            return
+
     @staticmethod
     def _close_socket(request: socket.socket) -> None:
         try:
@@ -993,6 +1141,7 @@ class _ProjectionHTTPServer(ThreadingHTTPServer):
             overdue = [request for request, started in self._requests.items()
                        if now - started >= self.request_timeout_seconds]
         for request in overdue:
+            self._fail_human_viewer_transport(request, "HTTP_DEADLINE")
             self._close_socket(request)
         if (self.session_timeout_seconds
                 and now - self._started_at >= self.session_timeout_seconds):
@@ -1011,6 +1160,7 @@ class _ProjectionHTTPServer(ThreadingHTTPServer):
         with self._requests_lock:
             requests = list(self._requests)
         for request in requests:
+            self._fail_human_viewer_transport(request, "HTTP_SERVER_CLOSED")
             self._close_socket(request)
         super().server_close()
 
@@ -1021,6 +1171,23 @@ class _ProjectionHTTPServer(ThreadingHTTPServer):
 
 
 def serve_projection(
+    provider: ProjectionProvider,
+    host: str = "127.0.0.1",
+    port: int = 0,
+    open_browser: bool = True,
+    show_resources: bool = False,
+    *,
+    session_timeout_seconds: float = _SESSION_TIMEOUT_SECONDS,
+    max_connections: int = _MAX_CONNECTIONS,
+) -> int:
+    from cpn.rpnh.update_install import lifecycle_lease
+    with lifecycle_lease():
+        return _serve_projection(provider, host, port, open_browser, show_resources,
+                                 session_timeout_seconds=session_timeout_seconds,
+                                 max_connections=max_connections)
+
+
+def _serve_projection(
     provider: ProjectionProvider,
     host: str = "127.0.0.1",
     port: int = 0,

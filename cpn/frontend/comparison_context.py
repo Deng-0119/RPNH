@@ -990,6 +990,11 @@ class ComparisonProvider:
         self.host_limits = _host_limits(host_limits)
         self._selection_pages = {}
         self._lock = RLock()
+        from .registry_browser import RegistryBrowserProvider
+        self._registry_browser = RegistryBrowserProvider(session, lock=self._lock)
+
+    def registry_browser(self, params):
+        return self._registry_browser.registry_browser(params)
 
     def comparison_context(self, request):
         with self._lock:

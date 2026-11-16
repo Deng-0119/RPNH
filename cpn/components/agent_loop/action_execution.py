@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from .managed_identity import managed_identity_fields
+
 from collections.abc import Mapping
 from copy import deepcopy
 from contextlib import nullcontext
@@ -572,10 +574,7 @@ class ActionExecutionMixin:
                             "provider_name": declaration.name,
                             "registration_key": declaration.registration_key,
                             "selector": declaration.selector,
-                            "plugin_catalog_digest": (
-                                managed_service.catalog.plugin_catalog_digest),
-                            "binding_digest": declaration.identity[
-                                "binding_digest"],
+                            **managed_identity_fields(declaration.identity),
                             "effect": declaration.effect,
                             "outcome": "returned",
                             "request_admission_receipt_ref": result[
@@ -616,10 +615,7 @@ class ActionExecutionMixin:
                             "provider_name": declaration.name,
                             "registration_key": declaration.registration_key,
                             "selector": declaration.selector,
-                            "plugin_catalog_digest": (
-                                managed_service.catalog.plugin_catalog_digest),
-                            "binding_digest": declaration.identity[
-                                "binding_digest"],
+                            **managed_identity_fields(declaration.identity),
                             "effect": declaration.effect,
                             "outcome": outcome,
                             "request_admission_receipt_ref": evidence[
@@ -685,10 +681,7 @@ class ActionExecutionMixin:
                             "provider_name": declaration.name,
                             "registration_key": declaration.registration_key,
                             "selector": declaration.selector,
-                            "plugin_catalog_digest": (
-                                managed_service.catalog.plugin_catalog_digest),
-                            "binding_digest": declaration.identity[
-                                "binding_digest"],
+                            **managed_identity_fields(declaration.identity),
                             "effect": declaration.effect,
                             "outcome": "rejected",
                             "request_admission_receipt_ref": None,

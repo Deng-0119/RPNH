@@ -74,7 +74,7 @@
     "authorization_ref": {"$ref": "#/definitions/authorization_ref"},
     "context_ref": {"$ref": "#/definitions/invocation_ref"},
     "accounting_parent_ref": {"$ref": "#/definitions/invocation_ref"},
-    "boundary": {"enum": ["llm_prompt", "tool_result", "subprocess_read", "parent_receipt", "petri_input"]},
+    "boundary": {"enum": ["llm_prompt", "tool_result", "subprocess_read", "parent_receipt", "petri_input", "human_viewer"]},
     "purpose": {"type": "string"},
     "witness_ref": {"oneOf": [{"$ref": "#/definitions/witness_ref"}, {"type": "null"}]},
     "expires_at": {"type": "string", "minLength": 1},

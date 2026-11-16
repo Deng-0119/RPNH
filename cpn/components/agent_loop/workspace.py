@@ -916,6 +916,26 @@ class WorkspaceExecutionMixin:
         refs = [item.resource_ref
                 for item in self._project_workspace(execution, loop)
                 if item.sandbox_path == arguments["path"]]
+        if not refs:
+            # request_resource returns an exact next-turn locator without
+            # changing the operation's immutable Start inputs. Resolve only
+            # original same-firing extension facts, never a caller-supplied
+            # resource ref or an arbitrary filesystem path.
+            firing_ref = context.own_transition_firing_ref
+            if firing_ref is not None:
+                for event in self.core.event_store.list_events_by_aggregate(
+                        str(firing_ref.entity_id),
+                        event_types=("live_firing_resource_extension/v1",)):
+                    ref = _resource_from_payload(event.payload["resource_ref"])
+                    if (self._input_path(ref) == arguments["path"]
+                            and self.kernel._live_firing_resource_extension_allows(
+                                context, context.operation_binding_ref, ref)):
+                        refs.append(ref)
+                refs = list(dict.fromkeys(refs))
+            if len(refs) == 1:
+                self.kernel._authorize_resource(
+                    context, context.operation_binding_ref, refs[0],
+                    metadata_only=False)
         if len(refs) != 1:
             raise ValueError("read_file path must be an exact registered input")
         ref = refs[0]

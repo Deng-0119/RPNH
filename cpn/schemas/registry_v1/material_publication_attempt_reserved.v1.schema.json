@@ -1,0 +1,219 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "registry_v1/material_publication_attempt_reserved/v1",
+  "title": "Original material publication attempt control",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*/v[1-9][0-9]*$"
+        },
+        "logical_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+        },
+        "version_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+        }
+      },
+      "required": [
+        "entity_type",
+        "logical_id",
+        "version_id"
+      ]
+    }
+  },
+  "properties": {
+    "material_publication_attempt_ref": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/ref"
+        },
+        {
+          "properties": {
+            "entity_type": {
+              "const": "material_publication_attempt/v1"
+            }
+          }
+        }
+      ]
+    },
+    "task_ref": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/ref"
+        },
+        {
+          "properties": {
+            "entity_type": {
+              "const": "task/v1"
+            }
+          }
+        }
+      ]
+    },
+    "owner_command_ref": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/ref"
+        },
+        {
+          "properties": {
+            "entity_type": {
+              "const": "resource_version/v1"
+            }
+          }
+        }
+      ]
+    },
+    "transition_firing_ref": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/ref"
+        },
+        {
+          "properties": {
+            "entity_type": {
+              "const": "transition_firing/v1"
+            }
+          }
+        }
+      ]
+    },
+    "invocation_ref": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/ref"
+        },
+        {
+          "properties": {
+            "entity_type": {
+              "const": "invocation/v1"
+            }
+          }
+        }
+      ]
+    },
+    "firing_admission_ref": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/ref"
+        },
+        {
+          "properties": {
+            "entity_type": {
+              "const": "firing_admission/v1"
+            }
+          }
+        }
+      ]
+    },
+    "workspace_revision_candidate_ref": {
+      "oneOf": [
+        {
+          "allOf": [
+            {
+              "$ref": "#/definitions/ref"
+            },
+            {
+              "properties": {
+                "entity_type": {
+                  "const": "workspace_revision_candidate/v1"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "original_catalog_ref": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/ref"
+        },
+        {
+          "properties": {
+            "entity_type": {
+              "const": "registry_type_catalog/v1"
+            }
+          }
+        }
+      ]
+    },
+    "registered_completion_event_id": {
+      "type": "string",
+      "pattern": "^event:[a-f0-9]{32}$"
+    },
+    "slot": {
+      "type": "integer",
+      "enum": [
+        0,
+        1
+      ]
+    },
+    "prior_conflict_event_id": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "pattern": "^event:[a-f0-9]{32}$"
+        }
+      ]
+    },
+    "proposal_key": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "material_publication_attempt_ref",
+    "task_ref",
+    "owner_command_ref",
+    "transition_firing_ref",
+    "invocation_ref",
+    "firing_admission_ref",
+    "workspace_revision_candidate_ref",
+    "original_catalog_ref",
+    "registered_completion_event_id",
+    "slot",
+    "prior_conflict_event_id",
+    "proposal_key"
+  ],
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "slot": {
+            "const": 0
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "prior_conflict_event_id": {
+            "type": "null"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "prior_conflict_event_id": {
+            "type": "string",
+            "pattern": "^event:[a-f0-9]{32}$"
+          }
+        }
+      }
+    }
+  ]
+}

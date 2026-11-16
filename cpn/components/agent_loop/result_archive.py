@@ -10,6 +10,7 @@ import re
 
 from cpn.rpnh.registry.publication import _ref_payload, _version_from_payload
 from .managed_output import serialized_managed_json
+from cpn.plugins.managed_output import fit_result_archive_page
 
 
 ARCHIVE_PAGE_KIND = "tool_result_archive_page/v1"
@@ -140,16 +141,7 @@ def validate_result_archive_page(page):
 def bound_result_archive_page(page, max_bytes):
     """Shrink an archive page without dropping identities or skipping entries."""
     validate_result_archive_page(page)
-    if type(max_bytes) is not int or max_bytes < 1:
-        raise ValueError("result archive max_bytes must be a positive integer")
-    for count in range(len(page["entries"]), -1, -1):
-        end = page["offset"] + count
-        candidate = dict(page, entries=page["entries"][:count],
-                         next_offset=end if end < page["total_count"] else None)
-        if len(serialized_managed_json(candidate).encode("utf-8")) <= max_bytes:
-            if count or end == page["total_count"]:
-                return candidate
-    raise ValueError("result archive budget cannot fit the minimum envelope and next complete entry")
+    return fit_result_archive_page(page, max_bytes)
 
 
 def _entries(lifecycle, anchor, cutoff, tool_names):

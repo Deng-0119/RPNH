@@ -115,6 +115,34 @@ class UserCollaborationHost:
     def session_principal(self, session):
         return _version_from_payload(self._get(self._session(session).ref)['data']['target_principal_ref'])
 
+    def material_action(self, session, *, owner_command, command_id, params):
+        """Seal one explicit complete material request at the trusted HOST."""
+        from ..registry._event_store.material_control import (
+            require_session, validate_input_params, validate_submit_params)
+        self._session(session)
+        if not isinstance(command_id, str) or not command_id:
+            raise ValueError('material action requires a stable command identity')
+        if owner_command == 'prepare_material_disable_plan':
+            from ..registry._event_store.material_availability import validate_plan_params
+            validate_plan_params(params)
+        elif owner_command == 'prepare_material_input':
+            validate_input_params(params)
+        elif owner_command == 'material_submit':
+            validate_submit_params(params)
+        elif owner_command == 'abandon_material_input':
+            from ..registry._event_store.material_input_lifecycle import validate_params, transaction_key
+            validate_params(params)
+            if command_id != transaction_key(params['input_ref']):
+                raise RegistryConflict('input abandonment requires its exact stable termination identity')
+        else:
+            raise ValueError('unsupported material HOST action')
+        with self._core.event_store.connect() as db:
+            require_session(self._core.event_store, db, self._core.task_id, session)
+        creation = canonical_json({'owner_command': owner_command,
+            'command_id': command_id, 'params': params})
+        return mint_action(self._core.event_store, session, owner_command, None,
+                           creation=creation)
+
     def resume_session(self, session_ref, *, origin_core, principal_ref):
         data = self._origin(origin_core, principal_ref)
         if self._get(session_ref)['data'] != data or session_ref.entity_type != SESSION:

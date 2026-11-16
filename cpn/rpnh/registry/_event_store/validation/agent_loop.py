@@ -970,6 +970,12 @@ def validate_current_invocation_authority(
     authority_decision_ref = invocation.get("authority_decision_ref")
     budget_ref = invocation.get("budget_witness_ref")
     lease_ref = invocation.get("operation_execution_lease_ref")
+    if isinstance(invocation_ref, Mapping):
+        root = db.execute(
+            "SELECT state FROM firing_publications WHERE invocation_version_id=?",
+            (invocation_ref.get("version_id"),)).fetchone()
+        if root is not None and root["state"] == "REJECTED":
+            raise RegistryConflict(f"{boundary} targets a rejected firing")
     if (not exact_ref_exists(invocation_ref, "invocation/v1")
             or not exact_ref_exists(task_ref, "task/v1")
             or not exact_ref_exists(round_ref, "task_round/v1")
@@ -2028,13 +2034,14 @@ def validate_current_invocation_authority(
                 or not isinstance(operation_result_ref, Mapping)):
             return False
         # A failed resume may reserve a writer epoch without publishing any
-        # facts.  Such an empty fence gap is safe to cross; any committed fact
-        # from a later writer means the stale completion is no longer the
-        # current exact settlement authority.
-        if db.execute(
-                "SELECT 1 FROM events WHERE writer_fencing_epoch>? LIMIT 1",
-                (lease_writer_epoch,),
-        ).fetchone() is not None:
+        # facts. For material completions only, the exact original 4/2-event
+        # budget transactions may also cross this fence. The shared reader
+        # proves their complete canonical inventory, original command/firing
+        # and frozen completion; other later-writer facts remain disqualifying.
+        from ..material_recovery import has_unrelated_later_writer_events
+        if has_unrelated_later_writer_events(context.event_store, db,
+                task_id=task_id, stale_epoch=lease_writer_epoch,
+                firing_ref=invocation.get("own_transition_firing_ref")):
             return False
         rows = db.execute(
             "SELECT writer_fencing_epoch,producer_invocation_id,payload_json "

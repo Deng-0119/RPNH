@@ -151,11 +151,11 @@ class RegistryFrontendApplication:
             raise FrontendError(
                 "session_owned", "The main session already has a writable owner.") from exc
         try:
-            # MainSession.resume is deliberately effect-free.  A temporary
-            # control prevents TaskControl's pending-launch recovery from
-            # running during construction; observational indexes are attached
-            # only after the canonical child path is known.
-            session = MainSession.resume(record.root, task_control=object())
+            # Adopt the writer under this existing owner lease. A temporary
+            # control prevents pending-launch recovery during construction;
+            # observational indexes attach after the canonical path is known.
+            session = MainSession.resume(
+                record.root, task_control=object(), owner_lease=lease)
             session.task_control = self._observational_control(
                 session.child_path_root / "tasks")
             sid = stable_frontend_session_id(record)
@@ -297,6 +297,16 @@ class RegistryFrontendApplication:
             raise FrontendError("unknown_session", "Unknown RPNH session.", 404)
         return self._sessions[sid]
 
+    def select_model(
+            self, sid: str, *, selection_id: str,
+            reasoning_effort: str | None = None,
+    ) -> dict[str, Any]:
+        """Select an existing RPNH profile without preparing or executing a turn."""
+        state = self._get(sid)
+        profile = self._select_profile(
+            state.session, selection_id, reasoning_effort)
+        return self._public_profile(profile)
+
     def create_session(
             self, selection_id: str | None = None,
             reasoning_effort: str | None = None,
@@ -319,7 +329,8 @@ class RegistryFrontendApplication:
         try:
             lease = MainSessionOwnerLease.reserve_for_creation(self.root)
             session = self._main_session_type(
-                self.root, profile.path, owner_root_reserved=True)
+                self.root, profile.path, owner_root_reserved=True,
+                owner_lease=lease)
             record = inspect_main_session_root(self.root)
             sid = stable_frontend_session_id(record)
             state = _Session(
@@ -655,9 +666,13 @@ class RegistryFrontendApplication:
             if run_dir.exists() or any(doc.get("registry_relative_path") == relative for _, doc in links):
                 raise FrontendError("unknown_outcome", "An agent Registry lacks its launch handle; no replay.")
             from cpn.llm_adapters import load_llm_execution_selection
-            runtime = load_llm_execution_selection(
-                session.execution_config_path).runtime_policy
+            selection = load_llm_execution_selection(session.execution_config_path)
+            settings, _ = session._plugin_settings(
+                {"user_input": session._selected_task_capabilities(selection)},
+                scope="child_task")
+            runtime = selection.runtime_policy
             handle = session.task_control.start(AgentTaskSpec(
+                **settings,
                 run_dir=run_dir, prompt=text,
                 stages=(AgentStage("worker", "Complete the requested task and return its result."),),
                 execution_config_path=session.execution_config_path,
@@ -874,7 +889,10 @@ class RegistryFrontendApplication:
 class FrontendGateway:
     """Bounded single-thread application owner; protocols never own a writer."""
 
-    METHODS = frozenset({"configuration", "snapshot", "create_session", "submit", "abort", "command"})
+    METHODS = frozenset({
+        "configuration", "snapshot", "select_model",
+        "create_session", "submit", "abort", "command",
+    })
 
     def __init__(self, factory: Callable[[], Any], *, on_change: Callable[[], None] | None = None,
                  tick_interval: float = 0.2) -> None:
@@ -928,9 +946,9 @@ class FrontendGateway:
                     continue
                 try:
                     value = getattr(app, name)(*args, **kwargs)
-                    # Reads only project state. Reconciliation is an application
-                    # owner activity, not a side effect of a UI GET.
-                    if name not in {"configuration", "snapshot"}:
+                    # Reads and model selection do not advance execution.
+                    # Periodic reconciliation remains an owner activity.
+                    if name not in {"configuration", "snapshot", "select_model"}:
                         app.tick()
                         next_tick = time.monotonic() + self._interval
                     if name == "snapshot" and not args and not kwargs:

@@ -12,7 +12,8 @@
     "entry": "codex --remote unix://<rpnh-owned-socket>",
     "transport": "websocket_text_frames_over_unix_socket",
     "protocol": "Codex app-server v2",
-    "schema_generation": "codex app-server generate-json-schema --out <directory>"
+    "schema_generation": "codex app-server generate-json-schema --out <directory>",
+    "notification_capabilities": "Exact per-connection optOutNotificationMethods; reconnect replaces the live delivery target without starting another worker."
   },
   "backend_authority": "RPNH",
   "implemented_entry": "cpn.frontend.codex_app_server",
@@ -59,7 +60,8 @@
     "thread/name/set",
     "thread/settings/update",
     "turn/start",
-    "turn/interrupt"
+    "turn/interrupt",
+    "turn/steer"
   ],
   "rpnh_owned": [
     "main_session",
@@ -79,16 +81,26 @@
     "automatic_or_unbounded_multi_version_compatibility"
   ],
   "verification": {
-    "policy": "Validation results belong to fixed commits and CI artifacts, not static status claims.",
-    "workflow": ".github/workflows/compatibility-audit.yml",
+    "policy": "Validation results belong to the exact reviewed source and locally recorded test artifacts; no static status is a runtime certification.",
     "tests": [
       "tests/test_codex_compat.py",
       "tests/test_frontend_boundary.py",
       "tests/test_codex_history.py",
       "tests/test_codex_0161_candidate.py",
       "tests/test_codex_0163_current.py",
-      "tests/test_codex_0166_candidate.py"
+      "tests/test_codex_0166_candidate.py",
+      "tests/test_codex_0167_candidate.py",
+      "tests/test_codex_0167_transport.py"
     ],
+    "prepared_regressions": {
+      "candidate-0.167.0": [
+        "Reconnect keeps one waiter and routes terminal events to the current connection.",
+        "Startup empty turnId maps to the existing RPNH interrupt path; stale nonempty IDs fail.",
+        "Live resume replays the observed turn ID without admission, execution or reconciliation.",
+        "Active steer rejects explicitly; completed-turn retry uses ordinary turn/start.",
+        "Client message receipts and exact notification opt-outs remain presentation-only."
+      ]
+    },
     "live_provider_calls": false
   },
   "unsupported_methods": {
@@ -96,7 +108,8 @@
     "memory/*": "No frontend-owned memory service.",
     "skills/config/write": "Native RPNH plugins are not Codex backend skills.",
     "mcpServer/*": "No frontend-owned MCP execution or authentication.",
-    "process/*": "No execution outside the RPNH Registry/Petri gateway."
+    "process/*": "No execution outside the RPNH Registry/Petri gateway.",
+    "turn/steer": "No same-turn input injection or server queue. Active requests fail explicitly without admission; an already completed turn uses the native no-active-turn race response so the TUI can submit a new turn."
   },
   "method_classes": {
     "empty_discovery": [
@@ -106,13 +119,18 @@
       "plugin/list",
       "apps/list"
     ],
-    "meaning": "Empty discovery is a compatibility response, not an installed capability."
+    "meaning": "Empty discovery is a compatibility response, not an installed capability.",
+    "explicit_rejection": [
+      "turn/steer"
+    ]
   },
   "history_projection": {
     "source": "existing owner-bound MainThreadRegistry fixed canonical cut",
     "wire_thread_id": "UUID rendering of the unchanged stable session identity",
     "safe_items": "committed original user text and safe main decision text only",
-    "native_client_certification": "separate version-pinned runtime gate"
+    "native_client_certification": "separate version-pinned runtime gate",
+    "live_resume": "Replay the existing observed in-progress turn ID as turn/started; committed history and cursors remain bound to the native fixed cut.",
+    "submission_receipts": "Echo clientUserMessageId as clientId on live userMessage receipts only; it is never persisted as execution or history authority."
   },
   "compatibility_profiles": {
     "default": "pinned-0.163.0",
@@ -142,6 +160,13 @@
       "candidate-0.166.0": {
         "version": "0.166.0",
         "reported_cli_version": "codex-cli 0.166.0",
+        "object_item_cursor": true,
+        "explicit_history_defaults": true,
+        "status": "CANDIDATE_NATIVE_CERTIFICATION_PENDING"
+      },
+      "candidate-0.167.0": {
+        "version": "0.167.0",
+        "reported_cli_version": "codex-cli 0.167.0",
         "object_item_cursor": true,
         "explicit_history_defaults": true,
         "status": "CANDIDATE_NATIVE_CERTIFICATION_PENDING"

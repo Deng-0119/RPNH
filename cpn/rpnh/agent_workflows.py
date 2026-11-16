@@ -41,6 +41,8 @@ WORKFLOW_GRAPH_COMPONENT_KEY = "rpnh/agent-workflow-graph/v2"
 WORKFLOW_GRAPH_COMPONENT_V3_KEY = "rpnh/agent-workflow-graph/v3"
 WORKFLOW_GRAPH_COMPONENT_V4_KEY = "rpnh/agent-workflow-graph/v4"
 WORKFLOW_GRAPH_CONFIG_SCHEMA_V4_ID = "application/rpnh_agent_workflow_graph_config/v4"
+WORKFLOW_GRAPH_COMPONENT_V5_KEY = "rpnh/agent-workflow-graph/v5"
+WORKFLOW_GRAPH_CONFIG_SCHEMA_V5_ID = "application/rpnh_agent_workflow_graph_config/v5"
 
 _ID = re.compile(r"^[a-z][a-z0-9_]{0,47}$")
 
@@ -592,6 +594,23 @@ WORKFLOW_GRAPH_CONFIG_SCHEMA_V4["$id"] = WORKFLOW_GRAPH_CONFIG_SCHEMA_V4_ID
 WORKFLOW_GRAPH_CONFIG_SCHEMA_V4["properties"]["nodes"]["items"]["properties"]["execution"]["properties"]["plugin"] = {
     "type": "string", "pattern": "^[a-z][a-z0-9_]{0,47}/[a-z][a-z0-9_]{0,47}$"}
 
+# Account inputs are HOST metadata alongside the business graph. They are not
+# graph ports or artifacts, and v1-v4 keep their original closed contracts.
+WORKFLOW_GRAPH_CONFIG_SCHEMA_V5 = deepcopy(WORKFLOW_GRAPH_CONFIG_SCHEMA_V4)
+WORKFLOW_GRAPH_CONFIG_SCHEMA_V5["$id"] = WORKFLOW_GRAPH_CONFIG_SCHEMA_V5_ID
+WORKFLOW_GRAPH_CONFIG_SCHEMA_V5["properties"]["account_inputs"] = {
+    "type": "array", "minItems": 1, "uniqueItems": True,
+    "items": {
+        "type": "object", "additionalProperties": False,
+        "properties": {
+            "node_id": {"type": "string", "pattern": _ID.pattern},
+            "port_id": {"type": "string", "pattern": r"^account_binding_(0|[1-9][0-9]*)$"},
+        },
+        "required": ["node_id", "port_id"],
+    },
+}
+WORKFLOW_GRAPH_CONFIG_SCHEMA_V5["required"].append("account_inputs")
+
 # v1 remains the immutable dependency-DAG wire contract.  The typed Python
 # loader accepts it and supplies dependency/zero-rework defaults, while all
 # newly authored graphs use the explicit v2 fields above.
@@ -678,9 +697,41 @@ def lower_agent_workflow_graph(
         config: Mapping[str, Any], context: BindingContext,
 ) -> PNFragment:
     """Lower dependency paths, rework activations and interruption returns."""
-    graph = AgentWorkflowGraph.from_mapping(config)
+    account_inputs = config.get("account_inputs", ())
+    graph = AgentWorkflowGraph.from_mapping({
+        key: value for key, value in config.items() if key != "account_inputs"})
     operations = {operation.name: operation for operation in context.operations}
     nodes = {node.node_id: node for node in graph.nodes}
+    account_ports: dict[str, tuple[str, ...]] = {}
+    if "account_inputs" in config:
+        from cpn.plugins.account_bindings import BINDING_SCHEMA
+        if not isinstance(account_inputs, (list, tuple)) or not account_inputs:
+            raise DeclarationError("workflow account inputs must be explicit and nonempty")
+        seen_ports = set()
+        by_node: dict[str, list[str]] = {}
+        for row in account_inputs:
+            if (not isinstance(row, Mapping) or set(row) != {"node_id", "port_id"}
+                    or not isinstance(row["port_id"], str)
+                    or re.fullmatch(r"account_binding_(0|[1-9][0-9]*)", row["port_id"]) is None
+                    or row["port_id"] in seen_ports
+                    or not isinstance(row["node_id"], str)
+                    or row["node_id"] not in nodes
+                    or nodes[row["node_id"]].execution.plugin is not None):
+                raise DeclarationError("workflow account input has no unique managed node binding")
+            seen_ports.add(row["port_id"])
+            by_node.setdefault(row["node_id"], []).append(row["port_id"])
+        # Like the original graph node/arc arrays, account rows carry no order
+        # semantics. The generated ordinal fixes the operation's input ABI.
+        ordinal = lambda name: int(name.removeprefix("account_binding_"))
+        account_inputs = tuple(sorted(account_inputs, key=lambda row: ordinal(row["port_id"])))
+        account_ports = {node_id: tuple(sorted(ports, key=ordinal))
+                         for node_id, ports in by_node.items()}
+        declared_ports = {port.name: port for port in context.ports}
+        if set(declared_ports) != {"request", "result", *seen_ports}:
+            raise DeclarationError("workflow account ports differ from their explicit declarations")
+        for name in seen_ports:
+            if declared_ports[name] != PortDeclaration(name, "input", BINDING_SCHEMA):
+                raise DeclarationError("workflow account port must be one complete binding input")
     feedback_targets = {
         arc.target.node_id for arc in graph.arcs if arc.kind == "feedback"}
     expected_operations = set(nodes) | {
@@ -706,10 +757,13 @@ def lower_agent_workflow_graph(
         *( (PlaceDeclaration(
             _rework_permit_place(), TEXT_SCHEMA, channel="control"),)
            if graph.max_rework_cycles else ()),
+        *(PlaceDeclaration(row["port_id"], BINDING_SCHEMA)
+          for row in account_inputs),
     ]
     public_bindings = (
         PortBinding("request", ingress_place),
         PortBinding("result", _data_place(*egress_key)),
+        *(PortBinding(row["port_id"], row["port_id"]) for row in account_inputs),
     )
     internal_ports: list[PortDeclaration] = []
     internal_bindings: list[PortBinding] = []
@@ -783,7 +837,11 @@ def lower_agent_workflow_graph(
                 internal_ports.append(PortDeclaration(capability_port, "input", native["capability_schema"]))
                 internal_bindings.append(PortBinding(capability_port, capability_port))
                 arcs.append(ArcDeclaration(capability_port, operation_name, "input", mode="read"))
-            if (operation.inputs != expected_inputs + ((native["capability_port"],) if native else ())
+            selected_accounts = account_ports.get(node.node_id, ())
+            if (selected_accounts
+                    and operation.config.get("semantic_node_id") != node.node_id):
+                raise DeclarationError("workflow account inputs require the exact semantic node")
+            if (operation.inputs != expected_inputs + ((native["capability_port"],) if native else ()) + selected_accounts
                     or operation.outputs not in (
                         semantic_outputs,
                         semantic_outputs + interrupt_outputs)
@@ -792,6 +850,8 @@ def lower_agent_workflow_graph(
                     "workflow node operation ports differ from its activation")
             transitions.append(TransitionDeclaration(
                 operation_name, operation_name))
+            arcs.extend(ArcDeclaration(port, operation_name, "input", mode="read")
+                        for port in selected_accounts)
 
             selected_controls: list[AgentWorkflowArc] = []
             for port, handle, rollback in zip(
@@ -1080,4 +1140,6 @@ __all__ = (
     "WORKFLOW_GRAPH_CONFIG_SCHEMA_V3", "WORKFLOW_GRAPH_CONFIG_SCHEMA_V3_ID",
     "lower_agent_workflow_graph", "WORKFLOW_GRAPH_COMPONENT_V4_KEY",
     "WORKFLOW_GRAPH_CONFIG_SCHEMA_V4", "WORKFLOW_GRAPH_CONFIG_SCHEMA_V4_ID",
+    "WORKFLOW_GRAPH_COMPONENT_V5_KEY", "WORKFLOW_GRAPH_CONFIG_SCHEMA_V5",
+    "WORKFLOW_GRAPH_CONFIG_SCHEMA_V5_ID",
 )

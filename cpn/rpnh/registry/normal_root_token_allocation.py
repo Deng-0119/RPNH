@@ -277,7 +277,7 @@ def _json_document(raw):
     return document
 
 
-def _normal_root_delta_schema(bundle) -> dict:
+def _normal_root_delta_schema(bundle, *, require_normal_capability=True) -> dict:
     """Recognize only the fixed optional scalar rule in the persisted bundle."""
     from .content_schemas import _validate_schema_bytes, ContentSchemaAuthorityError
     definitions = bundle.get("definitions")
@@ -314,7 +314,8 @@ def _normal_root_delta_schema(bundle) -> dict:
         _fail("persisted marking-delta schema is not self-contained Draft7: " + str(exc))
     if schema_id != _DELTA_SCHEMA or checked != document:
         _fail("persisted marking-delta schema identity differs")
-    _require_normal_root_schema_rule(document)
+    if require_normal_capability:
+        _require_normal_root_schema_rule(document)
     return document
 
 
@@ -332,15 +333,18 @@ def _require_normal_root_schema_rule(document) -> None:
             or set(document) - allowed or document.get("type") != "object"
             or document.get("additionalProperties") is not False
             or not isinstance(document.get("properties"), dict)
-            or document["properties"].get(_MARKER) != {
-                "type": "string", "const": NORMAL_ROOT_TOKEN_SCHEME}
+            or document["properties"].get(_MARKER) not in (
+                {"type": "string", "const": NORMAL_ROOT_TOKEN_SCHEME},
+                {"type": "string", "enum": [NORMAL_ROOT_TOKEN_SCHEME, "success_firing_scoped/v1"]})
             or not isinstance(document.get("required"), list)
             or _MARKER in document["required"]
             or document.get("allOf") != [rule]):
         _fail("original persisted catalog lacks the normal-root allocation capability")
 
 
-def load_normal_root_token_schema(store, db, *, task_id, cut: int) -> dict:
+def _load_original_token_schema(store, db, *, task_id, cut: int,
+                                require_source_binding=True,
+                                require_normal_capability=True) -> dict:
     """Read fixed genesis/catalog authority only through this existing db/cut."""
     from .execution_child_closure import ClosureSnapshot
     from ._event_store.source_identity import read_source_binding
@@ -433,21 +437,24 @@ def load_normal_root_token_schema(store, db, *, task_id, cut: int) -> dict:
     def locator(key, kind):
         return _exact(_json_document(meta(key)), kind)
 
-    binding_row = read_source_binding(db, store.catalog, task_id)
-    if binding_row is None:
-        _fail("normal allocation requires the original local source binding")
-    binding_metadata = _json_document(binding_row["binding_metadata_json"])
-    binding, _binding_row, _binding_tx, binding_events = read(
-        binding_metadata.get("binding_ref"), "collaboration_source_binding/v1")
-    if binding != binding_metadata:
-        _fail("source binding bytes differ from the registered local source")
+    binding = None
+    if require_source_binding:
+        binding_row = read_source_binding(db, store.catalog, task_id)
+        if binding_row is None:
+            _fail("normal allocation requires the original local source binding")
+        binding_metadata = _json_document(binding_row["binding_metadata_json"])
+        binding, _binding_row, _binding_tx, binding_events = read(
+            binding_metadata.get("binding_ref"), "collaboration_source_binding/v1")
+        if binding != binding_metadata:
+            _fail("source binding bytes differ from the registered local source")
     task_ref = locator("task_ref", "task/v1")
     run_ref = locator("native_run_ref", "native_run_identity/v1")
     bootstrap_ref = locator("bootstrap_command_ref", "bootstrap_command/v1")
     genesis_ref = locator("native_genesis_ref", "native_genesis_manifest/v1")
     branch_ref = locator("task_branch_ref", "task_branch/v1")
-    if (binding.get("task_ref") != task_ref or binding.get("native_run_ref") != run_ref
-            or binding.get("bootstrap_command_ref") != bootstrap_ref):
+    if (binding is not None and (binding.get("task_ref") != task_ref
+            or binding.get("native_run_ref") != run_ref
+            or binding.get("bootstrap_command_ref") != bootstrap_ref)):
         _fail("source binding differs from the fixed native owner locators")
     task, _task_row, _task_tx, _task_events = read(task_ref, "task/v1")
     branch, _branch_row, _branch_tx, _branch_events = read(branch_ref, "task_branch/v1")
@@ -472,7 +479,8 @@ def load_normal_root_token_schema(store, db, *, task_id, cut: int) -> dict:
             or run_row["transaction_id"] != genesis_row["transaction_id"]
             or bootstrap_row["transaction_id"] != genesis_row["transaction_id"]
             or genesis_tx["idempotency_key"] != "native-bootstrap:" + run_ref["logical_id"]
-            or genesis_events[-1]["ordinal"] >= binding_events[0]["ordinal"]):
+            or (binding is not None
+                and genesis_events[-1]["ordinal"] >= binding_events[0]["ordinal"])):
         _fail("fixed genesis/source/run/bootstrap identity or transaction differs")
     catalog_ref = _exact(genesis.get("type_catalog_ref"), "registry_type_catalog/v1")
     if (catalog_ref["logical_id"] != meta("type_catalog_logical_id")
@@ -482,7 +490,13 @@ def load_normal_root_token_schema(store, db, *, task_id, cut: int) -> dict:
     if (catalog_tx["idempotency_key"] != "registry-type-catalog:rpnh-v1"
             or catalog_events[-1]["ordinal"] >= genesis_events[0]["ordinal"]):
         _fail("catalog was not the original pre-bootstrap publication")
-    return _normal_root_delta_schema(bundle)
+    return _normal_root_delta_schema(bundle,
+        require_normal_capability=require_normal_capability)
+
+
+def load_normal_root_token_schema(store, db, *, task_id, cut: int) -> dict:
+    """Retain the exact original normal-root capability and source gate."""
+    return _load_original_token_schema(store, db, task_id=task_id, cut=cut)
 
 
 def validate_normal_root_token_delta(schema, delta) -> None:

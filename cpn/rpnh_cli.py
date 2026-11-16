@@ -6,6 +6,7 @@ from contextlib import nullcontext
 from dataclasses import dataclass
 import json
 import math
+import os
 from pathlib import Path
 import shlex
 import sys
@@ -78,6 +79,10 @@ def _parser() -> argparse.ArgumentParser:
               f"auto uses Codex {CODEX_FRONTEND_VERSION} when available, "
               f"otherwise basic; OpenCode {OPENCODE_VERSION} and DSH are explicit"),
     )
+    parser.add_argument(
+        "--no-open-browser", action="store_true",
+        help="DSH: print the local URL without opening a desktop browser",
+    )
     return parser
 
 
@@ -107,6 +112,8 @@ def _config_parser() -> argparse.ArgumentParser:
     frontend.add_argument("preference", nargs="?", choices=FRONTENDS)
     frontend.add_argument("--dsh-source", type=Path,
                           help="prepared DSH source checkout for the DSH frontend")
+    frontend.add_argument("--dsh-compatibility-profile",
+                          help="persist a packaged DSH Web profile; managed changes require reconfiguration")
     init = commands.add_parser(
         "init", help="create an empty catalog for manual/scripted configuration")
     init.add_argument("--catalog", type=Path)
@@ -141,13 +148,17 @@ def _config_command(argv: Sequence[str]) -> int:
             read_frontend_preferences, save_frontend_preferences,
         )
         preference = read_frontend_preferences()
-        if args.preference is not None or args.dsh_source is not None:
+        if (args.preference is not None or args.dsh_source is not None
+                or args.dsh_compatibility_profile is not None):
             preference = save_frontend_preferences(
                 args.preference or preference.frontend,
-                dsh_source=args.dsh_source)
+                dsh_source=args.dsh_source,
+                dsh_compatibility_profile=args.dsh_compatibility_profile)
         _print_json({"frontend": preference.frontend,
                      "dsh_source": (None if preference.dsh_source is None
-                                    else str(preference.dsh_source))})
+                                    else str(preference.dsh_source)),
+                     "dsh_compatibility_profile": preference.dsh_compatibility_profile,
+                     "installation_id": preference.installation_id})
         return 0
     if args.config_command == "init":
         from cpn.rpnh.provider_setup import initialize_provider_catalog
@@ -225,19 +236,49 @@ def _doctor(execution: Path | None = None, *, as_json: bool = False) -> int:
     return 0 if report["ready"] else 1
 
 
+def _native_frontend_options(frontend: str) -> dict:
+    from cpn.rpnh.frontend_config import read_frontend_preferences
+
+    preferences = read_frontend_preferences()
+    binary = getattr(preferences, f"{frontend}_binary")
+    if frontend == "codex":
+        binary = os.environ.get("RPNH_CODEX_BIN") or binary
+    profile = getattr(preferences, f"{frontend}_compatibility_profile")
+    if frontend == "opencode":
+        from cpn.frontend.opencode_protocol import OPENCODE_VERSION
+        if profile == OPENCODE_VERSION:
+            profile = None  # The existing launcher's default entry takes None.
+    options = {}
+    if binary is not None:
+        options[f"{frontend}_binary"] = str(binary)
+    if profile is not None:
+        options["compatibility_profile"] = profile
+    return options
+
+
 def _choose_frontend(requested: str | None) -> str:
+    from cpn.rpnh.frontend_config import read_frontend_preferences, preferences_path
+    preferences = read_frontend_preferences()
     if requested is None:
-        from cpn.rpnh.frontend_config import read_frontend_preferences
-        requested = read_frontend_preferences().frontend
+        requested = preferences.frontend
     if requested != "auto":
         return requested
     if not sys.stdin.isatty():
         return "basic"
-    from cpn.frontend.codex_app_server import CODEX_FRONTEND_VERSION, resolve_codex_binary
-    try:
-        resolve_codex_binary()
-    except (OSError, RuntimeError, ValueError):
-        print(f"Using the built-in terminal. Optional Codex {CODEX_FRONTEND_VERSION} frontend is unavailable.",
+    if preferences.installation_id is not None:
+        from cpn.rpnh.install_contract import read_installed
+        record = read_installed(preferences_path().parent)
+        return "codex" if "codex" in record["components"] else "basic"
+    from cpn.frontend.codex_app_server import _compatibility_profile
+    from cpn.rpnh.frontend_setup import frontend_status
+    options = _native_frontend_options("codex")
+    version = _compatibility_profile(options.get("compatibility_profile")).version
+    status = frontend_status("codex")
+    if not status["available"]:
+        if (os.environ.get("RPNH_CODEX_BIN") or preferences.codex_binary is not None
+                or preferences.codex_compatibility_profile is not None):
+            raise RuntimeError(status["detail"])
+        print(f"Using the built-in terminal. Optional Codex {version} frontend is unavailable.",
               file=sys.stderr)
         return "basic"
     return "codex"
@@ -283,6 +324,11 @@ def _frontend_command(argv: Sequence[str]) -> int:
     setup.add_argument("--codex-bin", type=Path, dest="codex_binary")
     setup.add_argument("--opencode-bin", type=Path, dest="opencode_binary")
     setup.add_argument("--dsh-source", type=Path)
+    setup.add_argument("--install", action="store_true", default=None,
+                       help="explicitly allow missing frontend dependencies and assets to be prepared")
+    setup.add_argument("--codex-compatibility-profile", help="packaged Codex profile; omitted keeps the saved selection")
+    setup.add_argument("--opencode-compatibility-profile", help="packaged OpenCode profile; omitted keeps the saved selection")
+    setup.add_argument("--dsh-compatibility-profile", help="packaged DSH Web profile; saved for subsequent launches")
     switch = commands.add_parser("switch", help="change the default or reopen a session in another frontend")
     switch.add_argument("frontend", choices=tuple(FRONTEND_LABELS))
     switch.add_argument("--resume", type=Path, metavar="SESSION_DIR")
@@ -298,7 +344,8 @@ def _frontend_command(argv: Sequence[str]) -> int:
         _require_setup_terminal()
     bindings = {
         key: getattr(options, key) for key in (
-            "codex_binary", "opencode_binary", "dsh_source")
+            "codex_binary", "opencode_binary", "dsh_source", "install",
+            "codex_compatibility_profile", "opencode_compatibility_profile", "dsh_compatibility_profile")
         if getattr(options, key, None) is not None}
     selected = choose_frontend(selected, **bindings)
     print(f"Frontend configured: {selected}. Start with: rpnh")
@@ -703,7 +750,14 @@ def _run_basic_frontend(
                     "resume execution profile differs from the session's "
                     "persisted exact profile")
             lease = MainSessionOwnerLease(descriptor)
-            session = MainSession.resume(root, execution)
+            from cpn.rpnh.task_control import TaskControl
+
+            # Adoption is observational; explicit actions activate execution.
+            session = MainSession.resume(
+                root, execution, task_control=object(), owner_lease=lease)
+            session.task_control = TaskControl(
+                session.child_path_root / "tasks",
+                recover_pending_launches=False)
             snapshot = session.active_turn_snapshot()
             if (snapshot is not None and snapshot.state in {
                     "accepted", "pending_start", "running"}):
@@ -718,7 +772,7 @@ def _run_basic_frontend(
         else:
             lease = MainSessionOwnerLease.reserve_for_creation(root)
             session = MainSession(
-                root, execution, owner_root_reserved=True)
+                root, execution, owner_root_reserved=True, owner_lease=lease)
 
         from cpn.rpnh.session_frontend import remember_session_frontend
         remember_session_frontend(root, "basic", lease=lease)
@@ -807,7 +861,29 @@ def _run_basic_frontend(
 
 
 def main(argv: list[str] | None = None) -> int:
+    from cpn.update_context import reject_candidate_runtime
     arguments = list(sys.argv[1:] if argv is None else argv)
+    try:
+        reject_candidate_runtime()
+        # Management commands take their own EX lease before the ordinary
+        # runtime guard. Other software/configuration subcommands hold SH.
+        if arguments and arguments[0] in {
+                "frontend", "config", "net", "plugins", "package", "examples",
+                "init", "doctor", "origin"}:
+            from cpn.rpnh.update_install import lifecycle_lease
+            with lifecycle_lease():
+                return _main(arguments)
+        return _main(arguments)
+    except (OSError, RuntimeError, TypeError, ValueError) as exc:
+        print(f"rpnh: error: {exc}", file=sys.stderr)
+        return 2
+
+
+def _main(argv: list[str] | None = None) -> int:
+    arguments = list(sys.argv[1:] if argv is None else argv)
+    if arguments and arguments[0] == "update":
+        from cpn.rpnh.update_cli import main as update_main
+        return update_main(arguments[1:])
     if arguments and arguments[0] == "help":
         from cpn.rpnh.help_catalog import help_command
         return help_command(arguments[1:])
@@ -849,9 +925,14 @@ def main(argv: list[str] | None = None) -> int:
         if command == "doctor":
             parser.add_argument("--execution", type=Path)
             parser.add_argument("--json", action="store_true")
+            parser.add_argument("--platform", action="store_true",
+                                help="check local OS and Python API prerequisites without loading provider configuration")
         options = parser.parse_args(arguments[1:])
         try:
             if command == "doctor":
+                if options.platform:
+                    from cpn.rpnh.platform_support import main as platform_main
+                    return platform_main(["--json"] if options.json else [])
                 return _doctor(options.execution, as_json=options.json)
             _require_setup_terminal()
             interactive_setup()
@@ -946,16 +1027,30 @@ def main(argv: list[str] | None = None) -> int:
     from cpn.rpnh.frontend_onboarding import FrontendSwitch
     while True:
         try:
-            if frontend == "dsh":
-                from cpn.frontend.dsh_launcher import run_dsh_frontend
-                return run_dsh_frontend(root, execution, resume=args.resume is not None)
-            if frontend == "opencode":
-                from cpn.frontend.opencode_launcher import run_opencode_frontend
-                return run_opencode_frontend(root, execution, resume=args.resume is not None)
-            if frontend == "codex":
-                from cpn.frontend.codex_app_server import run_codex_frontend
-                return run_codex_frontend(root, execution, resume=args.resume is not None)
-            return _run_basic_frontend(args, root, execution)
+            from cpn.rpnh.updates import startup
+            from cpn.rpnh.update_install import lifecycle_lease
+            entry = "dsh-web" if frontend == "dsh" else frontend
+            if startup(entry, interactive=(args.prompt is None and sys.stdin.isatty() and sys.stdout.isatty())):
+                return 0
+            with lifecycle_lease():
+                if frontend == "dsh":
+                    from cpn.frontend.dsh_launcher import run_dsh_frontend
+                    headless_linux = sys.platform.startswith("linux") and not any(
+                        os.environ.get(name) for name in ("DISPLAY", "WAYLAND_DISPLAY", "WSL_INTEROP"))
+                    return run_dsh_frontend(
+                        root, execution, resume=args.resume is not None,
+                        open_browser=not (args.no_open_browser or headless_linux))
+                if frontend == "opencode":
+                    from cpn.frontend.opencode_launcher import run_opencode_frontend
+                    return run_opencode_frontend(root, execution, resume=args.resume is not None,
+                                                 **_native_frontend_options("opencode"))
+                if frontend == "codex":
+                    from cpn.frontend.codex_app_server import run_codex_frontend
+                    return run_codex_frontend(root, execution, resume=args.resume is not None,
+                                              **_native_frontend_options("codex"))
+                from cpn.rpnh.frontend_launch import resolve_current_launch_spec
+                resolve_current_launch_spec("basic")
+                return _run_basic_frontend(args, root, execution)
         except FrontendSwitch as switch:
             frontend = switch.frontend
             args.resume = root

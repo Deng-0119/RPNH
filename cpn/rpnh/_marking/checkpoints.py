@@ -566,7 +566,8 @@ def typed_snapshot(self, executable: ExecutableNetAuthority, registry: RegistryT
 def pure_typed_snapshot(self, executable: 'ExecutableNetAuthority' = None, *,
         proposed_net_ref: VersionRef | None = None,
         ordinary_token_ref_scheme: str | None = None,
-        allocation_firing_ref: VersionRef | None = None) -> 'TypedMarkingSnapshot':
+        allocation_firing_ref: VersionRef | None = None,
+        allocation_checkpoint_ref: VersionRef | None = None) -> 'TypedMarkingSnapshot':
     """Build a typed snapshot without Registry calls or mutable clocks.
 
     proposed_net_ref names an analytical allocation scope only. Returned future
@@ -587,16 +588,27 @@ def pure_typed_snapshot(self, executable: 'ExecutableNetAuthority' = None, *,
     from cpn.rpnh.registry.normal_root_token_allocation import (
         NORMAL_ROOT_TOKEN_SCHEME, normal_root_token_ref,
     )
+    from cpn.rpnh.registry.success_token_allocation import (
+        SUCCESS_FIRING_TOKEN_SCHEME, success_firing_token_ref,
+    )
     if ordinary_token_ref_scheme is None:
-        if allocation_firing_ref is not None:
-            raise MarkingStateError('legacy token allocation cannot carry a firing selector')
-    elif (ordinary_token_ref_scheme != NORMAL_ROOT_TOKEN_SCHEME
+        if allocation_firing_ref is not None or allocation_checkpoint_ref is not None:
+            raise MarkingStateError('legacy token allocation cannot carry a firing/predecessor selector')
+    elif (ordinary_token_ref_scheme not in (NORMAL_ROOT_TOKEN_SCHEME, SUCCESS_FIRING_TOKEN_SCHEME)
             or not isinstance(allocation_firing_ref, VersionRef)
             or allocation_firing_ref.entity_type != 'transition_firing/v1'):
-        raise MarkingStateError('unknown or incomplete normal-root token allocation')
+        raise MarkingStateError('unknown or incomplete firing token allocation')
+    if ordinary_token_ref_scheme == SUCCESS_FIRING_TOKEN_SCHEME:
+        if (not isinstance(allocation_checkpoint_ref, VersionRef)
+                or allocation_checkpoint_ref.entity_type != 'marking_checkpoint/v1'):
+            raise MarkingStateError('Success token allocation requires its exact predecessor')
+    elif allocation_checkpoint_ref is not None:
+        raise MarkingStateError('normal-root allocation cannot change its original identity scope')
 
     def token_ref(token_id: int) -> VersionRef:
-        if ordinary_token_ref_scheme is not None:
+        if ordinary_token_ref_scheme == SUCCESS_FIRING_TOKEN_SCHEME:
+            return success_firing_token_ref(net_ref, allocation_firing_ref, allocation_checkpoint_ref, token_id)
+        if ordinary_token_ref_scheme == NORMAL_ROOT_TOKEN_SCHEME:
             return normal_root_token_ref(net_ref, allocation_firing_ref, token_id)
         material = str(net_ref.version_id)
         logical = TypedId('petri_token', uuid.uuid5(uuid.NAMESPACE_URL, f'd1-c:petri_token:{material}:{token_id}').hex)

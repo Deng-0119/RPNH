@@ -8,6 +8,7 @@ export const FRONTEND_DIR = dirname(fileURLToPath(import.meta.url))
 export const DESCRIPTOR_PACKAGES = ['dsh-api-session-controller', 'dsh-api-workspace-controller',
   'dsh-api-settings-controller', 'dsh-commands', 'dsh-subagent', 'dsh-api-remote-access']
 export const REQUIRED_CLIENTS = ['dsh-client-ui-commands', 'dsh-client-ui-model-selection']
+export const COMPATIBILITY = JSON.parse(await readFile(resolve(FRONTEND_DIR, 'web-packages.json'), 'utf8'))
 export async function officialPackages() {
   const { packages } = JSON.parse(await readFile(resolve(FRONTEND_DIR, 'web-packages.json'), 'utf8'))
   return await Promise.all((packages as string[]).map(async name => {
@@ -16,23 +17,45 @@ export async function officialPackages() {
   }))
 }
 export async function checkOfficialAssets(): Promise<void> {
+  if (!['0.2.2-alpha.2', '0.2.2-rc.1'].includes(COMPATIBILITY.version)) throw new Error('Unsupported official DSH frontend version')
   const packages = await officialPackages()
+  const names = new Set(packages.map(pkg => pkg.name))
+  for (const pkg of packages) {
+    for (const dependency of pkg.metadata.dsh?.client?.inject ?? []) {
+      if (!names.has(dependency)) throw new Error(`Missing official client dependency: ${pkg.name} requires ${dependency}`)
+    }
+  }
   for (const name of [...REQUIRED_CLIENTS, ...DESCRIPTOR_PACKAGES]) {
     if (!packages.some(pkg => pkg.name === '@deepseek-ai/' + name)) throw new Error(`Missing official frontend package: @deepseek-ai/${name}`)
   }
+  const expectedEntries: Array<{ id: string; name: string }> = []
   for (const pkg of packages) {
-    if (pkg.metadata.name !== pkg.name || pkg.metadata.version !== '0.2.1-rc.2') throw new Error(`Unexpected official package/version: ${pkg.name}`)
+    if (pkg.metadata.name !== pkg.name || pkg.metadata.version !== COMPATIBILITY.version) throw new Error(`Unexpected official package/version: ${pkg.name}`)
     if (pkg.metadata.dsh?.client) {
       const entry = pkg.metadata.exports['./client']
       await access(resolve(pkg.directory, typeof entry === 'string' ? entry : entry.browser ?? entry.default), constants.R_OK)
+      const host = resolve(pkg.directory, 'rpnh-host.ts')
+      await access(host, constants.R_OK)
+      expectedEntries.push({ id: `client-${expectedEntries.length}`, name: host })
     }
     if (DESCRIPTOR_PACKAGES.some(name => pkg.name === '@deepseek-ai/' + name)) {
       const entry = pkg.metadata.exports['./typert']
       await access(resolve(pkg.directory, typeof entry === 'string' ? entry : entry.default), constants.R_OK)
+      await access(resolve(FRONTEND_DIR, 'generated', pkg.name.split('/')[1] + '.ts'), constants.R_OK)
     }
   }
+  const bridge = resolve(FRONTEND_DIR, 'generated/bound-client')
+  for (const file of ['host.ts', 'client.js', 'package.json']) {
+    await access(resolve(bridge, file), constants.R_OK)
+  }
+  expectedEntries.push({ id: 'bound-session', name: resolve(bridge, 'host.ts') })
+  const entries: unknown = JSON.parse(await readFile(resolve(FRONTEND_DIR, 'official.json'), 'utf8'))
+  if (!Array.isArray(entries) || entries.length !== expectedEntries.length || entries.some((entry, index) =>
+    !entry || typeof entry !== 'object' || Object.keys(entry).length !== 2 ||
+    entry.id !== expectedEntries[index].id || entry.name !== expectedEntries[index].name)) {
+    throw new Error('Prepared DSH host entries do not match this source; run rpnh frontend setup dsh --install')
+  }
   await access(resolve(FRONTEND_DIR, 'node_modules/@deepseek-ai/dsh-web-frontend/dist/index.html'), constants.R_OK)
-  await access(resolve(FRONTEND_DIR, 'official.json'), constants.R_OK)
   await access(resolve(FRONTEND_DIR, 'tsconfig.json'), constants.R_OK)
 }
 export async function prepareOfficialHost(): Promise<void> {

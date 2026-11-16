@@ -1,0 +1,9 @@
+{
+  "schema_version": "rpnh/update_support/v1",
+  "status": "candidate",
+  "rpnh_version": "0.1.0rc2",
+  "release": null,
+  "channel": "prerelease",
+  "manager_protocol": "managed-side-by-side-v1",
+  "entries": {}
+}

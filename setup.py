@@ -3,10 +3,31 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+import runpy
 import shutil
 
 from setuptools import setup
 from setuptools.command.build_py import build_py
+from setuptools.command.sdist import sdist
+
+
+_release = runpy.run_path(str(Path(__file__).with_name("packaging") / "sdist_export.py"))
+
+
+def release_long_description():
+    """Keep the product introduction verbatim, after repository-only navigation."""
+    readme = Path(__file__).with_name("README.md").read_text(encoding="utf-8")
+    return _release["product_readme"](readme, "README.md")
+
+
+class PublicSourceDistribution(sdist):
+    """Export reviewed documents only in the independently copied release tree."""
+
+    def make_release_tree(self, base_dir, files):
+        super().make_release_tree(base_dir, files)
+        changes = _release["export_release_tree"](Path(base_dir))
+        for change in changes:
+            self.announce("RPNH source export: " + json.dumps(change, ensure_ascii=False), level=2)
 
 
 class BuildWithExamples(build_py):
@@ -45,4 +66,5 @@ class BuildWithExamples(build_py):
                     shutil.copyfile(file, target)
 
 
-setup(cmdclass={"build_py": BuildWithExamples})
+setup(cmdclass={"build_py": BuildWithExamples, "sdist": PublicSourceDistribution},
+      long_description=release_long_description(), long_description_content_type="text/markdown")

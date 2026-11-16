@@ -96,7 +96,8 @@ def _validate_resume_registration(
 
 
 def _load_resume_material(
-        core: _RegistryCore, registration: Registration) -> _ResumeMaterial:
+        core: _RegistryCore, registration: Registration, *,
+        require_tool_environment: bool = False) -> _ResumeMaterial:
     """Read and validate immutable resume material without opening a writer."""
 
     from .registry.event_store import validate_registered_net_closure
@@ -125,6 +126,13 @@ def _load_resume_material(
     _validate_resume_registration(core, registration, structure.compiled)
     net = validate_registered_net_closure(
         core.event_store, core.catalog, executable.net_ref)
+    if require_tool_environment:
+        # Only a prospective resume writer requests runtime admission. Other
+        # callers also read immutable evidence or revalidate after a fence.
+        from .managed_contract_admission import require_selected_managed_contracts
+        from .tool_environment_admission import require_selected_tool_environment_paths
+        require_selected_managed_contracts(core, net, compiled=structure.compiled, registration=registration)
+        require_selected_tool_environment_paths(core, net)
     root_ref = _version_from_payload(net["team_design_root_ref"])
     _root_ref, root = _registered(core, root_ref, "team_design_root/v1")
     principal_ref = _version_from_payload(root["owner_principal_ref"])
@@ -266,7 +274,27 @@ class RunOwner:
         from .owner_commands import OwnerControl
         self.control = OwnerControl(self)
 
-    def command(self, name, arguments, *, command_id):
+    def command(self, name, arguments, *, command_id, collaboration_action=None, session=None):
+        if name == "prepare_material_disable_plan":
+            from .material_availability import prepare_material_disable_plan
+            return prepare_material_disable_plan(self, arguments, command_id,
+                collaboration_action=collaboration_action)
+        if name == "prepare_material_input":
+            return self.control.materials.prepare_input(arguments, command_id,
+                collaboration_action=collaboration_action)
+        if name == "material_submit":
+            return self.control.materials.submit(arguments, command_id,
+                collaboration_action=collaboration_action)
+        if name == "abandon_material_input":
+            from .material_input_lifecycle import abandon_material_input
+            return abandon_material_input(self, arguments, command_id,
+                collaboration_action=collaboration_action)
+        if name == "read_material_input":
+            if set(arguments) != {"input_command_id"}:
+                raise ValueError("read_material_input requires one preparation identity")
+            return self.control.materials.read_input(arguments["input_command_id"], session=session)
+        if name == "read_material_receipt":
+            return self.control.materials.read_receipt(session=session, **arguments)
         if name == "read_edit_receipt":
             if set(arguments) != {"edit_command_id"}:
                 raise ValueError("read_edit_receipt requires one explicit edit_command_id")
@@ -329,6 +357,12 @@ class RunOwner:
 
     def succeed(self, outputs, *, command_id, workset_action=None):
         """Settle one generic registered operation; module policy stays outside H."""
+        from .material_settlement import is_material_execution, settle_material_operation
+        if is_material_execution(self, outputs.execution):
+            result = settle_material_operation(self, outputs, command_id=command_id,
+                                               workset_action=workset_action)
+            self.control.edits.advance()
+            return result
         from .registry.firing_success import succeed_module_operation
         from .workspace_settlement import prepare_firing_workspace_plans
         kernel, repository = self.operation_repository()
@@ -343,11 +377,19 @@ class RunOwner:
 
     def recover_completed_firing(self, recovery, *, command_id):
         """Settle one preflight-proven executor return without dispatching HOST."""
+        if getattr(recovery, "material_recovery_scope", None) is not None:
+            from .material_recovery import recover_prepared_material
+            return recover_prepared_material(self, recovery, command_id=command_id)
         from .registry.firing_recovery import (
             recover_registered_operation_completion,
         )
         from .registry.run_authority import current_run_execution_authority
         from .workspace_settlement import prepare_firing_workspace_plans
+        from .material_settlement import is_material_execution
+        if is_material_execution(self, recovery.outputs.execution):
+            from .registry.material_publication_attempts import MaterialAttemptRecoveryRequired
+            raise MaterialAttemptRecoveryRequired(
+                "RECOVERY_REQUIRED: material completion needs its original classified budget scope")
         kernel, repository = self.operation_repository()
         workspace_plans = prepare_firing_workspace_plans(
             self._core, kernel, recovery.outputs,
@@ -479,12 +521,21 @@ class RunOwner:
                                  idempotency_key=idempotency_key)
 
     def admit(self, transition_id: str, *, logical_tau: int, command_id: str,
-              prepare_admission=None):
+              prepare_admission=None, owner_command_ref=None):
         if self.admission_paused:
             raise RuntimeError("new firing admission is paused for owner graph editing")
+        from .registry.module_runtime import hydrate_module_runtime
+        _executable, structure, _marking = hydrate_module_runtime(self._core)
+        if self.control.materials.is_management_transition(structure, transition_id):
+            if owner_command_ref is None:
+                owner_command_ref = self.control.materials.next_command(transition_id)
+            if owner_command_ref is None:
+                return None
         return admit_module_firing(self._core, transition_id=transition_id,
             logical_tau=logical_tau, idempotency_key=command_id,
-            prepare_admission=prepare_admission)
+            prepare_admission=prepare_admission, owner_command_ref=owner_command_ref,
+            stage_owner_command_admission=(
+                self.control.materials.stage_admission if owner_command_ref is not None else None))
 
     def snapshot(self):
         """Exact read-only data, with no score/terminal or liveness authority."""
@@ -531,6 +582,8 @@ def start_run(module: ModuleDeclaration, registration: Registration, *,
     carries their keys only. Inputs are owner-supplied schema-valid bytes and
     are immutable registered resources. No submitted request is rewritten.
     """
+    from cpn.update_context import reject_candidate_runtime
+    reject_candidate_runtime()
     if not isinstance(task_input, OwnerInput) or not isinstance(budgets, ModuleBudgetDeclaration):
         raise TypeError("start_run requires explicit typed owner input and budget data")
     if not command_id or not owner_statement or not owner_name or not model_condition:
@@ -675,8 +728,11 @@ def resume_run(
         checkpoint_version_id: str | None = None,
         reopen_command_id: str | None = None,
         reopen_reason: str | None = None,
+        _material_recovery_scope=None,
 ) -> RunOwner:
     """Reopen one clean owner-stop checkpoint as the sole new writer."""
+    from cpn.update_context import reject_candidate_runtime
+    reject_candidate_runtime()
     if (not isinstance(registration, Registration)
             or not isinstance(model_condition, str) or not model_condition
             or ((checkpoint_version_id is None)
@@ -692,7 +748,7 @@ def resume_run(
         preflight, _ResourceServiceKernel(preflight),
         expected_model_condition=model_condition)
     registration.bind_schema_catalog(preflight.catalog)
-    material = _load_resume_material(preflight, registration)
+    material = _load_resume_material(preflight, registration, require_tool_environment=True)
     # Recovery classification may need the trusted executor contract before a
     # writer or Registry gateway exists.  A fresh worker process has no prior
     # process-global binding, so establish it immediately after the complete
@@ -702,7 +758,25 @@ def resume_run(
     input_checkpoint = None
     checkpoint_recoveries = []
     selected_checkpoint = None
-    if checkpoint_version_id is not None:
+    if _material_recovery_scope is not None:
+        from .material_recovery import validate_material_recovery_scope
+        from .registry.errors import ResourceIntegrityFault
+        from .registry.firing_recovery import classify_registered_operation_recovery
+        from .registry.module_execution import active_module_firings
+        if checkpoint_version_id is not None:
+            raise ResourceIntegrityFault("exact material recovery cannot authorize checkpoint reentry")
+        validate_material_recovery_scope(preflight, _material_recovery_scope,
+                                         current_run=preflight_current)
+        selected = tuple(firing for firing in active_module_firings(
+            preflight, material.executable.net_ref, require_current_writer=False)
+            if firing.transition_firing_ref == _material_recovery_scope.firing_ref)
+        if len(selected) != 1:
+            raise ResourceIntegrityFault("material recovery lacks its exact active firing")
+        preflight_kernel, preflight_repository, historical_input = _operation_services(preflight)
+        recovery = classify_registered_operation_recovery(preflight, preflight_kernel,
+            preflight_repository, current_run=preflight_current, historical_input=historical_input,
+            expected_firing=selected[0], material_recovery_scope=_material_recovery_scope)
+    elif checkpoint_version_id is not None:
         from .registry.checkpoint_reentry import (
             _existing_reentry, resolve_committed_checkpoint,
         )
@@ -721,6 +795,16 @@ def resume_run(
             from .registry.errors import ResourceIntegrityFault
             raise ResourceIntegrityFault(
                 "checkpoint reentry requires terminal, owner-stopped, or its recoverable running generation")
+        from .registry._event_store.checkpoint_supersession import (
+            reject_pending_purge_supersession,
+        )
+        # Refuse abandonment before acquiring a replacement writer.  The same
+        # exact proof is repeated by the final supersession write guard.
+        with preflight.event_store.connect() as db:
+            db.execute("BEGIN")
+            reject_pending_purge_supersession(
+                preflight.event_store, db, task_id=preflight.task_id,
+                net_version_id=material.executable.net_ref.version_id)
         if preflight_current["status"] in {"running", "stopped_by_owner"}:
             from .registry.module_execution import active_module_firings
             preflight_executable, preflight_structure, _marking = (
@@ -823,7 +907,18 @@ def resume_run(
         from .registry.errors import ResourceIntegrityFault
         raise ResourceIntegrityFault(
             "run resume requires stopped_by_owner or one recoverable completion")
-    if input_checkpoint is not None:
+    if recovery is not None and _material_recovery_scope is None:
+        _material_recovery_scope = getattr(recovery, "material_recovery_scope", None)
+    if _material_recovery_scope is not None:
+        # Reserve only the one generation whose whole read boundary was
+        # classified; a changed boundary is never silently recaptured.
+        core = _RegistryCore(destination, create=False, catalog=catalog,
+                             writer_epoch=_material_recovery_scope.writer_epoch)
+        core.writer_epoch = core.event_store.rotate_writer(
+            expected_epoch=_material_recovery_scope.writer_epoch)
+        from .material_recovery import validate_material_recovery_scope
+        validate_material_recovery_scope(core, _material_recovery_scope)
+    elif input_checkpoint is not None:
         # Reserve the new writer only after rechecking the exact wait under
         # the same write lock that advances the Registry fencing epoch.
         core = _RegistryCore(destination, create=False, catalog=catalog,
@@ -883,12 +978,19 @@ def resume_run(
                 owner.recover_interrupted_firing(
                     item, command_id=command_id)
     elif recovery is not None:
-        owner.recover_completed_firing(
-            recovery,
-            command_id=(
-                "rpnh:resume:registered-operation-completion:"
-                f"writer-{core.writer_epoch}"),
-        )
+        from .material_settlement import MaterialPublishRejected
+        try:
+            owner.recover_completed_firing(
+                recovery,
+                command_id=(
+                    "rpnh:resume:registered-operation-completion:"
+                    f"writer-{core.writer_epoch}"),
+            )
+        except MaterialPublishRejected:
+            if _material_recovery_scope is None:
+                raise
+            # Exact material recovery may close its original prepared root
+            # without publication. The entry below proves that real closure.
     if selected_checkpoint is not None:
         from .registry.module_execution import active_module_firings
         selected_executable, _selected_structure, _selected_marking = (
@@ -929,7 +1031,8 @@ def resume_run(
 
     _current_authority_ref, current_authority = (
         current_run_execution_authority(core, kernel))
-    if current_authority["status"] == "terminal":
+    if current_authority["status"] == "terminal" and not (
+            _material_recovery_scope is not None and recovery is not None and selected_checkpoint is None):
         from .registry.errors import ResourceIntegrityFault
         raise ResourceIntegrityFault(
             "checkpoint reopen command already reached terminal authority")
@@ -950,6 +1053,7 @@ def resume_run(
             immutable_input_ref=material.original_input_ref,
             mutable_stage_ref=recovered_executable.declaration_resource_ref,
             recovery_manifest_ref=material.recovery_manifest_ref,
+            material_recovery_scope=_material_recovery_scope,
         )
     elif (current_authority["status"] == "running"
           and current_authority.get("reopen_authorization_ref") is not None):
@@ -980,9 +1084,16 @@ def resume_pending_edit(registration, **arguments):
     return recover(registration, **arguments)
 
 
+def resume_material_firing(registration, **arguments):
+    """Recover one exact prepared material responsibility without draining peers."""
+    from .material_recovery import resume_material_firing as recover
+    return recover(registration, **arguments)
+
+
 def snapshot(owner_or_client):
     """Same snapshot API for the execution owner or its channel-only client."""
     return owner_or_client.snapshot()
 
 
-__all__ = ("OwnerInput", "RunOwner", "start_run", "resume_run", "resume_pending_edit", "snapshot")
+__all__ = ("OwnerInput", "RunOwner", "start_run", "resume_run", "resume_pending_edit",
+           "resume_material_firing", "snapshot")

@@ -317,6 +317,10 @@
       "path": "registry_v1/firing_external_kb_read_recorded.v2.schema.json"
     },
     {
+      "schema_id": "registry_v1/firing_rejection/v1",
+      "path": "registry_v1/firing_rejection.v1.schema.json"
+    },
+    {
       "schema_id": "registry_v1/firing_resource_transaction_committed/v1",
       "path": "registry_v1/firing_resource_transaction_committed.v1.schema.json"
     },
@@ -441,6 +445,18 @@
       "path": "registry_v1/marking_delta.v1.schema.json"
     },
     {
+      "schema_id": "registry_v1/material_publication_attempt/v1",
+      "path": "registry_v1/material_publication_attempt.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/material_publication_attempt_ordinal_conflicted/v1",
+      "path": "registry_v1/material_publication_attempt_ordinal_conflicted.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/material_publication_attempt_reserved/v1",
+      "path": "registry_v1/material_publication_attempt_reserved.v1.schema.json"
+    },
+    {
       "schema_id": "registry_v1/mechanical_transition_receipt/v1",
       "path": "registry_v1/mechanical_transition_receipt.v1.schema.json"
     },
@@ -495,6 +511,10 @@
     {
       "schema_id": "registry_v1/operation_execution_lease/v1",
       "path": "registry_v1/operation_execution_lease.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/operation_execution_rejected/v1",
+      "path": "registry_v1/operation_execution_rejected.v1.schema.json"
     },
     {
       "schema_id": "registry_v1/operation_execution_started/v1",
@@ -783,6 +803,10 @@
     {
       "schema_id": "registry_v1/transition_firing/v2",
       "path": "registry_v1/transition_firing.v2.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/transition_firing_rejected/v1",
+      "path": "registry_v1/transition_firing_rejected.v1.schema.json"
     },
     {
       "schema_id": "registry_v1/transition_firing_settled/v1",
@@ -1105,6 +1129,10 @@
       "path": "rpnh/executable_net.v1.schema.json"
     },
     {
+      "schema_id": "rpnh/installed_account_provider/v1",
+      "path": "rpnh/installed_account_provider.v1.schema.json"
+    },
+    {
       "schema_id": "rpnh/installed_public_material_contract/v1",
       "path": "rpnh/installed_public_material_contract.v1.schema.json"
     },
@@ -1187,6 +1215,18 @@
     {
       "schema_id": "rpnh/share_package/v3",
       "path": "rpnh/share_package.v3.schema.json"
+    },
+    {
+      "schema_id": "rpnh/stdio_account_binding/v1",
+      "path": "rpnh/stdio_account_binding.v1.schema.json"
+    },
+    {
+      "schema_id": "rpnh/stdio_account_plan/v1",
+      "path": "rpnh/stdio_account_plan.v1.schema.json"
+    },
+    {
+      "schema_id": "rpnh/stdio_account_publication_config/v1",
+      "path": "rpnh/stdio_account_publication_config.v1.schema.json"
     },
     {
       "schema_id": "rpnh/typed_call/v1",

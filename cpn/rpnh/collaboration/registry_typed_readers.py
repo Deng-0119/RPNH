@@ -123,6 +123,10 @@ def _prepared_at(core, reference, snapshot):
 
 
 def payload_at(core, reference, snapshot, *, material=False, max_bytes=None):
+    if material:
+        # Before the payload cache, not only its loader.  A historical cut or
+        # cached byte string cannot authorize a new governed body delivery.
+        _current_material_read(core, reference, snapshot)
     budget = getattr(snapshot, '_projection_material_budget', None)
     if max_bytes is None:
         max_bytes = budget.max_body_bytes if budget is not None else 4 * 1024 * 1024
@@ -135,6 +139,7 @@ def payload_at(core, reference, snapshot, *, material=False, max_bytes=None):
 def _payload_at(core, reference, snapshot, *, material=False, max_bytes=4 * 1024 * 1024):
     """Bounded immutable read. Legacy material checksums are not invented."""
     if material:
+        _current_material_read(core, reference, snapshot)
         checker = getattr(snapshot, 'check_authorized', None)
         if checker is None:
             raise TypedReadError('MATERIAL_ACCESS_NOT_GRANTED')
@@ -185,6 +190,27 @@ def _payload_at(core, reference, snapshot, *, material=False, max_bytes=4 * 1024
     if recorded is not None and recorded != hashlib.sha256(raw).hexdigest():
         raise TypedReadError('INTEGRITY_FAILED')
     return raw, prepared
+
+
+def _current_material_read(core, reference, snapshot):
+    checker = getattr(snapshot, 'check_authorized', None)
+    if checker is None:
+        raise TypedReadError('MATERIAL_ACCESS_NOT_GRANTED')
+    checker(reference, 'material')
+    from .material_read_policy import local_resource_ref
+    from ..material_body_policy import require_material_body_available
+    try:
+        # Structural public projections also use this verified payload helper
+        # for protected PN/schema evidence.  Their body availability check is
+        # current, but the helper cannot mislabel a proof read as human_viewer.
+        # Actual user body/export routes reject untracked governed reads at
+        # their outer RegistryReadSession/Viewer boundary.
+        require_material_body_available(core, local_resource_ref(reference),
+            purpose='typed_material_reader')
+    except Exception as exc:
+        code = ('MATERIAL_DISABLED' if str(exc).startswith('MATERIAL_DISABLED')
+                else getattr(exc, 'code', 'MATERIAL_AVAILABILITY_UNKNOWN'))
+        raise TypedReadError(code) from exc
 
 
 def _descriptor_body_at(core, reference, snapshot):
@@ -741,7 +767,13 @@ class TypedReaderCatalog:
         if context is not None:
             context.reserve(size=256 + sum(context.bytes_bound(body[key]) + context.bytes_bound(key)
                 for key in selected if key in body))
-        return {key:deepcopy(body[key]) for key in selected if key in body}
+        result = {key:deepcopy(body[key]) for key in selected if key in body}
+        if entry_type == 'resource_version/v1':
+            from .material_read_policy import project_material_fields
+            # Includes index predicate inputs; summaries of unavailable bodies
+            # cannot remain searchable via a fixed-cut resource projection.
+            result, _current = project_material_fields(core, entry_ref, result)
+        return result
 
     def read_index(self, core, entry_ref, *, snapshot, projection=None):
         """Read only the index fields needed for projection and predicates."""

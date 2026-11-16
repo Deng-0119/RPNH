@@ -94,6 +94,8 @@ IdKind = Literal[
     "run_reopen_authorization", "run_reopen_authorization_version",
     "terminal_evidence", "terminal_evidence_version",
     "firing_completion", "firing_completion_version",
+    "firing_rejection", "firing_rejection_version",
+    "material_publication_attempt", "material_publication_attempt_version",
     "runtime_timed_scheduler_snapshot",
     "runtime_timed_scheduler_snapshot_version",
     "published_model_call_baseline",

@@ -12,6 +12,7 @@ from cpn.rpnh.registry.identities import TypedId
 from cpn.rpnh.registry.models import VersionRef
 from cpn.rpnh.registry.operations import OperationExecutionBlockAuthority
 from cpn.rpnh.registry.resources import ResourceVersionRef
+from .managed_identity import managed_identity_fields
 
 from .timing import (
     AgentActionTimingEvidence,
@@ -790,14 +791,18 @@ class AgentActionRecord:
         value = self.managed_action
         if not isinstance(value, Mapping):
             raise AgentLoopProtocolError("managed action identity is missing")
+        try:
+            identity = managed_identity_fields(value)
+        except (TypeError, ValueError) as exc:
+            raise AgentLoopProtocolError("managed action identity is malformed") from exc
         fields = {
             "provider_name", "registration_key", "selector",
-            "plugin_catalog_digest", "binding_digest", "effect", "outcome",
+            "effect", "outcome",
             "request_admission_receipt_ref", "admitted_at_utc",
             "started_receipt_ref", "terminal_receipt_ref",
             "model_visible_result_ref", "non_delivery_reason", "output",
             "error", "max_result_bytes",
-        }
+        } | set(identity)
         if (set(value) != fields
                 or self.action_identity_kind != "tool_call_id"
                 or self.tool_name != value.get("provider_name")

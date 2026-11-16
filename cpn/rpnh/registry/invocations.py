@@ -220,6 +220,16 @@ class FiringClaim:
     activation_ref: VersionRef | None = None
     agent_ref: VersionRef | None = None
     admission_publications: "PreparedFiringAdmissionPublications | None" = None
+    owner_command_ref: VersionRef | None = None
+
+    def __post_init__(self) -> None:
+        if (self.owner_command_ref is not None
+                and (not isinstance(self.owner_command_ref, VersionRef)
+                     or self.owner_command_ref.entity_type
+                     != "resource_version/v1"
+                     or self.owner_command_ref.entity_id.kind != "resource"
+                     or self.owner_command_ref.version_id.kind != "resource_version")):
+            raise TypeError("firing owner command requires an exact resource version")
 
 
 @dataclass(frozen=True, slots=True)
@@ -379,9 +389,11 @@ class InvocationLifecycle:
         from ._invocation.admission import _active_claim_inputs as implementation
         return implementation(self, net_ref)
 
-    def admit_firing(self, claim: FiringClaim, *, idempotency_key: str) -> FiringAdmission:
+    def admit_firing(self, claim: FiringClaim, *, idempotency_key: str,
+                     stage_owner_command_admission=None) -> FiringAdmission:
         from ._invocation.admission import admit_firing as implementation
-        return implementation(self, claim, idempotency_key=idempotency_key)
+        return implementation(self, claim, idempotency_key=idempotency_key,
+            stage_owner_command_admission=stage_owner_command_admission)
 
     def revalidate_io(self, context: InvocationContext, *, boundary: str) -> None:
         from ._invocation.execution import revalidate_io as implementation

@@ -19,6 +19,10 @@ from collections.abc import Callable, Mapping
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any
 
+from cpn.process_supervision import (
+    ProcessCleanupError, ProcessStartError, start_process, stop_process,
+)
+
 if TYPE_CHECKING:
     from cpn.rpnh.registry.resources import (
         CanonicalInvocationAuthority,
@@ -87,6 +91,22 @@ class ExecutionEnvironmentIdentity:
         object.__setattr__(
             self, "python_executable", os.path.realpath(self.python_executable))
         object.__setattr__(self, "python_prefix", os.path.realpath(self.python_prefix))
+
+    @property
+    def python_launcher(self) -> str:
+        """Realize the registered executable/prefix pair without rebinding it.
+
+        A venv Python can be a symlink to the registered base executable. Keep
+        that lexical entry so Python observes the registered venv prefix, using
+        the same selection rule as collaboration.environment_check.selected_python.
+        """
+        candidate = os.path.join(
+            self.python_prefix, "Scripts" if os.name == "nt" else "bin",
+            "python.exe" if os.name == "nt" else "python")
+        if (os.path.isfile(candidate)
+                and os.path.realpath(candidate) == self.python_executable):
+            return candidate
+        return self.python_executable
 
 
 @dataclass(frozen=True, slots=True)
@@ -184,7 +204,7 @@ def _workspace_runtime_path(identity: ExecutionEnvironmentIdentity) -> str:
     if not isinstance(identity, ExecutionEnvironmentIdentity):
         raise RuntimeEnvironmentFrameworkFault(
             "execution_environment_identity_missing")
-    entries = [os.path.dirname(identity.python_executable)]
+    entries = [os.path.dirname(identity.python_launcher)]
     for raw in os.environ.get("PATH", "").split(os.pathsep):
         if not raw or not os.path.isabs(raw) or raw.startswith("/mnt/"):
             continue
@@ -492,7 +512,8 @@ def _workspace_namespace_unavailable(stderr: bytes) -> bool:
     )
 
 
-def _workspace_process_tree_usage(root_pid: int) -> tuple[int, int]:
+def _workspace_process_tree_usage(
+        root_pid: int, *, include_root: bool = True) -> tuple[int, int]:
     """Return visible process count and RSS+swap bytes below one launcher."""
 
     rows: dict[int, tuple[int, int]] = {}
@@ -529,8 +550,20 @@ def _workspace_process_tree_usage(root_pid: int) -> tuple[int, int]:
         if not added:
             break
         descendants.update(added)
-    visible = tuple(pid for pid in descendants if pid in rows)
+    visible = tuple(pid for pid in descendants
+                    if pid in rows and (include_root or pid != root_pid))
     return len(visible), sum(rows[pid][1] for pid in visible)
+
+
+def _stop_workspace_process(process):
+    if sys.platform == "linux":
+        stop_process(process)
+    else:
+        try:
+            os.killpg(process.pid, signal.SIGKILL)
+        except ProcessLookupError:
+            pass
+        process.wait()
 
 
 @dataclass(frozen=True, slots=True)
@@ -583,10 +616,13 @@ def execute_bounded_workspace_tool(
         raise BoundedWorkspaceCommandError(
             "workspace_tool_cwd_invalid")
 
+    linux = sys.platform == "linux"
+    deadline = (time.monotonic() + timeout_seconds
+                if linux and timeout_seconds is not None else None)
     start_read_fd, start_write_fd = os.pipe()
     try:
         runner = [
-            environment.python_executable, "-I", "-S", "-c",
+            environment.python_launcher, "-I", "-S", "-c",
             _LANDLOCK_WORKSPACE_BOOTSTRAP,
             resolved_cwd, str(start_write_fd),
             str(profile.memory_bytes), str(profile.process_limit), script,
@@ -599,7 +635,8 @@ def execute_bounded_workspace_tool(
                 *runner,
             ]
             if _use_user_namespace else runner)
-        process = subprocess.Popen(
+        launch = start_process if linux else subprocess.Popen
+        process = launch(
             command,
             cwd=resolved_cwd,
             env={
@@ -619,21 +656,52 @@ def execute_bounded_workspace_tool(
             stdin=subprocess.DEVNULL,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            shell=False,
-            start_new_session=True,
+            **({"deadline": deadline, "interrupted": interruption_requested}
+               if linux else {"shell": False, "start_new_session": True}),
             pass_fds=(start_write_fd,),
         )
-    except OSError as exc:
-        os.close(start_read_fd)
-        os.close(start_write_fd)
+    except BaseException as exc:
+        start_handshake = b""
+        try:
+            # The target can enter Bash before the supervisor's ready byte is
+            # consumed. Preserve that fact even when startup is interrupted.
+            if isinstance(exc, ProcessStartError):
+                os.set_blocking(start_read_fd, False)
+                try:
+                    start_handshake = os.read(start_read_fd, 2)
+                except BlockingIOError:
+                    pass
+        finally:
+            os.close(start_read_fd)
+            os.close(start_write_fd)
+        if (isinstance(exc, ProcessStartError)
+                and exc.code in {"owner_interrupted", "timeout"}):
+            result = {"exit_code": None, "stdout": "", "stderr": "",
+                      "status": ("interrupted" if exc.code == "owner_interrupted"
+                                 else "timed_out"),
+                      "output_truncated": False,
+                      "command_started": _workspace_command_started(start_handshake)}
+            if exc.code == "timeout":
+                # Startup did not expose a handle/exit status. Keep this as a
+                # framework fault, never admit an invented terminal result.
+                raise RuntimeEnvironmentFrameworkFault(
+                    "workspace_worker_unavailable" if result["command_started"]
+                    else "workspace_command_not_started",
+                    mechanical_result=result) from exc
+            return result
+        if not isinstance(exc, OSError):
+            raise
         raise RuntimeEnvironmentFrameworkFault(
             f"workspace_worker_unavailable: {type(exc).__name__}: {exc}") \
             from exc
     try:
         os.close(start_write_fd)
         if process.stdout is None or process.stderr is None:
-            process.kill()
-            process.wait()
+            if linux:
+                stop_process(process)
+            else:
+                process.kill()
+                process.wait()
             raise BoundedWorkspaceCommandError(
                 "workspace_tool_capture_unavailable")
         selector = selectors.DefaultSelector()
@@ -647,32 +715,24 @@ def execute_bounded_workspace_tool(
             for stream in (process.stdout, process.stderr):
                 os.set_blocking(stream.fileno(), False)
                 selector.register(stream, selectors.EVENT_READ)
-            deadline = (
-                time.monotonic() + timeout_seconds
-                if timeout_seconds is not None else None)
+            if not linux:
+                deadline = (time.monotonic() + timeout_seconds
+                            if timeout_seconds is not None else None)
             while selector.get_map() or process.poll() is None:
                 if (interruption_requested is not None
                         and interruption_requested()):
-                    try:
-                        os.killpg(process.pid, signal.SIGKILL)
-                    except ProcessLookupError:
-                        pass
-                    process.wait()
+                    _stop_workspace_process(process)
                     status = "interrupted"
                     break
                 process_count, process_memory_bytes = (
-                    _workspace_process_tree_usage(process.pid))
+                    _workspace_process_tree_usage(process.pid, include_root=not linux))
                 resource_status = (
                     "process_limited"
                     if process_count > profile.process_limit else
                     "memory_limited"
                     if process_memory_bytes > profile.memory_bytes else None)
                 if resource_status is not None:
-                    try:
-                        os.killpg(process.pid, signal.SIGKILL)
-                    except ProcessLookupError:
-                        pass
-                    process.wait()
+                    _stop_workspace_process(process)
                     configured = (
                         profile.process_limit
                         if resource_status == "process_limited"
@@ -691,11 +751,7 @@ def execute_bounded_workspace_tool(
                     deadline - time.monotonic()
                     if deadline is not None else None)
                 if remaining is not None and remaining <= 0:
-                    try:
-                        os.killpg(process.pid, signal.SIGKILL)
-                    except ProcessLookupError:
-                        pass
-                    process.wait()
+                    _stop_workspace_process(process)
                     status = "timed_out"
                     break
                 poll_seconds = (
@@ -712,18 +768,19 @@ def execute_bounded_workspace_tool(
                     if len(chunk) > remaining_output:
                         output_truncated = True
             if process.poll() is None:
-                process.wait()
+                if linux:
+                    process.wait(timeout=2)
+                else:
+                    process.wait()
+            if linux and not process.cleanup_complete:
+                raise ProcessCleanupError("workspace process cleanup was not confirmed")
             exit_code = process.returncode
         finally:
             selector.close()
             process.stdout.close()
             process.stderr.close()
             if process.poll() is None:
-                try:
-                    os.killpg(process.pid, signal.SIGKILL)
-                except ProcessLookupError:
-                    pass
-                process.wait()
+                _stop_workspace_process(process)
     finally:
         try:
             os.set_blocking(start_read_fd, False)
@@ -1006,26 +1063,60 @@ def _execute_numerical_worker(
             raise BoundedNumericalExecutionError(
                 "numerical_input_invalid") from exc
         try:
-            process = subprocess.Popen(
-                [environment.python_executable, "-I", "-B", "-c",
-                 _NUMERICAL_WORKER],
-                stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE, env={}, cwd="/", start_new_session=True,
-                pass_fds=((result_fd,) if result_fd is not None else ()))
-            try:
-                stdout, stderr = process.communicate(
-                    input=request_payload, timeout=timeout_seconds)
-            except subprocess.TimeoutExpired as exc:
+            if sys.platform == "linux":
+                deadline = (time.monotonic() + timeout_seconds
+                            if timeout_seconds is not None else None)
+                process = None
                 try:
-                    os.killpg(process.pid, signal.SIGKILL)
-                except ProcessLookupError:
-                    pass
-                except OSError:
-                    process.kill()
-                process.communicate()
-                raise BoundedNumericalExecutionError(
-                    "numerical_timeout",
-                    f"execution exceeded {timeout_seconds}s") from exc
+                    process = start_process(
+                        [environment.python_launcher, "-I", "-B", "-c",
+                         _NUMERICAL_WORKER],
+                        stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                        stderr=subprocess.PIPE, env={}, cwd="/",
+                        pass_fds=((result_fd,) if result_fd is not None else ()),
+                        deadline=deadline)
+                    stdout, stderr = process.communicate(
+                        input=request_payload,
+                        timeout=(max(0, deadline - time.monotonic())
+                                 if deadline is not None else None))
+                    if not process.cleanup_complete:
+                        raise ProcessCleanupError("numerical worker cleanup was not confirmed")
+                except (subprocess.TimeoutExpired, ProcessStartError) as exc:
+                    if isinstance(exc, ProcessStartError) and exc.code != "timeout":
+                        raise
+                    raise BoundedNumericalExecutionError(
+                        "numerical_timeout",
+                        f"execution exceeded {timeout_seconds}s") from exc
+                finally:
+                    if process is not None:
+                        try:
+                            if process.poll() is None:
+                                stop_process(process)
+                        finally:
+                            for stream in (process.stdin, process.stdout, process.stderr):
+                                if stream is not None:
+                                    stream.close()
+            else:
+                process = subprocess.Popen(
+                    [environment.python_launcher, "-I", "-B", "-c",
+                     _NUMERICAL_WORKER],
+                    stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE, env={}, cwd="/", start_new_session=True,
+                    pass_fds=((result_fd,) if result_fd is not None else ()))
+                try:
+                    stdout, stderr = process.communicate(
+                        input=request_payload, timeout=timeout_seconds)
+                except subprocess.TimeoutExpired as exc:
+                    try:
+                        os.killpg(process.pid, signal.SIGKILL)
+                    except ProcessLookupError:
+                        pass
+                    except OSError:
+                        process.kill()
+                    process.communicate()
+                    raise BoundedNumericalExecutionError(
+                        "numerical_timeout",
+                        f"execution exceeded {timeout_seconds}s") from exc
         except OSError as exc:
             raise RuntimeEnvironmentFrameworkFault(
                 "numerical_worker_unavailable: "

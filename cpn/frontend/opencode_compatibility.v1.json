@@ -5,6 +5,7 @@
         "repository": "anomalyco/opencode",
         "commit": "148842ef7cb1bc34192b3fff57d0f9721ab9c801",
         "package_version": "1.19.4",
+        "npm_package": "opencode-ai",
         "paths": [
             "packages/sdk/js/src/v2/gen/types.gen.ts",
             "packages/sdk/js/src/v2/gen/sdk.gen.ts",
@@ -1262,6 +1263,74 @@
             "native_g2": "not-run",
             "native_g3": "not-run",
             "scope": "REST session/text/history/interrupt and non-durable connection/status; no durable message stream or native client certification"
+        },
+        {
+            "package_version": "2.2.6",
+            "npm_package": "@opencode/cli",
+            "commit": "dc2ffcf8bf26f9e669b6aa22b95f50e12be15e06",
+            "protocol": "v2",
+            "status": "certification-only",
+            "production_enabled": false,
+            "native_g2": "not-run",
+            "native_g3": "not-run",
+            "scope": "Explicit ordinary-text frontend candidate: startup catalogs, bound RPNH session, profile selection, inbox/history pagination, checkpoint controls, per-connection admission/checkpoint events and REST committed-reply refresh. Full-client certification is not claimed; the default 1.19.4 pin is unchanged.",
+            "launcher": {
+                "explicit_profile": "2.2.6",
+                "explicit_binary_required": true,
+                "session_binding": "RPNH create/resume before --session; one MainSession; no aliases",
+                "default_changed": false
+            },
+            "execution_boundary": "Registry and existing RPNH profile/checkpoint owners; no native AgentLoop/provider/tool/shell/MCP execution",
+            "bootstrap_observations": {
+                "filesystem": "only the empty isolated display directory; no native file effects or workspace browse",
+                "goal": "bound-session read returns null; no goal execution or scheduler",
+                "migration": "upstream no-op completed response; no native v1 database; X-RPNH-Migration not-applicable",
+                "usage_limits": "null; no OpenCode Console allowance or provider usage claim",
+                "native_onboarding": "stock Getting started/connect panel may remain because no native credential or environment connection is invented"
+            },
+            "events": {
+                "transport": "volatile SSE",
+                "sequence": "dense order of reconstructible display projection, not Registry or native stored log",
+                "reconnect": "baseline current projection; hydrate via REST; never replay execution; close at a new committed reply to avoid append-after-hydration races",
+                "mutation": "close stream for a new committed assistant, changed projection prefix, model or error state",
+                "text": "committed whole reply via REST on reconnect; reconstructible step/text DTOs are never sent as append events after completion; no token delta; start time is an explicit turn-acceptance display proxy",
+                "metrics": "unavailable; schema-required numbers use zero display sentinels"
+            },
+            "unsupported": [
+                "native new-session IDs/multiple sessions",
+                "queue and steer-while-busy execution",
+                "resume=false inbox-only admission",
+                "attachments, native tools/shell/PTY/MCP/skills/permissions",
+                "upstream provider/AgentLoop/storage and event-log replay",
+                "native fork, revert, import/export and workspace mutation"
+            ],
+            "source_paths": [
+                "packages/cli/src/commands/handlers/default.ts",
+                "packages/cli/src/session-target.ts",
+                "packages/client/src/solid/data.ts",
+                "packages/protocol/src/groups/session.ts",
+                "packages/protocol/src/groups/message.ts",
+                "packages/protocol/src/groups/location.ts",
+                "packages/protocol/src/groups/model.ts",
+                "packages/protocol/src/groups/agent.ts",
+                "packages/protocol/src/groups/provider.ts",
+                "packages/protocol/src/groups/fs.ts",
+                "packages/protocol/src/groups/plugin.ts",
+                "packages/protocol/src/groups/form.ts",
+                "packages/protocol/src/groups/rpc.ts",
+                "packages/protocol/src/groups/migration.ts",
+                "packages/protocol/src/groups/usage.ts",
+                "packages/core/src/database/v1-migration.noop.ts",
+                "packages/schema/src/goal.ts",
+                "packages/schema/src/event.ts",
+                "packages/schema/src/session-event.ts",
+                "packages/schema/src/session-inbox.ts",
+                "packages/schema/src/session-message.ts",
+                "packages/schema/src/agent.ts",
+                "packages/schema/src/model.ts",
+                "packages/schema/src/provider.ts",
+                "packages/schema/src/location.ts"
+            ]
         }
     ]
 }

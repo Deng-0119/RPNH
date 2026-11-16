@@ -601,13 +601,16 @@ class RegistryReadSession:
         supported = set(self._catalog.entry_types) & {item.name for item in source.resolved.core.catalog.definitions() if item.category == 'object'}
         index_fields = {kind: list(fields) for kind, fields in source.authority.scope.index_fields.items() if kind in supported}
         record_fields = {kind: list(fields) for kind, fields in source.authority.scope.record_fields.items() if kind in supported}
+        from ..material_availability import source_governs_materials
+        governed = source_governs_materials(source.resolved.core)
         return {'source_id': source_id, 'source_ref': source.selection.source_ref.to_dict(),
                 'access_path': source.selection.access_path,
                 'cut': None if cut is None else cut.to_dict(), 'access_revision': source.authority.revision,
                 'access_state': 'readable', 'coverage': {'state': 'not_queried', 'loaded_count': None, 'total_count': None},
+                **({'body_read_mode': 'explicit_delivery_required'} if governed else {}),
                 'capabilities': {'index': list(index_fields), 'index_fields': index_fields,
-                    'record': list(record_fields), 'record_fields': record_fields, 'material': bool(source.authority.scope.material_refs),
-                    'export': bool(source.authority.scope.export_refs),
+                    'record': list(record_fields), 'record_fields': record_fields, 'material': bool(source.authority.scope.material_refs) and not governed,
+                    'export': bool(source.authority.scope.export_refs) and not governed,
                     'projection': [kind for kind in getattr(self._catalog, 'public_projection_types', ())
                         if kind in record_fields and set(self._catalog.default_record_projection(kind)) <= set(record_fields[kind])],
                     'execution': 'not_checked'}}
@@ -828,10 +831,35 @@ class RegistryReadSession:
 
     def _envelope(self, reference, cut, source, record, disclosure):
         local = qualified_ref(reference)
+        from .material_read_policy import project_material_fields
+        record, current = project_material_fields(source.resolved.core, reference,
+            record, source_cut=cut.to_dict())
+        if current is not None:
+            disclosure = {**disclosure,
+                'projected_fields': [field for field in disclosure.get('projected_fields', ()) if field in record],
+                'material_access': current['material_access']}
         return {'status': 'ok', 'entry_ref': reference.to_dict(), 'entry_type': local.entity_type,
                 'schema_ref': source.resolved.core.catalog.require(local.entity_type, category='object').schema_ref,
                 'source_cut': cut.to_dict(), 'record': record, 'disclosure': disclosure,
-                'access_revision': source.authority.revision}
+                'access_revision': source.authority.revision, **(current or {})}
+
+    def project_current_material(self, *, entry_ref, at_cut, fields):
+        """Reproject an already disclosed exact row, without reading its body.
+
+        This returns no additional original fields or hidden effect references.
+        Browser cache replay calls it again instead of retaining current policy.
+        """
+        _, cut, source, _snapshot = self._read_setup(entry_ref, at_cut)
+        from .material_read_policy import project_material_fields
+        try:
+            result = project_material_fields(source.resolved.core, entry_ref,
+                fields, source_cut=cut.to_dict())
+            self.final_recheck((cut.source_id,))
+            return result
+        except RegistryReadSessionError:
+            raise
+        except Exception as exc:
+            raise RegistryReadSessionError(getattr(exc, 'code', 'MATERIAL_AVAILABILITY_UNKNOWN')) from exc
 
     def read_exact(self, *, entry_ref, at_cut, projection=None):
         if (type(entry_ref) is SourceQualifiedVersionRef and type(projection) in (tuple, list)
@@ -956,12 +984,19 @@ class RegistryReadSession:
         except Exception as exc:
             raise RegistryReadSessionError(getattr(exc, 'code', 'INTEGRITY_FAILED')) from exc
 
-    def read_material(self, *, resource_ref, at_cut, max_bytes=None, representation='bytes'):
-        """Read a verified bytes/UTF-8 body, retaining legacy bytes/digest fields."""
+    def read_material(self, *, resource_ref, at_cut, max_bytes=None, representation='bytes', include_digest=True):
+        """Read a verified body; optional digest production is independent of verification.
+
+        Legacy callers retain their bytes and digest fields. Read-only text
+        consumers can omit the redundant output digest without changing recorded
+        descriptor verification, byte limits, authorization or final rechecks.
+        """
         from .registry_typed_readers import payload_at
         if type(resource_ref) is not SourceQualifiedResourceRef:
             raise TypeError('material reads require a source-qualified resource reference')
         if type(representation) is not str or representation not in ('bytes', 'utf8'):
+            raise RegistryReadSessionError('INVALID_REPRESENTATION')
+        if type(include_digest) is not bool:
             raise RegistryReadSessionError('INVALID_REPRESENTATION')
         _, cut, source, snapshot = self._read_setup(resource_ref, at_cut)
         self._authorize(cut.source_id, resource_ref, 'material')
@@ -970,14 +1005,19 @@ class RegistryReadSession:
             raise RegistryReadSessionError('LIMIT_EXCEEDED')
         limit = min(limit, self.limits.max_material_bytes)
         try:
+            from .material_read_policy import require_untracked_material_read
+            require_untracked_material_read(source.resolved.core, resource_ref,
+                purpose='registry_read_session')
             payload, prepared = payload_at(source.resolved.core, resource_ref, snapshot, material=True, max_bytes=limit)
-            digest = hashlib.sha256(payload).hexdigest()
             result = {'status': 'ok', 'resource_ref': resource_ref.to_dict(), 'source_cut': cut.to_dict(),
-                      'bytes': payload, 'sha256': digest, 'byte_count': len(payload),
-                      'body': payload, 'representation': representation, 'material_digest': digest,
+                      'bytes': payload, 'byte_count': len(payload),
+                      'body': payload, 'representation': representation,
                       'content_schema_ref': prepared.metadata['content_schema_ref'],
                       'media_type': prepared.media_type, 'access_revision': source.authority.revision,
                       'integrity': 'registered_size_and_recorded_digest' if prepared.metadata.get('descriptors', {}).get('content_sha256') else 'registered_size'}
+            if include_digest:
+                digest = hashlib.sha256(payload).hexdigest()
+                result.update(sha256=digest, material_digest=digest)
             if representation == 'utf8':
                 try:
                     body = payload.decode('utf-8', errors='strict')
@@ -992,6 +1032,7 @@ class RegistryReadSession:
             raise RegistryReadSessionError(getattr(exc, 'code', 'INTEGRITY_FAILED')) from exc
 
     def authorize_export(self, refs, *, destination, at_cuts):
+        from .material_read_policy import require_untracked_material_read, local_resource_ref
         for ref in refs:
             if ref.source_id not in at_cuts:
                 raise RegistryReadSessionError('MISSING_SOURCE')
@@ -999,6 +1040,15 @@ class RegistryReadSession:
             self._authorize(cut.source_id, ref, 'export')
             if destination not in source.authority.scope.export_destinations:
                 raise RegistryReadSessionError('EXPORT_ACCESS_NOT_GRANTED')
+            if local_resource_ref(ref) is None:
+                # Original structural object exports retain their authority;
+                # embedded body/archive exports have their own exact gates.
+                continue
+            try:
+                require_untracked_material_read(source.resolved.core, ref,
+                    purpose='registry_session_export')
+            except Exception as exc:
+                raise RegistryReadSessionError(getattr(exc, 'code', 'MATERIAL_AVAILABILITY_UNKNOWN')) from exc
         self.final_recheck(tuple(at_cuts))
 
     def capture_observation(self, *_args, **_kwargs):
@@ -1429,7 +1479,20 @@ class RegistryReadSession:
                 'cut': query.cuts[source_id].to_dict(), 'access_revision': source.authority.revision,
                 'access_state': 'readable', 'coverage': {'state': 'partial' if remaining else 'complete',
                     'loaded_count': count, 'total_count': None if remaining else total}})
-        result = {'schema_version': 'rpnh/registry_index_page/v1', 'entries': page, 'source_results': states,
+        # Query entries and cursor offsets retain historical membership.  Only
+        # this selected page is reprojected at the current policy cut; do not
+        # fetch later identities to replace undisclosed content or fill a page.
+        from .material_read_policy import project_material_fields
+        current_page = []
+        for entry in page:
+            value = dict(entry)
+            source_id = value['entry_ref']['source_id']
+            value['fields'], current = project_material_fields(self._sources[source_id].resolved.core,
+                value['entry_ref'], value['fields'], source_cut=query.cuts[source_id].to_dict())
+            if current is not None:
+                value.update(current)
+            current_page.append(value)
+        result = {'schema_version': 'rpnh/registry_index_page/v1', 'entries': current_page, 'source_results': states,
             'continuation': continuation, 'coverage': {'state': 'partial' if more or failures else 'complete',
                 'loaded_count': len(page), 'total_count': None if more or failures else len(query.entries)},
             'global_atomic_snapshot': False}

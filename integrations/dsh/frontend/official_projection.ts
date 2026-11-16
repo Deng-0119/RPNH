@@ -1,5 +1,6 @@
 /** Official DSH wire views derived only from the bound RPNH MainSession. */
 import { Session, SessionId } from '@deepseek-ai/dsh-session'
+import { ReasoningEffortId } from '@deepseek-ai/dsh-llm'
 import type { ModelCatalog, ModelSelection, SessionFollowFrame, SessionHistoryRecord,
   SessionProjectionValues, SessionSummary, SessionWireHeader } from '../packages/api/session-controller/src/types.ts'
 import { hasKnownModel, isActive, projectSession } from './projection.ts'
@@ -9,7 +10,7 @@ export const RPNH_PROVIDER = 'rpnh'
 
 export function officialSelection(profile: Profile) {
   return { provider: RPNH_PROVIDER, model: profile.selection,
-    ...(profile.reasoning_effort === null ? {} : { reasoningEffort: profile.reasoning_effort }) }
+    ...(profile.reasoning_effort === null ? {} : { reasoningEffort: ReasoningEffortId(profile.reasoning_effort) }) }
 }
 
 export function officialModelCatalog(initial: Initialization): ModelCatalog {
@@ -44,11 +45,13 @@ export function officialRecords(row: SessionRow): SessionHistoryRecord[] {
 export function officialProjections(row: SessionRow, pending?: ModelSelection): SessionProjectionValues {
   const completed = row.turns.findLast(turn => turn.state === 'committed')
   const first = row.turns[0]?.text.trim().split('\n')[0]
+  const selected = pending ?? officialSelection(row.model)
   return {
     title: first ? Array.from(first).slice(0, 70).join('') : 'RPNH MainSession',
     sessionListMetadata: { blank: row.turns.length === 0, lastPromptAt: row.turns.at(-1)?.created ?? null },
     modelSelection: { lastUsed: completed && hasKnownModel(completed) ? officialSelection(completed.model) : null,
-      next: { ...(pending ?? officialSelection(row.model)) } },
+      next: { provider: selected.provider, model: selected.model,
+        ...(selected.reasoningEffort === undefined ? {} : { reasoningEffort: ReasoningEffortId(selected.reasoningEffort) }) } },
   }
 }
 

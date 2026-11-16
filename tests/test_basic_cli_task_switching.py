@@ -3,6 +3,8 @@ from __future__ import annotations
 from pathlib import Path
 from types import SimpleNamespace
 
+import pytest
+
 from cpn.rpnh.main_session import MainSessionExecutionFailed
 from cpn.rpnh_cli import (
     _BasicFrontendState, _route_selected_input, _run_turn, _task_command,
@@ -190,3 +192,165 @@ def test_explicit_task_net_view_works_without_selection(
     assert calls == [[
         "--run", str(tmp_path / "one"), "--view", "--no-open",
     ]]
+
+
+# Real session adoption with synthetic pending work; no provider is constructed.
+def _pending_basic_session(tmp_path, monkeypatch):
+    from cpn.rpnh.task_control import TaskControl
+    from test_main_session_registry import _install_child_observation, _new_session
+
+    monkeypatch.setattr("cpn.plugins.catalog.read_config", lambda: None)
+
+    def pending_spawn(self, *args, launch_lock=None, **kwargs):
+        if launch_lock is not None:
+            launch_lock.close()
+        return SimpleNamespace(poll=lambda: None)
+
+    monkeypatch.setattr(TaskControl, "_spawn", pending_spawn)
+    with _new_session(tmp_path) as (session, root, execution, _lease):
+        session.prepare_turn("Delegate one synthetic task.")
+        _install_child_observation(monkeypatch, session, "terminal")
+        _decision, handle = session.complete_turn("Delegate one synthetic task.", {
+            "reply": "Synthetic committed launch.",
+            "task": {"kind": "single_agent", "prompt": "Never call a provider.",
+                     "instruction": "Return a result."},
+        })
+        assert handle is not None
+        manifest = session.task_control.root / "manifests" / f"{handle.task_id}.json"
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError("observational resume must not spawn or call a model")
+
+    monkeypatch.setattr(TaskControl, "_spawn", forbidden)
+    monkeypatch.setattr("cpn.rpnh.main_session.run_agent_task", forbidden)
+    monkeypatch.setattr("cpn.rpnh.agent_tasks.build_llm_input_port", forbidden)
+    return root, execution, manifest
+
+
+def test_basic_readonly_resume_does_not_recover_pending(tmp_path, monkeypatch, capsys):
+    import json
+    from cpn.rpnh.main_session import MainSession
+    from cpn.rpnh_cli import _run_basic_frontend
+
+    root, execution, manifest = _pending_basic_session(tmp_path, monkeypatch)
+    before = json.loads(manifest.read_text())
+    assert before["launch_state"] == "pending"
+    assert before["pid"] is None
+
+    def forbidden_activation(self):
+        raise AssertionError("read-only commands must not activate execution")
+
+    monkeypatch.setattr(MainSession, "activate_for_execution", forbidden_activation)
+    # Reopening later must remain observational as well.
+    for _ in range(2):
+        commands = iter(["/status", "/history", "/quit"])
+        monkeypatch.setattr("builtins.input", lambda _prompt: next(commands))
+        assert _run_basic_frontend(
+            SimpleNamespace(resume=str(root), prompt=None), root, execution) == 0
+        assert json.loads(manifest.read_text()) == before
+    assert "Turn      ready" in capsys.readouterr().out
+
+
+@pytest.mark.parametrize("one_shot", [False, True])
+@pytest.mark.parametrize("pending_state", [
+    "recoverable", "locked", "unknown_runtime", "runtime_changed_after_adoption",
+])
+def test_basic_resume_explicit_input_activates_execution(
+        tmp_path, monkeypatch, one_shot, pending_state):
+    import json
+    import os
+    from cpn.rpnh.agent_tasks import AgentTaskSpec
+    from cpn.rpnh.main_session import MainSession
+    from cpn.rpnh.task_control import (
+        TaskControl, _acquire_task_launch_lock, claim_task_worker_launch,
+    )
+    from cpn.rpnh.worker_runtime import WorkerCompatibilityError
+    from cpn.rpnh.business_admission import BusinessAdmissionError
+    from cpn.rpnh_cli import _run_basic_frontend
+
+    root, execution, manifest = _pending_basic_session(tmp_path, monkeypatch)
+    before = json.loads(manifest.read_text())
+    task_id = before["task_id"]
+    control_root = manifest.parent.parent
+    held_locks = []
+    if pending_state == "locked":
+        lock = _acquire_task_launch_lock(control_root, task_id)
+        assert lock is not None
+        held_locks.append(lock)
+    elif pending_state == "unknown_runtime":
+        before["launch_runtime"] = None
+        manifest.write_text(json.dumps(before))
+    events = []
+    activate = MainSession.activate_for_execution
+    reconcile = MainSession.reconcile_committed_launches
+
+    def observed_activation(self):
+        events.append("activate")
+        if pending_state == "runtime_changed_after_adoption":
+            before["launch_runtime"] = None
+            manifest.write_text(json.dumps(before))
+        return activate(self)
+
+    def observed_reconcile(self):
+        events.append("reconcile")
+        return reconcile(self)
+
+    def claim_pending(self, identity, spec_path, log_path, *, launch_lock, **kwargs):
+        events.append("recover")
+        assert pending_state == "recoverable"
+        assert identity == task_id
+        spec = AgentTaskSpec.from_worker_document(
+            json.loads(spec_path.read_text()), document_root=spec_path.parent)
+        # Simulate only the worker boundary; durable identity/lock claiming is real.
+        try:
+            claim = claim_task_worker_launch(
+                spec_path, spec, resume=kwargs["resume"],
+                inherited_lock_fd=os.dup(launch_lock.fileno()))
+            assert claim is not None
+            held_locks.append(claim)
+        finally:
+            launch_lock.close()
+        return SimpleNamespace(pid=os.getpid(), poll=lambda: None)
+
+    def execution_boundary(spec):
+        events.append("execute")
+        assert spec.prompt
+        raise MainSessionExecutionFailed("offline execution boundary reached")
+
+    monkeypatch.setattr(TaskControl, "_spawn", claim_pending)
+    monkeypatch.setattr(MainSession, "activate_for_execution", observed_activation)
+    monkeypatch.setattr(MainSession, "reconcile_committed_launches", observed_reconcile)
+    monkeypatch.setattr("cpn.rpnh.main_session.run_agent_task", execution_boundary)
+    commands = iter(["explicit work", "/quit"])
+    monkeypatch.setattr("builtins.input", lambda _prompt: next(commands))
+    try:
+        args = SimpleNamespace(resume=str(root), prompt="explicit work" if one_shot else None)
+        if pending_state == "unknown_runtime":
+            with pytest.raises(BusinessAdmissionError, match="runtime observation"):
+                _run_basic_frontend(args, root, execution)
+        elif pending_state == "runtime_changed_after_adoption" and one_shot:
+            with pytest.raises(WorkerCompatibilityError, match="runtime observation"):
+                _run_basic_frontend(args, root, execution)
+        else:
+            assert _run_basic_frontend(args, root, execution) == (1 if one_shot else 0)
+        if pending_state == "unknown_runtime":
+            assert events == []
+        elif pending_state == "runtime_changed_after_adoption":
+            assert events == ["activate"]
+        else:
+            assert events == (["activate", "recover", "reconcile", "execute"]
+                              if pending_state == "recoverable"
+                              else ["activate", "reconcile", "execute"])
+        after = json.loads(manifest.read_text())
+        assert after["task_id"] == task_id
+        if pending_state == "recoverable":
+            assert after["launch_state"] == "active"
+            assert after["pid"] == os.getpid()
+            # The same explicitly recovered identity cannot be launched twice.
+            TaskControl(control_root, recover_pending_launches=False)._recover_pending_launches()
+            assert events.count("recover") == 1
+        else:
+            assert after == before
+    finally:
+        for lock in held_locks:
+            lock.close()

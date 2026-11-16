@@ -269,6 +269,15 @@ def read_run_terminal_bytes(core: _RegistryCore, read: RunExecutionRead, *,
     read.cut.assert_unchanged(core)
     if read.terminal is None:
         raise ResourceIntegrityFault("current run has no terminal product")
+    from ..material_availability import source_governs_materials
+    from ..material_body_policy import require_material_body_available
+    result = read.terminal.result
+    require_material_body_available(core, VersionRef(result.object_type,
+        result.logical_id, result.version_id), purpose="terminal_product")
+    if source_governs_materials(core):
+        # Structural terminal evidence remains readable.  This legacy bytes
+        # helper cannot turn a read cut into a real release/transport receipt.
+        raise ResourceIntegrityFault("GOVERNED_DELIVERY_REQUIRED: terminal body requires an explicit governed delivery")
     payload = core.object_store.read_registered(read.terminal.result, max_bytes=max_bytes)
     read.cut.assert_unchanged(core)
     return payload
@@ -295,6 +304,13 @@ def stage_run_execution_checkpoint(
         raise TypeError(
             "run execution checkpoint update requires exact checkpoint/key")
     authority_ref, current = current_run_execution_authority(core, kernel)
+    if current.get("status") == "terminal":
+        if any(value is not None for value in (declaration_ref, declaration_schema_ref, mutable_stage_ref)):
+            raise ResourceIntegrityFault("terminal management cannot replace the adopted business source")
+        from .terminal_management import stage_terminal_management_checkpoint
+        stage_terminal_management_checkpoint(core, kernel, transaction, checkpoint_ref,
+            idempotency_key=idempotency_key, producer_invocation_id=producer_invocation_id)
+        return
     checkpoint_payload = _ref_payload(checkpoint_ref)
     prospective = {}
     if any(value is not None for value in (declaration_ref, declaration_schema_ref, mutable_stage_ref)):
@@ -515,6 +531,7 @@ def resume_owner_stopped_run(
 def record_recovered_run_entry(
         core: _RegistryCore, kernel: _ResourceServiceKernel, *,
         immutable_input_ref, mutable_stage_ref, recovery_manifest_ref,
+        material_recovery_scope=None,
 ) -> VersionRef:
     """Bind a recovered running checkpoint to the immediate new writer."""
     from .parent_bound import reject_bound_reentry
@@ -531,9 +548,15 @@ def record_recovered_run_entry(
     from .module_execution import active_module_firings
     from .module_runtime import hydrate_module_runtime
     executable, _structure, marking = hydrate_module_runtime(core)
-    if (current["status"] != "running"
-            or current["terminal_evidence_ref"] is not None
-            or active_module_firings(core, executable.net_ref)
+    material_cut = None
+    if material_recovery_scope is not None:
+        from ..material_recovery import validate_completed_material_recovery
+        material_cut = validate_completed_material_recovery(core, material_recovery_scope)
+    terminal_scope = (material_cut is not None and current["status"] == "terminal"
+        and current["terminal_evidence_ref"] is not None)
+    if ((not terminal_scope and (current["status"] != "running"
+            or current["terminal_evidence_ref"] is not None))
+            or (material_cut is None and active_module_firings(core, executable.net_ref))
             or current["latest_checkpoint_ref"]
             != _ref_payload(marking.checkpoint_ref)
             or current["declaration_ref"]
@@ -554,6 +577,8 @@ def record_recovered_run_entry(
         mutable_stage_ref=mutable_stage_ref,
         recovery_manifest_ref=recovery_manifest_ref,
         authority_ref=authority_ref)
+    if material_cut is not None:
+        material_cut.assert_unchanged(core)
     return authority_ref
 
 

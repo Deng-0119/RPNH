@@ -6,7 +6,7 @@ case "$PYTHON" in /*) ;; *) echo 'Python interpreter must be an absolute path.' 
 test -x "$PYTHON" || { echo 'Python interpreter is not executable.' >&2; exit 1; }
 DSH="$(cd "${2:?pass the pinned DSH source checkout}" && pwd)"
 test "$(git -C "$DSH" rev-parse HEAD)" = 687f282e8625c6b8d11ff58211a90524be2e4317 || {
-  echo 'Wrong DSH revision. Use the revision in integrations/dsh/UPSTREAM.json.' >&2; exit 1;
+  echo 'Wrong DSH revision. Use the revision in integrations/dsh/LEGACY_UPSTREAM.json.' >&2; exit 1;
 }
 node -e 'const [major,minor]=process.versions.node.split(".").map(Number); if (!(major===22&&minor>=19||major>=24)) { console.error("DSH needs Node ^22.19.0 or >=24; Node 22.22.1 is tested."); process.exit(1) }'
 test -x "$DSH/node_modules/.bin/tsx" || { echo 'Install pinned DSH dependencies with pnpm 11.28.5 --frozen-lockfile first.' >&2; exit 1; }

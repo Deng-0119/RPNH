@@ -5,9 +5,12 @@ import { resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { officialModelCatalog, officialRecords, officialProjections, officialSummary, officialHeader, officialSelection } from './official_projection.ts'
 import { isActive } from './projection.ts'
-import type { Initialization, RpcPort, SessionRow } from './rpc.ts'
+import { RpcError } from './rpc.ts'
+import type { Initialization, Profile, RpcPort, SessionRow } from './rpc.ts'
 import type { SessionEvent } from '@deepseek-ai/dsh-session'
-import { FRONTEND_DIR, DESCRIPTOR_PACKAGES } from './setup.ts'
+// Upstream pure protocol helpers; this does not install a DSH execution owner.
+import { DEFAULT_MAX_MESSAGES, paginate, pageRecords, validateHistoryWindow } from '../packages/api/session-controller/src/history.ts'
+import { FRONTEND_DIR, DESCRIPTOR_PACKAGES, COMPATIBILITY } from './setup.ts'
 
 declare module '@deepseek-ai/dsh-typert-protocol' {
   interface RemoteErrorDetailsMap {
@@ -23,7 +26,6 @@ declare module '@deepseek-ai/dsh-typert-protocol' {
 }
 
 export const RPNH_COMMANDS = ['rpnh-help', 'rpnh-tasks', 'rpnh-task', 'rpnh-net', 'rpnh-resume', 'rpnh-rollback', 'rpnh-agent', 'rpnh-workflow', 'rpnh-send']
-type Selection = { provider: string; model: string; reasoningEffort?: string }
 const unavailable = () => { throw new RemoteError('rpnh/unavailable', 'This capability is unavailable in the bound RPNH frontend.', null) }
 
 /** Small per-subscriber queue. These are live UI frames, never durable authority. */
@@ -51,10 +53,9 @@ export class OfficialView {
   row: SessionRow
   private journal: any[] = []
   private sourceCount = 0
-  private readonly requests = new Map<number, string>()
-  private pending: Selection | undefined
   private readonly followers = new Set<Frames>()
   private readonly controllers = new Set<Frames>()
+  private readonly projectionObservers = new Set<Frames>()
   private readonly idleStreams = new Set<Frames>()
   private refreshing: Promise<void> | undefined
   private timer: ReturnType<typeof setTimeout> | undefined
@@ -68,10 +69,10 @@ export class OfficialView {
     this.mergeHistory()
   }
   get cursor() { return this.journal.length - 1 }
-  private values() { return { ...officialProjections(this.row, this.pending), workingDirectory: this.cwd,
+  private values() { return { ...officialProjections(this.row), workingDirectory: this.cwd,
     inbox: { 'next-turn': [], 'next-step': [] } } }
   private baseline() { return { asOfSeq: this.cursor, values: this.values() } }
-  summary() { return { ...officialSummary(this.row, this.cwd, this.pending), projections: { kind: 'sequenced', ...this.baseline() } } }
+  summary() { return { ...officialSummary(this.row, this.cwd), projections: { kind: 'sequenced', ...this.baseline() } } }
   private append(event: any) {
     const projected = { ...event, seq: this.journal.length }
     this.journal.push({ type: 'event', event: projected })
@@ -81,27 +82,35 @@ export class OfficialView {
   private mergeHistory() {
     const records = officialRecords(this.row)
     if (records.length < this.sourceCount) throw new RemoteError('rpnh/history-changed', 'The RPNH history changed; reopen the frontend to refresh its view.', null)
-    let ordinal: number | undefined
     for (let index = 0; index < records.length; index++) {
       const event = records[index]!.event as SessionEvent
-      if (event.type === 'turn/start') ordinal = event.data.turn
       if (index < this.sourceCount) continue
-      const requestId = ordinal === undefined ? undefined : this.requests.get(ordinal)
       // Native live assistant nodes require an explicit step start; cold history
       // can reconstruct a fallback node, but a live update cannot start one.
       if (event.type === 'assistant/message') this.append({ type: 'step/start',
         time: this.row.turns.find(turn => turn.ordinal === event.data.turn)?.created ?? event.time,
         data: { turn: event.data.turn, step: event.data.step } })
-      this.append(event.type === 'user/message' && requestId
-        ? { ...event, data: { ...event.data, source: { ...event.data.source, rpcId: requestId } } } : event)
+      this.append(event)
       if (event.type === 'assistant/message') this.append({ type: 'step/end', time: event.time,
         data: { turn: event.data.turn, step: event.data.step } })
     }
     this.sourceCount = records.length
   }
   private publish() {
-    for (const [key, value] of Object.entries(this.values())) {
-      for (const controller of this.controllers) controller.push({ type: 'projection', sessionId: this.id, key, value, seq: this.cursor })
+    const entries = Object.entries(this.values())
+    if (COMPATIBILITY.version === '0.2.2-rc.1') {
+      const changes = entries.map(([key, val]) => ({ key, val }))
+      const frame = { type: 'projection', seq: this.cursor, changes }
+      for (const observer of this.projectionObservers) observer.push(frame)
+      for (const controller of this.controllers) controller.push({ ...frame, sessionId: this.id })
+    } else if (COMPATIBILITY.version === '0.2.2-alpha.2') {
+      for (const [key, value] of entries) {
+        const frame = { type: 'projection', key, value, seq: this.cursor }
+        for (const observer of this.projectionObservers) observer.push(frame)
+        for (const controller of this.controllers) controller.push({ ...frame, sessionId: this.id })
+      }
+    } else {
+      throw new Error('Unsupported official DSH projection protocol')
     }
     this.ctx.emit('api-session/added', this.summary() as any)
     this.ctx.emit('api-session/status', this.id as any, isActive(this.row))
@@ -119,15 +128,21 @@ export class OfficialView {
     const message = this.publicNotice()
     this.ctx.emit('api-session/error', this.id as any, message ?? '')
   }
+  private acceptRow(row: SessionRow) {
+    if (row.id !== this.id) throw new RemoteError('rpnh/session', 'The bound session identity changed.', null)
+    const oldCursor = this.cursor; const oldState = this.row.turns.at(-1)?.state; const oldNotice = this.publicNotice()
+    const oldSelection = officialSelection(this.row.model)
+    this.row = row; this.initial.session = row; this.mergeHistory()
+    const selected = officialSelection(row.model)
+    if (selected.model !== oldSelection.model || selected.reasoningEffort !== oldSelection.reasoningEffort) {
+      this.present('model/selection', selected)
+    }
+    if (this.cursor !== oldCursor || row.turns.at(-1)?.state !== oldState) this.publish()
+    if (this.publicNotice() !== oldNotice) this.publishNotice()
+  }
   refresh(): Promise<void> {
-    return this.refreshing ??= (async () => {
-      const row = await this.rpc.request<SessionRow>('snapshot')
-      if (row.id !== this.id) throw new RemoteError('rpnh/session', 'The bound session identity changed.', null)
-      const oldCursor = this.cursor; const oldState = this.row.turns.at(-1)?.state; const oldNotice = this.publicNotice()
-      this.row = row; this.initial.session = row; this.mergeHistory()
-      if (this.cursor !== oldCursor || row.turns.at(-1)?.state !== oldState) this.publish()
-      if (this.publicNotice() !== oldNotice) this.publishNotice()
-    })().finally(() => { this.refreshing = undefined })
+    return this.refreshing ??= this.rpc.request<SessionRow>('snapshot')
+      .then(row => this.acceptRow(row)).finally(() => { this.refreshing = undefined })
   }
   start() {
     const poll = async () => {
@@ -138,14 +153,37 @@ export class OfficialView {
     }
     this.timer = setTimeout(poll, 250)
   }
-  close() { this.closed = true; clearTimeout(this.timer); for (const queue of [...this.followers, ...this.controllers, ...this.idleStreams]) queue.close() }
+  close() { this.closed = true; clearTimeout(this.timer); for (const queue of [...this.followers, ...this.controllers, ...this.projectionObservers, ...this.idleStreams]) queue.close() }
   private bound(request: any) {
-    if ((typeof request === 'string' ? request : request?.sessionId ?? request?.address?.sessionId ?? request?.id) !== this.id) {
+    const address = typeof request === 'object' && request !== null ? request.address : undefined
+    const identity = typeof request === 'string' ? request : request?.sessionId ?? address?.sessionId ?? request?.id
+    if (identity !== this.id || (address !== undefined && (address?.kind !== 'session' || address.sessionId !== this.id))) {
       throw new RemoteError('rpnh/session', 'Only the launcher-bound RPNH MainSession is available.', null)
     }
   }
+  private history(request: any) {
+    this.bound(request)
+    if (request.throughSeq !== undefined && (!Number.isSafeInteger(request.throughSeq)
+      || request.throughSeq < -1 || Object.is(request.throughSeq, -0))) {
+      throw new RemoteError('gateway/bad-request', 'throughSeq must be a safe integer greater than or equal to -1.', {})
+    }
+    if (request.beforeSeq !== undefined && (!Number.isSafeInteger(request.beforeSeq)
+      || request.beforeSeq < 0 || Object.is(request.beforeSeq, -0))) {
+      throw new RemoteError('gateway/bad-request', 'beforeSeq must be a non-negative safe integer.', {})
+    }
+    if (request.turnWindow !== undefined && (request.turnWindow === null
+      || typeof request.turnWindow !== 'object' || Array.isArray(request.turnWindow))) {
+      throw new RemoteError('gateway/bad-request', 'turnWindow must contain minMessages and minTurns.', {})
+    }
+    validateHistoryWindow(request)
+    const cursor = request.throughSeq === undefined ? this.cursor : request.throughSeq
+    if (cursor > this.cursor) throw new RemoteError('gateway/bad-request', 'The requested history cut exceeds the observed RPNH history.', {})
+    const page = paginate(this.journal.map(record => record.event as SessionEvent),
+      request.beforeSeq, request.maxMessages ?? DEFAULT_MAX_MESSAGES, cursor, request.turnWindow)
+    return { cursor, records: pageRecords(page.events), hasMore: page.hasMore }
+  }
   private selection() {
-    const selected = this.pending ?? officialSelection(this.row.model)
+    const selected = officialSelection(this.row.model)
     return { selectionId: selected.model, ...(selected.reasoningEffort === undefined ? {} : { reasoningEffort: selected.reasoningEffort }) }
   }
   private async mutate<T>(operation: () => Promise<T>): Promise<T> {
@@ -159,17 +197,40 @@ export class OfficialView {
       session: {
         list: async () => { await view.refresh(); return { items: [view.summary()] } },
         projections: request => { view.bound(request); return { kind: 'sequenced', ...view.baseline() } },
-        page: request => { view.bound(request); return { records: view.journal.filter(record => record.event.seq <= request.throughSeq
-          && (request.beforeSeq === undefined || record.event.seq < request.beforeSeq)), hasMore: false } },
+        page: request => view.history(request),
+        events: request => view.history(request),
         async *follow(request, signal) {
-          view.bound(request)
+          if (signal.aborted) return
+          if (request.throughSeq !== undefined || request.beforeSeq !== undefined) {
+            throw new RemoteError('gateway/bad-request', 'follow opens the current history window; use page or events for an exact cut.', {})
+          }
+          // One synchronous read/subscription boundary: increments after this
+          // cut are queued before the first snapshot is delivered.
+          const page = view.history(request)
           const queue = new Frames(); view.followers.add(queue)
           try {
-            yield { type: 'snapshot', header: officialHeader(view.row, view.cwd), cursor: view.cursor,
-              records: [...view.journal], hasMore: false, projections: view.baseline(), assistantStream: { revision: 0 } }
+            yield { type: 'snapshot', header: officialHeader(view.row, view.cwd), ...page,
+              projections: view.baseline(),
+              ...(request.assistantStream === true ? { assistantStream: { revision: 0 } } : {}) }
             view.publishNotice()
             yield* queue.read(signal)
           } finally { view.followers.delete(queue); queue.close() }
+        },
+        async *observeEvent(request, signal) {
+          view.bound(request)
+          if (signal.aborted) return
+          const queue = new Frames(); view.followers.add(queue)
+          try { yield { type: 'ready' }; yield* queue.read(signal) }
+          finally { view.followers.delete(queue); queue.close() }
+        },
+        // Current presentation values at each RPNH observation boundary;
+        // this stream does not provide a per-commit projection audit log.
+        async *observeProjections(request, signal) {
+          view.bound(request)
+          if (signal.aborted) return
+          const queue = new Frames(); view.projectionObservers.add(queue)
+          try { yield { type: 'ready' }; yield* queue.read(signal) }
+          finally { view.projectionObservers.delete(queue); queue.close() }
         },
         async *control(signal) {
           const queue = new Frames(); view.controllers.add(queue)
@@ -177,15 +238,29 @@ export class OfficialView {
           finally { view.controllers.delete(queue); queue.close() }
         },
         modelCatalog: () => officialModelCatalog(view.initial),
-        selectModel(request) {
+        async selectModel(request) {
           view.bound(request)
           const profile = view.initial.configuration.profiles.find(profile => profile.selection === request.model && profile.ready)
           if (request.provider !== 'rpnh' || !profile) throw new RemoteError('rpnh/model', 'Choose an available RPNH model profile.', null)
           const effort = request.reasoningEffort ?? profile.default_reasoning_effort
           if (effort !== null && !profile.supported_reasoning_efforts.includes(effort)) throw new RemoteError('rpnh/effort', 'Unsupported reasoning effort.', null)
-          view.pending = { provider: 'rpnh', model: profile.selection, ...(effort === null ? {} : { reasoningEffort: effort }) }
-          view.present('model/selection', view.pending); view.publish()
-          return { selected: view.pending }
+          return await view.mutate(async () => {
+            // Settle any older read before asking the same serialized RPNH
+            // owner to persist its selection. Nothing is published optimistically.
+            await view.refresh()
+            let selected: Profile
+            try {
+              selected = await view.rpc.request<Profile>('select_model', {
+                selectionId: profile.selection, ...(effort === null ? {} : { reasoningEffort: effort }),
+              })
+            } catch (error) {
+              if (!(error instanceof RpcError)) throw error
+              throw new RemoteError('session/model-unavailable', `${error.code}: ${error.message}`,
+                { provider: request.provider, model: request.model })
+            }
+            view.acceptRow({ ...view.row, model: selected })
+            return { selected: officialSelection(selected) }
+          })
         },
         create() {
           if (view.row.turns.length) throw new RemoteError('rpnh/bound-session', 'This frontend is bound to an existing RPNH MainSession. Start a new RPNH session from the launcher.', null)
@@ -194,12 +269,21 @@ export class OfficialView {
         canOpenWorkspacePath: () => false,
         async prompt(request) {
           view.bound(request)
-          if (request.mode !== 'queue' || request.content.some((part: any) => part.type !== 'text')) unavailable()
+          if (!Array.isArray(request.content) || typeof request.requestId !== 'string'
+            || !/^[A-Za-z0-9._:-]{1,160}$/.test(request.requestId)) {
+            throw new RemoteError('gateway/bad-request', 'A text prompt and valid requestId are required.', {})
+          }
+          if (request.mode !== 'queue' || request.content.some((part: any) => part?.type !== 'text')) unavailable()
+          if (request.content.some((part: any) => typeof part.text !== 'string')) {
+            throw new RemoteError('gateway/bad-request', 'Text prompt parts must contain strings.', {})
+          }
           const text = request.content.map((part: any) => part.text).join('\n')
+          if (!text.trim()) throw new RemoteError('gateway/bad-request', 'A nonempty text prompt is required.', {})
           if (/^\s*\/rpnh-/.test(text)) throw new RemoteError('rpnh/command', 'Use the native slash-command menu for RPNH commands.', null)
           await view.mutate(async () => {
-            const result = await view.rpc.request<{ ordinal: number }>('submit', { text, requestId: request.requestId, ...view.selection() })
-            view.requests.set(result.ordinal, request.requestId)
+            // RPNH owns admission and retry identity. The accepted key in its
+            // snapshot also reconciles optimistic messages after a cold reopen.
+            await view.rpc.request('submit', { text, requestId: request.requestId, ...view.selection() })
             await view.refresh()
           })
           return { accepted: true }

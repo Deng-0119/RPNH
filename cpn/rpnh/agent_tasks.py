@@ -35,6 +35,7 @@ from cpn.llm_adapters import (
 from cpn.rpnh.agent_workflows import (
     AgentWorkflowGraph,
     WORKFLOW_GRAPH_COMPONENT_V4_KEY, WORKFLOW_GRAPH_CONFIG_SCHEMA_V4, WORKFLOW_GRAPH_CONFIG_SCHEMA_V4_ID,
+    WORKFLOW_GRAPH_COMPONENT_V5_KEY, WORKFLOW_GRAPH_CONFIG_SCHEMA_V5, WORKFLOW_GRAPH_CONFIG_SCHEMA_V5_ID,
     TEXT_SCHEMA,
     WORKFLOW_GRAPH_COMPONENT_KEY,
     WORKFLOW_GRAPH_COMPONENT_V1_KEY,
@@ -117,6 +118,9 @@ class AgentTaskSpec:
     # Tightens fresh native ordinary/total budgets, never node buckets.
     # Registered requests and explicit reentry generations have separate accounting.
     aggregate_call_cap: int | None = None
+    plugin_catalog_snapshot: Mapping[str, Any] | None = None
+    managed_accounts: Mapping[str, Any] | None = None
+    managed_account_provider: Mapping[str, Any] | None = None
 
     def __post_init__(self) -> None:
         if (self.aggregate_call_cap is not None
@@ -137,6 +141,9 @@ class AgentTaskSpec:
                     or self.execution_config_path is not None or self.execution_profiles
                     or self.workflow_graph is not None or len(self.stages) != 1
                     or self.plugin_configuration is not None or self.plugin_catalog_digest is not None
+                    or self.plugin_catalog_snapshot is not None
+                    or self.managed_accounts is not None
+                    or self.managed_account_provider is not None
                     or self.managed_bindings or self.managed_tool_policy is not None
                     or self.tool_program_policy is not None or self.max_parallel_nodes != 1
                     or self.owner_socket_path is None
@@ -217,14 +224,27 @@ class AgentTaskSpec:
                 or not self.owner_statement.strip()):
             raise ValueError("owner_statement must be nonempty text")
         if self.plugin_configuration is None:
-            if self.plugin_catalog_digest is not None or self.managed_bindings:
+            if (self.plugin_catalog_digest is not None or self.plugin_catalog_snapshot is not None
+                    or self.managed_bindings):
                 raise ValueError("plugin digest requires its exact owner configuration")
         else:
             from cpn.plugins.api import frozen
-            if (not isinstance(self.plugin_configuration, Mapping)
+            if not isinstance(self.plugin_configuration, Mapping):
+                raise ValueError("plugin configuration requires an exact catalog")
+            versioned = self.plugin_configuration.get("schema_version") == "rpnh/plugins/v2"
+            if versioned:
+                snapshot = self.plugin_catalog_snapshot
+                if (self.plugin_catalog_digest is not None or not isinstance(snapshot, Mapping)
+                        or set(snapshot) != {"schema_version", "identity", "bindings"}
+                        or snapshot.get("schema_version") != "rpnh/plugin_catalog_snapshot/v1"
+                        or not isinstance(snapshot.get("identity"), Mapping)
+                        or not isinstance(snapshot.get("bindings"), (list, tuple))):
+                    raise ValueError("versioned plugin configuration requires its full non-secret snapshot")
+                object.__setattr__(self, "plugin_catalog_snapshot", frozen(snapshot))
+            elif (self.plugin_catalog_snapshot is not None
                     or not isinstance(self.plugin_catalog_digest, str)
                     or re.fullmatch(r"[a-f0-9]{64}", self.plugin_catalog_digest) is None):
-                raise ValueError("plugin configuration requires its exact compiled catalog digest")
+                raise ValueError("legacy plugin configuration requires its exact compiled catalog digest")
             object.__setattr__(self, "plugin_configuration", frozen(self.plugin_configuration))
         if not isinstance(self.managed_bindings, Mapping):
             raise ValueError("managed bindings must be keyed by node or stage")
@@ -251,7 +271,7 @@ class AgentTaskSpec:
                         or _STAGE_ID.fullmatch(visible_name) is None
                         or not isinstance(declaration, Mapping)
                         or set(declaration) - {
-                            "selector", "description", "input_schema"}
+                            "selector", "description", "input_schema", "descriptor_revision"}
                         or not isinstance(declaration.get("selector"), str)):
                     raise ValueError("managed tool declaration is invalid")
                 tools[visible_name] = dict(declaration)
@@ -278,6 +298,23 @@ class AgentTaskSpec:
                 "managed tool names cannot collide with reserved built-in tools")
         from cpn.plugins.api import frozen
         object.__setattr__(self, "managed_bindings", frozen(normalized))
+        if self.managed_accounts is not None:
+            from cpn.plugins.account_bindings import AccountBindingPlan
+            if self.plugin_catalog_snapshot is None or not normalized:
+                raise ValueError(
+                    "managed accounts require a versioned task with managed tools")
+            plan = AccountBindingPlan.from_dict(self.managed_accounts)
+            if any(request.node_id not in normalized
+                   or request.tool_name not in normalized[request.node_id]["tools"]
+                   for request in plan.bindings):
+                raise ValueError("managed accounts must name exact selected node tools")
+            object.__setattr__(self, "managed_accounts", frozen(plan.to_dict()))
+        if self.managed_account_provider is not None:
+            from cpn.plugins.account_provider_catalog import AccountProviderSelection
+            if self.managed_accounts is None:
+                raise ValueError("installed account provider requires an explicit account plan")
+            provider = AccountProviderSelection.from_dict(self.managed_account_provider)
+            object.__setattr__(self, "managed_account_provider", frozen(provider.to_dict()))
         if self.managed_tool_policy is not None:
             if not normalized or not isinstance(self.managed_tool_policy, Mapping):
                 raise ValueError("managed scheduling requires explicit managed bindings and policy")
@@ -351,6 +388,9 @@ class AgentTaskSpec:
                     "owner socket must remain inside its child Registry")
             return {
                 "schema_version": (
+                    "rpnh/agent_task_spec/v21" if self.managed_accounts is not None and self.workflow_graph is not None else
+                    "rpnh/agent_task_spec/v19" if self.managed_accounts is not None else
+                    "rpnh/agent_task_spec/v17" if self.plugin_catalog_snapshot is not None else
                     "rpnh/agent_task_spec/v15" if self.aggregate_call_cap is not None else
                     "rpnh/agent_task_spec/v12" if self.tool_program_policy is not None else
                     "rpnh/agent_task_spec/v10" if self.managed_tool_policy is not None else
@@ -359,7 +399,9 @@ class AgentTaskSpec:
                 **({"aggregate_call_cap": self.aggregate_call_cap}
                    if self.aggregate_call_cap is not None else {}),
                 **({"plugin_configuration": json_copy(self.plugin_configuration),
-                    "plugin_catalog_digest": self.plugin_catalog_digest}
+                    **({"plugin_catalog_snapshot": json_copy(self.plugin_catalog_snapshot)}
+                       if self.plugin_catalog_snapshot is not None else
+                       {"plugin_catalog_digest": self.plugin_catalog_digest})}
                    if self.plugin_configuration is not None else {}),
                 "run_relative_path": self._relative_worker_path(
                     self.run_dir, root),
@@ -384,6 +426,10 @@ class AgentTaskSpec:
                 "owner_socket_relative_path": socket_relative,
                 **({"managed_bindings": json_copy(self.managed_bindings)}
                    if self.managed_bindings else {}),
+                **({"managed_accounts": json_copy(self.managed_accounts)}
+                   if self.managed_accounts is not None else {}),
+                **({"managed_account_provider": json_copy(self.managed_account_provider)}
+                   if self.managed_account_provider is not None else {}),
                 **({"managed_tool_policy": json_copy(self.managed_tool_policy)}
                    if self.managed_tool_policy is not None else {}),
                 **({"tool_program_policy": json_copy(self.tool_program_policy)}
@@ -391,6 +437,9 @@ class AgentTaskSpec:
             }
         return {
             "schema_version": (
+                "rpnh/agent_task_spec/v20" if self.managed_accounts is not None and self.workflow_graph is not None else
+                "rpnh/agent_task_spec/v18" if self.managed_accounts is not None else
+                "rpnh/agent_task_spec/v16" if self.plugin_catalog_snapshot is not None else
                 "rpnh/agent_task_spec/v14" if self.aggregate_call_cap is not None else
                 "rpnh/agent_task_spec/v11" if self.tool_program_policy is not None else
                 "rpnh/agent_task_spec/v9" if self.managed_tool_policy is not None else
@@ -399,7 +448,9 @@ class AgentTaskSpec:
             **({"aggregate_call_cap": self.aggregate_call_cap}
                if self.aggregate_call_cap is not None else {}),
             **({"plugin_configuration": json_copy(self.plugin_configuration),
-                "plugin_catalog_digest": self.plugin_catalog_digest} if self.plugin_configuration is not None else {}),
+                **({"plugin_catalog_snapshot": json_copy(self.plugin_catalog_snapshot)}
+                   if self.plugin_catalog_snapshot is not None else
+                   {"plugin_catalog_digest": self.plugin_catalog_digest})} if self.plugin_configuration is not None else {}),
             "run_dir": str(self.run_dir),
             "prompt": self.prompt,
             "stages": [
@@ -423,6 +474,10 @@ class AgentTaskSpec:
                 else str(self.owner_socket_path)),
             **({"managed_bindings": json_copy(self.managed_bindings)}
                if self.managed_bindings else {}),
+            **({"managed_accounts": json_copy(self.managed_accounts)}
+               if self.managed_accounts is not None else {}),
+            **({"managed_account_provider": json_copy(self.managed_account_provider)}
+               if self.managed_account_provider is not None else {}),
                 **({"managed_tool_policy": json_copy(self.managed_tool_policy)}
                    if self.managed_tool_policy is not None else {}),
                 **({"tool_program_policy": json_copy(self.tool_program_policy)}
@@ -494,7 +549,16 @@ class AgentTaskSpec:
         }
         fields_v7 = fields_v5 | {"managed_bindings"}
         fields_v8 = fields_v6 | {"managed_bindings"}
+        versioned_fields = {"plugin_configuration", "plugin_catalog_snapshot"}
+        versioned_optional = {"managed_bindings", "managed_tool_policy", "tool_program_policy", "aggregate_call_cap"}
         expected_fields = (
+            (fields_v5 if version in {"rpnh/agent_task_spec/v18", "rpnh/agent_task_spec/v20"} else fields_v6)
+            | versioned_fields | {"managed_bindings", "managed_accounts"}
+            | (set(value) & (versioned_optional | {"managed_account_provider"}))
+            if version in {"rpnh/agent_task_spec/v18", "rpnh/agent_task_spec/v19", "rpnh/agent_task_spec/v20", "rpnh/agent_task_spec/v21"} else
+            (fields_v5 if version == "rpnh/agent_task_spec/v16" else fields_v6)
+            | versioned_fields | (set(value) & versioned_optional)
+            if version in {"rpnh/agent_task_spec/v16", "rpnh/agent_task_spec/v17"} else
             fields_v1 if version == "rpnh/agent_task_spec/v1" else
             fields_v2 if version == "rpnh/agent_task_spec/v2" else
             fields_v3 if version == "rpnh/agent_task_spec/v3" else
@@ -515,7 +579,16 @@ class AgentTaskSpec:
             if version == "rpnh/agent_task_spec/v11" else
             fields_v8 | plugin_fields | {"managed_tool_policy", "tool_program_policy"}
             if version == "rpnh/agent_task_spec/v12" else set())
-        if version in {"rpnh/agent_task_spec/v6", "rpnh/agent_task_spec/v8", "rpnh/agent_task_spec/v10", "rpnh/agent_task_spec/v12"}:
+        if (version in {"rpnh/agent_task_spec/v18", "rpnh/agent_task_spec/v19", "rpnh/agent_task_spec/v20", "rpnh/agent_task_spec/v21"}
+                and value.get("managed_accounts") is None):
+            raise ValueError("account worker documents require their exact account plan")
+        if (version in {"rpnh/agent_task_spec/v18", "rpnh/agent_task_spec/v19"}
+                and value.get("workflow_graph") is not None):
+            raise ValueError("v18/v19 account worker documents require a single agent")
+        if (version in {"rpnh/agent_task_spec/v20", "rpnh/agent_task_spec/v21"}
+                and value.get("workflow_graph") is None):
+            raise ValueError("v20/v21 account worker documents require an explicit workflow")
+        if version in {"rpnh/agent_task_spec/v6", "rpnh/agent_task_spec/v8", "rpnh/agent_task_spec/v10", "rpnh/agent_task_spec/v12", "rpnh/agent_task_spec/v17", "rpnh/agent_task_spec/v19", "rpnh/agent_task_spec/v21"}:
             if document_root is None:
                 raise ValueError(
                     "v6 worker document requires its parent directory")
@@ -560,8 +633,12 @@ class AgentTaskSpec:
                 owner_statement=value["owner_statement"],
                 plugin_configuration=value.get("plugin_configuration"),
                 plugin_catalog_digest=value.get("plugin_catalog_digest"),
+                plugin_catalog_snapshot=value.get("plugin_catalog_snapshot"),
+                aggregate_call_cap=value.get("aggregate_call_cap"),
                 owner_socket_path=socket_path,
                 managed_bindings=value.get("managed_bindings", {}),
+                managed_accounts=value.get("managed_accounts"),
+                managed_account_provider=value.get("managed_account_provider"),
                 managed_tool_policy=value.get("managed_tool_policy"),
                 tool_program_policy=value.get("tool_program_policy"),
             )
@@ -573,7 +650,7 @@ class AgentTaskSpec:
         if (not isinstance(value, Mapping)
                 or set(value) != expected_fields
                 or not isinstance(value.get("stages"), list)
-                or (version in {"rpnh/agent_task_spec/v3", "rpnh/agent_task_spec/v4", "rpnh/agent_task_spec/v5", "rpnh/agent_task_spec/v7", "rpnh/agent_task_spec/v9", "rpnh/agent_task_spec/v11"}
+                or (version in {"rpnh/agent_task_spec/v3", "rpnh/agent_task_spec/v4", "rpnh/agent_task_spec/v5", "rpnh/agent_task_spec/v7", "rpnh/agent_task_spec/v9", "rpnh/agent_task_spec/v11", "rpnh/agent_task_spec/v16", "rpnh/agent_task_spec/v18", "rpnh/agent_task_spec/v20"}
                     and not isinstance(value.get("execution_profiles"), Mapping))
                 or invalid_owner_socket_path):
             raise ValueError("agent task worker document is not current")
@@ -596,16 +673,20 @@ class AgentTaskSpec:
             owner_statement=value["owner_statement"],
             plugin_configuration=value.get("plugin_configuration"),
             plugin_catalog_digest=value.get("plugin_catalog_digest"),
+            plugin_catalog_snapshot=value.get("plugin_catalog_snapshot"),
+            aggregate_call_cap=value.get("aggregate_call_cap"),
             owner_socket_path=(
                 None if value.get("owner_socket_path") is None
                 else Path(value["owner_socket_path"])),
             managed_bindings=value.get("managed_bindings", {}),
+            managed_accounts=value.get("managed_accounts"),
+            managed_account_provider=value.get("managed_account_provider"),
             managed_tool_policy=value.get("managed_tool_policy"),
             tool_program_policy=value.get("tool_program_policy"),
         )
 
 
-def agent_task_registration(plugin_catalog=None, managed_catalogs=()) -> Registration:
+def agent_task_registration(plugin_catalog=None, managed_catalogs=(), *, account_bindings=False) -> Registration:
     """Register the optional generic agent component without Current imports."""
     registration = Registration()
     register_basic_components(registration)
@@ -653,6 +734,10 @@ def agent_task_registration(plugin_catalog=None, managed_catalogs=()) -> Registr
     registration.register_component(WORKFLOW_GRAPH_COMPONENT_V4_KEY, lower_agent_workflow_graph,
         identity={"implementation_id": "rpnh.agent_workflow_graph", "revision": "v4"},
         contracts={"config_schema": WORKFLOW_GRAPH_CONFIG_SCHEMA_V4_ID})
+    registration.register_schema(WORKFLOW_GRAPH_CONFIG_SCHEMA_V5_ID, WORKFLOW_GRAPH_CONFIG_SCHEMA_V5)
+    registration.register_component(WORKFLOW_GRAPH_COMPONENT_V5_KEY, lower_agent_workflow_graph,
+        identity={"implementation_id": "rpnh.agent_workflow_graph", "revision": "v5"},
+        contracts={"config_schema": WORKFLOW_GRAPH_CONFIG_SCHEMA_V5_ID})
     if plugin_catalog is not None:
         from cpn.plugins.host import register_plugins
         register_plugins(registration, plugin_catalog)
@@ -706,10 +791,13 @@ def agent_task_registration(plugin_catalog=None, managed_catalogs=()) -> Registr
         },
         contracts={"binding_protocol": "rpnh/module_terminal/v1"},
     )
+    if account_bindings:
+        from cpn.plugins.account_bindings import register_account_binding_support
+        register_account_binding_support(registration)
     return registration
 
 
-def agent_task_catalog(plugin_catalog=None, *, registered_public=False) -> SchemaCatalog:
+def agent_task_catalog(plugin_catalog=None, *, registered_public=False, account_bindings=False) -> SchemaCatalog:
     schemas, types = optional_agent_loop_schema_data()
     paths = {}
     if registered_public:
@@ -721,7 +809,7 @@ def agent_task_catalog(plugin_catalog=None, *, registered_public=False) -> Schem
     if plugin_catalog is not None:
         from cpn.plugins.runtime import plugin_registration
         extra = {item["key"]: item["schema"] for item in plugin_registration(plugin_catalog).declarations("schema")}
-    return SchemaCatalog(schemas={
+    catalog = SchemaCatalog(schemas={
         **extra,
         WORKFLOW_GRAPH_CONFIG_SCHEMA_V4_ID: WORKFLOW_GRAPH_CONFIG_SCHEMA_V4,
         **schemas,
@@ -731,6 +819,10 @@ def agent_task_catalog(plugin_catalog=None, *, registered_public=False) -> Schem
         WORKFLOW_GRAPH_CONFIG_SCHEMA_ID: WORKFLOW_GRAPH_CONFIG_SCHEMA,
         WORKFLOW_GRAPH_CONFIG_SCHEMA_V3_ID: WORKFLOW_GRAPH_CONFIG_SCHEMA_V3,
     }, types=types, schema_paths=paths)
+    if account_bindings:
+        from cpn.plugins.account_bindings import register_account_binding_catalog
+        register_account_binding_catalog(catalog)
+    return catalog
 
 
 def build_agent_task_module(
@@ -934,6 +1026,11 @@ def _validate_resumed_execution_profiles(
             if (registration is None or registration.declaration("executor", operation.executor_key) != executor_contract):
                 raise ValueError("resume native plugin differs from the registered exact implementation")
             continue
+        if executor_contract["contracts"].get("transport") != "llm":
+            if (registration is None
+                    or registration.declaration("executor", operation.executor_key) != executor_contract):
+                raise ValueError("resume deterministic executor differs from its registered implementation")
+            continue
         profile_id = (
             operation.declaration.config.get("execution_profile_id")
             or "default")
@@ -998,10 +1095,28 @@ def _execute_agent_task(
         reopen_command_id: str | None = None,
         reopen_reason: str | None = None,
         registered_context=None,
+        managed_account_resolver_factory=None,
 ) -> dict[str, Any]:
     """Run or resume one task through the owner/Harness/AgentLoop path."""
+    from cpn.update_context import reject_candidate_runtime
+    reject_candidate_runtime()
     if not isinstance(spec, AgentTaskSpec):
         raise TypeError("run_agent_task requires AgentTaskSpec")
+    if managed_account_resolver_factory is not None and not callable(managed_account_resolver_factory):
+        raise TypeError("managed account resolver factory must be installed HOST code")
+    if managed_account_resolver_factory is not None and not spec.managed_bindings:
+        raise ValueError("managed account resolver factory requires selected managed tools")
+    account_plan = None
+    if spec.managed_accounts is not None:
+        if spec.managed_account_provider is not None:
+            if managed_account_resolver_factory is not None:
+                raise ValueError("account provider selection and in-process factory are mutually exclusive")
+            from cpn.plugins.account_provider_catalog import load_account_provider
+            managed_account_resolver_factory = load_account_provider(spec.managed_account_provider)
+        if managed_account_resolver_factory is None:
+            raise ValueError("managed account plan requires an explicitly installed in-process resolver factory")
+        from cpn.plugins.account_bindings import AccountBindingPlan
+        account_plan = AccountBindingPlan.from_dict(spec.managed_accounts)
     if spec.registered_execution_sources:
         from .public_agent_materials import RegisteredAgentExecutionContext
         if type(registered_context) is not RegisteredAgentExecutionContext or resume:
@@ -1026,13 +1141,18 @@ def _execute_agent_task(
     })
     from cpn.plugins.catalog import load_catalog
     plugin_catalog = load_catalog(spec.plugin_configuration)
-    if spec.plugin_catalog_digest is not None and plugin_catalog.digest != spec.plugin_catalog_digest:
+    if spec.plugin_catalog_snapshot is not None:
+        from cpn.plugins.api import canonical as plugin_canonical
+        if plugin_canonical(plugin_catalog.versioned_snapshot()) != plugin_canonical(spec.plugin_catalog_snapshot):
+            raise ValueError("installed plugin/configuration differs from the exact task snapshot")
+    elif spec.plugin_catalog_digest is not None and plugin_catalog.digest != spec.plugin_catalog_digest:
         raise ValueError("installed plugin/configuration differs from the pinned task catalog")
     from cpn.plugins.managed_tools import ManagedPluginToolCatalog
     managed_catalogs = {
         node_id: ManagedPluginToolCatalog(
             plugin_catalog, binding["tools"],
-            admitted_effects=binding["admitted_effects"])
+            admitted_effects=binding["admitted_effects"],
+            protocol_version="v3" if plugin_catalog.versioned else "v2")
         for node_id, binding in spec.managed_bindings.items()
     }
     managed_registration_keys = {
@@ -1044,8 +1164,10 @@ def _execute_agent_task(
         node_id: tuple(declaration.name for declaration in catalog.tools)
         for node_id, catalog in managed_catalogs.items()
     }
+    if account_plan is not None:
+        account_plan.require_catalogs(managed_catalogs)
     registration = agent_task_registration(
-        plugin_catalog, managed_catalogs.values())
+        plugin_catalog, managed_catalogs.values(), account_bindings=account_plan is not None)
     if spec.workflow_graph is None:
         module = build_agent_task_module(
             spec.stages, max_attempts_per_stage=spec.max_attempts_per_stage,
@@ -1065,6 +1187,8 @@ def _execute_agent_task(
             managed_tools=managed_registration_keys,
             managed_tool_names=managed_visible_names,
         )
+    # Account publication is a deterministic original PN operation, not an
+    # additional model-call allowance. Compute the model cap before composition.
     bucket_documents = module.to_dict()["budget_buckets"]
     call_cap = (None if any(bucket["max_attempts"] is None
                             for bucket in bucket_documents)
@@ -1073,8 +1197,17 @@ def _execute_agent_task(
     if spec.aggregate_call_cap is not None:
         call_cap = (spec.aggregate_call_cap if call_cap is None
                     else min(call_cap, spec.aggregate_call_cap))
+    if account_plan is not None:
+        from cpn.plugins.account_bindings import with_account_binding_inputs
+        module = with_account_binding_inputs(module, account_plan,
+            provider_selection=spec.managed_account_provider)
+        bucket_documents = module.to_dict()["budget_buckets"]
     request = OwnerInput(
         TEXT_SCHEMA, canonical_json(spec.prompt), "RPNH agent task request")
+    entry_inputs = {"request": request}
+    if account_plan is not None:
+        from cpn.plugins.account_bindings import PUBLISHER, account_binding_input
+        entry_inputs[PUBLISHER] = account_binding_input(account_plan)
     runner = None
     stop_requested = threading.Event()
 
@@ -1119,17 +1252,22 @@ def _execute_agent_task(
             tool_program_policy=spec.tool_program_policy,
         )
         if resume:
+            from cpn.plugins.account_bindings import verify_account_binding_plan
+            verify_account_binding_plan(destination, agent_task_catalog(plugin_catalog,
+                account_bindings=account_plan is not None), account_plan,
+                provider_selection=spec.managed_account_provider)
             # Validate every exact model/provider route through a read-only
             # Registry handle before resume_run acquires writer authority or
             # appends the successor run_execution_authority.
             resumed_transition_profiles = _validate_resumed_execution_profiles(
-                destination, selections, catalog=agent_task_catalog(plugin_catalog), registration=registration)
+                destination, selections, catalog=agent_task_catalog(plugin_catalog,
+                    account_bindings=account_plan is not None), registration=registration)
         owner = (
             resume_run(
                 registration,
                 run_dir=destination,
                 model_condition=selection.input_target.model_condition,
-                catalog=agent_task_catalog(plugin_catalog),
+                catalog=agent_task_catalog(plugin_catalog, account_bindings=account_plan is not None),
                 host_execution_bindings=host_bindings,
                 checkpoint_version_id=checkpoint_version_id,
                 reopen_command_id=reopen_command_id,
@@ -1141,7 +1279,7 @@ def _execute_agent_task(
                 registration,
                 run_dir=destination,
                 task_input=request,
-                entry_inputs={"request": request},
+                entry_inputs=entry_inputs,
                 budgets=ModuleBudgetDeclaration(
                     tuple(bucket_documents),
                     ("rpnh/module_declaration/v1",),
@@ -1150,9 +1288,14 @@ def _execute_agent_task(
                 model_condition=selection.input_target.model_condition,
                 owner_statement=spec.owner_statement,
                 command_id="rpnh:agent-task:fresh",
-                catalog=agent_task_catalog(plugin_catalog),
+                catalog=agent_task_catalog(plugin_catalog, account_bindings=account_plan is not None),
                 host_execution_bindings=host_bindings,
             ))
+        account_selections = {}
+        if account_plan is not None:
+            from cpn.plugins.account_bindings import prepare_account_bindings
+            account_selections = prepare_account_bindings(owner, account_plan,
+                provider_selection=spec.managed_account_provider)
         socket_path = spec.owner_socket_path or destination / "owner.sock"
         socket_path.parent.mkdir(parents=True, exist_ok=True)
         event_loop = OwnerEventLoop(owner, socket_path)
@@ -1187,12 +1330,17 @@ def _execute_agent_task(
             interruption_requested=stop_requested.is_set)
         if managed_catalogs:
             from types import MappingProxyType
+            from cpn.plugins.account_credentials import bind_installed_account_resolvers
             from cpn.plugins.managed_tools import ManagedPluginInvocationService
             assert services._optional_agent_service is not None
             services._optional_agent_service.managed_plugin_services = (
                 MappingProxyType({
                     node_id: ManagedPluginInvocationService(
-                        owner, services._kernel, services._repository, catalog)
+                        owner, services._kernel, services._repository, catalog,
+                        account_resolvers=bind_installed_account_resolvers(
+                            managed_account_resolver_factory, owner=owner,
+                            catalog=catalog, node_id=node_id,
+                            account_selections=account_selections.get(node_id)))
                     for node_id, catalog in managed_catalogs.items()
                 }))
             services._optional_agent_service.managed_plugin_interruption_requested = (
@@ -1248,26 +1396,30 @@ def _execute_agent_task(
     }
 
 
-def run_agent_task(spec: AgentTaskSpec) -> dict[str, Any]:
+def run_agent_task(spec: AgentTaskSpec, *, managed_account_resolver_factory=None) -> dict[str, Any]:
     """Start one fresh independent RPNH agent task."""
-    return _execute_agent_task(spec, resume=False)
+    return _execute_agent_task(spec, resume=False,
+        managed_account_resolver_factory=managed_account_resolver_factory)
 
 
 def resume_agent_task(
-        spec: AgentTaskSpec,
+        spec: AgentTaskSpec, *, managed_account_resolver_factory=None,
 ) -> dict[str, Any]:
     """Resume one owner-stopped task from its current checkpoint."""
-    return _execute_agent_task(spec, resume=True)
+    return _execute_agent_task(spec, resume=True,
+        managed_account_resolver_factory=managed_account_resolver_factory)
 
 
 def reopen_agent_task(
         spec: AgentTaskSpec, *, checkpoint_version_id: str,
         command_id: str, reason: str,
+        managed_account_resolver_factory=None,
 ) -> dict[str, Any]:
     """Start a new generation at one exact owner-selected checkpoint."""
     return _execute_agent_task(
         spec, resume=True, checkpoint_version_id=checkpoint_version_id,
-        reopen_command_id=command_id, reopen_reason=reason)
+        reopen_command_id=command_id, reopen_reason=reason,
+        managed_account_resolver_factory=managed_account_resolver_factory)
 
 
 __all__ = (

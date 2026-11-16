@@ -29,7 +29,7 @@ if TYPE_CHECKING:
 JsonScalar: TypeAlias = str | int | float | bool | None
 DeliveryBoundary: TypeAlias = Literal[
     "llm_prompt", "tool_result", "subprocess_read", "parent_receipt",
-    "petri_input",
+    "petri_input", "human_viewer",
 ]
 DeliveryOutcome: TypeAlias = Literal["acknowledged", "unknown", "failed"]
 PublicationOriginKind: TypeAlias = Literal[

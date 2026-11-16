@@ -251,12 +251,18 @@ def stage_success_material(
         from .normal_root_token_allocation import (
             NORMAL_ROOT_TOKEN_SCHEME, validate_normal_root_token_delta,
         )
-        if (ordinary_token_ref_scheme != NORMAL_ROOT_TOKEN_SCHEME
+        from .success_token_allocation import (
+            SUCCESS_FIRING_TOKEN_SCHEME, validate_success_firing_token_delta,
+        )
+        if (ordinary_token_ref_scheme not in (NORMAL_ROOT_TOKEN_SCHEME, SUCCESS_FIRING_TOKEN_SCHEME)
                 or normal_root_token_schema is None
                 or declared_effects is not None or revision is not None):
-            raise ResourceIntegrityFault('normal root token allocation lacks exact capability')
+            raise ResourceIntegrityFault('firing token allocation lacks exact capability')
         delta['ordinary_token_ref_scheme'] = ordinary_token_ref_scheme
-        validate_normal_root_token_delta(normal_root_token_schema, delta)
+        if ordinary_token_ref_scheme == NORMAL_ROOT_TOKEN_SCHEME:
+            validate_normal_root_token_delta(normal_root_token_schema, delta)
+        else:
+            validate_success_firing_token_delta(normal_root_token_schema, delta)
     elif normal_root_token_schema is not None:
         raise ResourceIntegrityFault('legacy Success cannot carry normal allocation capability')
     if declared_effects is not None:

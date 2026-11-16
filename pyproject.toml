@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "rpnh-harness"
 version = "0.1.0rc3"
 description = "Registry-governed agent harness with typed PetriNet execution"
-readme = "README.md"
+dynamic = ["readme"]
 license = "MIT"
 license-files = [
   "LICENSE",
@@ -35,11 +35,15 @@ Issues = "https://github.com/Deng-0119/RPNH/issues"
 Changelog = "https://github.com/Deng-0119/RPNH/blob/main/CHANGELOG.md"
 
 [project.optional-dependencies]
+# Optional connectors remain opt-in; these pins match the reviewed bridge contracts.
+mcp = ["mcp==1.30.0"]
+skills = ["strictyaml==1.7.3"]
 # Existing AgentLoop integration tests capture the numerical environment.
 # Keep these requirements explicit instead of relying on preinstalled packages.
 test = ["pytest>=8,<9", "numpy>=1.26,<3", "scipy>=1.11,<2"]
 
 [project.scripts]
+rpnh-bootstrap = "cpn.rpnh.bootstrap_entry:main"
 rpnh = "cpn.rpnh_cli:main"
 rpnh-configure-providers = "cpn.rpnh.provider_setup:main"
 rpnh-dsh = "cpn.dsh.launcher:main"
@@ -63,13 +67,23 @@ cpn = [
 ]
 integrations = [
   "dsh/UPSTREAM.json",
+  "dsh/UPSTREAM_CANDIDATE.json",
+  "dsh/LEGACY_UPSTREAM.json",
   "dsh/UPSTREAM_LICENSE",
   "dsh/prepare.sh",
   "dsh/run.sh",
   "dsh/verify.sh",
   "dsh/patch_upstream.py",
   "dsh/src/*.ts",
-    "dsh/frontend/*.ts",
+  "dsh/operator/index.js",
+  "dsh/operator/client.js",
+  "dsh/operator/updates.js",
+  "dsh/operator/transport.js",
+  "dsh/operator/package.json",
+  "dsh/operator/cordis.patch.yml",
+  "dsh/operator/README*.md",
+  "dsh/operator/LICENSE",
+  "dsh/frontend/*.ts",
   "dsh/frontend/*.json",
   "dsh/fixtures/*.json",
 ]

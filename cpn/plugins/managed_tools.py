@@ -6,7 +6,7 @@ pretend that caller is a native-plugin component firing.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 import hashlib
 import json
 from concurrent.futures import Future
@@ -16,7 +16,7 @@ from types import MappingProxyType
 from typing import Any, Iterable, Mapping
 
 from .api import (
-    PluginError, ResourceView, canonical, frozen, json_copy, symbol, validate,
+    PluginError, ResourceView, canonical, frozen, json_copy, symbol, validate, version,
 )
 from .catalog import BoundPlugin, PluginCatalog
 from .host import capability_value
@@ -30,6 +30,9 @@ CATALOG_SCHEMA_VERSION = "rpnh/managed_native_plugin_tool_catalog/v2"
 INVOCATION_PROTOCOL = "rpnh/managed_native_plugin_tool_invocation/v2"
 RECEIPT_SCHEMA_VERSION = "rpnh/managed_native_plugin_tool_receipt/v2"
 RESULT_SCHEMA_VERSION = "rpnh/managed_native_plugin_tool_result/v2"
+VERSIONED_CATALOG_SCHEMA_VERSION = "rpnh/managed_native_plugin_tool_catalog/v3"
+VERSIONED_INVOCATION_PROTOCOL = "rpnh/managed_native_plugin_tool_invocation/v3"
+VERSIONED_RECEIPT_SCHEMA_VERSION = "rpnh/managed_native_plugin_tool_receipt/v3"
 
 
 class ManagedPluginInvocationConflict(PluginError):
@@ -61,9 +64,12 @@ class ManagedToolSelector:
     selector: str
     description: str | None = None
     input_schema: Mapping[str, Any] | None = None
+    descriptor_revision: str | None = None
 
     def __post_init__(self) -> None:
         symbol(self.name)
+        if self.descriptor_revision is not None:
+            version(self.descriptor_revision)
         if not isinstance(self.selector, str) or self.selector.count("/") != 1:
             raise PluginError(
                 "managed tool selector must be plugin_name/operation_name")
@@ -122,7 +128,7 @@ class ManagedToolDeclaration:
                 "contracts": json_copy(self.contracts),
             },
         }
-        if self.protocol_version == "v2":
+        if self.protocol_version in {"v2", "v3"}:
             document.update(
                 effect=self.effect,
                 max_result_bytes=self.max_result_bytes)
@@ -140,10 +146,10 @@ def _allowlist_rows(
             if isinstance(value, str):
                 expanded.append((name, value))
             elif isinstance(value, Mapping) and set(value).issubset({
-                    "selector", "description", "input_schema"}):
+                    "selector", "description", "input_schema", "descriptor_revision"}):
                 expanded.append(ManagedToolSelector(
                     name, value.get("selector"), value.get("description"),
-                    value.get("input_schema")))
+                    value.get("input_schema"), value.get("descriptor_revision")))
             else:
                 raise PluginError(
                     "managed tool mapping values require an exact selector declaration")
@@ -179,7 +185,8 @@ def _allowlist_rows(
 class ManagedPluginToolCatalog:
     """Immutable allowlist projection of a selected :class:`PluginCatalog`."""
 
-    plugin_catalog_digest: str
+    plugin_catalog_digest: str | None
+    plugin_catalog_identity: Mapping[str, Any] | None
     protocol_version: str
     tools: tuple[ManagedToolDeclaration, ...]
     _bindings: Mapping[str, tuple[BoundPlugin, Any]] = field(
@@ -197,8 +204,10 @@ class ManagedPluginToolCatalog:
     ) -> None:
         if not isinstance(plugin_catalog, PluginCatalog):
             raise PluginError("managed tools require an exact PluginCatalog")
-        if protocol_version not in {"v1", "v2"}:
+        if protocol_version not in {"v1", "v2", "v3"}:
             raise PluginError("managed tool protocol version is unsupported")
+        if plugin_catalog.versioned != (protocol_version == "v3"):
+            raise PluginError("managed protocol and plugin identity versions must agree")
         rows = _allowlist_rows(allowlist)
         try:
             effects = tuple(admitted_effects)
@@ -220,6 +229,8 @@ class ManagedPluginToolCatalog:
         bindings: dict[str, tuple[BoundPlugin, Any]] = {}
         legacy_declarations: dict[str, ManagedToolDeclaration] = {}
         for row in rows:
+            if (row.descriptor_revision is not None) != (protocol_version == "v3"):
+                raise PluginError("versioned managed descriptors require an explicit revision")
             plugin, operation = plugin_catalog.resolve(row.selector)
             if operation.effect not in effects:
                 raise PluginError(
@@ -239,14 +250,17 @@ class ManagedPluginToolCatalog:
             description = (
                 operation.description if row.description is None
                 else row.description)
-            descriptor_digest = hashlib.sha256(canonical({
-                "name": row.name,
-                "description": description,
-                "input_schema": input_schema,
-            })).hexdigest()
+            descriptor_digest = None
+            if protocol_version != "v3":
+                descriptor_digest = hashlib.sha256(canonical({
+                    "name": row.name,
+                    "description": description,
+                    "input_schema": input_schema,
+                })).hexdigest()
 
             def declaration(version: str) -> ManagedToolDeclaration:
                 legacy = version == "v1"
+                versioned = version == "v3"
                 selected_description = (
                     operation.description if legacy else description)
                 selected_input = (
@@ -255,8 +269,9 @@ class ManagedPluginToolCatalog:
                     "selector": row.selector,
                     "plugin_name": plugin.definition.name,
                     "plugin_version": plugin.definition.version,
-                    "binding_digest": plugin.digest,
+                    **plugin.identity_fields(),
                     "operation": operation.descriptor(),
+                    **({"binding_descriptor": plugin.descriptor()} if versioned else {}),
                     **({} if legacy else {
                         "capability": capability_value(plugin, operation),
                     }),
@@ -266,24 +281,32 @@ class ManagedPluginToolCatalog:
                     if legacy else
                     f"{operation_key}/managed-tool/v2/{row.name}/"
                     f"{descriptor_digest}")
+                if versioned:
+                    registration_key = (
+                        f"{operation_key}/managed-tool/v3/{row.name}/"
+                        f"{row.descriptor_revision}")
                 identity = {
                     "implementation_id": "rpnh.managed_native_plugin_tool",
                     "revision": version,
+                    **({"descriptor_revision": row.descriptor_revision} if versioned else {}),
                     "provider_name": row.name,
                     "selector": row.selector,
                     "plugin_version": plugin.definition.version,
-                    "binding_digest": plugin.digest,
-                    "plugin_catalog_digest": plugin_catalog.digest,
+                    **plugin.identity_fields(),
+                    **plugin_catalog.identity_fields(),
                     **({} if legacy else {"effect": operation.effect}),
                 }
                 contracts = {
                     "invocation_protocol": (
                         LEGACY_INVOCATION_PROTOCOL
-                        if legacy else INVOCATION_PROTOCOL),
+                        if legacy else VERSIONED_INVOCATION_PROTOCOL
+                        if versioned else INVOCATION_PROTOCOL),
                     "provider_name": row.name,
                     "selector": row.selector,
-                    "plugin_catalog_digest": plugin_catalog.digest,
+                    **plugin_catalog.identity_fields(),
                     "managed_plugin": managed_binding,
+                    **({"provider_description": selected_description,
+                        "descriptor_revision": row.descriptor_revision} if versioned else {}),
                     "input_schema": json_copy(selected_input),
                     "output_schema": json_copy(operation.output_schema),
                     **({} if legacy else {
@@ -312,7 +335,10 @@ class ManagedPluginToolCatalog:
                 legacy_declarations[row.name] = declaration("v1")
             bindings[row.name] = (plugin, operation)
 
-        object.__setattr__(self, "plugin_catalog_digest", plugin_catalog.digest)
+        object.__setattr__(self, "plugin_catalog_digest",
+            None if plugin_catalog.versioned else plugin_catalog.digest)
+        object.__setattr__(self, "plugin_catalog_identity",
+            frozen(plugin_catalog.catalog_identity) if plugin_catalog.versioned else None)
         object.__setattr__(self, "protocol_version", protocol_version)
         object.__setattr__(self, "tools", tuple(declarations))
         object.__setattr__(self, "_bindings", MappingProxyType(bindings))
@@ -356,13 +382,19 @@ class ManagedPluginToolCatalog:
         self.declaration(name)
         return self._bindings[name]
 
+    def identity_fields(self) -> dict[str, Any]:
+        if self.protocol_version == "v3":
+            return {"plugin_catalog_identity": json_copy(self.plugin_catalog_identity)}
+        return {"plugin_catalog_digest": self.plugin_catalog_digest}
+
     def document(self) -> dict[str, Any]:
         return {
             "schema_version": (
                 LEGACY_CATALOG_SCHEMA_VERSION
                 if self.protocol_version == "v1" else
-                CATALOG_SCHEMA_VERSION),
-            "plugin_catalog_digest": self.plugin_catalog_digest,
+                VERSIONED_CATALOG_SCHEMA_VERSION if self.protocol_version == "v3"
+                else CATALOG_SCHEMA_VERSION),
+            **self.identity_fields(),
             "tools": [tool.document() for tool in self.tools],
         }
 
@@ -370,15 +402,18 @@ class ManagedPluginToolCatalog:
 @dataclass(frozen=True, slots=True)
 class _RegisteredManagedTool:
     name: str
-    plugin_catalog_digest: str
+    plugin_catalog_digest: str | None
     registration_key: str
+    plugin_catalog_identity: Mapping[str, Any] | None = None
 
     def __call__(self, *, service: "ManagedPluginInvocationService",
                  execution: Any, call_id: str, arguments: Mapping[str, Any],
                  interruption_requested=None) -> Mapping[str, Any]:
         if (not isinstance(service, ManagedPluginInvocationService)
                 or service.catalog.plugin_catalog_digest
-                != self.plugin_catalog_digest):
+                != self.plugin_catalog_digest
+                or canonical(service.catalog.plugin_catalog_identity)
+                != canonical(self.plugin_catalog_identity)):
             raise PluginError(
                 "managed invocation service differs from registered catalog")
         return service.invoke(
@@ -417,7 +452,7 @@ class ManagedPluginToolAdapter:
                 declaration.registration_key,
                 _RegisteredManagedTool(
                     declaration.name, self.catalog.plugin_catalog_digest,
-                    declaration.registration_key),
+                    declaration.registration_key, self.catalog.plugin_catalog_identity),
                 identity=declaration.identity,
                 contracts=declaration.contracts,
             )
@@ -428,6 +463,21 @@ def _resource_ref_payload(ref: Any) -> dict[str, str]:
         "resource_id": str(ref.resource_id),
         "resource_version_id": str(ref.resource_version_id),
     }
+
+
+def managed_call_receipt_refs(caller_execution_ref, caller_firing_ref, call_id):
+    """Original receipt identities, also used to verify settled projections.
+
+    This pure identity calculation grants no execution or read permission.
+    """
+    from cpn.rpnh.registry.publication import _stable_id
+    from cpn.rpnh.registry.resources import ResourceVersionRef
+    key = (f"managed-plugin:{caller_execution_ref.version_id}:"
+           f"{caller_firing_ref.version_id}:{call_id}")
+    logical = _stable_id("resource", key)
+    return key, {
+        phase: ResourceVersionRef(logical, _stable_id("resource_version", key, phase))
+        for phase in ("started", "returned", "failed", "outcome_unknown")}
 
 
 @dataclass(frozen=True, slots=True)
@@ -444,6 +494,9 @@ class PreparedManagedInvocation:
     timeout_seconds: float
     effect: str
     protocol_version: str
+    account_selection: Any = None
+    account_scope: Any = None
+    account_resolver: Any = field(default=None, repr=False, compare=False)
 
 
 @dataclass(frozen=True, slots=True)
@@ -459,23 +512,36 @@ class ManagedWorkerCompletion:
     error_code: str | None = None
     may_have_executed: bool = True
     observation_lost: bool = False
+    protocol_code: int | None = None
 
 
 def execute_prepared_invocation(prepared: PreparedManagedInvocation, *, cancelled):
     """Worker-only execution. Terminal validation/publication belong to finish."""
     from .worker import WorkerFailure, execute_worker
+    from .account_credentials import AccountCredentialError, resolve_account_fd
     try:
         if cancelled():
             return ManagedWorkerCompletion(
                 error_code="cancelled_before_start", may_have_executed=False)
-        output = execute_worker(
-            prepared.handler, pickle.loads(prepared.packet),
-            environment_names=prepared.environment_names,
-            timeout_seconds=prepared.timeout_seconds, cancelled=cancelled)
+        worker_arguments = {
+            "environment_names": prepared.environment_names,
+            "timeout_seconds": prepared.timeout_seconds, "cancelled": cancelled}
+        if prepared.account_resolver is None:
+            output = execute_worker(prepared.handler, pickle.loads(prepared.packet),
+                **worker_arguments)
+        else:
+            with resolve_account_fd(prepared.account_selection, prepared.account_scope,
+                    prepared.account_resolver) as credential:
+                output = execute_worker(prepared.handler, pickle.loads(prepared.packet),
+                    account_credential=credential, **worker_arguments)
         return ManagedWorkerCompletion(output=output)
+    except AccountCredentialError as exc:
+        return ManagedWorkerCompletion(error_code=exc.code, may_have_executed=False)
     except WorkerFailure as exc:
         return ManagedWorkerCompletion(
-            error_code=exc.code, may_have_executed=exc.may_have_executed)
+            error_code=exc.code, may_have_executed=exc.may_have_executed,
+            observation_lost=exc.observation_lost,
+            protocol_code=exc.protocol_code)
     except Exception:
         return ManagedWorkerCompletion(
             error_code="worker_observation_lost", observation_lost=True)
@@ -529,7 +595,8 @@ class ManagedPluginInvocationService:
             return coordinator
 
     def __init__(self, owner: Any, kernel: Any, repository: Any,
-                 catalog: ManagedPluginToolCatalog) -> None:
+                 catalog: ManagedPluginToolCatalog, *,
+                 account_resolvers: Mapping[str, Any] | None = None) -> None:
         from cpn.rpnh.run import RunOwner
         from cpn.rpnh.registry.operation_repository import (
             RegistryOperationAuthorityRepository,
@@ -558,6 +625,18 @@ class ManagedPluginInvocationService:
         self.kernel = kernel
         self.repository = repository
         self.catalog = catalog
+        from .account_credentials import InstalledAccountResolver
+        if account_resolvers is not None and not isinstance(account_resolvers, Mapping):
+            raise TypeError("account resolvers require an explicit HOST mapping")
+        resolvers = dict(account_resolvers or {})
+        for name, resolver in resolvers.items():
+            declaration = catalog.declaration(name)
+            plugin, _operation = catalog.binding(name)
+            if (declaration.protocol_version != "v3"
+                    or type(resolver) is not InstalledAccountResolver
+                    or plugin.environment):
+                raise PluginError("account tools require versioned bindings and no ambient environment")
+        self.account_resolvers = MappingProxyType(resolvers)
 
     def _enter_active_call(self, key: str):
         active_key = (id(self.core), key)
@@ -584,6 +663,14 @@ class ManagedPluginInvocationService:
 
         execution = verify_operation_execution(
             self.core, self.kernel, self.repository, execution)
+        # Verification checks the durable lease but returns the supplied wrapper.
+        # Consume current Registry inputs/context, never wrapper projections.
+        from cpn.rpnh.registry.operations import hydrate_operation_authority
+        supplied = execution.operation
+        current = hydrate_operation_authority(self.repository,
+            input_plan=supplied.input_plan,
+            petri_inputs=tuple(item.artifact for item in supplied.inputs))
+        execution = replace(execution, operation=current)
         operation = execution.operation
         if declaration.registration_key not in operation.spec.allowed_tool_ids:
             raise OperationAuthorityError(
@@ -612,15 +699,17 @@ class ManagedPluginInvocationService:
         }
         implementation = self.owner.registration.resolve(
             "tool", declaration.registration_key)
-        if (registered != expected
-                or compiled.registrations["tool"].get(
-                    declaration.registration_key) != registered
+        if (canonical(registered) != canonical(expected)
+                or canonical(compiled.registrations["tool"].get(
+                    declaration.registration_key)) != canonical(registered)
                 or not isinstance(implementation, _RegisteredManagedTool)
                 or implementation.name != declaration.name
                 or implementation.registration_key
                 != declaration.registration_key
                 or implementation.plugin_catalog_digest
-                != self.catalog.plugin_catalog_digest):
+                != self.catalog.plugin_catalog_digest
+                or canonical(implementation.plugin_catalog_identity)
+                != canonical(self.catalog.plugin_catalog_identity)):
             raise OperationAuthorityError(
                 "managed tool differs from exact HOST registration")
         return execution
@@ -633,7 +722,8 @@ class ManagedPluginInvocationService:
             "schema_version": (
                 LEGACY_RECEIPT_SCHEMA_VERSION
                 if declaration.protocol_version == "v1" else
-                RECEIPT_SCHEMA_VERSION),
+                VERSIONED_RECEIPT_SCHEMA_VERSION if declaration.protocol_version == "v3"
+                else RECEIPT_SCHEMA_VERSION),
             "caller_execution_ref": ref_payload(
                 execution.operation_execution_lease_ref),
             "caller_firing_ref": ref_payload(
@@ -645,24 +735,19 @@ class ManagedPluginInvocationService:
                 "contracts": json_copy(declaration.contracts),
             },
             "selector": declaration.selector,
-            "plugin_catalog_digest": self.catalog.plugin_catalog_digest,
-            "binding_digest": declaration.identity["binding_digest"],
+            **self.catalog.identity_fields(),
+            **({"binding_identity": json_copy(declaration.identity["binding_identity"])}
+               if declaration.protocol_version == "v3" else
+               {"binding_digest": declaration.identity["binding_digest"]}),
+            **({"account_selection": self.account_resolvers[declaration.name].selection.to_dict()}
+               if declaration.name in self.account_resolvers else {}),
             "arguments": json_copy(arguments),
             "producer_invocation_ref": ref_payload(context.invocation_ref),
         }
 
     def _refs(self, execution: Any, call_id: str):
-        from cpn.rpnh.registry.publication import _stable_id
-        from cpn.rpnh.registry.resources import ResourceVersionRef
-        key = (
-            f"managed-plugin:{execution.operation_execution_lease_ref.version_id}:"
-            f"{execution.operation.firing.transition_firing_ref.version_id}:{call_id}")
-        logical = _stable_id("resource", key)
-        return key, {
-            phase: ResourceVersionRef(
-                logical, _stable_id("resource_version", key, phase))
-        for phase in ("started", "returned", "failed", "outcome_unknown")
-        }
+        return managed_call_receipt_refs(execution.operation_execution_lease_ref,
+            execution.operation.firing.transition_firing_ref, call_id)
 
     def _read_receipt(self, execution: Any, key: str, ref: Any,
                       phase: str) -> dict[str, Any] | None:
@@ -802,23 +887,34 @@ class ManagedPluginInvocationService:
                 declaration, call_id, output, refs["started"], refs["returned"],
                 admitted_at)
         if failed is not None:
-            if (set(failed) != set(terminal_base) | {"state", "error_code"}
+            fields = set(terminal_base) | {"state", "error_code"}
+            if "protocol_code" in failed:
+                fields.add("protocol_code")
+            if (set(failed) != fields
                     or any(canonical(failed.get(name)) != canonical(value)
                            for name, value in terminal_base.items())
                     or not isinstance(failed.get("error_code"), str)
-                    or not failed["error_code"]):
+                    or not failed["error_code"]
+                    or ("protocol_code" in failed
+                        and type(failed["protocol_code"]) is not int)):
                 raise ManagedPluginInvocationConflict(
                     "managed failed receipt differs from its started claim")
             raise ManagedPluginInvocationFailed(
                 failed["error_code"], evidence=self._failure_result(
                     declaration, call_id, failed["error_code"], "failed",
-                    refs["started"], refs["failed"], admitted_at))
+                    refs["started"], refs["failed"], admitted_at,
+                    protocol_code=failed.get("protocol_code")))
         if unknown is not None:
-            if (set(unknown) != set(terminal_base) | {"state", "error_code"}
+            fields = set(terminal_base) | {"state", "error_code"}
+            if "protocol_code" in unknown:
+                fields.add("protocol_code")
+            if (set(unknown) != fields
                     or any(canonical(unknown.get(name)) != canonical(value)
                            for name, value in terminal_base.items())
                     or not isinstance(unknown.get("error_code"), str)
-                    or not unknown["error_code"]):
+                    or not unknown["error_code"]
+                    or ("protocol_code" in unknown
+                        and type(unknown["protocol_code"]) is not int)):
                 raise ManagedPluginInvocationConflict(
                     "managed outcome-unknown receipt differs from its started claim")
             raise ManagedPluginInvocationReconciliationRequired(
@@ -826,7 +922,8 @@ class ManagedPluginInvocationService:
                 evidence=self._failure_result(
                     declaration, call_id, unknown["error_code"],
                     "outcome_unknown", refs["started"],
-                    refs["outcome_unknown"], admitted_at))
+                    refs["outcome_unknown"], admitted_at,
+                    protocol_code=unknown.get("protocol_code")))
         if not legacy:
             error_code = "managed_terminal_observation_missing"
             self._terminal(
@@ -873,7 +970,7 @@ class ManagedPluginInvocationService:
             resources[name].payload,
             resources[name].media_type,
             f"managed-plugin-resource:{plugin.definition.name}:{name}",
-            plugin.digest,
+            resources[name].revision if plugin.versioned else plugin.digest,
         ) for name in operation.resources)
         return {
             "context": {
@@ -927,7 +1024,7 @@ class ManagedPluginInvocationService:
             "started_receipt_ref": _resource_ref_payload(started_ref),
             "terminal_receipt_ref": _resource_ref_payload(terminal_ref),
         }
-        if declaration.protocol_version == "v2":
+        if declaration.protocol_version in {"v2", "v3"}:
             result.update(
                 effect=declaration.effect,
                 outcome="returned",
@@ -939,7 +1036,8 @@ class ManagedPluginInvocationService:
             declaration: ManagedToolDeclaration, call_id: str, code: str,
             outcome: str, started_ref: Any,
             terminal_ref: Any | None,
-            admitted_at_utc: str | None) -> dict[str, Any]:
+            admitted_at_utc: str | None, *,
+            protocol_code: int | None = None) -> dict[str, Any]:
         return {
             "schema_version": RESULT_SCHEMA_VERSION,
             "name": declaration.name,
@@ -947,7 +1045,8 @@ class ManagedPluginInvocationService:
             "call_id": call_id,
             "effect": declaration.effect,
             "outcome": outcome,
-            "error": {"code": code},
+            "error": {"code": code, **({} if protocol_code is None else {
+                "protocol_code": protocol_code})},
             "admitted_at_utc": admitted_at_utc,
             "started_receipt_ref": _resource_ref_payload(started_ref),
             "terminal_receipt_ref": (
@@ -998,10 +1097,34 @@ class ManagedPluginInvocationService:
                     self._leave_active_call(key, active)
                     return ManagedInvocationObservation(active.future)
                 self._check_reconciliation_block(execution, key)
+                resolver = self.account_resolvers.get(name)
+                requirement = operation.account_requirement
+                if requirement is not None:
+                    from .account_credentials import AccountCredentialError
+                    # A terminal receipt has already been handled above. Only
+                    # a new claim requires this declared account association;
+                    # the original resolver still checks current use at dispatch.
+                    if plugin.environment:
+                        raise AccountCredentialError("account_environment_rejected")
+                    if resolver is None:
+                        raise AccountCredentialError("account_required")
+                    if (resolver.selection.service_id != requirement["service_id"]
+                            or resolver.selection.slot != requirement["slot"]):
+                        raise AccountCredentialError("account_requirement_mismatch")
+                selection = scope = None
+                if resolver is not None:
+                    from .account_credentials import _account_scope_from_authorized
+                    selection = resolver.selection
+                    scope = _account_scope_from_authorized(
+                        self, execution, declaration, selection, call_id=call_id)
                 # Build all bounded worker material before the durable claim.
-                packet = pickle.dumps(self._packet(
+                worker_packet = self._packet(
                     execution, declaration.selector, plugin, operation,
-                    call_id, arguments))
+                    call_id, arguments)
+                if selection is not None:
+                    worker_packet.update(account_selection=selection.to_dict(),
+                        account_scope=scope.to_dict())
+                packet = pickle.dumps(worker_packet)
                 if not self._claim(
                         execution, declaration, call_id, arguments, key, refs):
                     result = self._existing(
@@ -1015,7 +1138,7 @@ class ManagedPluginInvocationService:
                     frozen(_resource_ref_payload(refs["started"])),
                     packet, operation.handler, tuple(plugin.environment),
                     operation.timeout_seconds, declaration.effect,
-                    declaration.protocol_version)
+                    declaration.protocol_version, selection, scope, resolver)
                 active.prepared = prepared
                 active.execution = execution
                 active.declaration = declaration
@@ -1082,6 +1205,9 @@ class ManagedPluginInvocationService:
                     raise ManagedPluginInvocationConflict("finish admission receipt changed")
                 if not isinstance(completion, ManagedWorkerCompletion):
                     raise TypeError("finish requires a worker completion")
+                if (completion.protocol_code is not None
+                        and type(completion.protocol_code) is not int):
+                    raise TypeError("finish requires an integer protocol code")
                 code = completion.error_code
                 output = completion.output
                 if code is None:
@@ -1098,7 +1224,11 @@ class ManagedPluginInvocationService:
                 self._terminal(
                     execution, declaration, active.call_id, active.arguments,
                     prepared.receipt_key, active.refs, phase,
-                    **({"output": output} if code is None else {"error_code": code}))
+                    **({"output": output} if code is None else {
+                        "error_code": code,
+                        **({} if completion.protocol_code is None else {
+                            "protocol_code": completion.protocol_code}),
+                    }))
                 # Reuse the exact durable replay parser for success and failure.
                 result = self._existing(
                     execution, declaration, active.call_id, active.arguments,
@@ -1196,3 +1326,4 @@ __all__ = (
     "ManagedPluginInvocationFailed",
     "build_managed_plugin_tool_catalog",
 )
+

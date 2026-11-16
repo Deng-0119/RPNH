@@ -97,7 +97,7 @@ class ManagedSchedulerPolicy:
                 else ("pure", "external_read", "external_write"))
 
     def validate_declaration(self, declaration):
-        if declaration.protocol_version != "v2" or declaration.effect not in self.admitted_effects:
+        if declaration.protocol_version not in {"v2", "v3"} or declaration.effect not in self.admitted_effects:
             raise PluginError("managed declaration is outside the scheduler policy")
         for entry in self.conflict_domains:
             if entry.registration_key == declaration.registration_key and entry.effect != declaration.effect:
@@ -303,7 +303,7 @@ class ManagedToolScheduler:
                         running[prepared.future] = (call, None, None)
                     elif isinstance(prepared, PreparedManagedInvocation):
                         if (prepared.effect not in self.policy.admitted_effects
-                                or prepared.protocol_version != "v2"):
+                                or prepared.protocol_version not in {"v2", "v3"}):
                             completion = ManagedWorkerCompletion(
                                 error_code="scheduler_policy_not_admitted", may_have_executed=False)
                             record(call, result=finish(prepared, completion))
@@ -335,3 +335,4 @@ class ManagedToolScheduler:
         return ManagedToolBatchResult(
             tuple(outcomes[c.ordinal] for c in sorted(calls, key=lambda c: c.ordinal)),
             unknown, was_cancelled)
+

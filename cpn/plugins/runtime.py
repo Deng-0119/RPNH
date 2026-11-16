@@ -9,6 +9,7 @@ from pathlib import Path
 from .api import canonical, validate
 from .catalog import PluginCatalog
 from .host import (BINDING_SCHEMA, COMPONENT_KEY, TERMINAL_KEY,
+                   binding_schema, component_key,
                    operation_config, register_plugins, schema_key)
 
 
@@ -18,10 +19,11 @@ def build_plugin_module(catalog: PluginCatalog, selector: str):
     config = operation_config(catalog, selector)
     request_schema = schema_key(catalog, selector, "input")
     result_schema = schema_key(catalog, selector, "output")
+    selected_binding_schema = binding_schema(catalog)
     return ModuleDeclaration.from_dict({
         "schema_version": "rpnh/module_declaration/v1", "name": "NativePluginTask",
-        "components": [{"name": "plugin", "key": COMPONENT_KEY,
-            "config_schema": BINDING_SCHEMA, "config": config,
+        "components": [{"name": "plugin", "key": component_key(catalog),
+            "config_schema": selected_binding_schema, "config": config,
             "ports": [{"name": "request", "direction": "input", "schema": request_schema},
                       {"name": "result", "direction": "output", "schema": result_schema}],
             "operations": [{"name": "run", "executor": catalog.operation_key(selector),
@@ -34,7 +36,7 @@ def build_plugin_module(catalog: PluginCatalog, selector: str):
         "exit": {"result": {"component": "plugin", "port": "result"}},
         "terminal": {"key": TERMINAL_KEY, "source": {"component": "plugin", "port": "result"},
                      "operation": "run", "outcome": "complete", "config": {"run_outcome": "complete"}},
-        "required_schemas": [BINDING_SCHEMA, request_schema, result_schema,
+        "required_schemas": [selected_binding_schema, request_schema, result_schema,
                              schema_key(catalog, selector, "capability")],
         "budgets": {}, "budget_buckets": [{"bucket_id": "plugin", "budget_scope": "module",
                                            "finalization_scope": None, "max_attempts": 1}],
@@ -95,7 +97,8 @@ def run_plugin(catalog: PluginCatalog, selector: str, arguments, *, run_dir: Pat
             kernel, _ = owner.operation_repository()
             output = json.loads(kernel._read_registered(ResourceVersionRef(ref.entity_id, ref.version_id)))
         return {"schema_version": "rpnh/native_plugin_task_result/v1", "selector": selector,
-                "catalog_digest": catalog.digest, "run_dir": str(run_dir),
+                **({"catalog_identity": catalog.catalog_identity} if catalog.versioned else
+                   {"catalog_digest": catalog.digest}), "run_dir": str(run_dir),
                 "stop_reason": result.stop_reason, "output": output,
                 "terminal_evidence_ref": None if result.terminal_evidence_ref is None else ref_payload(result.terminal_evidence_ref),
                 "actual_model_call_counts": list(owner._core.event_store.actual_model_call_counts())}
@@ -103,3 +106,4 @@ def run_plugin(catalog: PluginCatalog, selector: str, arguments, *, run_dir: Pat
         loop.close()
         if previous is not None:
             signal.signal(signal.SIGINT, previous)
+

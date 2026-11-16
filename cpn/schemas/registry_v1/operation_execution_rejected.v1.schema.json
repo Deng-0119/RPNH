@@ -1,0 +1,216 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "registry_v1/operation_execution_rejected/v1",
+  "title": "Exact prepared material nonpublication closure",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*/v[1-9][0-9]*$"
+        },
+        "logical_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+        },
+        "version_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+        }
+      },
+      "required": [
+        "entity_type",
+        "logical_id",
+        "version_id"
+      ]
+    }
+  },
+  "properties": {
+    "firing_rejection_ref": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/ref"
+        },
+        {
+          "properties": {
+            "entity_type": {
+              "const": "firing_rejection/v1"
+            }
+          }
+        }
+      ]
+    },
+    "owner_command_ref": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/ref"
+        },
+        {
+          "properties": {
+            "entity_type": {
+              "const": "resource_version/v1"
+            }
+          }
+        }
+      ]
+    },
+    "transition_firing_ref": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/ref"
+        },
+        {
+          "properties": {
+            "entity_type": {
+              "const": "transition_firing/v1"
+            }
+          }
+        }
+      ]
+    },
+    "invocation_ref": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/ref"
+        },
+        {
+          "properties": {
+            "entity_type": {
+              "const": "invocation/v1"
+            }
+          }
+        }
+      ]
+    },
+    "operation_execution_lease_ref": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/ref"
+        },
+        {
+          "properties": {
+            "entity_type": {
+              "const": "operation_execution_lease/v1"
+            }
+          }
+        }
+      ]
+    },
+    "retained_checkpoint_ref": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/ref"
+        },
+        {
+          "properties": {
+            "entity_type": {
+              "const": "marking_checkpoint/v1"
+            }
+          }
+        }
+      ]
+    },
+    "registered_completion_event_id": {
+      "type": "string",
+      "pattern": "^event:[a-f0-9]{32}$"
+    },
+    "reason": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "type": "string",
+          "minLength": 1
+        },
+        "message": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "code",
+        "message"
+      ]
+    },
+    "disposition": {
+      "const": "abandon"
+    },
+    "execution_children": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "execution_instance_ref": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/ref"
+              },
+              {
+                "properties": {
+                  "entity_type": {
+                    "const": "execution_instance/v1"
+                  }
+                }
+              }
+            ]
+          },
+          "terminal_checkpoint_ref": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/ref"
+              },
+              {
+                "properties": {
+                  "entity_type": {
+                    "const": "execution_checkpoint/v1"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "required": [
+          "execution_instance_ref",
+          "terminal_checkpoint_ref"
+        ]
+      }
+    },
+    "sealed_resource_lifecycle_refs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "allOf": [
+          {
+            "$ref": "#/definitions/ref"
+          },
+          {
+            "properties": {
+              "entity_type": {
+                "const": "resource_access_lifecycle/v1"
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "required": [
+    "firing_rejection_ref",
+    "owner_command_ref",
+    "transition_firing_ref",
+    "invocation_ref",
+    "operation_execution_lease_ref",
+    "retained_checkpoint_ref",
+    "registered_completion_event_id",
+    "reason",
+    "disposition",
+    "execution_children",
+    "sealed_resource_lifecycle_refs"
+  ]
+}

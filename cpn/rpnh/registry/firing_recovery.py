@@ -40,6 +40,7 @@ class RegisteredOperationFiringRecovery:
     completion_payload: Mapping[str, object]
     stale_writer_fencing_epoch: int
     checkpoint_reentry: bool = False
+    material_recovery_scope: object | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -172,8 +173,8 @@ def _reject_conflicting_lifecycle(
         firing_ref: VersionRef, lease_ref: VersionRef,
 ) -> None:
     publication = core.event_store.firing_publication_for_invocation(invocation_ref.version_id)
-    if publication is not None and publication["state"] == "SUPERSEDED":
-        raise ResourceIntegrityFault("registered-operation recovery has a superseded firing")
+    if publication is not None and publication["state"] in {"SUPERSEDED", "REJECTED"}:
+        raise ResourceIntegrityFault("registered-operation recovery has a closed unpublished firing")
     terminal_types = {
         "operation_terminal_ready/v1", "invocation_settled/v1",
         "transition_firing_settled/v1",
@@ -183,6 +184,7 @@ def _reject_conflicting_lifecycle(
         "invocation_superseded_by_native_resume/v1",
         "transition_firing_superseded_by_native_resume/v1",
         "operation_dispatch_superseded_by_native_resume/v1",
+        "transition_firing_rejected/v1", "operation_execution_rejected/v1",
     }
     aggregate_ids = {
         str(invocation_ref.entity_id), str(firing_ref.entity_id),
@@ -199,13 +201,15 @@ def _reject_conflicting_lifecycle(
                 "registered-operation recovery has a terminal conflict")
 
 
-def _has_later_writer_events(core: _RegistryCore, stale_epoch: int) -> bool:
+def _has_later_writer_events(core: _RegistryCore, stale_epoch: int, *, material_firing_ref=None) -> bool:
     """Reject a consumed writer generation only when it published facts."""
 
-    return any(
-        isinstance(event.writer_fencing_epoch, int)
-        and event.writer_fencing_epoch > stale_epoch
-        for event in core.event_store.list_events())
+    from ._event_store.material_recovery import has_unrelated_later_writer_events
+    with core.event_store.connect() as db:
+        db.execute("BEGIN")
+        return has_unrelated_later_writer_events(core.event_store, db,
+            task_id=core.task_id, stale_epoch=stale_epoch,
+            firing_ref=(None if material_firing_ref is None else _ref_payload(material_firing_ref)))
 
 
 _LLM_OWNER_INTERRUPTION_TYPES = frozenset({
@@ -274,10 +278,18 @@ def _validate_recovery_shape(
         expected_firing=None, completion_required: bool = True,
         allow_owner_interruption: bool = False,
         checkpoint_reentry: bool = False,
+        material_recovery_scope=None,
 ) -> tuple[object, EventEnvelope | None, int]:
     from .module_execution import active_module_firings
     from .module_runtime import hydrate_module_runtime
 
+    if material_recovery_scope is not None:
+        from ..material_recovery import validate_material_recovery_scope
+        validate_material_recovery_scope(core, material_recovery_scope, current_run=current_run)
+        if (checkpoint_reentry or not completion_required or allow_owner_interruption
+                or expected_firing is None
+                or expected_firing.transition_firing_ref != material_recovery_scope.firing_ref):
+            raise ResourceIntegrityFault("material recovery differs from its exact selected completion")
     executable, _structure, marking = hydrate_module_runtime(core)
     all_active = active_module_firings(
         core, executable.net_ref, require_current_writer=False)
@@ -301,7 +313,7 @@ def _validate_recovery_shape(
             "running run recovery lacks the selected active firing"
             if checkpoint_reentry else
             "running run recovery requires exactly one active firing")
-    if not checkpoint_reentry and len(all_active) != 1:
+    if not checkpoint_reentry and material_recovery_scope is None and len(all_active) != 1:
         raise ResourceIntegrityFault(
             "running run recovery requires exactly one active firing")
     firing = active[0]
@@ -309,6 +321,8 @@ def _validate_recovery_shape(
     lease_ref = None
     admission = kernel._exact_object(
         firing.firing_admission_ref, expected_type="firing_admission/v1")
+    if checkpoint_reentry and admission.metadata.get("owner_command_ref") is not None:
+        raise ResourceIntegrityFault("material completion recovery cannot substitute checkpoint reentry")
     try:
         invocation_ref = _version_from_payload(admission.metadata["invocation_ref"])
         lease_ref = _version_from_payload(
@@ -345,7 +359,8 @@ def _validate_recovery_shape(
         else stale_epoch < current_epoch)
     later_events_valid = (
         checkpoint_reentry
-        or not _has_later_writer_events(core, stale_epoch)
+        or not _has_later_writer_events(core, stale_epoch,
+            material_firing_ref=(firing.transition_firing_ref if completion_required else None))
         or (allow_owner_interruption
             and _only_later_owner_interruption_events(
                 core, stale_epoch, invocation_ref=invocation_ref)))
@@ -369,7 +384,7 @@ def _validate_recovery_shape(
                 != stale_epoch))
             or current_run.get("latest_checkpoint_ref")
             != _ref_payload(marking.checkpoint_ref)
-            or (not checkpoint_reentry
+            or (not checkpoint_reentry and material_recovery_scope is None
                 and marking.checkpoint_ref
                 != firing.admission_marking_checkpoint_ref)
             or current_run.get("declaration_ref")
@@ -511,20 +526,24 @@ def classify_registered_operation_recovery(
             [VersionRef, ResourceVersionRef], HistoricalPetriInputArtifact],
         expected_firing=None,
         checkpoint_reentry: bool = False,
+        material_recovery_scope=None,
 ) -> RegisteredOperationFiringRecovery:
     """Classify and fully hydrate recoverable material on a read-only writer."""
 
+    terminal_scope = (material_recovery_scope is not None and not checkpoint_reentry
+        and current_run.get("status") == "terminal" and current_run.get("terminal_evidence_ref") is not None)
     if (not isinstance(core, _RegistryCore) or not core.read_only
-            or current_run.get("status") not in (
+            or (not terminal_scope and (current_run.get("status") not in (
                 {"running", "stopped_by_owner"} if checkpoint_reentry else {"running"})
-            or current_run.get("terminal_evidence_ref") is not None
+                or current_run.get("terminal_evidence_ref") is not None))
             or not callable(historical_input)):
         raise ResourceIntegrityFault(
             "registered-operation recovery requires one running read-only run")
     firing, event, stale_epoch = _validate_recovery_shape(
         core, kernel, current_run=current_run,
         expected_firing=expected_firing,
-        checkpoint_reentry=checkpoint_reentry)
+        checkpoint_reentry=checkpoint_reentry,
+        material_recovery_scope=material_recovery_scope)
     if event is None:
         raise ResourceIntegrityFault(
             "registered-operation completion recovery lacks its event")
@@ -573,12 +592,23 @@ def classify_registered_operation_recovery(
                 != _ref_payload(candidate[1])):
             raise ResourceIntegrityFault(
                 "recoverable completion lacks its exact map-ready candidate")
+    admission = kernel._exact_object(firing.firing_admission_ref, expected_type="firing_admission/v1")
+    if admission.metadata.get("owner_command_ref") is not None:
+        if checkpoint_reentry:
+            raise ResourceIntegrityFault("material completion recovery requires its exact budget scope")
+        if material_recovery_scope is None:
+            # The ordinary single-active and original checkpoint checks above
+            # still apply before minting a material scope for that old entry.
+            from ..material_recovery import _mint_scope
+            material_recovery_scope = _mint_scope(core,
+                _version_from_payload(admission.metadata["owner_command_ref"]), firing.transition_firing_ref)
     return RegisteredOperationFiringRecovery(
         outputs=outputs,
         completion_event_id=event.event_id,
         completion_payload=payload,
         stale_writer_fencing_epoch=stale_epoch,
         checkpoint_reentry=checkpoint_reentry,
+        material_recovery_scope=material_recovery_scope,
     )
 
 
@@ -873,25 +903,31 @@ def recover_registered_operation_completion(
         recovery: RegisteredOperationFiringRecovery, *,
         current_run: Mapping[str, object], idempotency_key: str,
         registration=None, candidate_publisher=None,
-        workspace_plans=(),
+        workspace_plans=(), material_result_stager=None,
 ):
     """Settle one exact stale completion under the sole new writer."""
 
+    terminal_scope = (isinstance(recovery, RegisteredOperationFiringRecovery)
+        and recovery.material_recovery_scope is not None and not recovery.checkpoint_reentry
+        and current_run.get("status") == "terminal" and current_run.get("terminal_evidence_ref") is not None)
     if (not isinstance(recovery, RegisteredOperationFiringRecovery)
             or core.read_only
             or core.writer_epoch <= recovery.stale_writer_fencing_epoch
             or (not recovery.checkpoint_reentry
                 and _has_later_writer_events(
-                    core, recovery.stale_writer_fencing_epoch))
-            or current_run.get("status") not in (
-                {"running", "stopped_by_owner"} if recovery.checkpoint_reentry else {"running"})):
+                    core, recovery.stale_writer_fencing_epoch,
+                    material_firing_ref=(recovery.outputs.execution.operation.firing.transition_firing_ref
+                        if recovery.material_recovery_scope is not None else None)))
+            or (not terminal_scope and current_run.get("status") not in (
+                {"running", "stopped_by_owner"} if recovery.checkpoint_reentry else {"running"}))):
         raise ResourceIntegrityFault(
             "registered-operation recovery requires the immediate new writer")
     _firing, event, stale_epoch = _validate_recovery_shape(
         core, kernel, current_run=current_run,
         expected_event_payload=recovery.completion_payload,
         expected_firing=recovery.outputs.execution.operation.firing,
-        checkpoint_reentry=recovery.checkpoint_reentry)
+        checkpoint_reentry=recovery.checkpoint_reentry,
+        material_recovery_scope=recovery.material_recovery_scope)
     if (event.event_id != recovery.completion_event_id
             or stale_epoch != recovery.stale_writer_fencing_epoch
             or registered_operation_completion_payload(
@@ -912,6 +948,9 @@ def recover_registered_operation_completion(
         workspace_plans=tuple(workspace_plans),
         resource_access_writer_epoch=stale_epoch,
         authorize_stale_lease_settlement=recovery.checkpoint_reentry,
+        material_result_stager=material_result_stager,
+        expected_registry_ordinal=(None if recovery.material_recovery_scope is None
+            else recovery.material_recovery_scope.registry_ordinal),
     )
 
 

@@ -2,6 +2,7 @@ import { Session, SessionId } from '@deepseek-ai/dsh-session'
 import type { SessionEvent } from '@deepseek-ai/dsh-session'
 import { MessageId } from '@deepseek-ai/dsh-llm'
 import type { SessionRow, Turn } from './rpc.ts'
+import type { SessionRequestId } from '../packages/api/session-controller/src/types.ts'
 
 export const ACTIVE_STATES = new Set(['accepted', 'pending_start', 'running', 'terminal'])
 export const SETTLED_STATES = new Set(['committed', 'stopped_by_owner', 'failed', 'interrupted'])
@@ -20,7 +21,10 @@ export function appendTurn(session: Session, id: string, turn: Turn): void {
   session.append('turn/start', { turn: turn.ordinal })
   session.append('user/message', {
     id: MessageId(`${id}:${turn.ordinal}:${turn.key}:user`), role: 'user',
-    content: [{ type: 'text', text: turn.text }], source: { kind: 'user' },
+    content: [{ type: 'text', text: turn.text }], source: { kind: 'user',
+      // This key is supplied by the RPNH owner, not a second frontend ledger.
+      ...(typeof turn.key === 'string' && turn.key.startsWith('explicit:')
+        ? { rpcId: turn.key.slice('explicit:'.length) as SessionRequestId } : {}) },
   }, { surfaceOp: 'append' })
   appendOutcome(session, id, turn)
 }

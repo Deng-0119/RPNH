@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "rpnh/installed_account_provider/v1",
+  "title": "Explicit installed account provider selection",
+  "description": "A non-secret HOST entry point and complete declared implementation identity. The handler field is compared only, never imported from this document.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "entry_point", "implementation"],
+  "properties": {
+    "schema_version": {"const": "rpnh/installed_account_provider/v1"},
+    "entry_point": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,127}$(?![\\s\\S])"},
+    "implementation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_version", "implementation_id", "revision", "handler"],
+      "properties": {
+        "schema_version": {"const": "rpnh/plugin_implementation/v2"},
+        "implementation_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,191}$(?![\\s\\S])"},
+        "revision": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$(?![\\s\\S])"},
+        "handler": {"type": "string", "minLength": 3, "maxLength": 512, "pattern": "^[A-Za-z_][A-Za-z0-9_]*(?:\\.[A-Za-z_][A-Za-z0-9_]*)+$(?![\\s\\S])"}
+      }
+    }
+  }
+}

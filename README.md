@@ -1,3 +1,5 @@
+> Source candidate: Linux/npm integration is under review. [Scope, evidence and remaining release work](docs/guides/linux-npm-candidate.md). This branch is not a published npm release.
+
 # RPNH Harness
 
 English | [中文](README_ZH.md)

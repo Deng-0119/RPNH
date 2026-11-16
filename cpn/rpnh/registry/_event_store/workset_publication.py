@@ -96,8 +96,8 @@ def _success(context, obj, body):
     invocation = _metadata(context, inv, "invocation/v1")
     _validate_registered_return(context, firing, invocation, result)
     predecessor = _metadata(context, checkpoint["previous_checkpoint_ref"], "marking_checkpoint/v1")
-    from ..normal_root_token_allocation import normal_root_allocation_scheme
-    ordinary_token_ref_scheme = normal_root_allocation_scheme(
+    from ..success_token_allocation import success_token_allocation_scheme
+    ordinary_token_ref_scheme = success_token_allocation_scheme(
         objects=context.objects, task_id=context.task_id, transaction_id=context.transaction_id,
         firing=firing, invocation=invocation, result=result, delta=delta,
         completion=completion, checkpoint=checkpoint,

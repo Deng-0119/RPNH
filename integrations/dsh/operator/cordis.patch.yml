@@ -4,4 +4,3 @@
       config:
         controlRoot: !!js process.env.RPNH_CONTROL_ROOT
         python: !!js process.env.RPNH_PYTHON
-

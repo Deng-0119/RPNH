@@ -49,11 +49,16 @@ def _native_capabilities(compiled: CompiledPetriNet) -> dict[str, dict[str, Any]
             continue
         declaration = operation.declaration
         binding = declaration.config.get("native_plugin")
+        versioned = isinstance(contract, Mapping) and contract.get("schema_version") == (
+            "rpnh/native_plugin_contract/v2")
+        identity_key = "binding_identity" if versioned else "binding_digest"
         if (not isinstance(contract, Mapping) or not isinstance(binding, Mapping)
                 or binding.get("selector") != contract.get("selector")
-                or binding.get("binding_digest") != contract.get("binding_digest")
-                or hashlib.sha256(canonical_json(binding["capability"])).hexdigest()
-                != contract.get("capability_sha256")):
+                or canonical_json(binding.get(identity_key)) != canonical_json(contract.get(identity_key))
+                or (canonical_json(binding["capability"]) != canonical_json(contract.get("capability"))
+                    if versioned else
+                    hashlib.sha256(canonical_json(binding["capability"])).hexdigest()
+                    != contract.get("capability_sha256"))):
             raise ValueError("native inspection binding differs from registered contract")
         port = binding["capability_port"]
         qualified = port if port in declaration.inputs else (
@@ -69,10 +74,11 @@ def _native_capabilities(compiled: CompiledPetriNet) -> dict[str, dict[str, Any]
             result[transition] = {
                 "selector": contract["selector"],
                 "plugin_version": binding["capability"]["plugin"]["version"],
-                "binding_digest": contract["binding_digest"],
+                identity_key: contract[identity_key],
                 "effect": contract["operation"]["effect"],
                 "place": place, "input_port": qualified,
-                "assets": [{k: a[k] for k in ("name", "media_type", "size_bytes", "sha256")}
+                "assets": [{k: a[k] for k in ("name", "media_type", "size_bytes",
+                                               "revision" if versioned else "sha256")}
                            for a in binding["capability"]["assets"]],
             }
     return result
@@ -344,13 +350,16 @@ def _native_receipt(core, firing_ref, invocation_ref, lease_ref, capability, pha
                 "native_plugin_execution": lease_ref["version_id"], "phase": phase}):
         raise ValueError("native inspection receipt has foreign provenance")
     body = json.loads(core.object_store.read_registered(prepared))
-    if (body.get("schema_version") != "rpnh/native_plugin_receipt/v1"
+    versioned = "binding_identity" in capability
+    identity_key = "binding_identity" if versioned else "binding_digest"
+    if (body.get("schema_version") != ("rpnh/native_plugin_receipt/v2" if versioned else
+                                      "rpnh/native_plugin_receipt/v1")
             or body.get("execution_ref") != lease_ref
             or body.get("firing_ref") != firing_ref
             or body.get("phase") != phase
             or body.get("selector") != capability["selector"]
             or (phase == "started"
-                and body.get("binding_digest") != capability["binding_digest"])):
+                and canonical_json(body.get(identity_key)) != canonical_json(capability[identity_key]))):
         raise ValueError("native inspection receipt differs from its firing/contract")
     return {
         "phase": phase,

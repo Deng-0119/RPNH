@@ -25,6 +25,7 @@
     },
     "default_reasoning_effort": {"$ref": "#/definitions/nullableIdentifier"},
     "normal_history_reasoning_replay": {"type": "boolean"},
+    "agent_task_settings": {"$ref": "#/definitions/agentTaskSettings"},
     "runtime": {"$ref": "#/definitions/runtimePolicy"}
   },
   "required": [
@@ -35,6 +36,23 @@
     "default_reasoning_effort"
   ],
   "definitions": {
+    "agentTaskSettings": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "main_turn": {"$ref": "#/definitions/taskSettings"},
+        "child_task": {"$ref": "#/definitions/taskSettings"}
+      }
+    },
+    "taskSettings": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "managed_bindings": {"type": "object"},
+        "managed_tool_policy": {"type": ["object", "null"]},
+        "tool_program_policy": {"type": ["object", "null"]},
+        "managed_accounts": {"type": ["object", "null"]},
+        "managed_account_provider": {"type": ["object", "null"]}
+      }
+    },
     "identifier": {
       "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"
     },

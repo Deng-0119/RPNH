@@ -186,6 +186,7 @@ class _Pending:
     marking: object
     owner_inputs: dict
     receipt: dict
+    candidate_net: dict
 
 
 def _blocked(receipt, reason, *, conflict=False):
@@ -391,7 +392,7 @@ def _pending(core, registration, reads, owner, cut, command_ref, command,
         from .pn_validation.runtime_gate import analyze_owner_preview
         analyze_owner_preview(owner, preview_owner_mapping(core, publication, marking, decision))
     return _Pending(cut, material, candidate_record, publication, command_ref, data,
-        arguments, compiled, marking, inputs, receipt)
+        arguments, compiled, marking, inputs, receipt, net)
 
 
 def resume_pending_edit(registration: Registration, *, run_dir, model_condition,
@@ -405,6 +406,8 @@ def resume_pending_edit(registration: Registration, *, run_dir, model_condition,
     alone is not a resumed session or a completed report. No suffix is executed.
     Ordinary resume_run eligibility is intact.
     """
+    from cpn.update_context import reject_candidate_runtime
+    reject_candidate_runtime()
     if (not isinstance(registration, Registration) or type(model_condition) is not str
             or not model_condition or type(edit_command_id) is not str or not edit_command_id):
         raise TypeError("pending edit recovery requires registration, exact model and command id")
@@ -415,6 +418,16 @@ def resume_pending_edit(registration: Registration, *, run_dir, model_condition,
     selected = _preflight(preflight, registration, **selector)
     if isinstance(selected, PendingEditResumeResult):
         return selected
+    # Only this exact candidate will become executable. The old base may be
+    # historical, and receipt-only outcomes above do not require its runtime.
+    # Reuse the original validated net and read cut; the writer pass below
+    # rechecks authority without probing a second time after taking a fence.
+    from .managed_contract_admission import require_selected_managed_contracts
+    from .tool_environment_admission import require_selected_tool_environment_paths
+    require_selected_managed_contracts(
+        preflight, selected.candidate_net, compiled=selected.compiled, registration=registration)
+    require_selected_tool_environment_paths(preflight, selected.candidate_net)
+    selected.cut.assert_unchanged(preflight)
     core = _RegistryCore(Path(run_dir), create=False, catalog=catalog)
     # No retry: acquiring a fence does not permit using changed preflight facts.
     checked = _preflight(core, registration, **selector)

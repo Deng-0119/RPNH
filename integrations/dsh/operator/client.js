@@ -4,7 +4,7 @@ window.__ModuleLoader__.load({
   factory(require) {
     const { createElement: h, useState, useEffect, useRef } = require('react')
     const upstreamVersion = '0.2.2-alpha.2'
-    const adaptationVersion = '0.1.0-rc.3'
+    const adaptationVersion = '0.1.0-rc.2'
     const updatePath = '/api/rpnh-operator/update'
     const label = 'RPNH 适配版'
     function BrandName() {
@@ -88,4 +88,3 @@ window.__ModuleLoader__.load({
     }
   },
 })
-

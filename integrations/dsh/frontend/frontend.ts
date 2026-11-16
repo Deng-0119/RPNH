@@ -14,7 +14,7 @@ export async function runDshFrontend(options: FrontendOptions): Promise<void> {
   const rpc = PipeRpc.fromFds(options.readFd, options.writeFd)
   try {
     const frontend = await startDshFrontend(rpc, { port: options.port ?? 0 })
-    console.log(`DSH official Web · RPNH MainSession ${frontend.view.id}\n${frontend.url}`)
+    console.log(`RPNH for DSH · RPNH 适配版 · MainSession ${frontend.view.id}\n${frontend.url}`)
     const stop = () => { void frontend.close() }
     process.once('SIGINT', stop); process.once('SIGTERM', stop)
     if (options.openBrowser !== false) {

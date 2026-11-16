@@ -53,6 +53,8 @@ def ordered_firing_record(
     """Return one firing's exact event and Petri closure in ordinal order."""
     firing_id = str(firing_version_id)
     with (store.connect() if _db is None else nullcontext(_db)) as db:
+        if _db is None:
+            db.execute("BEGIN")
         publication = db.execute(
             "SELECT * FROM firing_publications "
             "WHERE firing_version_id=?", (firing_id,)).fetchone()
@@ -113,11 +115,25 @@ def ordered_firing_record(
             "event_type": event.event_type,
         } for event in events)
         if publication["state"] != "PUBLISHED":
+            rejection = None
+            retained = None
+            if publication["state"] == "REJECTED":
+                from .firing_rejection import read_rejection
+                try:
+                    rejection, terminal_events = read_rejection(store, db, publication)
+                except RegistryConflict as exc:
+                    raise RegistryCorruptError("rejected firing closure is not exact") from exc
+                retained = metadata(rejection["retained_checkpoint_ref"]["version_id"], "marking_checkpoint/v1")
+                events = tuple(sorted((*events, *terminal_events), key=lambda event: event.ordinal))
+                ordered = tuple({"event_id": str(event.event_id), "ordinal": event.ordinal,
+                                 "event_type": event.event_type} for event in events)
             return {
                 "firing_version_id": firing_id,
                 "state": str(publication["state"]),
                 "firing": firing,
                 "firing_completion": None,
+                "firing_rejection": rejection,
+                "retained_checkpoint": retained,
                 "admission_checkpoint": admission,
                 "successor_checkpoint": successor,
                 "marking_delta": None,
@@ -205,6 +221,14 @@ def ordered_firing_record(
                 != successor.get("marking_checkpoint_ref")):
             raise RegistryCorruptError(
                 "firing completion is not linked to its exact closure")
+
+        from ..success_token_allocation import validate_success_firing_reconstruction
+        try:
+            validate_success_firing_reconstruction(store, db, publication=publication,
+                firing=firing, predecessor=settlement_predecessor, delta=delta,
+                completion=completion, checkpoint=successor)
+        except RegistryConflict as exc:
+            raise RegistryCorruptError("firing token identity closure is not exact") from exc
 
         def token_keys(values: object, label: str) -> set[bytes]:
             if not isinstance(values, list):
@@ -433,7 +457,7 @@ def provisional_observation_view(
             "FROM firing_temporary_members WHERE firing_version_id=?",
             (firing_key,),
         ).fetchall()
-    if (root is None or root["state"] not in {"PROVISIONAL", "SUPERSEDED"}
+    if (root is None or root["state"] not in {"PROVISIONAL", "SUPERSEDED", "REJECTED"}
             or str(root["invocation_version_id"]) != invocation_key):
         raise RegistryConflict(
             "provisional observation requires one matching retained root")
@@ -493,11 +517,24 @@ def canonical_object_row(
             (str(version_id), upper, upper, upper, upper),
         ).fetchone()
 
+def _reject_closed_material_view(store, view):
+    """A captured execution view cannot reopen a rejected candidate root."""
+    if not isinstance(view, FiringView):
+        return
+    with store.connection_scope() as db:
+        root = db.execute("SELECT state FROM firing_publications WHERE firing_version_id=? "
+                          "AND invocation_version_id=?",
+                          (view.firing_version_id, view.invocation_version_id)).fetchone()
+    if root is not None and root["state"] == "REJECTED":
+        raise RegistryConflict("rejected firing view is closed to execution reads")
+
+
 def object_row_for_view(
         store, view: RegistryAuthorityView,
         version_id: TypedId | str) -> sqlite3.Row | None:
     """Resolve one object through only the supplied authority capability."""
 
+    _reject_closed_material_view(store, view)
     upper = store._authority_ordinal(view)
     canonical = store.canonical_object_row(
         TypedId.parse(str(version_id)), through_ordinal=upper)
@@ -576,9 +613,15 @@ def canonical_object_rows(
 
 def canonical_relation_rows(
         store, *, through_ordinal: int | None = None,
-        version_id: TypedId | str | None = None) -> tuple[sqlite3.Row, ...]:
+        version_id: TypedId | str | None = None,
+        reference: str | None = None, endpoint: str = "either",
+        relation_type: str | None = None) -> tuple[sqlite3.Row, ...]:
     """Return relations canonical at the requested history head."""
 
+    if endpoint not in {"source", "target", "either"}:
+        raise ValueError("relation endpoint must be source, target, or either")
+    if reference is not None and not isinstance(reference, str):
+        raise TypeError("relation reference must be a string")
     upper = store.max_ordinal() if through_ordinal is None else through_ordinal
     predicate = store._canonical_member_sql(
         member_kind="relation", member_identity_sql="r.relation_id",
@@ -589,6 +632,20 @@ def canonical_relation_rows(
     parameters: list[Any] = [upper, upper, upper, upper]
     if version_id is not None:
         parameters.extend((str(version_id), str(version_id)))
+    # Candidate IDs only narrow the original canonical predicate. UNION keeps
+    # one result when a reference matches both logical and version identity.
+    # Independent indexed branches avoid an OR over unlike endpoint fields.
+    if reference is not None:
+        columns = ("source_json", "target_json") if endpoint == "either" else (endpoint + "_json",)
+        branches = []
+        for column in columns:
+            for field in ("entity_id", "version_id"):
+                branches.append("SELECT rowid FROM relations WHERE json_extract(" + column + ",'$." + field + "')=?")
+                parameters.append(reference)
+        endpoint_clause += "AND r.rowid IN (" + " UNION ".join(branches) + ") "
+    if relation_type is not None:
+        endpoint_clause += "AND r.relation_type=? "
+        parameters.append(relation_type)
     with store.connection_scope() as db:
         return tuple(db.execute(
             "SELECT r.* FROM relations r JOIN events published_event "
@@ -606,6 +663,7 @@ def relation_rows_for_view(
 
     if endpoint not in {"source", "target", "either"}:
         raise ValueError("relation endpoint must be source, target, or either")
+    _reject_closed_material_view(store, view)
     upper = store._authority_ordinal(view)
     predicate = store._canonical_member_sql(
         member_kind="relation", member_identity_sql="r.relation_id",
@@ -672,6 +730,7 @@ def events_for_view(
         ) -> tuple[EventEnvelope, ...]:
     """Resolve events through canonical or one frozen exact-firing view."""
 
+    _reject_closed_material_view(store, view)
     upper = store._authority_ordinal(view)
     events = list(store.canonical_events(through_ordinal=upper))
     if isinstance(view, FiringView):
@@ -736,7 +795,7 @@ def provisional_firing_object_rows(
             "SELECT state FROM firing_publications WHERE firing_version_id=?",
             (str(firing_version_id),),
         ).fetchone()
-        if root is None or root["state"] not in {"PROVISIONAL", "SUPERSEDED"}:
+        if root is None or root["state"] not in {"PROVISIONAL", "SUPERSEDED", "REJECTED"}:
             raise RegistryConflict(
                 "provisional object observation requires a retained firing")
         return tuple(db.execute(
@@ -757,7 +816,7 @@ def provisional_firing_events(
             "SELECT state FROM firing_publications WHERE firing_version_id=?",
             (str(firing_version_id),),
         ).fetchone()
-        if root is None or root["state"] not in {"PROVISIONAL", "SUPERSEDED"}:
+        if root is None or root["state"] not in {"PROVISIONAL", "SUPERSEDED", "REJECTED"}:
             raise RegistryConflict(
                 "provisional event observation requires a retained firing")
         rows = db.execute(
@@ -989,7 +1048,7 @@ def firing_activity_page(store, *, catalog, object_store, scope, bindings,
                         'operation_binding_version_id','admission_checkpoint_version_id','state',
                         'opened_transaction_id','published_transaction_id'),
                         'firing_publications WHERE firing_version_id=?', (fid,))
-                    if root is None or root['state'] not in ('PROVISIONAL', 'PUBLISHED', 'SUPERSEDED'):
+                    if root is None or root['state'] not in ('PROVISIONAL', 'PUBLISHED', 'SUPERSEDED', 'REJECTED'):
                         raise ValueError('activity publication root unavailable')
                     invocation_ref = activity_reference(p['invocation_ref'], 'invocation/v1')
                     if (root['firing_logical_id'] != ref['logical_id']
@@ -998,7 +1057,7 @@ def firing_activity_page(store, *, catalog, object_store, scope, bindings,
                         raise ValueError('activity publication identity differs')
                     transaction(root['opened_transaction_id'])
                     member('transaction', root['opened_transaction_id'], fid, root['opened_transaction_id'])
-                    if root['state'] == 'SUPERSEDED':
+                    if root['state'] in ('SUPERSEDED', 'REJECTED'):
                         if not root['published_transaction_id']:
                             raise ValueError('activity supersession has no commit')
                         transaction(root['published_transaction_id'])

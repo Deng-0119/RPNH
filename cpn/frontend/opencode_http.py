@@ -11,13 +11,24 @@ import secrets
 import socket
 import threading
 from typing import Any
-from urllib.parse import urlsplit
+from urllib.parse import unquote, urlsplit
 
 from cpn.rpnh.frontend_application import FrontendError, canonical
 from .opencode_protocol import OpenCodeProtocol, Reply, encode_sse
 
 MAX_BODY = 262144
 MAX_RESPONSE = 4194304
+
+
+def _encode_event(protocol: OpenCodeProtocol, event: dict[str, Any]) -> bytes:
+    if not getattr(protocol, "differential_events", False):
+        return encode_sse(event)
+    # v2 already has a reversible display-event ID; never derive another ID
+    # from content or perform an integrity calculation for SSE framing.
+    identity = event.get("id")
+    if not isinstance(identity, str) or not identity.startswith("evt_") or any(c in identity for c in "\r\n"):
+        raise FrontendError("invalid_event_identity", "Invalid display event identity.", 500)
+    return f"id: {identity}\ndata: {canonical(event)}\n\n".encode("utf-8")
 
 
 def _unique_object(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
@@ -76,9 +87,15 @@ class _Server(ThreadingHTTPServer):
                  "/experimental/capabilities", "/experimental/console",
                  "/api/info", "/api/event", "/api/session", "/api/session/active",
                  "/api/location", "/api/agent", "/api/provider", "/api/model",
-                 "/api/command", "/api/integration", "/api/skill", "/api/reference"}
+                 "/api/command", "/api/integration", "/api/skill", "/api/reference",
+                 "/api/project", "/api/mcp", "/api/mcp/resource", "/api/shell", "/api/vcs",
+                 "/api/config", "/api/config/shell", "/api/model/default", "/api/session/global/form",
+                 "/api/fs/list", "/api/plugin", "/api/form", "/api/experimental/migration/v1",
+                 "/api/rpc/opencode.goal/get",
+                 "/api/experimental/usage/limits",
+                 "/api/permission/request", "/api/provider/rpnh", "/api/agent/rpnh"}
         session_route = re.fullmatch(r"/session/:session(?:/(?:message|prompt_async|abort|command|todo|diff|children))?", path)
-        candidate_route = re.fullmatch(r"/api/session/:session(?:/(?:prompt|interrupt|message))?", path)
+        candidate_route = re.fullmatch(r"/api/session/:session(?:/(?:prompt|interrupt|message|inbox|model|command|permission|form|view))?", path)
         route = path if path in known or session_route or candidate_route else "unsupported"
         with self.diagnostic_lock:
             self.diagnostics.append({"method": method, "route": route, "status": status})
@@ -157,8 +174,13 @@ class _Handler(BaseHTTPRequestHandler):
             # a normal error reply rather than a second status line inside SSE.
             connected = (protocol.connected_event() if hasattr(protocol, "connected_event") else
                          protocol.envelope({"type": "server.connected", "properties": {}}))
-            frames = [encode_sse(connected)]
-            frames.extend(encode_sse(event) for event in protocol.events())
+            differential = getattr(protocol, "differential_events", False)
+            if differential:
+                cursor, initial = protocol.open_event_stream()
+            else:
+                cursor, initial = None, protocol.events()
+            frames = [_encode_event(protocol, connected)]
+            frames.extend(_encode_event(protocol, event) for event in initial)
             if sum(map(len, frames)) > MAX_RESPONSE:
                 raise FrontendError("projection_too_large", "Event snapshot exceeds the display bound.", 413)
             self.server.record(self.command, self.path, 200)
@@ -172,14 +194,23 @@ class _Handler(BaseHTTPRequestHandler):
                     for frame in frames:
                         self.wfile.write(frame)
                     self.wfile.flush()
-                    # Last-Event-ID is intentionally not a work-replay cursor.
-                    # Reconnect sends the current registered snapshot, replacing
-                    # stable message/part IDs. Slow peers coalesce updates.
+                    # Last-Event-ID never authorizes replay. The legacy stream
+                    # replaces snapshots; v2 append events are per-connection
+                    # prefix extensions. Replaced projections close the stream
+                    # so native reconnect hydrates authoritative REST views.
                     if not protocol.wait(revision):
                         break
                     current = protocol.revision()
-                    frames = ([encode_sse(event) for event in protocol.events()]
-                              if current != revision else [b": keepalive\n\n"])
+                    if current == revision:
+                        frames = [b": keepalive\n\n"]
+                    elif differential:
+                        update = protocol.poll_event_stream(cursor)
+                        if update is None:
+                            break
+                        cursor, changes = update
+                        frames = [_encode_event(protocol, event) for event in changes] or [b": keepalive\n\n"]
+                    else:
+                        frames = [_encode_event(protocol, event) for event in protocol.events()]
                     revision = current
                     if sum(map(len, frames)) > MAX_RESPONSE:
                         break
@@ -192,6 +223,32 @@ class _Handler(BaseHTTPRequestHandler):
         finally:
             self.server.stream_slots.release()
 
+    def _frontend_error(self, exc: FrontendError) -> Reply:
+        if not getattr(self.server.protocol, "differential_events", False):
+            return Reply(exc.status, {"name": "RPNHFrontendError",
+                                     "data": {"code": exc.code, "message": str(exc)}})
+        path = urlsplit(self.path).path
+        session = re.search(r"/session/(ses_[0-9a-f]{32})", path)
+        message = str(exc)
+        if exc.code == "unknown_session" and session:
+            body = {"_tag": "SessionNotFoundError", "sessionID": session[1], "message": message}
+        elif exc.code == "unknown_message" and session:
+            body = {"_tag": "MessageNotFoundError", "sessionID": session[1],
+                    "messageID": unquote(path.split("/message/", 1)[-1]), "message": message}
+        elif exc.code in {"invalid_cursor", "stale_cursor"} and exc.status == 400:
+            body = {"_tag": "InvalidCursorError", "message": message}
+        elif exc.status == 400:
+            body = {"_tag": "InvalidRequestError", "kind": exc.code, "message": message}
+        elif exc.status == 409:
+            body = {"_tag": "ConflictError", "resource": "rpnh-session", "message": message}
+        elif exc.status == 401:
+            body = {"_tag": "UnauthorizedError", "message": message}
+        elif exc.status == 503:
+            body = {"_tag": "ServiceUnavailableError", "service": "rpnh", "message": message}
+        else:
+            body = {"_tag": "UnknownError", "message": message, "ref": exc.code}
+        return Reply(exc.status, body)
+
     def _handle(self) -> None:
         try:
             self._validate()
@@ -202,12 +259,12 @@ class _Handler(BaseHTTPRequestHandler):
             else:
                 self._reply(reply)
         except FrontendError as exc:
-            self._reply(Reply(exc.status, {"name": "RPNHFrontendError", "data": {"code": exc.code, "message": str(exc)}}))
+            self._reply(self._frontend_error(exc))
         except (BrokenPipeError, ConnectionError, TimeoutError):
             self.close_connection = True
         except Exception:
-            self._reply(Reply(500, {"name": "RPNHFrontendError", "data": {
-                "code": "transport_error", "message": "RPNH could not serve this request."}}))
+            self._reply(self._frontend_error(FrontendError(
+                "transport_error", "RPNH could not serve this request.", 500)))
 
     do_GET = do_POST = do_PUT = do_PATCH = do_DELETE = do_OPTIONS = do_HEAD = _handle
 

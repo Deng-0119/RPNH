@@ -6,7 +6,7 @@ import type { GenerateOptions, StreamChunk } from '@deepseek-ai/dsh-llm'
 import type { Agent } from '@deepseek-ai/dsh-agent'
 import { REVISION, type JsonRecord, type EffectHost } from './bridge.ts'
 import { toolResultText } from './message-codec.ts'
-import { providerMessages } from './provider-message-codec.ts'
+import { providerMessages, providerToolCalls } from './provider-message-codec.ts'
 type Grant = { frame: JsonRecord; used: boolean; raw?: unknown }
 const equal = (a: unknown, b: unknown): boolean => isDeepStrictEqual(a, b)
 const record = (value: unknown): JsonRecord | undefined => value !== null && typeof value === 'object' && !Array.isArray(value)
@@ -26,13 +26,6 @@ function registeredToolNames(tools: unknown): Set<string> {
     names.add(fn.name)
   }
   return names
-}
-function exactToolArguments(value: unknown): value is string {
-  if (typeof value !== 'string') return false
-  try {
-    const parsed = JSON.parse(value)
-    return parsed !== null && typeof parsed === 'object' && !Array.isArray(parsed)
-  } catch { return false }
 }
 export interface PhysicalCounters { model: number; tools: number; tickets: string[] }
 declare module '@deepseek-ai/cordis' { interface Context { rpnhCapabilities: CapabilityHost } }
@@ -132,12 +125,7 @@ export class CapabilityHost extends Service {
       const block = { type: 'text' as const, text: response.text }
       content.push(block); chunks.push({ type: 'block-start', index, blockType: 'text' }, { type: 'block-end', index, block }); index++
     }
-    if (response.tool_calls.length > 1) throw new Error('configured provider response contains parallel tool calls')
-    for (const raw of response.tool_calls) {
-      if (!raw || typeof raw !== 'object' || typeof raw.id !== 'string' || !raw.id
-        || typeof raw.name !== 'string' || !toolNames.has(raw.name) || !exactToolArguments(raw.arguments)) {
-        throw new Error('configured provider response contains an invalid tool call')
-      }
+    for (const raw of providerToolCalls(response.tool_calls, toolNames)) {
       const block = { type: 'tool-call' as const, id: ToolCallId(raw.id), name: raw.name, arguments: raw.arguments }
       content.push(block); chunks.push({ type: 'block-start', index, blockType: 'tool-call' }, { type: 'block-end', index, block }); index++
     }

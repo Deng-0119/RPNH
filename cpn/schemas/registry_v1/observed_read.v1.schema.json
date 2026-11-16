@@ -130,7 +130,7 @@
     "boundary_receipt_ref": {"$ref": "#/definitions/boundary_receipt_ref"},
     "delivery_id": {"type": "string", "pattern": "^resource_delivery:[a-f0-9]{32}$"},
     "transaction_id": {"type": "string", "pattern": "^transaction:[a-f0-9]{32}$"},
-    "boundary": {"enum": ["llm_prompt", "tool_result", "subprocess_read", "parent_receipt", "petri_input"]}
+    "boundary": {"enum": ["llm_prompt", "tool_result", "subprocess_read", "parent_receipt", "petri_input", "human_viewer"]}
   },
   "required": [
     "origin", "task_ref", "task_branch_ref", "task_round_ref", "net_ref",

@@ -160,7 +160,7 @@
     "consumed_refs": {"type": "array", "items": {"$ref": "#/definitions/ref"}, "uniqueItems": true},
     "deposited_refs": {"type": "array", "items": {"$ref": "#/definitions/ref"}, "uniqueItems": true},
     "phase": {"enum": ["claim", "settlement"]},
-    "ordinary_token_ref_scheme": {"type": "string", "const": "normal_root_firing_scoped/v1"},
+    "ordinary_token_ref_scheme": {"type": "string", "enum": ["normal_root_firing_scoped/v1", "success_firing_scoped/v1"]},
     "declared_effects": {
       "type": "object", "additionalProperties": false,
       "properties": {
