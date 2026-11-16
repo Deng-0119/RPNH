@@ -23,6 +23,7 @@ from cpn.rpnh.registry.publication import (
 from cpn.rpnh.registry.resource_service import _resource_payload
 from cpn.rpnh.registry.resources import ResourceVersionRef
 from cpn.rpnh.registry.schema_catalog import canonical_json
+from .managed_identity import managed_identity_fields
 from cpn.rpnh.response_protocol import (
     PublishedLLMResponse, observe_registered_llm_response,
 )
@@ -696,12 +697,13 @@ class ActionRecordsMechanicsMixin:
                 None if action_ref.entity_type == "agent_action/v2" else {
                     name: value[name] for name in (
                         "provider_name", "registration_key", "selector",
-                        "plugin_catalog_digest", "binding_digest", "effect",
+                        "effect",
                         "outcome", "request_admission_receipt_ref",
                         "admitted_at_utc", "started_receipt_ref",
                         "terminal_receipt_ref", "model_visible_result_ref",
                         "non_delivery_reason", "output", "error")
-                } | {"max_result_bytes": value["max_result_bytes"]}))
+                } | managed_identity_fields(value)
+                  | {"max_result_bytes": value["max_result_bytes"]}))
 
     def latest_settled_action(
             self, *, action_id: str, turn_ref: VersionRef,

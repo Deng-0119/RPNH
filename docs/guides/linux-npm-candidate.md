@@ -23,3 +23,9 @@ This newly assembled public candidate requires its own native validation. Offlin
 - Preserve the existing release artifacts. macOS, OpenCode and old-release data migration are not established by this candidate.
 
 [Chinese](linux-npm-candidate_ZH.md)
+
+## Dynamic entrypoint closure follow-up
+
+This candidate also aligns AgentLoop versioned tool identities, DSH result delivery, plugin exports, optional MCP/account-provider adapters and skill inputs with the shared runtime. Historical identity fields remain readable without adding new legacy-format validation; this is not a claim that every older identity format has been removed.
+
+Focused installation tests (67) and component tests (36) pass. Native worker/AgentLoop integration did not complete successfully in the current validation environment: process startup failed before a ready handshake, and the required procfs child-list interface is unavailable there. A DSH parallel-tool diagnostic ended without a normal test result; its cause is unresolved. These outcomes are not waived or counted as passing. Exact-candidate native validation remains necessary before main promotion. This source candidate is not an npm registry release or a cross-release upgrade certification.

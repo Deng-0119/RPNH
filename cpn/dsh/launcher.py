@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import argparse
+from contextlib import nullcontext
+import os
 import importlib.resources
 import json
 import subprocess
@@ -123,6 +125,15 @@ def main(argv: Sequence[str] | None = None) -> int:
             "--resume requires explicit --offline or --execution until the "
             "original profile can be reconstructed")
 
+    if (not offline and not history and not resume
+            and sys.stdin.isatty() and sys.stdout.isatty()
+            and os.environ.get("RPNH_UPDATES", "on") != "off"
+            and not any(a in ("--help", "-h", "--json", "--task") or a.startswith("--task=")
+                        for a in forwarded)):
+        from cpn.rpnh.updates import startup
+        # Legacy source host remains manual; never overwrite its pinned checkout.
+        startup("dsh-legacy", interactive=sys.stdin.isatty() and sys.stdout.isatty())
+
     managed_arguments = list(forwarded)
     if not history and not offline:
         try:
@@ -139,7 +150,12 @@ def main(argv: Sequence[str] | None = None) -> int:
         ))
 
     runner = importlib.resources.files("integrations.dsh").joinpath("run.sh")
-    with importlib.resources.as_file(runner) as runner_path:
+    from cpn.update_context import managed_context_hint
+    lease = nullcontext()
+    if managed_context_hint() is not None:
+        from cpn.rpnh.update_install import lifecycle_lease
+        lease = lifecycle_lease()
+    with lease, importlib.resources.as_file(runner) as runner_path:
         return subprocess.run(
             ["bash", str(runner_path), sys.executable, args.dsh_checkout,
              *managed_arguments],

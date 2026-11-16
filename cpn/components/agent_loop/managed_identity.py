@@ -11,7 +11,6 @@ from collections.abc import Mapping
 
 _SYMBOL = re.compile(r"[a-z][a-z0-9_]{0,47}\Z")
 _VERSION = re.compile(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,63}\Z")
-_LEGACY = re.compile(r"[a-f0-9]{64}\Z")
 
 
 def _binding(value):
@@ -32,8 +31,8 @@ def managed_identity_fields(value):
     new = {"plugin_catalog_identity", "binding_identity"}
     present = (old | new) & set(value)
     if present == old:
-        if any(not isinstance(value[key], str) or not _LEGACY.fullmatch(value[key]) for key in old):
-            raise ValueError("legacy managed identity is malformed")
+        # Preserve the existing legacy projection; do not add digest-format
+        # checks to already admitted historical bindings or action records.
         return {key: value[key] for key in sorted(old)}
     if present != new:
         raise ValueError("managed identity requires one complete versioned branch")

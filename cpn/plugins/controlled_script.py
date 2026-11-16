@@ -25,6 +25,8 @@ import threading
 import time
 from typing import Any, Callable, Mapping
 
+from cpn.process_supervision import ProcessCleanupError, ProcessStartError, start_process, stop_process
+
 from .api import canonical, frozen, json_copy
 
 PROFILE_ID = "linux_isolated_python/v1"
@@ -321,7 +323,49 @@ def _runtime_closure(work_root: Path, deadline: float):
             raise TimeoutError(errno.ETIMEDOUT, "public runtime preparation deadline expired")
         return min(limit, seconds)
 
+    # In a user namespace the immutable OS owner may be unmapped, so its
+    # visible UID need not be zero. Derive it only from fixed system anchors;
+    # never trust an overflow UID by itself or accept caller-owned/writable OS
+    # material. Ordinary root-owned distributions retain their existing check.
+    system_owner = Path("/").stat().st_uid
+    checked_directories = set()
+    if system_owner != 0:
+        if system_owner in {os.getuid(), os.geteuid()}:
+            raise ValueError("runtime system anchors must not be caller-owned")
+        for anchor in (Path("/"), Path("/usr"), Path("/usr/bin"), Path("/usr/lib")):
+            metadata = anchor.stat()
+            if (anchor.resolve(strict=True) != anchor or not stat.S_ISDIR(metadata.st_mode)
+                    or metadata.st_uid != system_owner or metadata.st_mode & 0o022
+                    or os.access(anchor, os.W_OK, effective_ids=True)):
+                raise ValueError("runtime system anchors must share an immutable system owner")
+            checked_directories.add(anchor)
+
+    def check_source(path, is_dir):
+        metadata = path.stat()
+        if metadata.st_uid != system_owner or metadata.st_mode & 0o022:
+            raise ValueError("runtime source must be system-owned and not publicly writable")
+        if not (stat.S_ISDIR(metadata.st_mode) if is_dir else stat.S_ISREG(metadata.st_mode)):
+            raise ValueError("runtime closure contains a non-file source")
+        if system_owner != 0:
+            if not (path.is_relative_to("/usr/bin") or path.is_relative_to("/usr/lib")):
+                raise ValueError("runtime source is outside the public OS roots")
+            if os.access(path, os.W_OK, effective_ids=True):
+                raise ValueError("runtime source must not be caller-writable")
+            # A read-only file in a caller-writable directory is replaceable.
+            for parent in path.parents:
+                if parent in checked_directories:
+                    break
+                parent_metadata = parent.stat()
+                if (parent_metadata.st_uid != system_owner or parent_metadata.st_mode & 0o022
+                        or not stat.S_ISDIR(parent_metadata.st_mode)
+                        or os.access(parent, os.W_OK, effective_ids=True)):
+                    raise ValueError("runtime source ancestors must be immutable system directories")
+                checked_directories.add(parent)
+
     executable = Path("/usr/bin/python3").resolve(strict=True)
+    if not executable.is_relative_to("/usr/bin"):
+        raise ValueError("runtime must be the public OS Python distribution")
+    check_source(executable, False)
     environment = {"PATH": "/usr/bin:/bin", "LANG": "C", "LC_ALL": "C",
                    "TMPDIR": str(work_root)}
     probe = subprocess.run(
@@ -361,11 +405,7 @@ def _runtime_closure(work_root: Path, deadline: float):
             raise ValueError("ELF dependency is outside the public OS library root")
         mounts.append((str(source), target, False))
     for source, target, is_dir in mounts:
-        metadata = Path(source).stat()
-        if metadata.st_uid != 0 or metadata.st_mode & 0o022:
-            raise ValueError("runtime source must be root-owned and not publicly writable")
-        if not (stat.S_ISDIR(metadata.st_mode) if is_dir else stat.S_ISREG(metadata.st_mode)):
-            raise ValueError("runtime closure contains a non-file source")
+        check_source(Path(source), is_dir)
     return mounts, {"profile_id": PROFILE_ID, "python_version": info["version"],
                     "executable": str(executable), "stdlib": str(stdlib),
                     "mounts": tuple((a, b) for a, b, _ in mounts)}
@@ -449,13 +489,6 @@ def _execute_result_read(request, reader):
         return ProgramBrokerReply(error_code="read_result_failed")
 
 
-def _kill(process):
-    try:
-        os.killpg(process.pid, signal.SIGKILL)
-    except ProcessLookupError:
-        pass
-
-
 def run_isolated_program(*, source: str, arguments: Any,
                          parent_identity: Mapping[str, Any], allowlist: tuple[str, ...],
                          budget: IsolatedProgramBudget,
@@ -519,6 +552,9 @@ def run_isolated_program(*, source: str, arguments: Any,
                    "-I", "-S", "-B", "-c", _BOOTSTRAP, str(manifest),
                    str(request_w), str(reply_r), str(status_w)]
         process = None
+        process_lock = threading.RLock()
+        cleanup_error = None
+        cleanup_confirmed = False
         pending = {}
         observations = {}
         read_observations = {}
@@ -540,12 +576,38 @@ def run_isolated_program(*, source: str, arguments: Any,
         replies = bytearray()
         pool = ThreadPoolExecutor(max_workers=budget.max_parallel, thread_name_prefix="program-broker")
 
+        def cleanup_process():
+            nonlocal cleanup_error, cleanup_confirmed
+            # poll/wait also consume the supervisor's cleanup report. Serialize
+            # them with deadline, cancellation and final cleanup of this handle.
+            with process_lock:
+                if cleanup_error is not None:
+                    raise cleanup_error
+                if process is not None and not cleanup_confirmed:
+                    try:
+                        stop_process(process)
+                    except ProcessCleanupError as exc:
+                        cleanup_error = exc
+                        raise
+                    cleanup_confirmed = True
+
+        def poll_process():
+            with process_lock:
+                if cleanup_error is not None:
+                    raise cleanup_error
+                return process.poll()
+
         def stop(reason):
-            if state["status"] is None or reason == "reconciliation_required":
-                state["status"] = reason
-            interrupted.set()
-            if process is not None:
-                _kill(process)
+            with process_lock:
+                if state["status"] is None or reason == "reconciliation_required":
+                    state["status"] = reason
+                interrupted.set()
+                try:
+                    cleanup_process()
+                except ProcessCleanupError:
+                    # The owner must raise this after draining accepted callbacks;
+                    # an unconfirmed cleanup must never become a normal result.
+                    pass
 
         def watch_deadline():
             # This thread must never call HOST code: even the trusted cancel
@@ -564,11 +626,11 @@ def run_isolated_program(*, source: str, arguments: Any,
                     return
 
         try:
-            process = subprocess.Popen(command, cwd=directory,
+            process = start_process(command, cwd=directory,
                 env={"PATH": "/usr/bin:/bin", "LANG": "C.UTF-8", "LC_ALL": "C.UTF-8",
                      "TMPDIR": str(directory)}, stdin=subprocess.DEVNULL,
                 stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                pass_fds=(request_w, reply_r, status_w), start_new_session=True)
+                pass_fds=(request_w, reply_r, status_w), deadline=deadline)
             for fd in (request_w, reply_r, status_w):
                 os.close(fd)
             request_w = reply_r = status_w = -1
@@ -583,7 +645,7 @@ def run_isolated_program(*, source: str, arguments: Any,
                 target=observe_cancellation, name="isolated-program-cancellation", daemon=True)
             cancellation_observer.start()
             while selector.get_map() or pending:
-                if process.poll() is not None:
+                if poll_process() is not None:
                     # Exited source cannot authorize another request, including
                     # a buffered request emitted just before an exception.
                     interrupted.set()
@@ -660,7 +722,7 @@ def run_isolated_program(*, source: str, arguments: Any,
                                 result_received = True
                                 result_value = frozen(request["value"])
                                 continue
-                            if (interrupted.is_set() or process.poll() is not None
+                            if (interrupted.is_set() or poll_process() is not None
                                     or result_received or not ready or not isinstance(request, dict)
                                     or accepted_requests >= budget.max_calls or len(pending) >= budget.max_parallel):
                                 raise ValueError("broker contract rejected")
@@ -701,7 +763,8 @@ def run_isolated_program(*, source: str, arguments: Any,
                         except (ValueError, TypeError, KeyError, RecursionError):
                             stop("protocol_error")
                             break
-            exit_code = process.wait(timeout=2)
+            with process_lock:
+                exit_code = process.wait(timeout=2)
             if streams["setup"]:
                 try:
                     setup_error = _strict_json(streams["setup"])
@@ -730,20 +793,25 @@ def run_isolated_program(*, source: str, arguments: Any,
                 diagnostics[0], diagnostics[1],
                 tuple(observations[i] for i in sorted(observations)),setup_error,frozen(identity),result_value,
                 tuple(read_observations[i] for i in sorted(read_observations)))
+        except ProcessStartError as exc:
+            return IsolatedProgramResult("timeout" if exc.code == "timeout" else "setup_failed",
+                None, "", "", (), {"phase": "process-start", "errno": exc.errno, "error": str(exc)},
+                frozen(identity))
         finally:
             interrupted.set()
             done.set()
-            if process is not None:
-                _kill(process)
-                process.wait(timeout=2)
-                process.stdout.close()
-                process.stderr.close()
-            if guardian is not None:
-                guardian.join(timeout=1)
-            if cancellation_observer is not None:
-                cancellation_observer.join(timeout=1)
-            pool.shutdown(wait=True, cancel_futures=False)
-            selector.close()
-            for fd in (request_r,request_w,reply_r,reply_w,status_r,status_w):
-                if fd >= 0:
-                    os.close(fd)
+            try:
+                cleanup_process()
+            finally:
+                if process is not None:
+                    process.stdout.close()
+                    process.stderr.close()
+                if guardian is not None:
+                    guardian.join(timeout=1)
+                if cancellation_observer is not None:
+                    cancellation_observer.join(timeout=1)
+                pool.shutdown(wait=True, cancel_futures=False)
+                selector.close()
+                for fd in (request_r,request_w,reply_r,reply_w,status_r,status_w):
+                    if fd >= 0:
+                        os.close(fd)
