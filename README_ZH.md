@@ -102,6 +102,7 @@ rpnh net --run "$RUN_DIR" --view --no-open
 ## 更多资料
 
 [文档](docs/index_ZH.md) · [案例](examples/README_ZH.md) ·
+[Registry 资料与控件图解](docs/guides/viewer-materials_ZH.md) ·
 [技术报告](docs/technical-report_ZH.md) ·
 [架构](docs/architecture/design_ZH.md) · [参与贡献](CONTRIBUTING_ZH.md)
 

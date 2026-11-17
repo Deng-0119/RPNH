@@ -56,6 +56,7 @@ For a conceptual introduction before running anything, read the
 | Validate firing products or inspect original owner edit receipts | [Firing content contracts and owner receipts](guides/firing-content-contract.md) |
 | Diagnose missing configuration, owner conflicts or unknown effects | [Troubleshooting and safe recovery](guides/troubleshooting.md) |
 | Inspect a full PN, agent Overview, firing, resource or checkpoint | [Viewer](guides/viewer.md), [display/evidence semantics](DISPLAY_OBSERVATION.md) |
+| Browse exact materials and use actions enabled by an application HOST | [Registry materials and annotated controls](guides/viewer-materials.md) |
 | Compare checkpoints in one Registry or exact nets across sources | [Checkpoint comparison](guides/checkpoint-comparison.md), [cross-net comparison](guides/comparison-context.md) |
 | Inspect actual controlled-user contributions | [Viewer contributions](guides/viewer-user-contributions.md) |
 | Check declaration compatibility with an already prepared HOST | [HOST readiness](guides/host-readiness.md) |

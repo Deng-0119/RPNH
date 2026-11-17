@@ -120,6 +120,7 @@ These integrations have bounded compatibility, not blanket support across versio
 ## Learn more
 
 [Documentation](docs/index.md) · [Examples](examples/README.md) ·
+[Registry materials and annotated controls](docs/guides/viewer-materials.md) ·
 [Technical report](docs/technical-report.md) ·
 [Architecture](docs/architecture/design.md) · [Contributing](CONTRIBUTING.md)
 

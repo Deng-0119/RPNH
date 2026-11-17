@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: viewer.md
-  revision: "2026-10-04.5"
+  revision: "2026-11-17.1"
   status: source-reviewed-pre-release
 ---
 
@@ -16,6 +16,10 @@ metadata:
 
 看板只投影一个已有 Registry run，不获取 writer 权限，不执行 transition、不恢复任务、不创建
 结果，也不修改 PetriNet。终端文本与浏览器读取同一份持久化 run 证据。
+
+工具栏中的 **Registry** 可打开资料浏览器。[Registry 资料指南](viewer-materials_ZH.md)
+用带标注的真实截图说明精确版本、完整读取及可选管理控件。显式管理操作需要应用 HOST
+单独配置，并沿用原 Owner/Registry/PN 路径；普通 run 查看入口仍保持只读。
 
 已有可信协作 HOST 时，可按[用户贡献指南](viewer-user-contributions_ZH.md)在实际 Petri 网中
 查看记录中的提案修改。此视图沿用原 Registry 事实和读取权限；仅打开 run 不能恢复

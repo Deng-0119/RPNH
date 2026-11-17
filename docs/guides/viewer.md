@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: viewer_ZH.md
-  revision: "2026-10-04.5"
+  revision: "2026-11-17.1"
   status: source-reviewed-pre-release
 ---
 
@@ -17,6 +17,12 @@ metadata:
 The dashboard projects one existing Registry run. It never acquires writer
 authority, executes transitions, resumes work, creates results or changes the
 PetriNet. Terminal text and the browser use the same durable run evidence.
+
+Select **Registry** in the toolbar to browse materials. The
+[Registry materials guide](viewer-materials.md) explains exact versions, complete
+reading, and the optional management controls with annotated real screenshots.
+Those explicit actions require a separately configured application HOST and use
+the original Owner/Registry/PN path. The ordinary run-view entry remains read-only.
 
 For a trusted collaboration HOST, the [user-contribution guide](viewer-user-contributions.md)
 explains how to inspect recorded proposal changes on the actual Petri net. It uses

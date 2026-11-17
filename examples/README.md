@@ -105,6 +105,10 @@ ERP, AutomationBench, HarnessAudit Office and SlopCodeBench now export **1 / 1 /
 Each runnable workflow creates a real Registry that can be opened with
 `rpnh net --run RUN_DIR --view --no-open`. Scripted fixtures exercise the same
 protocol and settlement boundaries but are not claims about model reasoning.
+Use the [Registry materials guide](../docs/guides/viewer-materials.md) to inspect
+an exact resource and understand the annotated controls. Managed actions require
+an application HOST that enables them; opening an example's read-only Viewer does
+not enable editing or deletion.
 Run screenshots retain their original scenario scope; declaration galleries state their source and offline-compilation boundary. Routine example captures omit exact checkpoint identities and local observation timestamps. Dated result galleries may preserve original technical run identifiers when explicitly documented; these are not identity or access credentials.
 
 For interruption/recovery behavior, use the independent-task example and the

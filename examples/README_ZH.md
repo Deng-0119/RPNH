@@ -100,7 +100,10 @@ ERP、AutomationBench、HarnessAudit Office 与 SlopCodeBench 的静态 frame �
 
 每个可运行 workflow 都会创建真实 Registry，可用
 `rpnh net --run RUN_DIR --view --no-open` 打开。脚本替身经过相同协议与结算边界，但不代表
-模型推理能力。运行截图保留其原场景范围；初始声明图的来源与静态编译边界在各图册中说明。常规案例截图省略精确 checkpoint 标识和本地观察时间。注明日期的结果图册可在明确说明后保留原始技术运行标识；这些不是个人身份或访问凭据。
+模型推理能力。
+查看精确资料与控件图解，可读 [Registry 资料指南](../docs/guides/viewer-materials_ZH.md)。
+管理操作需要应用 HOST 单独开放；打开案例的只读 Viewer 不会开启编辑或删除。
+运行截图保留其原场景范围；初始声明图的来源与静态编译边界在各图册中说明。常规案例截图省略精确 checkpoint 标识和本地观察时间。注明日期的结果图册可在明确说明后保留原始技术运行标识；这些不是个人身份或访问凭据。
 
 中断／恢复行为请使用独立任务案例和专门的
 [checkpoint 恢复指南](../docs/guides/checkpoint-recovery_ZH.md)。显式执行／checkpoint reopen

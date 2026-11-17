@@ -49,6 +49,7 @@ RPNH 使用 Registry 与 PetriNet 声明、执行、查看和复用 agent 工作
 | 验证 firing 产物或查看原 owner edit 回执 | [Firing 内容契约与 owner 回执](guides/firing-content-contract_ZH.md) |
 | 排查配置缺失、owner 冲突或未知副作用 | [排障与安全恢复](guides/troubleshooting_ZH.md) |
 | 查看完整 PN、agent Overview、firing、资源或 checkpoint | [Viewer](guides/viewer_ZH.md)、[展示/证据语义](DISPLAY_OBSERVATION_ZH.md) |
+| 浏览精确资料，使用应用 HOST 开放的管理操作 | [Registry 资料与控件图解](guides/viewer-materials_ZH.md) |
 | 比较同一 Registry 的 checkpoint 或跨来源精确网 | [Checkpoint 比较](guides/checkpoint-comparison_ZH.md)、[跨网比较](guides/comparison-context_ZH.md) |
 | 查看实际受控用户贡献 | [Viewer 贡献](guides/viewer-user-contributions_ZH.md) |
 | 对已准备 HOST 检查声明兼容性 | [HOST readiness](guides/host-readiness_ZH.md) |

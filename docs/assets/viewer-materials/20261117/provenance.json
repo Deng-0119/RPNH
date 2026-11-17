@@ -1,0 +1,122 @@
+{
+  "schema": "rpnh/viewer_material_capture_catalog/v1",
+  "capture_date": "2026-11-17",
+  "platform": "WSL/Linux",
+  "browser": "Chromium 153.0.8010.12",
+  "source_revision": "851b721dc22ac9796bca5c46e9c6e50f9163f960",
+  "data_kind": "synthetic local fixtures; real Owner, Registry, HTTP and browser",
+  "images_unchanged": true,
+  "annotations": "Original numbered red-frame DOM overlays captured by the original driver",
+  "normal_journey": {
+    "phases": 6,
+    "captures": 9,
+    "seconds": 101.50778341293335,
+    "result": "PASS_SCOPED_REAL_BROWSER_JOURNEY"
+  },
+  "images": [
+    {
+      "id": "S01-resources",
+      "raw": "S01-resources.raw.png",
+      "annotated": "S01-resources.annotated.png",
+      "viewport": [
+        1440,
+        1050
+      ],
+      "observed_scope": "resource_navigation"
+    },
+    {
+      "id": "S02-exact-record",
+      "raw": "S02-exact-record.raw.png",
+      "annotated": "S02-exact-record.annotated.png",
+      "viewport": [
+        1440,
+        1050
+      ],
+      "observed_scope": "exact_record"
+    },
+    {
+      "id": "S03-position-history",
+      "raw": "S03-position-history.raw.png",
+      "annotated": "S03-position-history.annotated.png",
+      "viewport": [
+        1440,
+        1050
+      ],
+      "observed_scope": "position_history"
+    },
+    {
+      "id": "S04-complete-read",
+      "raw": "S04-complete-read.raw.png",
+      "annotated": "S04-complete-read.annotated.png",
+      "viewport": [
+        1440,
+        1050
+      ],
+      "observed_scope": "complete_read_owner_confirmed"
+    },
+    {
+      "id": "S05-draft-and-result",
+      "raw": "S05-draft-and-result.raw.png",
+      "annotated": "S05-draft-and-result.annotated.png",
+      "viewport": [
+        1440,
+        1050
+      ],
+      "observed_scope": "published_v2_independent_d2"
+    },
+    {
+      "id": "S06-disable",
+      "raw": "S06-disable.raw.png",
+      "annotated": "S06-disable.annotated.png",
+      "viewport": [
+        1440,
+        1050
+      ],
+      "observed_scope": "management_not_configured"
+    },
+    {
+      "id": "S07-carriers",
+      "raw": "S07-carriers.raw.png",
+      "annotated": "S07-carriers.annotated.png",
+      "viewport": [
+        1440,
+        1050
+      ],
+      "observed_scope": "action_unavailable"
+    },
+    {
+      "id": "S08-cleanup",
+      "raw": "S08-cleanup.raw.png",
+      "annotated": "S08-cleanup.annotated.png",
+      "viewport": [
+        1440,
+        1050
+      ],
+      "observed_scope": "action_unavailable"
+    },
+    {
+      "id": "S09-narrow-navigation",
+      "raw": "S09-narrow-navigation.raw.png",
+      "annotated": "S09-narrow-navigation.annotated.png",
+      "viewport": [
+        390,
+        844
+      ],
+      "observed_scope": "narrow_navigation"
+    }
+  ],
+  "later_terminal_check": {
+    "source_revision": "3354e410b04e3f9f2da5a14ae13c63b0385ef2d2",
+    "installed_permission_regressions": 3,
+    "native_http_dom_result": "PASS_SCOPED_HTTP_DOM",
+    "normal_images_recaptured": false,
+    "first_terminal_failure_retained": "851b721 returned HTTP409 target_unavailable"
+  },
+  "public_source_integration": "f4eb4ee2f77fae79d162644765ebd701d3c576c0",
+  "not_established": [
+    "final package installation acceptance",
+    "human visual sign-off",
+    "other native platforms",
+    "complete disable or cleanup paths"
+  ]
+}
