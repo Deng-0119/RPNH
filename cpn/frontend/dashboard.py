@@ -11,6 +11,7 @@ from datetime import datetime, timezone
 import hashlib
 import json
 from pathlib import Path
+from threading import Lock
 from typing import Any, Mapping
 from cpn.rpnh.inspection import project_registry_net, project_registry_observation
 from cpn.rpnh.registry._registry import _RegistryCore
@@ -126,6 +127,20 @@ class RegistryDashboard:
         self.user_contribution_view = user_contribution_view
         core = self._open()
         self.task_id = str(core.task_id)
+        self._registry_browser = None
+        self._registry_browser_lock = Lock()
+
+    def registry_browser(self, params):
+        from .local_registry_browser import LocalRegistryBrowserProvider
+        from .registry_browser import RegistryBrowserError
+        with self._registry_browser_lock:
+            if self._registry_browser is None:
+                reader = LocalRegistryBrowserProvider(
+                    self.run_dir, catalog=self.catalog, binding=self._bound)
+                if reader.task_id != self.task_id:
+                    raise RegistryBrowserError('access_changed')
+                self._registry_browser = reader
+        return self._registry_browser.registry_browser(params)
 
     def _open(self):
         return _RegistryCore(self.run_dir, create=False, read_only=True, catalog=self.catalog)
@@ -415,6 +430,12 @@ class RegistryDashboard:
 
 
 def main():
+    from cpn.rpnh.update_install import lifecycle_lease
+    with lifecycle_lease():
+        return _main()
+
+
+def _main():
     import math
     parser = argparse.ArgumentParser(description='RPNH read-only workflow dashboard')
     parser.add_argument('--run', type=Path, required=True)
@@ -454,3 +475,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+

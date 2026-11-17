@@ -73,7 +73,7 @@ def require_material_available(core, resource_ref, *, purpose):
 
 
 def source_governs_materials(core):
-    with core.event_store.connect() as db:
+    with core.event_store.connection_scope() as db:
         db.execute("BEGIN")
         return source_governs_materials_at(core.event_store, db, core.task_id)
 

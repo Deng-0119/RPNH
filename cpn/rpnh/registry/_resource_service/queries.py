@@ -384,7 +384,8 @@ def _header(self, ref: ResourceVersionRef, *, through_head: RegistryHead) -> Res
 
 
 def _headers(self, refs: Iterable[ResourceVersionRef], *,
-             through_head: RegistryHead) -> Iterable[ResourceHeader]:
+             through_head: RegistryHead,
+             relation_directions: dict | None = None) -> Iterable[ResourceHeader]:
     """Hydrate exact headers in bounded batches, without limiting candidates.
 
     Authorization/filtering and paging remain the query's responsibility. Each
@@ -392,7 +393,8 @@ def _headers(self, refs: Iterable[ResourceVersionRef], *,
     """
     batch: list[tuple[dict[str, Any], int]] = []
     for ref in refs:
-        batch.append(_header_fields(self, ref, through_head=through_head))
+        batch.append(_header_fields(self, ref, through_head=through_head,
+                                    relation_directions=relation_directions))
         if len(batch) == 128:
             heads = self._canonical_heads(ordinal for _fields, ordinal in batch)
             for fields, ordinal in batch:
@@ -404,20 +406,50 @@ def _headers(self, refs: Iterable[ResourceVersionRef], *,
             yield ResourceHeader(**fields, published_at_head=heads[ordinal])
 
 
-def _header_fields(self, ref: ResourceVersionRef, *, through_head: RegistryHead
+def _display_metadata(self, ref, metadata, *, firing=False):
+    """Keep structure at its historical cut, project content policy now.
+
+    Public metadata queries have no delivery witness.  On governed sources
+    arbitrary summaries/labels are therefore not a substitute body channel.
+    An available firing-local header retains the original executor fields;
+    the original input/release gate separately authorizes actual new use.
+    """
+    from ...material_availability import source_governs_materials
+    from ...material_body_policy import resolve_material_body_availability
+    core = self._ResourceServiceKernel__core
+    governed = source_governs_materials(core)
+    if not governed:
+        return metadata
+    availability = resolve_material_body_availability(core, ref)
+    if firing and availability["availability"] == "available":
+        return metadata
+    return {**metadata, "summary": None, "descriptors": {
+        "current_availability": availability["availability"],
+        "availability_as_of": availability["availability_as_of"],
+    }}
+
+
+def _header_fields(self, ref: ResourceVersionRef, *, through_head: RegistryHead,
+                   relation_directions: dict | None = None
                    ) -> tuple[dict[str, Any], int]:
     """Retain the exact resource/provenance checks before header projection."""
     prepared = self._canonical_prepared(
         ref, through_ordinal=through_head.ordinal)
     ordinal = self._canonical_published_ordinal(
         ref.resource_version_id, through_ordinal=through_head.ordinal)
-    metadata = dict(prepared.metadata)
-    relation_kinds = sorted({
-        row["relation_type"]
-        for row in self._ResourceServiceKernel__core.event_store.canonical_relation_rows(
-            through_ordinal=through_head.ordinal,
-            version_id=ref.resource_version_id)
-    })
+    metadata = _display_metadata(self, ref, dict(prepared.metadata))
+    related = self._ResourceServiceKernel__core.event_store.canonical_relation_rows(
+        through_ordinal=through_head.ordinal, version_id=ref.resource_version_id)
+    relation_kinds = sorted({row["relation_type"] for row in related})
+    if relation_directions is not None:
+        # Reuse the exact relation rows already required for this header. The
+        # caller consumes each projection; at most the header batch is retained.
+        endpoint_kinds = {"forward": set(), "reverse": set()}
+        for row in related:
+            for direction, column in (("forward", "source_json"), ("reverse", "target_json")):
+                if json.loads(row[column]).get("version_id") == str(ref.resource_version_id):
+                    endpoint_kinds[direction].add(row["relation_type"])
+        relation_directions[ref] = endpoint_kinds
     descriptor_labels = tuple(
         SafeDescriptor(
             str(name), tuple(value) if isinstance(value, list)
@@ -464,7 +496,7 @@ def _firing_header(
     if published is None or published.event_type != "object_version_published/v1":
         raise ResourceIntegrityFault(
             "firing-visible resource lacks its publication event")
-    metadata = dict(resource.metadata)
+    metadata = _display_metadata(self, ref, dict(resource.metadata), firing=True)
     relation_kinds = tuple(sorted({
         str(relation["relation_type"])
         for relation in self._ResourceServiceKernel__core.event_store.relation_rows_for_view(
@@ -657,8 +689,12 @@ def query(
     allowed_scopes = set(query.scope_refs)
     allowed_producers = set(query.producer_refs)
     ordered_refs = sorted(visible, key=lambda item: str(item.resource_version_id))
-    for header in _headers(self, ordered_refs, through_head=head):
+    relation_directions = {} if any(
+        item.direction != "either" for item in query.relation_filters) else None
+    for header in _headers(self, ordered_refs, through_head=head,
+                           relation_directions=relation_directions):
         ref = header.ref
+        endpoint_kinds = relation_directions.pop(ref) if relation_directions is not None else None
         if allowed_scopes and not ({header.task_ref, header.round_ref, header.net_ref}
                                    & allowed_scopes):
             continue
@@ -682,6 +718,13 @@ def query(
         if query.relation_filters:
             relation_types = set(header.relation_kinds)
             if any(item.relation_type not in relation_types
+                   for item in query.relation_filters):
+                continue
+            # Each filter constrains this resource's endpoint, not merely the
+            # presence of the relation kind on either side. Keep the historical
+            # AND semantics across resource filters and the same fixed cut.
+            if any(item.direction != "either" and item.relation_type not in
+                   endpoint_kinds.get(item.direction, set())
                    for item in query.relation_filters):
                 continue
         headers.append(header)
@@ -763,6 +806,11 @@ def relation_query(
         through_ordinal=head.ordinal)
     for row in relation_rows:
         source_raw, target_raw = json.loads(row["source_json"]), json.loads(row["target_json"])
+        # This API returns exact VersionRef endpoints only. Logical ObjectRef
+        # relations remain in Registry/RelationStore; never invent a version or
+        # let an unrelated logical edge invalidate an exact-resource query.
+        if "version_id" not in source_raw or "version_id" not in target_raw:
+            continue
         source, target = self._relation_endpoint(source_raw), self._relation_endpoint(target_raw)
         source_resource = source if isinstance(source, ResourceVersionRef) else None
         target_resource = target if isinstance(target, ResourceVersionRef) else None

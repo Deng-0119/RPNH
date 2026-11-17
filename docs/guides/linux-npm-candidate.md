@@ -1,31 +1,27 @@
-# Linux installation and npm source candidate
+# Linux, Viewer and npm source integration
 
-This branch is a source-integration candidate, not a new stable release. The default branch and existing release assets are unchanged. Do not replace an existing installation with the locally built `0.1.0rc3` wheel: its retained version identifies the development baseline, not a newly published release.
+The Linux/npm runtime integration is already on public main at baseline `3d61bcf17b22deee28c5db7a427cda0e81a7f6bd`. The 2026-11-17 Viewer/query source update adds 13 product files and 13 tests/fixtures from the reviewed integrated candidate. This is a source update, not a new stable wheel or an npm registry publication. Existing release assets remain unchanged; do not overwrite rc3 assets with a development build.
 
-## Included changes
+## Included behavior
 
-The npm transport delegates to the Python bootstrap and original managed installation lifecycle. Linux invocation supervision keeps child work in its original process group and owns descendant cleanup. Reopening a session observes pending work rather than silently restarting it; execution remains explicit. Installation, frontend selection, runtime/account bindings and their shared Registry/PN dependencies accompany the entry points. This is not merely an npm launcher patch: the necessary runtime compatibility closure also touches tool execution and Viewer management modules.
+The npm transport delegates to the Python bootstrap and original managed installation lifecycle. Linux process supervision retains process-group ownership and descendant cleanup. Reopening observes pending work rather than silently restarting it. Shared runtime bindings, AgentLoop versioned identities, DSH results, optional MCP/account-provider adapters and skill inputs continue to use the original Registry/PN.
 
-The source package is in `packaging/npm-bootstrap`; its bilingual README describes its exact prerequisites and local tarball commands. It remains `private: true`, version `0.0.0-private`. A local controller wheel, persistent Python and installed uv are required. There is no supported public `npm install` command yet. Updating the transport alone is not an application upgrade.
+Viewer changes cover Registry navigation, material availability/body policies, managed material locations and connection lifetime. Terminal-location access remains explicitly opt-in under the original contract; ordinary executors do not acquire terminal capabilities. Relation queries retain forward/reverse/either filtering, logical ObjectRef handling and same-cut relation-row reuse. This is not a new parallel authorization or fact store.
 
-## Verification on 2026-11-16
+## Scoped verification
 
-The integrated candidate passed 67 focused Python bootstrap, installation-contract and platform tests, seven npm transport tests, Python compilation, wheel and source-archive builds. The wheel includes the bootstrap console entry and candidate frontend manifests. These are offline/source checks, not a new real-model acceptance run.
+- Baseline offline evidence: 67 installation/platform checks, 36 component checks, 7 Node transport tests and package builds.
+- Exact public baseline 3d61bcf: three native WSL2/Linux integrations passed on 2026-11-16 (Registry worker/replay 6.15s, AgentLoop identity/receipt 33.02s, DSH ordered parallel success/failure 72.61s). These use scripted model ports and the original fixture transport, not a new provider API or native DSH frontend acceptance. Earlier dot startup/diagnostic failures are historical, not outstanding repetitions of these checks.
+- Integrated Viewer/query source: independent 20 scoped tests passed; installed private candidate relation tests 14 passed and version tests 7 passed. These sets overlap and must not be summed as unique coverage. A broader eight-file run was manually stopped and is not a full pass.
+- Exact private wheel `0.1.0rc4.dev2026111702`: independently installed on WSL2/Linux 6.6.87.2, CPython 3.13.12; three original terminal-location native tests passed first attempt, 0 failures/errors/skips, 15.273s. Actual AF_UNIX OwnerEventLoop was used; model calls: zero.
+- Browser evidence remains scoped: earlier ordinary six-stage/nine-image flow and later terminal HTTP/DOM flow belong to their respective source windows. The final installed wheel reopened an existing run and Registry pages successfully, but this is not a repeat of every browser flow. Human visual acceptance remains unconfirmed.
 
-This newly assembled public candidate requires its own native validation. Offline checks do not establish real-model acceptance. Native process-supervision tests could not pass in the current validation environment because `/proc/self/task/<pid>/children` is unavailable. No guard was removed to make them pass.
+## npm and release work still separate
 
-## Before promotion
+`packaging/npm-bootstrap` remains `private: true`, version `0.0.0-private`. Its bilingual instructions describe a local controller wheel, persistent Python and uv. No new supported public npm install command is claimed.
 
-- Review the complete candidate against the public baseline, including shared runtime and Viewer changes.
-- Validate this exact candidate in native Linux/WSL, including installation, subprocess cleanup and retained-data reopening.
-- Choose a new release version and package identity; prepare matching public controller/application wheels, dependency assets and release metadata.
-- Validate public npm acquisition and a genuinely supported application-version update. Same-payload frontend reconfiguration is not cross-release upgrade evidence.
-- Preserve the existing release artifacts. macOS, OpenCode and old-release data migration are not established by this candidate.
+The next release needs a fixed public version, matching controller/application wheels and real release metadata/assets, npm name/publication rights, and verification of the actual public acquisition route. Existing local tarball activation is not public-registry transport or cross-release upgrade evidence. Do not replace existing rc3 assets or fabricate asset identities.
 
-[Chinese](linux-npm-candidate_ZH.md)
+This publication scope is Linux/WSL2. macOS is not a prerequisite for this source update and is not claimed supported by these results. Production account-provider wiring, full frontend/API certification and old-release migration remain separately scoped.
 
-## Dynamic entrypoint closure follow-up
-
-This candidate also aligns AgentLoop versioned tool identities, DSH result delivery, plugin exports, optional MCP/account-provider adapters and skill inputs with the shared runtime. Historical identity fields remain readable without adding new legacy-format validation; this is not a claim that every older identity format has been removed.
-
-Focused installation tests (67) and component tests (36) pass. Native worker/AgentLoop integration did not complete successfully in the current validation environment: process startup failed before a ready handshake, and the required procfs child-list interface is unavailable there. A DSH parallel-tool diagnostic ended without a normal test result; its cause is unresolved. These outcomes are not waived or counted as passing. Exact-candidate native validation remains necessary before main promotion. This source candidate is not an npm registry release or a cross-release upgrade certification.
+[中文](linux-npm-candidate_ZH.md)

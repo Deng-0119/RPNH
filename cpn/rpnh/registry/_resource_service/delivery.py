@@ -43,7 +43,7 @@ def prepare_delivery(
         raise TypeError("delivery_id must be a typed resource-delivery identity")
     if command.consumer_boundary not in {
             "llm_prompt", "tool_result", "subprocess_read",
-            "parent_receipt", "petri_input"}:
+            "parent_receipt", "petri_input", "human_viewer"}:
         raise UnmonitorableDeliveryBoundary("delivery boundary is not monitored")
     firing_ref = context.own_transition_firing_ref
     if (firing_ref is None
@@ -58,6 +58,9 @@ def prepare_delivery(
     self._authorize_resource(
         context, command.authorization_ref, command.resource_ref,
         metadata_only=False, native_resume=native_resume)
+    from ...material_body_policy import require_material_body_available
+    require_material_body_available(self._ResourceServiceKernel__core, command.resource_ref,
+                                    purpose="delivery_prepare")
     try:
         self._verify_firing_registered(
             context, command.resource_ref, view=view, prepared=prepared)
@@ -245,6 +248,9 @@ def authorize_release(
         self._authorize_resource(
             context, authorization_ref, resource_ref, metadata_only=False,
             native_resume=native_resume)
+        from ...material_body_policy import require_material_body_available
+        require_material_body_available(self._ResourceServiceKernel__core, resource_ref,
+                                        purpose="delivery_release")
         expires_at = _timestamp(_utc_now() + timedelta(seconds=60))
         head = self._head()
         witness_meta = {

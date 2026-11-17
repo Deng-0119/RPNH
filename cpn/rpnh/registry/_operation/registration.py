@@ -76,6 +76,12 @@ def _validate_operation_contract(contracts: Mapping[str, Any]) -> None:
             or not {"input_ports", "output_ports"}.issubset(contracts)):
         raise OperationAuthorityError(
             "operation contract must declare transport and port ABI")
+    if ("owner_material_commands" in contracts
+            and (contracts["owner_material_commands"]
+                 != "rpnh/material_command/v1"
+                 or contracts["transport"] != "deterministic")):
+        raise OperationAuthorityError(
+            "owner material commands require their deterministic protocol contract")
     from ...resource_access import ResourceReadContract
     read_contracts = contracts.get("resource_read_contracts", [])
     if not isinstance(read_contracts, (list, tuple)):

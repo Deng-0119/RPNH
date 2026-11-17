@@ -1479,6 +1479,21 @@ def _authorize_resource(self, context: InvocationContext,
     self._revalidate_invocation(context, boundary=(
         "resource-metadata-query" if metadata_only else "resource-delivery"),
         native_resume=native_resume)
+    if not metadata_only:
+        from .._event_store.material_control import validate_material_input_consumer
+        core = self._ResourceServiceKernel__core
+        with core.event_store.connection_scope() as db:
+            db.execute("BEGIN")
+            try:
+                validate_material_input_consumer(core.event_store, db, core.task_id,
+                    _ref_payload(resource_ref.as_version_ref()), _ref_payload(context.invocation_ref))
+                from ...material_body_policy import resolve_body_availability
+                availability = resolve_body_availability(core.event_store, db, core.task_id,
+                    _ref_payload(resource_ref.as_version_ref()))
+                if availability["availability"] != "available":
+                    raise RegistryConflict("MATERIAL_UNAVAILABLE: new body authorization requires current availability")
+            except RegistryConflict as exc:
+                raise UnauthorizedResourceDelivery(str(exc)) from exc
     if self._binding_allows(
             context, authorization_ref, resource_ref, metadata_only=metadata_only):
         return

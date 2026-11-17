@@ -127,7 +127,7 @@ def resolve_body_availability(store, db, task_id, resource_ref, *, source_cut=No
 
 
 def resolve_material_body_availability(core, resource_ref, *, source_cut=None):
-    with core.event_store.connect() as db:
+    with core.event_store.connection_scope() as db:
         db.execute("BEGIN")
         return resolve_body_availability(core.event_store, db, core.task_id,
             resource_ref, source_cut=source_cut)

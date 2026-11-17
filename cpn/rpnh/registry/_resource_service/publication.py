@@ -383,7 +383,26 @@ def _publish_fresh_bootstrap_reference(
         validate_resource_replay(self._ResourceServiceKernel__core, ref)
         return ref
     for ancestor in command.derived_from:
-        self._prepared_reference(ancestor)
+        from ..transaction import RegistryTransaction
+        core = self._ResourceServiceKernel__core
+        staged = ()
+        if (type(transaction) is RegistryTransaction
+                and transaction.event_store is core.event_store
+                and transaction.object_store is core.object_store
+                and transaction.task_id == core.task_id
+                and not transaction._closed):
+            staged = tuple(item for item in transaction._objects
+                if item.object_type == "resource_version/v1"
+                and item.logical_id == ancestor.resource_id
+                and item.version_id == ancestor.resource_version_id)
+        if staged:
+            if len(staged) != 1 or staged[0].metadata.get("task_ref") != _ref_payload(task_ref):
+                raise ResourceSchemaViolation("staged private ancestor differs from its original task")
+            core.object_store.validate_envelope(staged[0])
+            core.catalog.validate_instance("resource_version/v1", category="object",
+                                           instance=staged[0].metadata)
+        else:
+            self._prepared_reference(ancestor)
     if command.supersedes is not None:
         prior = self._prepared_reference(command.supersedes)
         if prior.logical_id != resource_id:

@@ -73,6 +73,7 @@ class HarnessResult:
     operation_execution_trace: tuple["OperationExecutionTrace", ...]
     terminal_evidence_ref: VersionRef | None = None
     completion_error: BaseException | None = field(default=None, compare=False, repr=False)
+    management_in_progress: bool = False
 
 
 @dataclass(frozen=True, slots=True)
@@ -158,6 +159,22 @@ class Harness:
         executable, _structure, _marking = self._runtime()
         return bool(active_module_firings(core, executable.net_ref))
 
+    def _committed_terminal(self) -> bool:
+        """Keep business completion while a real management firing is pending."""
+        from .registry._registry import _RegistryCore
+        core = getattr(self.owner, "_core", None)
+        if isinstance(core, _RegistryCore):
+            from .registry.resource_service import _ResourceServiceKernel
+            from .registry.run_authority import read_run_execution
+            current = read_run_execution(core, _ResourceServiceKernel(core))
+            self._terminal_ref = (None if current.terminal is None else current.terminal.evidence_ref)
+        return self._terminal_ref is not None
+
+    def _refresh_terminal(self):
+        self._terminal_ref = self.owner.terminal()
+        self._committed_terminal()
+        return self._terminal_ref
+
     @staticmethod
     def _claimed_inputs(execution):
         from .registry.operations import ClaimedPetriInputAuthority, canonical_claimed_petri_inputs
@@ -172,9 +189,10 @@ class Harness:
 
     def schedule_ready(self) -> tuple[VersionRef, ...]:
         """Admit every eligible occurrence; injected code selects no firing."""
-        if (self._terminal_ref is not None or self.owner.admission_paused
+        if (self.owner.admission_paused
                 or self._completion_error is not None):
             return ()
+        terminal = self._committed_terminal()
         capacity = self.max_in_flight - len(self._pending) - len(self._waiting)
         if capacity <= 0:
             return ()
@@ -183,7 +201,14 @@ class Harness:
         from .registry.module_execution import install_active_module_claims
         active = install_active_module_claims(
             self.owner._core, local, executable.net_ref)
-        enabled = tuple(local.enabled_transitions())
+        enabled = self.owner.control.materials.eligible_transitions(
+            structure, tuple(local.enabled_transitions()))
+        if terminal:
+            # The Registry admits only the explicitly adopted bounded variant.
+            # A temporary None from terminal detection cannot restart business.
+            enabled = tuple(name for name in enabled
+                if self.owner.control.materials.is_management_transition(structure, name))
+            capacity = min(capacity, 1)
         selected = enabled
         if self.select_ready is not None:
             selected = self.select_ready(
@@ -262,7 +287,7 @@ class Harness:
         ))
         self._pending.pop(key, None)
         self._waiting.pop(key, None)
-        self._terminal_ref = self.owner.terminal()
+        self._refresh_terminal()
         return successor
 
     def _supports_interruption(self, execution) -> bool:
@@ -276,6 +301,30 @@ class Harness:
             if item.declaration.name == transition.operation)
         return any(
             outcome.name == "interrupted" for outcome in operation.outcomes)
+
+    def _complete_material_rejection(self, execution, outputs, reported):
+        """Retire only an exact, durably rejected completion from this loop."""
+        from .material_settlement import MaterialPublishRejected, _known_terminal
+        # Neither an exception type nor its supplied receipt closes a firing.
+        # This original read verifies command, Start, ordered outputs and the
+        # canonical same-transaction result/rejection before returning a fact.
+        try:
+            _known_terminal(self.owner, outputs)
+        except MaterialPublishRejected as verified:
+            if reported.receipt != verified.receipt:
+                # A stale or fabricated report cannot replace the exact root
+                # read. The proven terminal fact still owns this completion.
+                reported = verified
+        else:
+            raise HarnessBoundaryError(
+                "material rejection lacks its exact durable terminal result") from reported
+        key = execution.operation_execution_lease_ref
+        self._pending.pop(key)
+        self._refresh_terminal()
+        if self._terminal_ref is None and not self._owner_stop_requested:
+            self._resume_resource_waits(
+                idempotency_key=f"harness:resource-wake-after-rejection:{key.version_id}")
+        return reported.receipt
 
     def _complete(self, execution, future):
         key = execution.operation_execution_lease_ref
@@ -294,7 +343,12 @@ class Harness:
                         or outputs.execution.operation.firing != execution.operation.firing):
                     raise HarnessBoundaryError("products belong to another firing")
                 durable_products = True
-                successor = self.owner.succeed(outputs, command_id=f"harness:{key.version_id}:success")
+                from .material_settlement import MaterialPublishRejected
+                try:
+                    successor = self.owner.succeed(
+                        outputs, command_id=f"harness:{key.version_id}:success")
+                except MaterialPublishRejected as rejected:
+                    return self._complete_material_rejection(execution, outputs, rejected)
                 from .registry.publication import _version_from_payload
                 record = self.owner._core.event_store.ordered_firing_record(
                     execution.operation.firing.transition_firing_ref.version_id)
@@ -309,7 +363,7 @@ class Harness:
                     budget_scope=context.budget_scope, finalization_scope=context.finalization_scope,
                     timing_observation=result.timing_observation))
                 self._pending.pop(key)
-                self._terminal_ref = self.owner.terminal()
+                self._refresh_terminal()
                 if (self._terminal_ref is None
                         and not self._owner_stop_requested):
                     self._resume_resource_waits(
@@ -331,7 +385,7 @@ class Harness:
                 return successor
             self._waiting[key] = result
             self._pending.pop(key)
-            self._terminal_ref = self.owner.terminal()
+            self._refresh_terminal()
             return result
         except Exception as exc:
             if (not durable_products
@@ -394,6 +448,7 @@ class Harness:
         return resumed
 
     def result(self) -> HarnessResult:
+        self._committed_terminal()
         _, _, marking = self._runtime()
         resources = tokens = ()
         if self._terminal_ref is not None:
@@ -408,7 +463,10 @@ class Harness:
             tokens = tuple(item.token_ref for item in marking.tokens
                 if item.state.consumed_by is None and product in
                 (item.state.resource_ref, item.state.work_resource_ref))
-        reason = ("terminal" if self._terminal_ref is not None else
+        management = (self._terminal_ref is not None and
+            (bool(self._pending or self._waiting) or self._has_unresolved_registry_firing()))
+        reason = ("terminal_management_pending" if management else
+            "terminal" if self._terminal_ref is not None else
             "stopped_by_owner" if self._owner_stop_ref is not None else
             "task_model_call_cap" if self._terminal_handoff else
             "completion_failed" if self._completion_error is not None else
@@ -419,12 +477,11 @@ class Harness:
             "quiescent_marking" if self._quiescent else
             "waiting_owner_commands")
         return HarnessResult(self._terminal_ref is not None, reason, marking, tokens, resources,
-            tuple(self._trace), self._terminal_ref, self._completion_error)
+            tuple(self._trace), self._terminal_ref, self._completion_error, management)
 
     def exact_execute(self) -> HarnessResult:
-        self._terminal_ref = self.owner.terminal()
-        while ((self._terminal_ref is None and not self._terminal_handoff)
-               or self._pending):
+        self._refresh_terminal()
+        while not self._terminal_handoff or self._pending:
             # The first completion failure closes admission immediately, but
             # already-started sibling firings still own worker/gateway state.
             # Drain those completions on the sole owner loop before surfacing
@@ -435,12 +492,12 @@ class Harness:
                 for disposition in tuple(self._waiting.values()):
                     if self._supports_interruption(disposition.execution):
                         self._settle_interruption(disposition.execution)
-                self._owner_stop_ref = self.owner.record_owner_stop(idempotency_key="launcher-owner-stop")
+                if not self._committed_terminal():
+                    self._owner_stop_ref = self.owner.record_owner_stop(idempotency_key="launcher-owner-stop")
                 return self.result()
             if (not self._owner_stop_requested
                     and self._completion_error is None
-                    and not self._terminal_handoff
-                    and self._terminal_ref is None):
+                    and not self._terminal_handoff):
                 started = self.schedule_ready()
                 if (not started and not self._pending and self._waiting):
                     # No live completion can release contention. Surface the
@@ -454,7 +511,7 @@ class Harness:
                     # to its caller.  The interactive OwnerEventLoop remains
                     # available as a separate API; blocking here would hide a
                     # malformed graph or an exhausted bounded-feedback lane.
-                    self._quiescent = True
+                    self._quiescent = self._terminal_ref is None
                     return self.result()
             self.event_loop.dispatch_ready()
             if self._completion_error is not None and not self._pending:

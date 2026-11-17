@@ -534,6 +534,7 @@ class MaterialManagementViewer:
         from cpn.rpnh.registry._event_store.material_locations import validate_location_spec
         from cpn.rpnh.registry.strict_contracts import ref_payload
         from cpn.rpnh.material_locations import LOCATION_EXECUTOR, LOCATION_CONTRACTS
+        from cpn.rpnh.terminal_management import TERMINAL_EXECUTOR, TERMINAL_CONTRACTS
         core = self._owner._core
         transition = validate_active_target(core.event_store, db, core.task_id, request,
                                              ref_payload(self._owner.principal_ref))
@@ -541,10 +542,14 @@ class MaterialManagementViewer:
         spec = exact_descriptor(db, core.object_store, core.task_id, binding["operation_spec_ref"])
         validate_location_spec(spec, binding)
         registered = self._owner.registration.declaration("executor", spec["executor_key"])
-        if (spec["executor_key"] != LOCATION_EXECUTOR
-                or registered["identity"] != spec["implementation_identity"]
+        expected_contracts = LOCATION_CONTRACTS
+        if self._terminal_materials and spec["executor_key"] == TERMINAL_EXECUTOR:
+            expected_contracts = TERMINAL_CONTRACTS
+        elif spec["executor_key"] != LOCATION_EXECUTOR:
+            raise MaterialManagementError("target_unavailable", 409)
+        if (registered["identity"] != spec["implementation_identity"]
                 or registered["contracts"] != spec["implementation_contracts"]
-                or registered["contracts"] != LOCATION_CONTRACTS):
+                or registered["contracts"] != expected_contracts):
             raise MaterialManagementError("target_unavailable", 409)
 
     def _location_catalog_at_cut(self, db, selected=None):
@@ -557,7 +562,7 @@ class MaterialManagementViewer:
         if not self._location_targets:
             return closed_location_catalog(self.source_id)
         core = self._owner._core
-        execution = self._execution(db)
+        execution = self._execution(db, allow_terminal=self._terminal_materials)
         bindable = False
         if selected is not None:
             selected = reference(selected, "resource_version/v1")
@@ -802,7 +807,7 @@ class MaterialManagementViewer:
                 if previous["status"] == "NOT_FOUND_AT_READ_CUT":
                     # Check the frozen selection at one read cut. The Owner's
                     # original lock/CAS still decides a later execution race.
-                    if request["execution"] != self._execution(db):
+                    if request["execution"] != self._execution(db, allow_terminal=self._terminal_materials):
                         raise MaterialManagementError("execution_changed", 409)
                     self._location_target(db, request)
                     kernel, _repository = self._owner.operation_repository()
