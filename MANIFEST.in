@@ -29,3 +29,6 @@ prune docs/validation
 
 # Public installation entry and export helpers.
 recursive-include packaging *.py *.md *.json *.mjs
+
+# Optional OAuth HOST remains a separately installed distribution.
+recursive-include packaging/github-oauth-host *.py *.toml *.md LICENSE

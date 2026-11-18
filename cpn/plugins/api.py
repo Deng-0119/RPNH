@@ -86,7 +86,7 @@ def checked_account_requirement(value: Mapping[str, str] | None):
             or len(service) > 512
             or any(ord(character) < 32 or ord(character) == 127 for character in service)):
         raise PluginError("account requirement service_id requires bounded canonical text")
-    if type(value["slot"]) is not str or value["slot"] != "github_pat/v1":
+    if type(value["slot"]) is not str or value["slot"] not in ("github_pat/v1", "github_oauth/v1"):
         raise PluginError("account requirement slot is not supported")
     return frozen({"service_id": service, "slot": value["slot"]})
 
@@ -459,4 +459,5 @@ class PluginContext:
     def check_cancelled(self) -> None:
         if self.cancelled or self.remaining_seconds <= 0:
             raise PluginError("plugin execution cancelled or deadline exceeded")
+
 

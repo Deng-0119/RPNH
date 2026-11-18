@@ -81,7 +81,7 @@ class GitHubPATAccountProvider:
     __slots__ = ("_request", "_account", "_current_use_check", "_credential_source")
 
     def __init__(self, request, *, host, current_use_check, credential_source):
-        if type(request) is not AccountBindingRequest:
+        if type(request) is not AccountBindingRequest or request.slot != "github_pat/v1":
             raise TypeError("GitHub PAT provider requires one fixed account binding request")
         if (current_use_check is not None and not callable(current_use_check)
                 or credential_source is not None and not callable(credential_source)):
@@ -194,3 +194,4 @@ class GitHubPATResolverFactory:
 
 __all__ = ("GitHubPATAccount", "GitHubPATCredential", "GitHubPATAccountProvider",
            "GitHubPATResolverFactory")
+

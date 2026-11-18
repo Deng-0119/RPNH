@@ -21,6 +21,7 @@ from cpn.rpnh.registry.credentials import (
 )
 
 _SLOT = "github_pat/v1"
+_SLOTS = frozenset({_SLOT, "github_oauth/v1"})
 _SECRET_VARIABLE = "GITHUB_PERSONAL_ACCESS_TOKEN"
 _BASE_ENVIRONMENT = frozenset({"PATH", "LANG", "LC_ALL", "TMPDIR"})
 _ERROR_CODES = frozenset({
@@ -88,7 +89,7 @@ class AccountSelection:
             raise ValueError("the first account bridge requires one canonical local source")
         for value in (self.service_id, self.account_id, self.binding_revision):
             _text(value)
-        if self.slot != _SLOT:
+        if self.slot not in _SLOTS:
             raise ValueError("unsupported installed credential renderer slot")
 
     def to_dict(self) -> dict[str, object]:
@@ -525,4 +526,5 @@ def resolved_stdio_environment(
             secret_buffer[:] = b"\x00" * len(secret_buffer)
         if isinstance(received, ResolvedAccountFD):
             ResolvedAccountFD.close(received)
+
 

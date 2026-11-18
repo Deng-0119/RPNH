@@ -8,7 +8,6 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 from dataclasses import dataclass
-import hashlib
 import json
 from typing import Callable
 
@@ -155,7 +154,7 @@ def _tool_messages(messages):
 def verify_required_read_coverage(required_sources, verified_snapshot, *, cutoff):
     """Return errors + exact evidence for an inclusive pre-seal event cut.
 
-    required_sources: [{doc_id,resource_ref,decoded_sha256,required_ranges:
+    required_sources: [{doc_id,resource_ref,required_ranges:
       [{start,end_exclusive,unit:'unicode_codepoint'}]}]. Teacher bodies use the
     identical generic resource/range contract. Only genuine complete bounded
     read slices count; reducer fragments, references and summaries do not.
@@ -164,6 +163,8 @@ def verify_required_read_coverage(required_sources, verified_snapshot, *, cutoff
     """
     s = verified_snapshot
     required_sources = _plain(required_sources)
+    if any("decoded_sha256" in source for source in required_sources):
+        raise ValueError("decoded_sha256 is no longer supported; bind the exact Registry resource_ref instead")
     if not isinstance(s, ReadCoverageSnapshot):
         raise TypeError("coverage requires a trusted ReadCoverageSnapshot")
     if type(cutoff) is not int or not 0 <= cutoff <= s.head_ordinal:
@@ -307,7 +308,7 @@ def verify_required_read_coverage(required_sources, verified_snapshot, *, cutoff
                         text = None
             except (UnicodeError, ValueError):
                 text = None
-        if text is None or hashlib.sha256(text.encode("utf-8")).hexdigest() != source["decoded_sha256"]:
+        if text is None:
             errors.append({"doc_id": source["doc_id"], "code": "source_body_identity_unavailable"})
             continue
         required = source["required_ranges"]
@@ -433,7 +434,7 @@ def verify_required_read_coverage(required_sources, verified_snapshot, *, cutoff
             errors.append({"doc_id": source["doc_id"], "code": "required_read_coverage_missing",
                            "reason_code": reason, "required_ranges": missing})
         evidence.append({"doc_id": source["doc_id"], "resource_ref": resource_ref,
-            "decoded_sha256": source["decoded_sha256"], "covered_ranges": [
+            "covered_ranges": [
                 {"start": lo, "end_exclusive": hi, "unit": "unicode_codepoint"} for lo, hi in union],
             "acknowledged_read_actions": len(candidates),
             "submitted_followup_requests": submitted_followup_requests, "proofs": proofs})

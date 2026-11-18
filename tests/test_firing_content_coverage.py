@@ -1,7 +1,6 @@
 """Pure original-fact-format tests; native closure is tested by the HOST suite."""
 from copy import deepcopy
 from dataclasses import replace
-import hashlib
 import json
 import sqlite3
 from types import SimpleNamespace
@@ -120,7 +119,6 @@ def fixture(slices=None):
     snapshot = ReadCoverageSnapshot(tuple(records), tuple(events), reader, inv, op, firing,
                                     "task", len(slices) * 20)
     required = [{"doc_id": "source", "resource_ref": source,
-                 "decoded_sha256": hashlib.sha256(text.encode()).hexdigest(),
                  "required_ranges": [{"start": 0, "end_exclusive": len(text), "unit": "unicode_codepoint"}]}]
     return required, snapshot, materials
 
@@ -165,7 +163,7 @@ def test_action_and_settlement_must_share_original_atomic_transaction():
     "N01_unread", "N02_wrongref", "N05_not_submitted", "N06_truncated",
     "materialized_only", "reserved_only", "unknown_submission", "assistant_quote",
     "history_provenance", "receipt_only", "missing_ack", "wrong_operation", "wrong_attempt_recipe",
-    "missing_prior_turn", "unsettled", "bad_original_toolcall", "bad_source_digest",
+    "missing_prior_turn", "unsettled", "bad_original_toolcall", "bad_source_body",
     "missing_origin_call", "bad_final_toolcall", "no_final_toolcall",
 ])
 def test_missing_or_nonbody_facts_never_prove_coverage(damage):
@@ -209,8 +207,8 @@ def test_missing_or_nonbody_facts_never_prove_coverage(damage):
         response = json.loads(materials["response0"])
         response["tool_calls"][0]["name"] = "search_text"
         materials["response0"] = encoded(response)
-    elif damage == "bad_source_digest":
-        required[0]["decoded_sha256"] = "0" * 64
+    elif damage == "bad_source_body":
+        materials["source"] = b"\xff"
     assert verify(required, snapshot)["errors"]
 
 
@@ -331,3 +329,12 @@ def test_bounded_original_sql_collector_excludes_pending_proposals():
     with pytest.raises(ValueError, match="head"):
         collect_read_coverage_snapshot(view, **dict(args, cutoff=15))
     db.close()
+
+
+
+@pytest.mark.parametrize("legacy", [None, "incorrect"])
+def test_legacy_source_field_requires_migration(legacy):
+    required,snapshot,_=fixture()
+    required[0]["decoded_sha256"]=legacy
+    with pytest.raises(ValueError,match="no longer supported"):
+        verify(required,snapshot)

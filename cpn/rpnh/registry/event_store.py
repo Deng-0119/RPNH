@@ -1932,6 +1932,7 @@ class EventStore:
                       expected_registry_ordinal: int | None = None,
                       collaboration_action=None,
                   run_input_command=None,
+                      staged_payloads=None,
                       ) -> tuple[EventEnvelope, ...]:
         from ._event_store import commit
 
@@ -1951,6 +1952,7 @@ class EventStore:
             expected_registry_ordinal=expected_registry_ordinal,
             collaboration_action=collaboration_action,
             run_input_command=run_input_command,
+            staged_payloads=staged_payloads,
         )
 
     def _before_firing_authority_mutation(
@@ -2370,3 +2372,4 @@ class EventStore:
 
 
 from .task_ledger import TaskControlLedger
+

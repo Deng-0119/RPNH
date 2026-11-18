@@ -74,7 +74,7 @@ class AccountBindingRequest:
             raise ValueError("account request requires exact node and tool symbols")
         for value in (self.service_id, self.account_id, self.binding_revision):
             _text(value)
-        if self.slot != "github_pat/v1":
+        if self.slot not in ("github_pat/v1", "github_oauth/v1"):
             raise ValueError("unsupported installed account slot")
 
     def to_dict(self):
@@ -410,3 +410,4 @@ __all__ = ("BINDING_SCHEMA", "PLAN_SCHEMA", "PUBLICATION_CONFIG_SCHEMA", "PUBLIS
            "AccountBindingRequest", "AccountBindingPlan", "account_binding_schema_data",
            "register_account_binding_catalog", "register_account_binding_support", "with_account_binding_inputs", "account_binding_input",
            "account_publication_config", "verify_account_binding_plan", "prepare_account_bindings")
+

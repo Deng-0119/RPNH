@@ -235,7 +235,7 @@ class BootstrapMetadataTests(BootstrapTestCase):
         self.assertFalse(self.root.exists())
         self.assertEqual(self.fixture.wheel_calls, [])
 
-    def test_incomplete_or_non_native_evidence_never_reaches_acquisition(self):
+    def test_extras_incomplete_or_non_native_evidence_never_reaches_acquisition(self):
         changes = [
             lambda f: f.validation["results"][0].update(mode="fixture"),
             lambda f: f.validation["results"][0].update(status="fail"),
@@ -244,11 +244,27 @@ class BootstrapMetadataTests(BootstrapTestCase):
             lambda f: f.support["combinations"][0].update(evidence=["missing-result"]),
         ]
         for index, change in enumerate(changes):
-            fixture = self.new_fixture()
+            fixture = self.new_fixture(extras=("mcp",))
             change(fixture)
             with self.subTest(case=index), self.transports(fixture), \
                     self.assertRaises(bootstrap.PublishedBootstrapError):
-                fixture.inspect()
+                fixture.inspect(root_extras=["mcp"])
+            self.assertEqual(fixture.wheel_calls, [])
+        self.assertFalse(self.root.exists())
+
+    def test_basic_non_native_history_is_not_installation_qualification(self):
+        changes = [
+            lambda f: f.validation["results"][0].update(mode="fixture"),
+            lambda f: f.validation["results"][0].update(status="fail"),
+            lambda f: f.validation["results"][0].update(status="blocked"),
+            lambda f: f.validation["results"][0].update(scope=["T02", "T20"]),
+        ]
+        for index, change in enumerate(changes):
+            fixture = self.new_fixture()
+            change(fixture)
+            with self.subTest(case=index), self.transports(fixture):
+                document = fixture.inspect().to_document()
+                self.assertFalse(document["qualification_gaps"]["qualification_granted"])
             self.assertEqual(fixture.wheel_calls, [])
         self.assertFalse(self.root.exists())
 

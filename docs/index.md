@@ -151,3 +151,5 @@ pages. They do not certify every combination of current source and providers.
 [Role and resource views](../examples/multiuser_release_handoff/figures/README.md) ·
 [Run prerequisites](../examples/multiuser_release_handoff/RUNNING.md) ·
 [Historical results and limits](../examples/multiuser_release_handoff/RESULTS.md)
+
+- [Optional GitHub OAuth account](guides/github-oauth-account.md)

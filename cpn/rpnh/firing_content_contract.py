@@ -5,10 +5,10 @@ FiringContentContractError. No callback return value grants authority.
 
 configuration_sources(owner)'s immutable JSON contains
 firing_content_contracts: {binding_key: {resource_id, resource_version_id}}.
-That resource is JSON with protocol='firing_content_contract/v1', run_ref,
+That resource is JSON with protocol='firing_content_contract/v2', run_ref,
 net_ref, operation_binding_ref (or operation_binding_refs), checker (the full
 Registration tool declaration), sources, products, required_reads, refinement.
-sources maps role to {resource_ref, sha256?, decoded_sha256?}; products maps
+sources maps role to {resource_ref}; products maps
 qualified symbolic port name to registered schema ID. Domain fields remain
 ordinary data interpreted by the explicitly registered trusted checker.
 
@@ -23,12 +23,11 @@ evidence.read_resource(ref, max_bytes=None) returns registered bytes (or None
 when the bound is exceeded). evidence.read_object(ref) returns metadata.
 evidence.events(*, event_types=()) and objects(*, object_type) return original
 facts at acceptance_cut. Snapshot refs are original JSON refs;
-sources include original payload bytes and any explicit digest assertions;
-products include payload bytes and sha256. Preflight product refs are None.
+sources and products include original payload bytes and exact Registry refs.
+Preflight product refs are None. Check records use firing_content_check/v2.
 """
 from __future__ import annotations
 
-import hashlib
 import json
 from collections.abc import Mapping
 from types import MappingProxyType
@@ -40,8 +39,8 @@ from .registry.identities import TypedId
 from .registry.publication import _ref_payload, _resource_from_payload, _version_from_payload
 from .registry.schema_catalog import canonical_json
 
-PROTOCOL = "firing_content_contract/v1"
-CHECKER_PROTOCOL = "firing_content_checker/v1"
+PROTOCOL = "firing_content_contract/v2"
+CHECKER_PROTOCOL = "firing_content_checker/v2"
 
 
 class FiringContentContractError(ResourceIntegrityFault):
@@ -72,6 +71,8 @@ def validate_marker(operation, registration):
     if "firing_content_contract" not in operation.config:
         return
     marker = operation.config["firing_content_contract"]
+    if isinstance(marker, Mapping) and marker.get("protocol") == "firing_content_contract/v1":
+        _fail("legacy v1 declaration requires its original runtime; rebuild a new v2 run explicitly")
     if (not isinstance(marker, Mapping) or set(marker) != {
             "protocol", "binding_key", "checker_key", "success_outcomes"}
             or marker["protocol"] != PROTOCOL
@@ -86,7 +87,7 @@ def validate_marker(operation, registration):
     registration.resolve("tool", marker["checker_key"])
     if (checker["contracts"].get("protocol") != CHECKER_PROTOCOL
             or marker["checker_key"] in operation.tools):
-        _fail("checker must be a registered HOST-only firing_content_checker/v1")
+        _fail("checker must be a registered HOST-only firing_content_checker/v2")
 
 
 class _ReadSQL:
@@ -166,7 +167,8 @@ class FiringContentEvidence:
         version = TypedId.parse(row["version_id"])
         if row["storage_locator"] != "registry-object:" + str(version):
             _fail("registered object locator is not exact")
-        raw = (self.__store.path.parent / "objects" / version.kind / version.value).read_bytes()
+        from .registry.object_store import transaction_payload_path
+        raw = transaction_payload_path(self.__store.path.parent / "objects", version).read_bytes()
         if len(raw) != row["size"]:
             _fail("registered object bytes differ from their envelope")
         return raw
@@ -259,6 +261,8 @@ def _load(evidence, invocation_ref, outcome=None):
     for role, source in contract["sources"].items():
         if not isinstance(source, Mapping) or not isinstance(source.get("resource_ref"), Mapping):
             _fail("source requires an exact resource_ref: " + role)
+        if "decoded_sha256" in source or "sha256" in source:
+            _fail("legacy source assertion requires migration to an exact Registry resource_ref: " + role)
         try:
             ref = _version(source["resource_ref"])
         except (KeyError, TypeError, ValueError) as exc:
@@ -268,18 +272,10 @@ def _load(evidence, invocation_ref, outcome=None):
                        for key in ("logical_id", "version_id"))):
             _fail("source requires an exact resource_ref: " + role)
         raw = evidence.read_resource(source["resource_ref"])
-        if (evidence.read_object(source["resource_ref"])["task_ref"] != invocation["task_ref"]
-                or ("sha256" in source and hashlib.sha256(raw).hexdigest() != source["sha256"])):
+        if evidence.read_object(source["resource_ref"])["task_ref"] != invocation["task_ref"]:
             _fail("SOURCE_BINDING_MISMATCH: source bytes or task differs: " + role)
-        if "decoded_sha256" in source:
-            try:
-                decoded = json.loads(raw)
-            except (ValueError, UnicodeError) as exc:
-                raise FiringContentContractError("decoded source is not a JSON string: " + role) from exc
-            if not isinstance(decoded, str) or hashlib.sha256(decoded.encode()).hexdigest() != source["decoded_sha256"]:
-                _fail("decoded source bytes differ: " + role)
         sources[role] = {**source, "payload": raw}
-    snapshot = {"contract_ref": contract_ref, "contract_sha256": hashlib.sha256(contract_raw).hexdigest(),
+    snapshot = {"contract_ref": contract_ref,
         "contract": contract, "checker": checker, "run_ref": run_ref, "net_ref": net_ref,
         "compiled_ref": compiled_ref, "configuration_ref": _resource(config_ref),
         "operation_binding_ref": binding, "invocation_ref": invocation_ref,
@@ -309,7 +305,7 @@ def _check(evidence, invocation_ref, outcome, products, *, refs=None, check_cont
             Draft7Validator(schema).validate(json.loads(payload))
         except Exception as exc:
             raise FiringContentContractError("candidate schema rejected: " + name) from exc
-        bound[name] = {"payload": payload, "sha256": hashlib.sha256(payload).hexdigest(),
+        bound[name] = {"payload": payload,
                        "resource_ref": None if refs is None else refs[name], "schema_id": ports[name].schema}
     snapshot.update(selected_outcome_id=outcome, products=bound)
     if outcome not in marker["success_outcomes"]:
@@ -415,8 +411,8 @@ def _output_material(evidence, invocation_ref, outcome, refs, pending=()):
 
 
 def _verify_record(store, db, head, record, refs, *, pending=()):
-    if not isinstance(record, dict) or record.get("protocol") != "firing_content_check/v1":
-        _fail("check resource is not the finite protocol")
+    if not isinstance(record, dict) or record.get("protocol") != "firing_content_check/v2":
+        _fail("legacy or unsupported check record requires explicit migration; expected firing_content_check/v2")
     saved = record["snapshot"]
     cut = saved.get("acceptance_cut")
     if type(cut) is not int or not 0 <= cut <= head:
@@ -489,6 +485,19 @@ def get_firing_content_check(core, execution):
 
 
 def seal_candidate(core, execution, *, products, selected_outcome_id, idempotency_key):
+    from .registry.object_store import discard_staged_payloads
+    pending = []
+    try:
+        return _seal_candidate(core, execution, products=products,
+            selected_outcome_id=selected_outcome_id, idempotency_key=idempotency_key,
+            pending_stages=pending)
+    finally:
+        for staged in pending:
+            discard_staged_payloads(staged)
+
+
+def _seal_candidate(core, execution, *, products, selected_outcome_id, idempotency_key,
+                    pending_stages):
     """Publish the entire content bundle and exact check in one native transaction.
 
     An identical command after a crash reads the already-committed whole bundle.
@@ -517,11 +526,15 @@ def seal_candidate(core, execution, *, products, selected_outcome_id, idempotenc
             if len(existing) != 1:
                 _fail("multiple acceptance records")
             record = existing[0][1]
+            if record.get("protocol") != "firing_content_check/v2":
+                _fail("legacy check record requires explicit migration; cannot reseal accepted products")
             saved = record["snapshot"]
             if (record["command_id"] != idempotency_key
                     or saved["selected_outcome_id"] != selected_outcome_id
-                    or {k: hashlib.sha256(v).hexdigest() for k,v in products.items()}
-                    != {k: v["sha256"] for k,v in saved["products"].items()}):
+                    or set(products) != set(saved["products"])
+                    or any(not isinstance(payload, bytes)
+                           or payload != evidence.read_resource(saved["products"][name]["resource_ref"])
+                           for name, payload in products.items())):
                 _fail("BLOCKED: prior atomic seal cannot be overwritten")
             refs = {k:v["resource_ref"] for k,v in saved["products"].items()}
             _verify_record(core.event_store, db, cut, record, list(refs.values()))
@@ -537,6 +550,7 @@ def seal_candidate(core, execution, *, products, selected_outcome_id, idempotenc
             bindings = {p.port_id:p for p in execution.operation.operation_binding.output_port_bindings}
             tx = core.begin(idempotency_key=idempotency_key,
                 task_round_id=context.task_round_ref.entity_id, net_instance_id=context.net_instance_ref.entity_id)
+            pending_stages.append(tx._staged_payloads)
             tx.expect_registry_ordinal(cut)
             refs = {}
             for name in sorted(products):
@@ -550,15 +564,16 @@ def seal_candidate(core, execution, *, products, selected_outcome_id, idempotenc
                     idempotency_key=f"{idempotency_key}:product:{port.port_id}:0"), tx)
                 refs[name] = _resource(ref)
             accepted = _check(evidence, invocation_ref, selected_outcome_id, products, refs=refs)
-            record = {"protocol":"firing_content_check/v1", "command_id":idempotency_key,
+            record = {"protocol":"firing_content_check/v2", "command_id":idempotency_key,
                       "snapshot":_without_bytes(accepted)}
             bootstrap = _version_from_payload(json.loads(core.event_store.get_meta("bootstrap_command_ref")))
-            kernel._publish_bytes_in_transaction(context, PublishResource(
-                origin=PrivateSystemOrigin(bootstrap), payload=canonical_json(record),
-                media_type="application/json",content_schema_ref=None,
-                summary="Trusted firing content check",lifetime_ref=context.invocation_ref,
-                descriptors={"firing_content_check":"v1"},
-                idempotency_key=idempotency_key+":content-check"),tx)
+            with tx.stage_payloads():
+                kernel._publish_bytes_in_transaction(context, PublishResource(
+                    origin=PrivateSystemOrigin(bootstrap), payload=canonical_json(record),
+                    media_type="application/json",content_schema_ref=None,
+                    summary="Trusted firing content check",lifetime_ref=context.invocation_ref,
+                    descriptors={"firing_content_check":"v1"},
+                    idempotency_key=f"{idempotency_key}:content-check:{cut}"),tx)
     if tx is not None:
         tx.commit()
     artifacts = tuple(verify_resource(core,kernel,execution.operation.canonical,_resource_from_payload(ref))
@@ -636,3 +651,4 @@ def validate_content_transaction(context):
         if len(original) != 1 or original[0][1]["snapshot"]["selected_outcome_id"] != outcome:
             _fail("Success lacks its original accepted outcome/check")
         _verify_record(context.event_store,context.db,head,original[0][1],result["output_resource_refs"])
+

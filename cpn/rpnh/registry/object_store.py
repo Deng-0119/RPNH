@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import os
+from contextlib import contextmanager
+from contextvars import ContextVar
 import tempfile
 from pathlib import Path
 from typing import Any, Callable, Mapping
@@ -14,6 +16,50 @@ from .schema_catalog import SchemaCatalog, canonical_json
 
 class ObjectIntegrityError(RuntimeError):
     pass
+
+
+_STAGED_READS = ContextVar('registry_transaction_staged_reads', default=None)
+class StagedPayloads(dict):
+    def __init__(self, store):
+        super().__init__()
+        self.store = store
+        self.root = store.root.resolve()
+
+    def require_path(self, final):
+        relative = Path(final).resolve().relative_to(self.root)
+        if len(relative.parts) != 2:
+            raise ObjectIntegrityError('staged path is not an exact object path')
+
+
+def transaction_payload_path(root, version_id):
+    final = Path(root) / version_id.kind / version_id.value
+    staged = _STAGED_READS.get()
+    return staged.get(str(final.resolve()), final) if staged is not None else final
+
+
+@contextmanager
+def staged_payload_scope(staged):
+    read = _STAGED_READS.set(staged)
+    try:
+        yield
+    finally:
+        _STAGED_READS.reset(read)
+
+
+def discard_staged_payloads(staged):
+    # Delete only private temporary aliases, never final object paths.
+    for temporary in staged.values():
+        temporary.unlink(missing_ok=True)
+    staged.clear()
+
+
+def publish_staged_payloads(staged):
+    # Called only after validation under the original SQLite writer lock.
+    for final, temporary in staged.items():
+        staged.require_path(final)
+        if temporary.parent.resolve() != Path(final).parent.resolve():
+            raise ObjectIntegrityError("staged alias belongs to another directory")
+        staged.store._publish_temporary_exact(temporary, Path(final))
 
 
 class ObjectStore:
@@ -33,7 +79,7 @@ class ObjectStore:
     def path_for_version(self, version_id: TypedId) -> Path:
         if not isinstance(version_id, TypedId):
             raise ObjectIntegrityError("payload path requires an exact version id")
-        return self.root / version_id.kind / version_id.value
+        return transaction_payload_path(self.root, version_id)
 
     @staticmethod
     def locator_for_version(version_id: TypedId) -> str:
@@ -42,8 +88,8 @@ class ObjectStore:
         return f"registry-object:{version_id}"
 
     def _publish_payload(
-            self, payload: bytes, version_id: TypedId) -> None:
-        destination = self.path_for_version(version_id)
+            self, payload: bytes, version_id: TypedId, *, staged=None) -> None:
+        destination = self.root / version_id.kind / version_id.value
         destination.parent.mkdir(parents=True, exist_ok=True)
         fd, temporary = tempfile.mkstemp(
             prefix="prewrite-", dir=destination.parent)
@@ -52,11 +98,23 @@ class ObjectStore:
                 stream.write(payload)
                 stream.flush()
                 os.fsync(stream.fileno())
-            self._publish_temporary_exact(
-                Path(temporary), destination)
+            if staged is not None:
+                if type(staged) is not StagedPayloads or staged.store is not self:
+                    raise ObjectIntegrityError('staged payload belongs to another ObjectStore')
+                staged.require_path(destination)
+                key = str(destination.resolve())
+                prior = staged.get(key)
+                if prior is not None:
+                    if not self._paths_have_same_bytes(prior, Path(temporary)):
+                        raise ObjectIntegrityError('different payload in one staging slot')
+                else:
+                    staged[key] = Path(temporary)
+                    temporary = None
+            else:
+                self._publish_temporary_exact(Path(temporary), destination)
         finally:
             try:
-                os.unlink(temporary)
+                if temporary is not None: os.unlink(temporary)
             except FileNotFoundError:
                 pass
 
@@ -64,7 +122,8 @@ class ObjectStore:
                  version_id: TypedId, payload: bytes,
                  metadata: Mapping[str, Any], media_type: str,
                  schema_ref: str,
-                 producer_invocation_id: TypedId | None = None) -> PreparedObject:
+                 producer_invocation_id: TypedId | None = None,
+                 _staged_payloads=None) -> PreparedObject:
         if self.read_only:
             raise ObjectIntegrityError("read-only immutable object store cannot prewrite")
         definition = self.catalog.require(object_type, category="object")
@@ -85,7 +144,7 @@ class ObjectStore:
             storage_locator=self.locator_for_version(version_id),
             metadata=dict(metadata))
         self.validate_envelope(prepared)
-        self._publish_payload(payload, version_id)
+        self._publish_payload(payload, version_id, staged=_staged_payloads)
         return prepared
 
     def prewrite_with_metadata_factory(
@@ -93,7 +152,8 @@ class ObjectStore:
             version_id: TypedId, payload: bytes,
             metadata_factory: Callable[[int], Mapping[str, Any]],
             media_type: str, schema_ref: str,
-            producer_invocation_id: TypedId | None = None) -> PreparedObject:
+            producer_invocation_id: TypedId | None = None,
+            _staged_payloads=None) -> PreparedObject:
         """Prewrite bytes whose metadata records their exact byte count."""
 
         if self.read_only:
@@ -125,7 +185,7 @@ class ObjectStore:
             storage_locator=self.locator_for_version(version_id),
             metadata=frozen_metadata)
         self.validate_envelope(prepared)
-        self._publish_payload(payload, version_id)
+        self._publish_payload(payload, version_id, staged=_staged_payloads)
         return prepared
 
     def prewrite_descriptor(
@@ -217,14 +277,15 @@ class ObjectStore:
         finally:
             os.close(directory_fd)
 
-    def _paths_have_same_bytes(self, left: Path, right: Path) -> bool:
+    @classmethod
+    def _paths_have_same_bytes(cls, left: Path, right: Path) -> bool:
         """Compare two payload files without retaining either payload in memory."""
 
         try:
             with left.open("rb") as left_stream, right.open("rb") as right_stream:
                 while True:
-                    left_chunk = left_stream.read(self._CHUNK_SIZE)
-                    right_chunk = right_stream.read(self._CHUNK_SIZE)
+                    left_chunk = left_stream.read(cls._CHUNK_SIZE)
+                    right_chunk = right_stream.read(cls._CHUNK_SIZE)
                     if left_chunk != right_chunk:
                         return False
                     if not left_chunk:
@@ -348,3 +409,4 @@ class ObjectStore:
         if locator != self.locator_for_version(version_id):
             raise ObjectIntegrityError("locator and exact version disagree")
         self._verify_path(self.path_for_version(version_id), size=size)
+

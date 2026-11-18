@@ -41,6 +41,7 @@ def publish_batch(event_store: "EventStore", *, task_id: TypedId, branch_id: str
                   expected_registry_ordinal: int | None = None,
                   collaboration_action=None,
                   run_input_command=None,
+                  staged_payloads=None,
                   ) -> tuple[EventEnvelope, ...]:
     """Validate and atomically append one complete Registry transaction."""
     from ..event_store import (
@@ -690,6 +691,12 @@ def publish_batch(event_store: "EventStore", *, task_id: TypedId, branch_id: str
             rows = db.execute(
                 "SELECT * FROM events WHERE transaction_id=? ORDER BY ordinal",
                 (existing["transaction_id"],)).fetchall()
+            if staged_payloads:
+                from ..object_store import ObjectStore, ObjectIntegrityError
+                from pathlib import Path
+                for final, temporary in staged_payloads.items():
+                    if not ObjectStore._paths_have_same_bytes(Path(final), temporary):
+                        raise ObjectIntegrityError('staged replay differs from committed bytes')
             db.rollback()
             return tuple(event_store._row_to_envelope(row) for row in rows)
 
@@ -1945,5 +1952,9 @@ def publish_batch(event_store: "EventStore", *, task_id: TypedId, branch_id: str
         db.execute("INSERT INTO outbox VALUES(?,?,?,?,?)", (
             str(transaction_id), str(task_id), writer_epoch,
             json.dumps([str(event.event_id) for event in envelopes]), _now()))
+        if staged_payloads:
+            from ..object_store import publish_staged_payloads
+            publish_staged_payloads(staged_payloads)
         db.commit()
         return tuple(envelopes)
+

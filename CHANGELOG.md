@@ -14,6 +14,13 @@ metadata:
 
 # Changelog
 
+## 2026-11-18 source candidate
+
+- Basic-only installation selects unique materials for the current OS/architecture rather than requiring a historical kernel/Python patch match. Existing wheel compatibility, dependency closure and target preparation remain authoritative; this does not grant native qualification.
+- Preserve the public Linux supervision and Registry Viewer fixes while adding the explicit GitHub OAuth account slot and optional separately built HOST.
+- Use original Registry references and staged acceptance for firing content contract v2. Legacy v1 declarations need explicit migration; do not reopen them under v2 by changing a label.
+- Core candidate `0.1.0rc4.dev2026111804`, optional HOST `0.0.4`. This is not an npm registry release or blanket real-API qualification.
+
 ## Unreleased
 
 - Organized the public repository around product source, user documentation,

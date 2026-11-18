@@ -43,6 +43,9 @@ class RegistryTransaction:
                 f"d1-c:transaction:{task_id}:{idempotency_key}",
             ).hex,
         )
+        from .object_store import StagedPayloads
+        self._staged_payloads = StagedPayloads(object_store)
+        self._capture_staged_payloads = False
         self._objects: list[PreparedObject] = []
         self._events: list[PendingEvent] = []
         self._relations: list[TypedRelation] = []
@@ -96,7 +99,8 @@ class RegistryTransaction:
             object_type=object_type, logical_id=logical_id, version_id=version_id,
             payload=payload, metadata=metadata, media_type=media_type,
             schema_ref=schema_ref,
-            producer_invocation_id=producer_invocation_id)
+            producer_invocation_id=producer_invocation_id,
+            _staged_payloads=self._staged_payloads if self._capture_staged_payloads else None)
         self._objects.append(prepared)
         return prepared
 
@@ -131,7 +135,8 @@ class RegistryTransaction:
             version_id=version_id, payload=payload,
             metadata_factory=metadata_factory, media_type=media_type,
             schema_ref=schema_ref,
-            producer_invocation_id=producer_invocation_id)
+            producer_invocation_id=producer_invocation_id,
+            _staged_payloads=self._staged_payloads if self._capture_staged_payloads else None)
         self._objects.append(prepared)
         return prepared
 
@@ -414,7 +419,36 @@ class RegistryTransaction:
             "authority_version_id": str(authority_ref.version_id),
         })
 
+    def stage_payloads(self):
+        from contextlib import contextmanager
+        from .object_store import staged_payload_scope, discard_staged_payloads
+        @contextmanager
+        def capture():
+            if self._closed:
+                raise RuntimeError('transaction is closed')
+            try:
+                if self._capture_staged_payloads:
+                    raise RuntimeError('nested payload capture on one transaction')
+                self._capture_staged_payloads = True
+                try:
+                    with staged_payload_scope(self._staged_payloads):
+                        yield
+                finally:
+                    self._capture_staged_payloads = False
+            except BaseException:
+                discard_staged_payloads(self._staged_payloads)
+                raise
+        return capture()
+
     def commit(self) -> tuple[EventEnvelope, ...]:
+        from .object_store import staged_payload_scope, discard_staged_payloads
+        try:
+            with staged_payload_scope(self._staged_payloads):
+                return self._commit()
+        finally:
+            discard_staged_payloads(self._staged_payloads)
+
+    def _commit(self) -> tuple[EventEnvelope, ...]:
         if self._closed:
             raise RuntimeError("transaction is closed")
         from .user_collaboration import stage_action_receipt
@@ -490,13 +524,16 @@ class RegistryTransaction:
             workspace_head_advances=tuple(self._workspace_head_advances),
             expected_registry_ordinal=self._expected_registry_ordinal,
             collaboration_action=self._collaboration_action,
-            run_input_command=self._run_input_command)
+            run_input_command=self._run_input_command,
+            staged_payloads=self._staged_payloads)
         self._closed = True
         return result
 
     def abort(self, reason: str) -> tuple[EventEnvelope, ...]:
         if self._closed:
             raise RuntimeError("transaction is closed")
+        from .object_store import discard_staged_payloads
+        discard_staged_payloads(self._staged_payloads)
         result = self.event_store.abort(
             task_id=self.task_id, branch_id=self.branch_id,
             transaction_id=self.transaction_id,
@@ -504,3 +541,4 @@ class RegistryTransaction:
             reason=reason)
         self._closed = True
         return result
+

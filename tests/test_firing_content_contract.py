@@ -2,7 +2,6 @@
 
 No AgentLoop, provider, domain fixture, historical test or parallel fact store.
 """
-import hashlib
 import json
 
 import pytest
@@ -37,16 +36,17 @@ def _owner(path, *, bound=True, wrong_source=False, callback=None, missing_bindi
     reg.register_tool('test-terminal',lambda *args: None,identity={'revision':'v1'},contracts={})
 
     def checker(*, snapshot, evidence):
-        assert evidence.read_resource(snapshot['sources']['input']['resource_ref']) == expected_source
-        assert snapshot['sources']['input']['payload'] == expected_source
+        if (evidence.read_resource(snapshot['sources']['input']['resource_ref']) != expected_source
+                or snapshot['sources']['input']['payload'] != expected_source):
+            raise FiringContentContractError('SOURCE_CONTENT_INVALID')
         if any(json.loads(p['payload']) != {'value':7} for p in snapshot['products'].values()):
             raise FiringContentContractError('CONTENT_INVALID')
         if callback is not None:
             return callback(snapshot=snapshot,evidence=evidence)
 
     reg.register_tool('test-checker',checker,identity={'revision':'v1'},
-        contracts={'protocol':'firing_content_checker/v1'})
-    marker = {'protocol':'firing_content_contract/v1','binding_key':'work',
+        contracts={'protocol':'firing_content_checker/v2'})
+    marker = {'protocol':'firing_content_contract/v2','binding_key':'work',
               'checker_key':'test-checker','success_outcomes':['complete']}
     module = ModuleDeclaration.from_dict({'schema_version':'rpnh/module_declaration/v1',
         'name':'ContractTest','components':[{'name':'work','key':'operation',
@@ -75,11 +75,9 @@ def _owner(path, *, bound=True, wrong_source=False, callback=None, missing_bindi
             source = publish({'value': 6}, 'wrong-source-version')
         source_entry = {'resource_ref': {'resource_id': str(source.resource_id),
                                        'resource_version_id': str(source.resource_version_id)}}
-        if source_builder is None:
-            source_entry['sha256'] = hashlib.sha256(canonical_json({'value':7})).hexdigest()
-        else:
+        if source_builder is not None:
             source_entry = source_builder(owner, source_entry, publish)
-        contract = {'protocol':'firing_content_contract/v1',
+        contract = {'protocol':'firing_content_contract/v2',
             'run_ref':_ref_payload(owner.identity.run_ref),'net_ref':_ref_payload(owner.publication.net_ref),
             'operation_binding_refs':[_ref_payload(r) for r in owner.publication.binding_refs.values()],
             'checker':reg.declaration('tool','test-checker'),
@@ -214,20 +212,21 @@ def test_exact_source_preserves_candidate_gates(tmp_path, case):
 def test_explicit_source_assertions_are_not_ignored(tmp_path, field, value):
     owner, execution = _owner(tmp_path / 'explicit',
         source_builder=lambda owner, source, publish: {**source, field: value})
-    with pytest.raises(FiringContentContractError, match='source bytes|SOURCE_BINDING_MISMATCH'):
+    with pytest.raises(FiringContentContractError, match='requires migration'):
         _seal(owner, execution)
     assert not _checks(owner)
 
 
-def test_decoded_source_assertion_without_raw_digest(tmp_path):
+def test_legacy_decoded_source_assertion_requires_migration(tmp_path):
     def source_builder(owner, source, publish):
         ref = publish('abc', 'text-source')
         return {'resource_ref': _ref_payload(ref.as_version_ref()),
-                'decoded_sha256': 'ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad'}
+                'decoded_sha256': 'legacy-value-requires-migration'}
     owner, execution = _owner(tmp_path / 'decoded', source_builder=source_builder,
                               expected_source=canonical_json('abc'))
-    owner.succeed(_seal(owner, execution), command_id='success')
-    assert len(_checks(owner)) == 1
+    with pytest.raises(FiringContentContractError, match='requires migration'):
+        _seal(owner, execution)
+    assert not _checks(owner)
 
 
 def test_correctable_draft_atomic_success_and_same_command_replay(tmp_path):
@@ -489,3 +488,17 @@ def test_foreign_firing_accepted_check_cannot_seal_identical_candidate(tmp_path,
         assert not contract._has_products(
             contract.FiringContentEvidence(owner_b._core.event_store,db,head),
             _ref_payload(execution_b.operation.canonical.context.invocation_ref))
+
+
+
+def test_same_command_same_length_changed_product_is_not_resealed(tmp_path):
+    owner, execution = _owner(tmp_path / 'same-length')
+    _seal(owner, execution)
+    head = owner._core.event_store.max_ordinal()
+    changed = {name: canonical_json({'value': 8}) for name in PRODUCTS}
+    assert all(len(changed[name]) == len(PRODUCTS[name]) for name in PRODUCTS)
+    with pytest.raises(FiringContentContractError, match='cannot be overwritten'):
+        _seal(owner, execution, products=changed)
+    assert owner._core.event_store.max_ordinal() == head
+    assert len(_checks(owner)) == 1
+

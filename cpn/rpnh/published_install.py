@@ -153,25 +153,32 @@ def inspect_bootstrap(*, release: str, channel: str, platform: dict,
             raise PublishedBootstrapError("sidecar source differs from the exact official release")
         backed = {row["id"]: row for row in assessment["evidence_backed_combinations"]}
         choices = []
+        basic_install = set(components) == {"basic"} and not extras
         for row in support["combinations"]:
             if combination is not None and row["id"] != combination:
                 continue
-            if (row["id"] not in backed or row["platform"] != platform
-                    or row["runtimes"] != contract.runtime_signature(runtimes)
+            same_target = (row["platform"]["os"] == platform["os"]
+                and row["platform"]["architecture"] == platform["architecture"]) if basic_install else (
+                    row["id"] in backed and row["platform"] == platform
+                    and row["runtimes"] == contract.runtime_signature(runtimes))
+            if (not same_target
                     or {entry: item["profile"] for entry, item in row["components"].items()}
                     != {entry: item["profile"] for entry, item in components.items()}
                     or row["materials"]["root_extras"] != extras):
                 continue
             gaps = project_qualification_gaps(support, validation, assessment,
-                components=row["components"], matching_combinations=[backed[row["id"]]],
+                components=row["components"], matching_combinations=([backed[row["id"]]] if row["id"] in backed else []),
                 root_extras=extras, material_selection=row["materials"])
-            if (len(gaps["combinations"]) == 1
+            # Basic installation compatibility is proved by original preparation
+            # against the actual target, not by historical native-test labels.
+            # Keep qualification gaps unchanged; ambiguous materials still reject.
+            if basic_install or (len(gaps["combinations"]) == 1
                     and not gaps["combinations"][0]["installation"]["missing_case_ids"]
                     and not any(item["missing_case_ids"] for item in gaps["combinations"][0].get("entry_installation", {}).values())
                     and gaps["dependency_materials"]["status"] == "exact_selection_matches_backed_metadata"):
                 choices.append((row, gaps))
         if len(choices) != 1:
-            raise PublishedBootstrapError("choose one exact backed combination matching the complete components, explicit extras and applicable bootstrap cases")
+            raise PublishedBootstrapError("choose one unambiguous material combination matching the target, components and extras; non-Basic entries still require backed bootstrap cases")
         selected, gaps = choices[0]
         assets = deepcopy(observed["assets"])
         identities = {asset["id"] for asset in assets}

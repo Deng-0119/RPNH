@@ -133,3 +133,5 @@ RPNH 使用 Registry 与 PetriNet 声明、执行、查看和复用 agent 工作
 [角色与资源视图](../examples/multiuser_release_handoff/figures/README_ZH.md) ·
 [运行前提](../examples/multiuser_release_handoff/RUNNING_ZH.md) ·
 [历史结果与限制](../examples/multiuser_release_handoff/RESULTS_ZH.md)
+
+- [可选GitHub OAuth账户](guides/github-oauth-account_ZH.md)
