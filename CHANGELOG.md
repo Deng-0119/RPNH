@@ -10,6 +10,11 @@ metadata:
   status: maintained
 ---
 
+## v0.1.0rc5 metadata tolerance
+
+- Increases the existing official metadata socket timeout from 2 to 15 seconds and scheduling budget from 6 to 45 seconds, without adding retries or changing source, redirect, size, or content validation. These are not strict total wall-clock deadlines.
+- This bounded tolerance change does not establish the cause of the earlier public installation failure or prove public installation success. Optional OAuth HOST 0.0.8 pins core 0.1.0rc5.
+
 ## v0.1.0rc4 prerelease packaging
 
 - Packages the locally verified dev1806 product without product-code changes under a non-development prerelease version accepted by the original published-release contract. Optional GitHub OAuth HOST 0.0.7 pins core 0.1.0rc4.

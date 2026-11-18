@@ -86,7 +86,7 @@ rpnh net --run "$RUN_DIR" --view --no-open
 
 ## 兼容与发布边界
 
-当前源码候选为 `0.1.0rc4`；10 月 30 日发布的
+当前源码候选为 `0.1.0rc5`；10 月 30 日发布的
 [v0.1.0rc3 wheel 与 DSH 插件](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc3)
 **不包含** 11 月 1 日的源码修复；详见[源码与发布包边界](docs/guides/compatibility_ZH.md)。
 

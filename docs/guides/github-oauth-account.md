@@ -10,7 +10,7 @@ metadata:
   status: source-candidate-not-published
 ---
 
-This release candidate preserves existing Linux/Viewer fixes: core `0.1.0rc4`, optional HOST `0.0.7`, unchanged implementation revision `oauth-candidate-2`. Build the HOST separately from `packaging/github-oauth-host`. Historical limited live-account evidence for 0.0.1 and offline/PTY evidence for 0.0.2 below is not a new real-account acceptance of 0.0.7. Check the matching GitHub Release for current artifact availability.
+This release candidate preserves existing Linux/Viewer fixes: core `0.1.0rc5`, optional HOST `0.0.8`, unchanged implementation revision `oauth-candidate-2`. Build the HOST separately from `packaging/github-oauth-host`. Historical limited live-account evidence for 0.0.1 and offline/PTY evidence for 0.0.2 below is not a new real-account acceptance of 0.0.8. Check the matching GitHub Release for current artifact availability.
 
 [English](github-oauth-account.md) | [中文](github-oauth-account_ZH.md)
 
@@ -22,10 +22,10 @@ This source candidate adds the explicit `github_oauth/v1` slot. It does not requ
 
 For this candidate, obtain these two reviewed artifacts from your project handoff, not an unverified package-index search:
 
-- `rpnh_harness-0.1.0rc4-py3-none-any.whl`
-- `rpnh_gh_interactive_oauth_host-0.0.7-py3-none-any.whl`
+- `rpnh_harness-0.1.0rc5-py3-none-any.whl`
+- `rpnh_gh_interactive_oauth_host-0.0.8-py3-none-any.whl`
 
-The HOST strictly depends on core `0.1.0rc4`. The ordinary `dev2026111802` core has no OAuth slot and is not interchangeable. Use an isolated installation rather than replacing your daily environment. Given absolute paths to the two supplied files:
+The HOST strictly depends on core `0.1.0rc5`. The ordinary `dev2026111802` core has no OAuth slot and is not interchangeable. Use an isolated installation rather than replacing your daily environment. Given absolute paths to the two supplied files:
 
 ```bash
 python3 -m venv .venv-oauth

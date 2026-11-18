@@ -32,8 +32,8 @@ _ALL_SIDECARS = (*SIDECARS, *V3_SIDECARS, *V4_SIDECARS)
 MAX_JSON_BYTES = 2 * 1024 * 1024
 MAX_RELEASES = 20
 MAX_CANDIDATES = 5
-FETCH_TIMEOUT = 2.0
-SCHEDULE_BUDGET = 6.0
+FETCH_TIMEOUT = 15.0
+SCHEDULE_BUDGET = 45.0
 _DOWNLOAD_ROOT = f"https://github.com/{REPOSITORY}/releases/download/"
 _CDN_HOSTS = {"release-assets.githubusercontent.com", "objects.githubusercontent.com"}
 
