@@ -1,4 +1,4 @@
-> 源码更新：Linux/WSL2 与 npm 启动器整合已纳入公开 main。[范围、证据与剩余发行工作](docs/guides/linux-npm-candidate_ZH.md)。这不是新的 wheel 发布，也不是 npm registry 发布。
+> 发行状态：rc5 wheel 与 npm 格式 GitHub 附件已[预发布](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc5)。npm registry 发布与实际公网应用安装验收仍待完成。[范围与证据](docs/guides/linux-npm-candidate_ZH.md)。
 
 # RPNH Harness
 

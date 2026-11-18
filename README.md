@@ -1,4 +1,4 @@
-> Source update: Linux/WSL2 and npm bootstrap integration is included in public main. [Scope, evidence and remaining release work](docs/guides/linux-npm-candidate.md). This is not a new wheel release or an npm registry publication.
+> Release status: rc5 wheels and an npm-format GitHub attachment are now [available as a prerelease](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc5). npm registry publication and actual public application installation acceptance remain pending. [Scope and evidence](docs/guides/linux-npm-candidate.md).
 
 # RPNH Harness
 
