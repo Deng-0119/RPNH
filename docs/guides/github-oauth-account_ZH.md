@@ -10,7 +10,7 @@ metadata:
   status: source-candidate-not-published
 ---
 
-本次私有开发候选保留既有Linux/Viewer修复，核心候选为 `0.1.0rc4.dev2026111806`，可选HOST为 `0.0.6`，实现revision仍为 `oauth-candidate-2`。从 `packaging/github-oauth-host` 可独立构建HOST。下方0.0.1/0.0.2是真实历史证据，不代表0.0.6已完成新的真实账户测试；发行资产尚未发布。
+本次发行候选保留既有Linux/Viewer修复，核心候选为 `0.1.0rc4`，可选HOST为 `0.0.7`，实现revision仍为 `oauth-candidate-2`。从 `packaging/github-oauth-host` 可独立构建HOST。下方0.0.1为限定真实账户调用证据，0.0.2仅为离线/PTY证据，不代表0.0.7已完成新的真实账户测试；配套制品是否已提供请查对应GitHub Release。
 
 [English](github-oauth-account.md) | [中文](github-oauth-account_ZH.md)
 
@@ -22,10 +22,10 @@ metadata:
 
 从项目交接取得以下准确、已审阅材料，而不是搜索未核实的包索引同名包：
 
-- `rpnh_harness-0.1.0rc4.dev2026111806-py3-none-any.whl`
-- `rpnh_gh_interactive_oauth_host-0.0.6-py3-none-any.whl`
+- `rpnh_harness-0.1.0rc4-py3-none-any.whl`
+- `rpnh_gh_interactive_oauth_host-0.0.7-py3-none-any.whl`
 
-HOST严格依赖核心`0.1.0rc4.dev2026111806`；普通`dev2026111802`核心没有OAuth槽，不能混用。建议隔离安装，不替换日常环境。准备两个文件的绝对路径后：
+HOST严格依赖核心`0.1.0rc4`；普通`dev2026111802`核心没有OAuth槽，不能混用。建议隔离安装，不替换日常环境。准备两个文件的绝对路径后：
 
 ```bash
 python3 -m venv .venv-oauth

@@ -10,6 +10,11 @@ metadata:
   status: maintained
 ---
 
+## v0.1.0rc4 prerelease packaging
+
+- Packages the locally verified dev1806 product without product-code changes under a non-development prerelease version accepted by the original published-release contract. Optional GitHub OAuth HOST 0.0.7 pins core 0.1.0rc4.
+- Public distribution acceptance and npm account publication remain separate from the completed local candidate installation.
+
 ## Local dev1806 correction for dev1805 defaults
 
 - Bootstrap candidate installation now rejects existing roots before forwarding to the updater, including dangling aliases. Read-only inspection and explicit application update commands retain their existing behavior.

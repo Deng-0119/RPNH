@@ -10,6 +10,11 @@ metadata:
   status: maintained
 ---
 
+## v0.1.0rc4 预发布打包
+
+- 将本地已验收的 dev1806 产品以原 published-release 契约接受的非开发预发布版本打包，不改变产品代码。可选 GitHub OAuth HOST 0.0.7 精确依赖 core 0.1.0rc4。
+- 公网分发验收与 npm 账户发布仍区别于已经完成的本地候选安装。
+
 ## dev1805 默认入口的本地 dev1806 修正
 
 - bootstrap候选实际安装在转发updater前拒绝已有根（含悬空别名）；只读规划及应用的显式更新命令保持原行为。

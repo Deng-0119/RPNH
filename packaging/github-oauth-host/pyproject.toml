@@ -3,11 +3,11 @@ requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 [project]
 name = "rpnh-gh-interactive-oauth-host"
-version = "0.0.6"
+version = "0.0.7"
 license = "MIT"
 license-files = ["LICENSE"]
 requires-python = ">=3.11"
-dependencies = ["rpnh-harness==0.1.0rc4.dev2026111806"]
+dependencies = ["rpnh-harness==0.1.0rc4"]
 [project.entry-points."rpnh.account_providers"]
 gh_interactive_oauth = "rpnh_gh_interactive_oauth_host:factory"
 [tool.setuptools]
