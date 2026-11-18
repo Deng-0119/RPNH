@@ -1,4 +1,4 @@
-> 源码候选：Linux/npm 整合正在审核。[范围、证据与剩余发行工作](docs/guides/linux-npm-candidate_ZH.md)。本分支不是已发布的 npm 版本。
+> 源码更新：Linux/WSL2 与 npm 启动器整合已纳入公开 main。[范围、证据与剩余发行工作](docs/guides/linux-npm-candidate_ZH.md)。这不是新的 wheel 发布，也不是 npm registry 发布。
 
 # RPNH Harness
 
@@ -99,6 +99,12 @@ rpnh net --run "$RUN_DIR" --view --no-open
 
 这些集成只覆盖限定的兼容范围，不代表支持任意版本。
 
+## 显式配置受控工具调度
+
+[受控工具指南](docs/controlled-managed-tools.zh.md)说明如何按选定策略与效果／冲突约束，
+为显式绑定的 managed 操作启用并行执行。混合 builtin/managed 的工具轮次仍按顺序执行。
+共享容量仅限同一个 run，不是跨 run 锁；选用策略不会增加业务权限。
+
 ## 更多资料
 
 [文档](docs/index_ZH.md) · [案例](examples/README_ZH.md) ·
@@ -109,3 +115,4 @@ rpnh net --run "$RUN_DIR" --view --no-open
 ## 许可证
 
 [MIT](LICENSE)。第三方组件保留各自许可证，见[第三方声明](THIRD_PARTY_NOTICES.md)。
+
