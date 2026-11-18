@@ -1,6 +1,7 @@
 """Thin bootstrap entry delegating to the original managed installer."""
 import argparse
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
@@ -16,7 +17,15 @@ def require_base_python(executable, run=subprocess.run):
         raise ValueError("Select a persistent base Python, not a controller/virtual environment Python")
     return path.resolve(strict=True)
 
-def main(argv=None, *, observe=None, update_main=None, base_python=None, register_command=None):
+def default_root():
+    if not sys.platform.startswith("linux"):
+        raise ValueError("Automatic installation defaults currently support Linux only")
+    data = os.environ.get("XDG_DATA_HOME")
+    base = Path(data).expanduser() if data and Path(data).is_absolute() else Path.home() / ".local/share"
+    return base / "rpnh"
+
+
+def main(argv=None, *, observe=None, update_main=None, base_python=None, register_command=None, platform_observe=None):
     p = argparse.ArgumentParser(description=__doc__)
     runtime_choice = p.add_mutually_exclusive_group()
     runtime_choice.add_argument("--python", help="explicit persistent base Python; Basic convenience path")
@@ -25,9 +34,9 @@ def main(argv=None, *, observe=None, update_main=None, base_python=None, registe
     p.add_argument("--select", choices=("auto", "basic", "codex", "opencode", "dsh", "dsh-web"))
     p.add_argument("--extra", action="append", default=[], choices=("mcp", "skills"))
     p.add_argument("--platform", type=Path, help="actual observed platform JSON; native status is not guessed")
-    p.add_argument("--root", required=True, type=Path)
+    p.add_argument("--root", type=Path, help="new application root; defaults to Linux user data directory")
     p.add_argument("--bin-dir", type=Path, help="explicit existing user command directory; never changes PATH or replaces a command")
-    source = p.add_mutually_exclusive_group(required=True)
+    source = p.add_mutually_exclusive_group()
     source.add_argument("--release", help="exact published release")
     source.add_argument("--candidate-wheel", type=Path, help="explicit local candidate wheel")
     p.add_argument("--materials", type=Path, help="fixed local candidate materials")
@@ -36,6 +45,14 @@ def main(argv=None, *, observe=None, update_main=None, base_python=None, registe
     p.add_argument("--inspect-only", action="store_true")
     p.add_argument("--json", action="store_true")
     o = p.parse_args(argv)
+    if o.root is None:
+        o.root = default_root()
+    if o.release is None and o.candidate_wheel is None:
+        from cpn import __version__
+        o.release = "v" + __version__
+        if o.channel is None:
+            from packaging.version import Version
+            o.channel = "prerelease" if Version(__version__).is_prerelease else "stable"
     # Complete recipes use the existing exact observations without a second
     # schema reader or guessed platform/runtime facts. Original installer owns
     # eligibility and consistency checks. Optional extras remain explicit.
@@ -48,11 +65,16 @@ def main(argv=None, *, observe=None, update_main=None, base_python=None, registe
                     "--platform, --channel, --extra or --combination; materials own those facts")
         if o.inspect_only and o.select is not None:
             p.error("--select is not supported for local --inspect-only")
+        if not o.inspect_only and os.path.lexists(o.root):
+            p.error(f"installation root already exists: {o.root}; "
+                    "use explicit update commands or a new root")
     else:
         if o.materials is not None:
             p.error("--materials requires --candidate-wheel")
-        if o.platform is None or (o.python is None and o.runtime_bindings is None):
-            p.error("--release requires --platform and either --python or --runtime-bindings")
+        if o.python is None and o.runtime_bindings is None:
+            p.error("Persistent Python is required; npm transport discovers one or use --python")
+        if o.platform is None and (o.components is not None or o.extra or o.runtime_bindings is not None):
+            p.error("Complete/non-Basic recipes require explicit --platform")
         if o.components is not None and o.runtime_bindings is None:
             p.error("--components requires --runtime-bindings for the complete selected recipes")
     if o.bin_dir is not None and o.inspect_only:
@@ -110,6 +132,16 @@ def main(argv=None, *, observe=None, update_main=None, base_python=None, registe
     with tempfile.TemporaryDirectory(prefix="rpnh-entry-") as directory:
         bindings = Path(directory) / "runtime.json"
         bindings.write_text(json.dumps(binding), encoding="utf-8")
+        if o.platform is None:
+            if platform_observe is None:
+                from .platform_support import require_platform_support
+                platform_observe = require_platform_support
+            host = platform_observe()
+            if host["platform"] != "linux":
+                raise ValueError("Automatic platform selection currently supports Linux only")
+            o.platform = Path(directory) / "platform.json"
+            o.platform.write_text(json.dumps({"os": host["platform"], "architecture": host["machine"],
+                "os_release": host["os_release"], "libc": host["libc"], "emulated": None}), encoding="utf-8")
         return forward(bindings)
 
 if __name__ == "__main__":

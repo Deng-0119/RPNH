@@ -22,7 +22,7 @@ class BasicSelection(BootstrapTestCase):
   self.assertFalse(self.root.exists())
  def test_two_material_rows_require_explicit_selection(self):
   self.no_history();a=self.fixture.support['combinations'][0];b=deepcopy(a)
-  b['id']='other-python-row';a['runtimes']['python']['version']='3.11.9';b['runtimes']['python']['version']='3.12.9'
+  b['id']='other-python-row';b['runtimes']['python']['version']=a['runtimes']['python']['version']
   self.fixture.support['combinations'].append(b)
   with self.transports():
    with self.assertRaises(bootstrap.PublishedBootstrapError):self.fixture.inspect()

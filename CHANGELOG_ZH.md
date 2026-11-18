@@ -10,6 +10,12 @@ metadata:
   status: maintained
 ---
 
+## dev1805 默认入口的本地 dev1806 修正
+
+- bootstrap候选实际安装在转发updater前拒绝已有根（含悬空别名）；只读规划及应用的显式更新命令保持原行为。
+- 未发布的本地修复采用core0.1.0rc4.dev2026111806及配套HOST0.0.6；原dev1805产物另行保留。
+
+
 [English](CHANGELOG.md) | [中文](CHANGELOG_ZH.md)
 
 # 变更记录
@@ -178,3 +184,6 @@ metadata:
 - 这是预发布版。公开声明契约有文档说明，但私有实现模块不是稳定 SDK。
 
 支持版本与安装选择见[兼容性](docs/guides/compatibility_ZH.md)和[版本说明](docs/guides/releases_ZH.md)。
+
+## 未发布 dev2026111805 候选
+Linux 原 bootstrap 默认参数、Basic 保留未知仿真观察、按目标 Python 唯一消歧材料；不授予新的原生资格。

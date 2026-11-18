@@ -134,7 +134,7 @@ class LocalCandidateTest(unittest.TestCase):
             ['--root', 'r', '--materials', 'm.json'],
             ['--root', 'r', '--release', 'v0.1.0', '--platform', 'p', '--python', '/p',
              '--materials', 'm.json'],
-            ['--root', 'r', '--release', 'v0.1.0', '--python', '/p'],
+            ['--root', 'r', '--release', 'v0.1.0', '--python', '/p', '--extra', 'mcp'],
             ['--root', 'r', '--release', 'v0.1.0', '--platform', 'p'],
         ]
         for options in cases:

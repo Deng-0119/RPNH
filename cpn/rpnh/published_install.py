@@ -21,6 +21,7 @@ from pathlib import Path
 import stat
 import tempfile
 import time
+from packaging.version import Version
 
 from . import install_contract as contract
 from .published_download import MAX_WHEEL_BYTES, _open_wheel, _stream
@@ -116,7 +117,9 @@ def inspect_bootstrap(*, release: str, channel: str, platform: dict,
         raise PublishedBootstrapError("unknown release channel")
     platform = contract.validate_platform(platform)
     runtimes = contract.validate_runtime_bindings(runtime_bindings)
-    if platform["emulated"] is not False or set(runtimes) != _runtime_names(components):
+    basic_install = set(components) == {"basic"} and not extras
+    if (platform["emulated"] is True or not basic_install and platform["emulated"] is not False
+            or set(runtimes) != _runtime_names(components)):
         raise PublishedBootstrapError("bootstrap requires an explicit native target and exactly its selected runtime bindings")
     if combination is not None and (not isinstance(combination, str) or not combination):
         raise PublishedBootstrapError("choose an explicit combination ID")
@@ -153,12 +156,12 @@ def inspect_bootstrap(*, release: str, channel: str, platform: dict,
             raise PublishedBootstrapError("sidecar source differs from the exact official release")
         backed = {row["id"]: row for row in assessment["evidence_backed_combinations"]}
         choices = []
-        basic_install = set(components) == {"basic"} and not extras
         for row in support["combinations"]:
             if combination is not None and row["id"] != combination:
                 continue
             same_target = (row["platform"]["os"] == platform["os"]
-                and row["platform"]["architecture"] == platform["architecture"]) if basic_install else (
+                and row["platform"]["architecture"] == platform["architecture"]
+) if basic_install else (
                     row["id"] in backed and row["platform"] == platform
                     and row["runtimes"] == contract.runtime_signature(runtimes))
             if (not same_target
@@ -177,6 +180,17 @@ def inspect_bootstrap(*, release: str, channel: str, platform: dict,
                     and not any(item["missing_case_ids"] for item in gaps["combinations"][0].get("entry_installation", {}).values())
                     and gaps["dependency_materials"]["status"] == "exact_selection_matches_backed_metadata"):
                 choices.append((row, gaps))
+        if basic_install and combination is None and len(choices) > 1:
+            # Prefer the uniquely declared target-runtime material set only to
+            # resolve ambiguity; never reject a sole pure-Python set on this basis.
+            matches = [(row, gaps) for row, gaps in choices
+                if set(row["runtimes"]) == {"python"}
+                and row["runtimes"]["python"]["implementation"] == runtimes["python"]["implementation"]
+                and row["runtimes"]["python"]["architecture"] == runtimes["python"]["architecture"]
+                and Version(row["runtimes"]["python"]["version"]).release[:2]
+                    == Version(runtimes["python"]["version"]).release[:2]]
+            if len(matches) == 1:
+                choices = matches
         if len(choices) != 1:
             raise PublishedBootstrapError("choose one unambiguous material combination matching the target, components and extras; non-Basic entries still require backed bootstrap cases")
         selected, gaps = choices[0]

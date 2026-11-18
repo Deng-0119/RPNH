@@ -10,6 +10,12 @@ metadata:
   status: maintained
 ---
 
+## Local dev1806 correction for dev1805 defaults
+
+- Bootstrap candidate installation now rejects existing roots before forwarding to the updater, including dangling aliases. Read-only inspection and explicit application update commands retain their existing behavior.
+- This unpublished local fix uses core0.1.0rc4.dev2026111806 and paired HOST0.0.6; prior dev1805 artifacts are preserved separately.
+
+
 [English](CHANGELOG.md) | [中文](CHANGELOG_ZH.md)
 
 # Changelog
@@ -234,3 +240,6 @@ First public prerelease of the unified RPNH repository.
 
 Supported versions and installation choices are described in
 [compatibility](docs/guides/compatibility.md) and [releases](docs/guides/releases.md).
+
+## Unreleased dev2026111805 candidate
+Linux bootstrap defaults, observed unknown emulation retained for Basic, and unique target-Python material disambiguation. No new native qualification.

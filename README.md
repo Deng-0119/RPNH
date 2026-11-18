@@ -101,7 +101,7 @@ provenance and validation scope.
 
 ## Compatibility and releases
 
-Current source candidate is `0.1.0rc4.dev2026111804`; the October 30
+Current source candidate is `0.1.0rc4.dev2026111806`; the October 30
 [v0.1.0rc3 wheel and DSH plugin](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc3)
 do **not** include the November 1 source fixes; see the
 [source/release boundary](docs/guides/compatibility.md).
