@@ -1,4 +1,4 @@
-> Source candidate: Linux/npm integration is under review. [Scope, evidence and remaining release work](docs/guides/linux-npm-candidate.md). This branch is not a published npm release.
+> Source update: Linux/WSL2 and npm bootstrap integration is included in public main. [Scope, evidence and remaining release work](docs/guides/linux-npm-candidate.md). This is not a new wheel release or an npm registry publication.
 
 # RPNH Harness
 
@@ -117,6 +117,14 @@ do **not** include the November 1 source fixes; see the
 
 These integrations have bounded compatibility, not blanket support across versions.
 
+## Explicit managed-tool scheduling
+
+[Controlled managed tools](docs/controlled-managed-tools.md) documents opt-in
+parallel execution for explicitly bound managed operations under the selected
+policy and effect/conflict limits. Mixed builtin/managed turns retain sequential
+execution. The shared capacity applies within one run, not as a cross-run lock.
+Selecting a policy does not grant additional business authority.
+
 ## Learn more
 
 [Documentation](docs/index.md) · [Examples](examples/README.md) ·
@@ -128,3 +136,4 @@ These integrations have bounded compatibility, not blanket support across versio
 
 [MIT](LICENSE). Third-party components retain their own licenses; see
 [third-party notices](THIRD_PARTY_NOTICES.md).
+
