@@ -612,8 +612,11 @@ def _acquire_plan_materials(root, document, *, current=None):
                 with os.fdopen(descriptor, "wb") as output:
                     with _open_wheel(deepcopy(asset)) as response:
                         _stream(response, output, asset["size"])
-            except (OSError, HTTPException, ValueError, TypeError):
-                raise PublishedBootstrapError("exact official wheel acquisition failed; no installation was activated") from None
+            except (OSError, HTTPException, ValueError, TypeError) as exc:
+                category = "timeout" if isinstance(exc, TimeoutError) else "unavailable or invalid"
+                raise PublishedBootstrapError(
+                    f"exact official wheel acquisition failed; no installation was activated: {wheel['filename']} ({category})"
+                ) from None
             wheels.append({"path": str(path), "name": wheel["name"], "version": wheel["version"]})
             acquired_paths.append(path)
         frontends = {}
