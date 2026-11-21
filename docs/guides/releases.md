@@ -15,7 +15,7 @@ metadata:
 # Releases and installation choices
 
 RPNH is currently a prerelease. Release tags identify fixed source snapshots;
-`main` contains development since the latest tagged release.
+`main` and a release tag can point to different source versions.
 
 ## Choose an installation
 
@@ -25,12 +25,9 @@ RPNH is currently a prerelease. Release tags identify fixed source snapshots;
 | Selected source revision | Use fixes after a release; record the chosen commit and build in an isolated environment |
 | Current `main` | Follow current development; it may differ from the latest uploaded wheel |
 
-The latest uploaded software prerelease is
-[v0.1.0rc3](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc3), with
-`rpnh_harness-0.1.0rc3-py3-none-any.whl` and
-`dsh-rpnh-operator-0.1.0-rc.3.tgz`. Both belong to the October 30 release.
-Current source retains the same version metadata but includes later changes;
-the version string alone does not distinguish those source revisions.
+The latest GitHub prerelease is [v0.1.0rc6](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc6), scoped to Basic Linux x86_64 with CPython 3.12/3.13 candidate materials. The npm-format attachment does not indicate npm registry publication. Public installation and activation are pending verification. The `main` checkout still identifies its source as `0.1.0rc5`; use the release tag for rc6.
+
+The October 30 [v0.1.0rc3 release](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc3) contains its historical Python wheel and stock DSH operator plugin; that pairing is not part of rc6.
 
 Use the [installation guide](installation.md) for source or wheel installation,
 the [stock DSH operator guide](../../integrations/dsh/operator/README.md) for the

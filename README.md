@@ -1,4 +1,4 @@
-> Release status: rc5 wheels and an npm-format GitHub attachment are now [available as a prerelease](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc5). npm registry publication and actual public application installation acceptance remain pending. [Scope and evidence](docs/guides/linux-npm-candidate.md).
+> Release status: [v0.1.0rc6](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc6) is the latest GitHub prerelease, scoped to Basic Linux x86_64. The GitHub attachment is not an npm registry release; public installation and activation are still awaiting verification. [Scope and evidence](docs/guides/linux-npm-candidate.md).
 
 # RPNH Harness
 
@@ -101,7 +101,7 @@ provenance and validation scope.
 
 ## Compatibility and releases
 
-Current source candidate is `0.1.0rc5`; the October 30
+The `main` checkout carries `0.1.0rc5` source metadata. Use the release tag for the rc6 build. The October 30
 [v0.1.0rc3 wheel and DSH plugin](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc3)
 do **not** include the November 1 source fixes; see the
 [source/release boundary](docs/guides/compatibility.md).

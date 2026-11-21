@@ -40,7 +40,7 @@ profile，均不是当前默认值。客户端发现响应不表示已安装插�
 
 ## 源码与发布包
 
-当前源码版本元数据为 `0.1.0rc3`。10 月 30 日发布的
+`main` 的源码版本元数据仍为 `0.1.0rc5`。[rc6 预发布](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc6) 是单独的 Linux x86_64 Basic 发行，不是新的 stock DSH 插件，也不是 npm registry 发行。10 月 30 日发布的
 [v0.1.0rc3](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc3)
 提供由 `bc7755d0a0111a0045c86ed4508b11e1cb4a38bc` 构建的 Python wheel 和
 stock DSH operator tarball。`main` 后续修改不包含在这些已上传文件中。

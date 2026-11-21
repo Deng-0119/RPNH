@@ -2,7 +2,7 @@
 
 ## Current distribution status
 
-The [rc5 prerelease](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc5) now includes core `0.1.0rc5`, optional OAuth HOST `0.0.8`, Linux x86_64 CPython 3.12/3.13 Basic dependency wheels, both v3 sidecars and an npm-format GitHub attachment. This is not an npm registry publication. Local candidate installation passed its scoped checks; actual public application installation is still awaiting local acceptance. The dot attempt exited before application-root creation with a metadata-read error; a separate diagnostic timed out during HTTPS proxy CONNECT. Neither result proves the original failure cause or public installation success. Previously published wheel binaries are not overwritten.
+The [rc6 GitHub prerelease](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc6) contains the matching Basic Linux x86_64 application wheel, CPython 3.12/3.13 dependency wheels, two v3 sidecars, and an npm-format GitHub attachment. The exact candidate passed scoped offline CLI checks. An anonymous release metadata readback succeeded, but an attempted download timed out after the GitHub redirect; public installation and activation are not yet verified. The npm registry release is still pending. This does not qualify upgrade, rollback, optional frontends, or macOS.
 
 The Linux/npm runtime integration is already on public main at baseline `3d61bcf17b22deee28c5db7a427cda0e81a7f6bd`. The 2026-11-17 Viewer/query source update adds 13 product files and 13 tests/fixtures from the reviewed integrated candidate. This is a source update, not a new stable wheel or an npm registry publication. Existing release assets remain unchanged; do not overwrite rc3 assets with a development build.
 
@@ -22,9 +22,9 @@ Viewer changes cover Registry navigation, material availability/body policies, m
 
 ## npm and release work still separate
 
-`packaging/npm-bootstrap` remains `private: true`, version `0.0.0-private`. This repository directory is the source transport template, not the generated rc5 release attachment. Historical template instructions describe a local controller wheel, persistent Python and uv; the generated attachment embeds the matching rc5 controller and selects Python automatically. No new supported public npm install command is claimed.
+`packaging/npm-bootstrap` remains `private: true`, version `0.0.0-private`. This repository directory is the source transport template, not the generated rc6 release attachment. Historical template instructions describe a local controller wheel, persistent Python and uv; the generated attachment embeds the matching rc6 controller and selects Python automatically. No new supported public npm install command is claimed.
 
-rc5 supplies the fixed version, matching controller/application wheels and real release metadata/assets. The remaining gate is actual public acquisition and installed application startup, followed by npm registry publication and registry-path verification. Existing local tarball activation is not public-registry transport or cross-release upgrade evidence. Do not replace existing rc3 assets or fabricate asset identities.
+rc6 supplies the fixed version, matching controller/application wheels and real release metadata/assets. The remaining gate is actual public acquisition and installed application startup, followed by npm registry publication and registry-path verification. Existing local tarball activation is not public-registry transport or cross-release upgrade evidence. Do not replace existing rc3 assets or fabricate asset identities.
 
 This publication scope is Linux/WSL2. macOS is not a prerequisite for this source update and is not claimed supported by these results. Production account-provider wiring, full frontend/API certification and old-release migration remain separately scoped.
 

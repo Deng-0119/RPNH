@@ -42,7 +42,7 @@ attachments or arbitrary process execution. Unsupported operations are rejected.
 
 ## Source and release packages
 
-The current source metadata is `0.1.0rc3`. The published October 30
+The `main` checkout carries `0.1.0rc5` source metadata. The [rc6 prerelease](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc6) is a separate Basic Linux x86_64 release, not a new stock DSH plugin or an npm registry release. The published October 30
 [v0.1.0rc3 release](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc3)
 contains the Python wheel and stock DSH operator tarball built from
 `bc7755d0a0111a0045c86ed4508b11e1cb4a38bc`. Later changes on `main` are not in

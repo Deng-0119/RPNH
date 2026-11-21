@@ -14,8 +14,7 @@ metadata:
 
 # 版本与发行说明
 
-RPNH 当前处于预发布阶段。Release tag 标识固定源码快照；`main` 包含最新
-tag 之后的开发变更。
+RPNH 当前处于预发布阶段。Release tag 标识固定源码快照；`main` 与发行 tag 可能指向不同的源码版本。
 
 ## 选择安装方式
 
@@ -25,11 +24,9 @@ tag 之后的开发变更。
 | 指定源码版本 | 使用发布后的修复；记录所选 commit，在隔离环境构建 |
 | 当前 `main` | 跟进当前开发，内容可能不同于最新已上传 wheel |
 
-最新上传的软件预发布为
-[v0.1.0rc3](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc3)，包含
-`rpnh_harness-0.1.0rc3-py3-none-any.whl` 和
-`dsh-rpnh-operator-0.1.0-rc.3.tgz`，均属于 10 月 30 日发布。
-当前源码沿用相同版本元数据，但已有后续修改，不能仅用版本字符串区分源码版本。
+最新 GitHub 预发布为 [v0.1.0rc6](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc6)，包含 Linux x86_64 Basic、CPython 3.12/3.13 的候选材料。npm 格式附件不代表 npm registry 已发布；公网安装与激活尚待验证。`main` 的源码版本元数据仍为 `0.1.0rc5`；rc6 请使用对应发行标签。
+
+10 月 30 日发布的 [v0.1.0rc3](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc3) 包含当时的 Python wheel 与 stock DSH operator 插件；该配对不属于 rc6。
 
 源码或 wheel 安装见[安装指南](installation_ZH.md)，配套插件安装见
 [stock DSH operator 指南](../../integrations/dsh/operator/README_ZH.md)，客户端

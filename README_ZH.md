@@ -1,4 +1,4 @@
-> 发行状态：rc5 wheel 与 npm 格式 GitHub 附件已[预发布](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc5)。npm registry 发布与实际公网应用安装验收仍待完成。[范围与证据](docs/guides/linux-npm-candidate_ZH.md)。
+> 发行状态：[v0.1.0rc6](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc6) 是最新 GitHub 预发布，范围为 Linux x86_64 Basic。GitHub 附件不等于 npm registry 发布；公网安装与激活尚待验证。[范围与证据](docs/guides/linux-npm-candidate_ZH.md)。
 
 # RPNH Harness
 
@@ -86,7 +86,7 @@ rpnh net --run "$RUN_DIR" --view --no-open
 
 ## 兼容与发布边界
 
-当前源码候选为 `0.1.0rc5`；10 月 30 日发布的
+`main` 的源码版本元数据仍为 `0.1.0rc5`；rc6 构建请使用对应发行标签。10 月 30 日发布的
 [v0.1.0rc3 wheel 与 DSH 插件](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc3)
 **不包含** 11 月 1 日的源码修复；详见[源码与发布包边界](docs/guides/compatibility_ZH.md)。
 
