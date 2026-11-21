@@ -346,13 +346,19 @@ class BootstrapMetadataTests(BootstrapTestCase):
         self.assertEqual(request.to_document()["combination"], other["id"])
         self.assertEqual(fixture.wheel_calls, [])
 
-    def test_inspection_does_not_claim_unobserved_native_or_additional_runtimes(self):
-        for emulated in (None, True):
-            platform = deepcopy(self.fixture.platform)
-            platform["emulated"] = emulated
-            with self.subTest(emulated=emulated), self.transports(), \
-                    self.assertRaises(bootstrap.PublishedBootstrapError):
-                self.fixture.inspect(platform=platform)
+    def test_basic_inspection_with_unknown_emulation_does_not_grant_native_qualification(self):
+        platform = dict(self.fixture.platform, emulated=None)
+        with self.transports():
+            document = self.fixture.inspect(platform=platform).to_document()
+        self.assertIsNone(document["platform"]["emulated"])
+        self.assertFalse(document["qualification_gaps"]["qualification_granted"])
+        self.assertEqual(self.fixture.wheel_calls, [])
+        self.assertFalse(self.root.exists())
+
+    def test_basic_inspection_rejects_emulation_and_additional_runtimes_before_metadata(self):
+        platform = dict(self.fixture.platform, emulated=True)
+        with self.transports(), self.assertRaises(bootstrap.PublishedBootstrapError):
+            self.fixture.inspect(platform=platform)
         runtimes = deepcopy(self.fixture.runtimes)
         runtimes["node"] = dict(runtimes["python"], implementation="node")
         with self.transports(), self.assertRaises(bootstrap.PublishedBootstrapError):

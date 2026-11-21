@@ -30,6 +30,10 @@ class PublishedDownloadError(ValueError):
     """Stable acquisition error; transport URLs/tokens are not echoed."""
 
 
+class PublishedTransferTimeout(PublishedDownloadError):
+    """The bounded response-body transfer exhausted its total time budget."""
+
+
 def _open_wheel(asset):
     # The immutable GitHub asset ID, rather than a mutable filename route, is
     # used for the transfer. Source still records the canonical release URL.
@@ -71,11 +75,11 @@ def _stream(response, output, expected_size, *, max_bytes=MAX_WHEEL_BYTES, secon
     read = getattr(response, "read1", response.read)
     while True:
         if time.monotonic() - started > seconds:
-            raise PublishedDownloadError("wheel transfer exceeded its time budget")
+            raise PublishedTransferTimeout("wheel transfer exceeded its time budget")
         amount = min(CHUNK_BYTES, expected_size - received + 1)
         chunk = read(amount)
         if time.monotonic() - started > seconds:
-            raise PublishedDownloadError("wheel transfer exceeded its time budget")
+            raise PublishedTransferTimeout("wheel transfer exceeded its time budget")
         if not isinstance(chunk, bytes) or len(chunk) > amount:
             raise PublishedDownloadError("wheel response is not a bounded byte stream")
         if not chunk:

@@ -21,13 +21,14 @@ from pathlib import Path
 import stat
 import tempfile
 import time
+from urllib.error import HTTPError, URLError
 from packaging.version import Version
 
 from . import install_contract as contract
-from .published_download import MAX_WHEEL_BYTES, _open_wheel, _stream
+from .published_download import MAX_WHEEL_BYTES, STREAM_SECONDS, PublishedTransferTimeout, _open_wheel, _stream
 from .published_qualification import project_qualification_gaps
 from .published_releases import (
-    MAX_RELEASES, SCHEDULE_BUDGET, V3_SIDECARS, V4_SIDECARS, _asset, _release, _release_tag, get_json,
+    MAX_RELEASES, SCHEDULE_BUDGET, V3_SIDECARS, V4_SIDECARS, _Rejected, _asset, _release, _release_tag, get_json,
 )
 from .updates import CHANNELS, RELEASES_URL
 
@@ -41,6 +42,29 @@ _ACQUISITION_KEY = object()
 
 class PublishedBootstrapError(ValueError):
     """A concrete release/material/target selection cannot be bootstrapped."""
+
+
+def _metadata_failure_category(error):
+    # Only fixed categories and numeric HTTP status are safe to display. Error
+    # text, including URLError.reason, may contain signed URLs or credentials.
+    if isinstance(error, HTTPError):
+        return f"HTTP {error.code}" if type(error.code) is int else "HTTP failure"
+    reason = error.reason if isinstance(error, URLError) else error
+    if isinstance(reason, TimeoutError):
+        return "timeout"
+    if isinstance(error, (OSError, HTTPException)):
+        return "connection failure"
+    if isinstance(error, _Rejected):
+        return {"metadata_size_limit": "metadata exceeds size limit",
+                "metadata_redirect_rejected": "metadata redirect rejected",
+                "untrusted_metadata_coordinate": "metadata coordinate rejected"}.get(error.code, "invalid metadata")
+    return "invalid metadata"
+
+
+def _wheel_stream_seconds(size):
+    # Published installation closures can include large wheels on slow links.
+    # Keep a finite body budget independent of the unchanged socket timeout.
+    return min(300.0, max(STREAM_SECONDS, size / (16 * 1024)))
 
 
 def _canonical(document):
@@ -125,16 +149,21 @@ def inspect_bootstrap(*, release: str, channel: str, platform: dict,
         raise PublishedBootstrapError("choose an explicit combination ID")
     started = time.monotonic()
 
-    def read(url):
+    def read(url, subject):
         if time.monotonic() - started > SCHEDULE_BUDGET:
             raise PublishedBootstrapError("official metadata exceeded its scheduling budget")
-        result = get_json(url)
+        try:
+            result = get_json(url)
+        except (OSError, HTTPException, ValueError, TypeError, KeyError) as exc:
+            raise PublishedBootstrapError(
+                f"official bootstrap metadata read failed: {subject} ({_metadata_failure_category(exc)})"
+            ) from None
         if time.monotonic() - started > SCHEDULE_BUDGET:
             raise PublishedBootstrapError("official metadata exceeded its scheduling budget")
         return result
 
     try:
-        index = read(RELEASES_URL)
+        index = read(RELEASES_URL, "release index")
         if not isinstance(index, list) or len(index) > MAX_RELEASES:
             raise PublishedBootstrapError("official release index is unavailable or invalid")
         rows = [row for row in index if isinstance(row, dict) and row.get("tag_name") == release]
@@ -144,8 +173,8 @@ def inspect_bootstrap(*, release: str, channel: str, platform: dict,
         pair = () if observed is None else tuple(asset["name"] for asset in observed["assets"][1:])
         if pair not in (V3_SIDECARS, V4_SIDECARS) or len(components) > 1 and pair != V4_SIDECARS:
             raise PublishedBootstrapError("bootstrap requires an exact-material sidecar pair; frontends require v4")
-        support = contract.validate_update_support(read(observed["assets"][1]["url"]))
-        validation = contract.validate_update_validation(read(observed["assets"][2]["url"]))
+        support = contract.validate_update_support(read(observed["assets"][1]["url"], f"official sidecar {pair[0]}"))
+        validation = contract.validate_update_validation(read(observed["assets"][2]["url"], f"official sidecar {pair[1]}"))
         expected_schemas = ((contract.UPDATE_SUPPORT_V4_SCHEMA, contract.UPDATE_VALIDATION_V4_SCHEMA)
                             if pair == V4_SIDECARS else
                             (contract.UPDATE_SUPPORT_V3_SCHEMA, contract.UPDATE_VALIDATION_V3_SCHEMA))
@@ -611,9 +640,10 @@ def _acquire_plan_materials(root, document, *, current=None):
             try:
                 with os.fdopen(descriptor, "wb") as output:
                     with _open_wheel(deepcopy(asset)) as response:
-                        _stream(response, output, asset["size"])
+                        _stream(response, output, asset["size"], seconds=_wheel_stream_seconds(asset["size"]))
             except (OSError, HTTPException, ValueError, TypeError) as exc:
-                category = "timeout" if isinstance(exc, TimeoutError) else "unavailable or invalid"
+                category = ("transfer time budget exceeded" if isinstance(exc, PublishedTransferTimeout)
+                            else "timeout" if isinstance(exc, TimeoutError) else "unavailable or invalid")
                 raise PublishedBootstrapError(
                     f"exact official wheel acquisition failed; no installation was activated: {wheel['filename']} ({category})"
                 ) from None
