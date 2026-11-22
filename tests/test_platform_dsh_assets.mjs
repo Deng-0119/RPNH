@@ -27,7 +27,7 @@ async function treeState(root) {
   return rows
 }
 
-for (const manifestName of ['web-packages.json', 'web-packages.rc1.json']) {
+for (const manifestName of ['web-packages.json', 'web-packages.rc1.json', 'web-packages.rc5.json']) {
   test(`production setup.ts with synthetic ${manifestName}`, async t => {
     const root = await mkdtemp(join(tmpdir(), 'rpnh-dsh-ts-contract-'))
     try {
@@ -38,6 +38,7 @@ for (const manifestName of ['web-packages.json', 'web-packages.rc1.json']) {
       await writeFile(join(source, 'tsconfig.base.json'), '{}')
       await copyFile(join(adapters, manifestName), join(target, 'web-packages.json'))
       await copyFile(join(adapters, 'setup.ts'), join(target, 'setup.ts'))
+      await copyFile(join(adapters, 'projection_frames.ts'), join(target, 'projection_frames.ts'))
       const production = await import(pathToFileURL(join(target, 'setup.ts')).href)
       const manifest = JSON.parse(await readFile(join(target, 'web-packages.json'), 'utf8'))
       const descriptors = new Set(production.DESCRIPTOR_PACKAGES)
