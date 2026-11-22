@@ -1,4 +1,4 @@
-> Release status: [v0.1.0rc6](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc6) is the latest GitHub prerelease, scoped to Basic Linux x86_64. The formal rc6 npm-format tgz passed A4 installation and activation on WSL2 / CPython 3.13.12 Basic. npm registry publication remains pending; RC8 is a separate local candidate. [Scope and evidence](docs/guides/linux-npm-candidate.md).
+> [RPNH v0.1.0rc8](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc8) is a GitHub prerelease. [`rpnh-bootstrap@0.1.0-rc.8`](https://www.npmjs.com/package/rpnh-bootstrap/v/0.1.0-rc.8) is published on npm. Anonymous GitHub and npm installation, activation and version readback passed on WSL2 x86_64 / CPython 3.13.12 (Basic). Pin the npm version below; RC8 is not a stable release.
 
 # RPNH Harness
 
@@ -16,6 +16,23 @@ resource versions, execution records and checkpoints.
 [Technical report](docs/technical-report.md) · [Examples](examples/README.md) ·
 [Documentation](docs/index.md) ·
 [Repository map](docs/guides/repository-layout.md)
+
+## Quick start: install from npm
+
+Use **Node.js 20+ with npm**, `uv` on PATH, and a persistent CPython with
+`venv`. Anonymous installation and activation were verified for Basic on
+**WSL2 Linux x86_64 with CPython 3.13.12**.
+
+```bash
+npm install -g rpnh-bootstrap@0.1.0-rc.8
+rpnh-bootstrap
+```
+
+The npm command installs the bootstrap only. Run the second command, review
+the proposed RPNH version and installation materials, then confirm in the
+terminal. Installation needs network access and makes no model calls.
+Optional frontends and account providers are not enabled by this Basic
+install. [Release notes and install scope](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc8).
 
 ## What you can do
 
@@ -42,7 +59,7 @@ shows structure, recorded inputs, outputs and workspace versions.
 committed checkpoint, or explicitly reopen a checkpoint in the active net
 lineage. Earlier history is retained; reopening does not undo external effects.
 
-## One-command installation
+## Alternative: install from source
 
 Requires **Linux/WSL2, Python 3.11+ with venv, Git, curl and Bash**.
 [Review the installer](scripts/install.sh), then run:
@@ -58,7 +75,7 @@ is needed; no model is called. [Custom directory, pinned commit and manual insta
 
 ## Example: add two numbers and inspect the run
 
-After the default installation, run this zero-model example. Local subprocess
+After the source installation above, run this zero-model example. Local subprocess
 and Unix-socket permissions are required:
 
 ```bash
@@ -102,7 +119,7 @@ provenance and validation scope.
 
 ## Compatibility and releases
 
-This local candidate targets `0.1.0rc8` (npm `0.1.0-rc.8`) and is not yet published; see [release scope](docs/guides/releases.md). The public baseline still carries `0.1.0rc5` source metadata. Use the release tag for the rc6 build. The October 30
+See [RC8 release notes](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc8) for current release scope. The October 30
 [v0.1.0rc3 wheel and DSH plugin](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc3)
 do **not** include the November 1 source fixes; see the
 [source/release boundary](docs/guides/compatibility.md).

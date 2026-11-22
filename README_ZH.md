@@ -1,4 +1,4 @@
-> 发行状态：[v0.1.0rc6](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc6) 是最新 GitHub 预发布，范围为 Linux x86_64 Basic。正式 rc6 npm 格式 tgz 已在 WSL2／CPython 3.13.12 Basic 通过 A4 安装与激活验收。npm registry 尚未发布；RC8 是独立本地候选。[范围与证据](docs/guides/linux-npm-candidate_ZH.md)。
+> [RPNH v0.1.0rc8](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc8) 是 GitHub 预发行；[`rpnh-bootstrap@0.1.0-rc.8`](https://www.npmjs.com/package/rpnh-bootstrap/v/0.1.0-rc.8) 已发布到 npm。在 WSL2 x86_64／CPython 3.13.12 的 Basic 范围内，GitHub 和 npm 两条匿名路径均通过安装、激活和版本回读。请使用下方的固定 npm 版本；RC8 不是稳定版。
 
 # RPNH Harness
 
@@ -14,6 +14,21 @@ RPNH 是不绑定特定模型服务商的 Agent 执行框架，用于**构建、
 [技术报告](docs/technical-report_ZH.md) · [案例](examples/README_ZH.md) ·
 [文档导航](docs/index_ZH.md) ·
 [仓库目录图](docs/guides/repository-layout_ZH.md)
+
+## 快速开始：通过 npm 安装
+
+需要 **Node.js 20+（含 npm）**、PATH 中可用的 `uv` 和支持 `venv` 的持久
+CPython。匿名安装与激活已在 **WSL2 Linux x86_64／CPython 3.13.12** 的 Basic
+配置下通过验证。
+
+```bash
+npm install -g rpnh-bootstrap@0.1.0-rc.8
+rpnh-bootstrap
+```
+
+第一条命令只安装引导器。运行第二条命令，核对提示中的 RPNH 版本和安装材料，
+再在终端确认。安装需要联网，不调用模型；Basic 不会自动启用可选前端或账户
+提供方。[发行说明与安装范围](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc8)。
 
 ## 可以做什么
 
@@ -34,7 +49,7 @@ RPNH 是不绑定特定模型服务商的 Agent 执行框架，用于**构建、
 从最新已提交检查点继续，也可显式重开当前 net lineage 中的检查点。
 先前历史会保留；重开不会撤销外部效果。
 
-## 一键安装
+## 备选：从源码安装
 
 需要 **Linux/WSL2、Python 3.11+（含 venv）、Git、curl 和 Bash**。
 先[查看安装脚本](scripts/install.sh)，然后执行一条命令：
@@ -49,7 +64,7 @@ bash -c 'set -e; installer=$(mktemp); curl -fsSL https://raw.githubusercontent.c
 
 ## 使用案例：两数相加并查看运行
 
-完成默认安装后，执行这个零模型案例；需要本地子进程与 Unix socket 权限：
+完成上述源码安装后，执行这个零模型案例；需要本地子进程与 Unix socket 权限：
 
 ```bash
 cd "$HOME/.local/share/rpnh/source"
@@ -87,7 +102,7 @@ rpnh net --run "$RUN_DIR" --view --no-open
 
 ## 兼容与发布边界
 
-本地候选目标为 `0.1.0rc8`（npm `0.1.0-rc.8`），尚未发布；见[发行范围](docs/guides/releases_ZH.md)。公开基线的源码版本元数据仍为 `0.1.0rc5`；rc6 构建请使用对应发行标签。10 月 30 日发布的
+当前发行范围以 [RC8 发行说明](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc8) 为准。10 月 30 日发布的
 [v0.1.0rc3 wheel 与 DSH 插件](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc3)
 **不包含** 11 月 1 日的源码修复；详见[源码与发布包边界](docs/guides/compatibility_ZH.md)。
 
