@@ -62,7 +62,7 @@ profile，均不是当前默认值。客户端发现响应不表示已安装插�
 
 ## 源码与发布包
 
-本地 `0.1.0rc8` 候选（npm `0.1.0-rc.8`）尚未发布，见[发行范围](releases_ZH.md)。公开基线的源码版本元数据仍为 `0.1.0rc5`。[rc6 预发布](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc6) 是单独的 Linux x86_64 Basic 发行，不是新的 stock DSH 插件，也不是 npm registry 发行。10 月 30 日发布的
+[RPNH v0.1.0rc8](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc8) 是 GitHub 预发行；[`rpnh-bootstrap@0.1.0-rc.8`](https://www.npmjs.com/package/rpnh-bootstrap/v/0.1.0-rc.8) 已发布到 npm。在 WSL2 x86_64／CPython 3.13.12 的 Basic 范围内，GitHub 和 npm 两条匿名路径均通过安装、激活和版本回读。见[发行范围](releases_ZH.md)。10 月 30 日发布的
 [v0.1.0rc3](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc3)
 提供由 `bc7755d0a0111a0045c86ed4508b11e1cb4a38bc` 构建的 Python wheel 和
 stock DSH operator tarball。`main` 后续修改不包含在这些已上传文件中。

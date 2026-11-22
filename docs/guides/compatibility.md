@@ -73,7 +73,7 @@ attachments or arbitrary process execution. Unsupported operations are rejected.
 
 ## Source and release packages
 
-The local `0.1.0rc8` candidate (npm `0.1.0-rc.8`) is not yet published; see [release scope](releases.md). The public baseline carries `0.1.0rc5` source metadata. The [rc6 prerelease](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc6) is a separate Basic Linux x86_64 release, not a new stock DSH plugin or an npm registry release. The published October 30
+[RPNH v0.1.0rc8](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc8) is a GitHub prerelease. [`rpnh-bootstrap@0.1.0-rc.8`](https://www.npmjs.com/package/rpnh-bootstrap/v/0.1.0-rc.8) is published on npm. Anonymous GitHub and npm installation, activation and version readback passed on WSL2 x86_64 / CPython 3.13.12 (Basic). See [release scope](releases.md). The October 30
 [v0.1.0rc3 release](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc3)
 contains the Python wheel and stock DSH operator tarball built from
 `bc7755d0a0111a0045c86ed4508b11e1cb4a38bc`. Later changes on `main` are not in

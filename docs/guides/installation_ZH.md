@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: installation.md
-  revision: "2026-11-02.1"
+  revision: "2026-11-22.1"
   status: source-installation
   basis: "unified main; host differences explicitly labelled"
 ---
@@ -19,12 +19,9 @@ metadata:
 从明确指定的 RPNH 源码或 wheel 安装，不调用模型。当前运行支持范围仍是 **Linux（包括 WSL2）**，不支持原生 Windows 和 macOS。`pyproject.toml` 声明 Python `>=3.11`，不等于每个 Python/平台组合均已测试；运行时涉及 Unix socket、POSIX 进程控制和 Linux 进程检查。basic 文本前端不需要 Codex 或 Node。
 
 发行包为 `rpnh-harness`，导入包为 `cpn`，命令为 `rpnh`。
-当前公开源码版本为 `0.1.0rc3`。10 月 30 日的
-[v0.1.0rc3 release](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc3)
-包含 Python wheel 与 stock DSH operator tarball，**不含** 11 月 1 日的源码修复；
-详见[源码与产物边界](compatibility_ZH.md)。
-版本字符串不能单独区分这些源码；应记录提交或产物摘要，并使用全新环境。
-不表示包索引发布或 runtime 全面验收。
+RC8 源码声明版本为 `0.1.0rc8`。已发布的 Linux／WSL2 Basic 安装方式、固定 npm 版本和实测环境见 [RC8 安装及支持范围](linux-npm-candidate_ZH.md)。源码、GitHub wheel 和 npm 引导包不是同一类产物；请记录实际安装的来源。
+
+历史 [v0.1.0rc3 发行](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc3)包含 Python wheel 和 stock DSH operator tarball，不含 11 月 1 日的后续源码修正。使用历史适配器前请看[兼容性说明](compatibility_ZH.md)。
 
 依赖为 `jsonschema>=4.20,<5`、`packaging>=24,<27`、`websockets>=12,<16`。
 没有 `codex` 或 `dsh` pip extra；不要在同一环境覆盖安装不同来源的 `cpn`。
@@ -104,7 +101,7 @@ cd "$TEST_ROOT"
 "$TEST_ROOT/venv/bin/python" -c 'import cpn; from importlib.metadata import version; print(version("rpnh-harness")); print(cpn.__file__)'
 ```
 
-当前源码输出版本应为 `0.1.0rc3`；10 月 30 日 wheel 也使用同一版本，因此还须核对选定的源码提交。包路径应来自新环境的 `site-packages`，不能来自源码目录。[开发维护](development_ZH.md)介绍源码包内 `scripts/check_installed_docs.py` 的受限零模型配置检查；它不验证模型和交互式终端。
+RC8 源码输出版本应为 `0.1.0rc8`；还须核对实际选定的源码版本，而不是只看版本字符串。包路径应来自新环境的 `site-packages`，不能来自源码目录。[开发维护](development_ZH.md)介绍源码包内 `scripts/check_installed_docs.py` 的受限零模型配置检查；它不验证模型和交互式终端。
 
 从本源码候选版构建的 wheel 包含命名可复用案例以及默认的 provider-neutral 跨宿主任务。
 导出只是零模型文件操作，不需要源码 checkout。旧 rc1 wheel 只包含 adapter 任务。当前命名
@@ -128,10 +125,10 @@ cd "$TEST_ROOT"
 
 | 入口 | 当前边界 |
 |---|---|
-| Codex | 默认 `0.163.0`；`0.166.0` 是[显式候选](codex-candidate-0166_ZH.md)。 |
+| Codex | 默认 `0.163.0`；`0.166.0` 和 RC8 的 `0.171.0` 均需显式选择。见[实测范围](compatibility_ZH.md)。 |
 | OpenCode | 默认 `1.19.4`；`2.2.5` 仅为 [REST／认证／非持久化事件子集](../reference/opencode-v2-candidate_ZH.md)，不是完整原生前端。 |
 | Stock DSH operator | RPNH Python companion 与 operator 手动配对 DSH `0.2.2-alpha.2`，按[operator 安装指南](../../integrations/dsh/operator/README_ZH.md)操作；不代表托管升级验收。 |
-| 早期 DSH Web／headless 路径 | 是不同集成入口，按 [DSH 指南](dsh_ZH.md)使用，不适用 stock operator 安装步骤。 |
+| DSH Web／headless | 与 stock operator 分开。DSH Web 默认 `0.2.2-alpha.2`；RC8 的 `0.2.2-rc.5` 需显式选择，验证有范围限制。分别见 [DSH 指南](dsh_ZH.md)。 |
 
 其他展示客户端见[前端配置与切换](frontends_ZH.md)。
 不要把旧 DSH Web 固定版本配置混入 stock alpha.2 operator 配对。

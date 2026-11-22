@@ -24,7 +24,9 @@ RPNH 当前处于预发布阶段。Release tag 标识固定源码快照；`main`
 | 指定源码版本 | 使用发布后的修复；记录所选 commit，在隔离环境构建 |
 | 当前 `main` | 跟进当前开发，内容可能不同于最新已上传 wheel |
 
-在已核对的公开基线中，最新 GitHub 预发布为 [v0.1.0rc6](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc6)，包含 Linux x86_64 Basic、CPython 3.12/3.13 的候选材料。npm 格式附件不代表 npm registry 已发布；正式 rc6 npm 格式 tgz 后续已在 WSL2／CPython 3.13.12 Basic 通过 A4 安装与激活验收；npm registry 尚未发布。已核对公开基线的源码版本元数据仍为 `0.1.0rc5`；rc6 请使用对应发行标签。
+[RPNH v0.1.0rc8](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc8) 是 GitHub 预发行；[`rpnh-bootstrap@0.1.0-rc.8`](https://www.npmjs.com/package/rpnh-bootstrap/v/0.1.0-rc.8) 已发布到 npm。在 WSL2 x86_64／CPython 3.13.12 的 Basic 范围内，GitHub 和 npm 两条匿名路径均通过安装、激活和版本回读。使用 Node.js 20+（含 npm）、PATH 中的 `uv` 和支持 `venv` 的持久 CPython。请固定使用 `npm install -g rpnh-bootstrap@0.1.0-rc.8`，然后运行 `rpnh-bootstrap`。npm 首发时的 `next` 与 `latest` 均指向此预发行，标签不代表稳定版。
+
+历史 RC6 保留为 GitHub 验收记录；其 A4 回执不用于证明 RC8 或跨版本升级。
 
 10 月 30 日发布的 [v0.1.0rc3](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc3) 包含当时的 Python wheel 与 stock DSH operator 插件；该配对不属于 rc6。
 
@@ -33,17 +35,16 @@ RPNH 当前处于预发布阶段。Release tag 标识固定源码快照；`main`
 版本与已知限制见[兼容性](compatibility_ZH.md)。手动安装不会迁移任务数据或重启
 worker，更换环境时应保留已有任务目录。
 
-## 本地 RC8 候选（尚未发布）
+## RC8 预发行范围
 
-本地候选目标为 Python `0.1.0rc8` 与 npm `0.1.0-rc.8`，基于公开基线组装，
+RC8 的 Python 版本为 `0.1.0rc8`，npm 包版本为 `0.1.0-rc.8`。
 新增 Codex `0.171.0` 和 DSH Web `0.2.2-rc.5` 显式 opt-in。默认版本仍为
 Codex `0.163.0`、OpenCode `1.19.4` 和 DSH Web `0.2.2-alpha.2`；既有 opt-in
 继续保留。RC8 不包含新的 OpenCode 候选支持。
 
-候选同时包含共用 Owner reconciliation 修复，以及限定的文档导航、元数据和 Viewer
+RC8 同时包含共用 Owner reconciliation 修复，以及限定的文档导航、元数据和 Viewer
 资源验证更新。此前前端任务结果在[兼容性](compatibility_ZH.md)中保留精确源码、
-模型、输入与重开范围；这些结果不证明 RC8 包安装、公网获取、升级或回滚验收通过。
-当前源码状态不等于 GitHub 发行或 npm registry 发布。RC8 最终正式 GitHub 安装验收 A 仍待后续单独授权。
+模型、输入与重开范围。上文的独立匿名安装不证明原地升级、回滚、其他操作系统或所有可选前端均已验收。
 
 ## 仓库内容
 

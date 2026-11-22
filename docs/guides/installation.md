@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: installation_ZH.md
-  revision: "2026-11-02.1"
+  revision: "2026-11-22.1"
   status: source-installation
   basis: "unified main; host differences explicitly labelled"
 ---
@@ -19,13 +19,9 @@ metadata:
 Install an explicitly selected RPNH source tree or wheel without calling a model. Runtime support remains **Linux, including WSL2**; native Windows and macOS are not supported by this candidate. Python is declared as `>=3.11`; this is not a claim that every Python/platform combination was tested. The runtime uses Unix sockets, POSIX process control and Linux-specific process inspection. A basic terminal does not require Codex or Node.
 
 The distribution is `rpnh-harness`, with imports under `cpn` and command `rpnh`.
-Current public source declares `0.1.0rc3`. The October 30
-[v0.1.0rc3 release](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc3)
-contains a Python wheel and stock DSH operator tarball, but not the later
-November 1 source fixes. See the [source/artifact boundary](compatibility.md).
-A version string alone cannot distinguish these sources: record the commit or
-artifact digest and use a fresh environment. No package-index publication or
-blanket runtime acceptance is implied.
+The RC8 source declares `0.1.0rc8`. For the published Basic Linux/WSL2 path, see the [RC8 installation and support limits](linux-npm-candidate.md), including the exact npm version and the tested environment. Source, the GitHub wheel, and the npm bootstrap are distinct artifacts; record the one you actually installed.
+
+The earlier [v0.1.0rc3 release](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc3) included a Python wheel and stock DSH operator tarball; it predates the November 1 source fixes. See [compatibility](compatibility.md) before using that historical adapter.
 
 Dependencies are `jsonschema>=4.20,<5`, `packaging>=24,<27` and
 `websockets>=12,<16`. There are no `codex` or `dsh` pip extras. Do not overlay
@@ -112,9 +108,9 @@ cd "$TEST_ROOT"
 "$TEST_ROOT/venv/bin/python" -c 'import cpn; from importlib.metadata import version; print(version("rpnh-harness")); print(cpn.__file__)'
 ```
 
-For current source, the printed version is `0.1.0rc3`; also verify the selected source commit, because the October 30 wheel has the same version. The printed package path must be in this environment's `site-packages`, not the checkout. Use `scripts/check_installed_docs.py` from the source bundle for the guarded configuration smoke described in [development](development.md). That smoke does not validate a model or an interactive terminal.
+For the RC8 source, the printed version is `0.1.0rc8`; verify the selected source revision, not just the version label. The printed package path must be in this environment's `site-packages`, not the checkout. Use `scripts/check_installed_docs.py` from the source bundle for the guarded configuration smoke described in [development](development.md). That smoke does not validate a model or an interactive terminal.
 
-A wheel built from this source candidate contains named reusable example exports
+A wheel built from RC8 contains named reusable example exports
 plus the default provider-neutral cross-host task. Exporting is a zero-model
 file operation and does not require the source checkout. The older rc1 wheel
 has only the adapter task. For current named exports, use
@@ -140,10 +136,10 @@ Optional clients are not installed by the bootstrap script.
 
 | Surface | Current boundary |
 |---|---|
-| Codex | Default `0.163.0`; `0.166.0` is an [explicit candidate](codex-candidate-0166.md). |
+| Codex | Default `0.163.0`; `0.166.0` and RC8’s `0.171.0` are explicit opt-ins. See the [tested scope](compatibility.md). |
 | OpenCode | Default `1.19.4`; `2.2.5` is only a [REST/authentication/non-durable event subset](../reference/opencode-v2-candidate.md), not a complete native frontend. |
 | Stock DSH operator | Manually pair the RPNH Python companion and operator with DSH `0.2.2-alpha.2`; follow the [operator installation guide](../../integrations/dsh/operator/README.md). No managed-upgrade qualification. |
-| Earlier DSH Web/headless paths | Separate integration surfaces; follow the [DSH guide](dsh.md), not the stock operator instructions. |
+| DSH Web / headless | Separate from the stock operator. DSH Web defaults to `0.2.2-alpha.2`; RC8’s `0.2.2-rc.5` is an explicit opt-in with scoped evidence. See the [DSH guide](dsh.md) for each path. |
 
 Use [frontend setup and switching](frontends.md) for other presentation clients.
 Do not combine old DSH Web setup pins with the stock alpha.2 operator pairing.

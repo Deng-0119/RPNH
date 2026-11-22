@@ -16,11 +16,11 @@ metadata:
 
 ## Current distribution status
 
-The local RC8 candidate (Python `0.1.0rc8`, npm `0.1.0-rc.8`) is not yet published; see [scoped release status](releases.md). The rc6 status below preserves the earlier public-baseline record and does not establish RC8 release or installation acceptance.
+[RPNH v0.1.0rc8](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc8) is a GitHub prerelease. [`rpnh-bootstrap@0.1.0-rc.8`](https://www.npmjs.com/package/rpnh-bootstrap/v/0.1.0-rc.8) is published on npm. Anonymous GitHub and npm installation, activation and version readback passed on WSL2 x86_64 / CPython 3.13.12 (Basic). Use Node.js 20+ with npm, `uv` on PATH, and a persistent CPython with `venv`. Pin `npm install -g rpnh-bootstrap@0.1.0-rc.8`, then run `rpnh-bootstrap`. At first publication, both `next` and `latest` pointed to RC8; this is not a stable release.
 
-The [rc6 GitHub prerelease](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc6) contains the matching Basic Linux x86_64 application wheel, CPython 3.12/3.13 dependency wheels, two v3 sidecars, and an npm-format GitHub attachment. The exact candidate passed scoped offline CLI checks. The first anonymous release metadata readback succeeded, but its download attempt timed out after the GitHub redirect; that original failure is retained. The formal rc6 npm-format tgz subsequently passed A4 installation and activation on WSL2 / CPython 3.13.12 Basic. The npm registry release is still pending. This does not qualify upgrade, rollback, optional frontends, or macOS.
+The [rc6 GitHub prerelease](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc6) contains the matching Basic Linux x86_64 application wheel, CPython 3.12/3.13 dependency wheels, two v3 sidecars, and an npm-format GitHub attachment. The exact candidate passed scoped offline CLI checks. The first anonymous release metadata readback succeeded, but its download attempt timed out after the GitHub redirect; that original failure is retained. The formal rc6 npm-format tgz subsequently passed A4 installation and activation on WSL2 / CPython 3.13.12 Basic. This is historical RC6 evidence, not a registry publication for RC6. This does not qualify upgrade, rollback, optional frontends, or macOS.
 
-The Linux/npm runtime integration is already on public main at baseline `3d61bcf17b22deee28c5db7a427cda0e81a7f6bd`. The 2026-11-17 Viewer/query source update adds 13 product files and 13 tests/fixtures from the reviewed integrated candidate. This is a source update, not a new stable wheel or an npm registry publication. Existing release assets remain unchanged; do not overwrite rc3 assets with a development build.
+The Linux/npm runtime integration is already on public main at baseline `3d61bcf17b22deee28c5db7a427cda0e81a7f6bd`. The 2026-11-17 Viewer/query source update adds 13 product files and 13 tests/fixtures from the reviewed integrated candidate. That November 17 change was a historical source-only update; see above for current npm availability. Existing release assets remain unchanged; do not overwrite rc3 assets with a development build.
 
 ## Included behavior
 
@@ -36,11 +36,9 @@ Viewer changes cover Registry navigation, material availability/body policies, m
 - Exact private wheel `0.1.0rc4.dev2026111702`: independently installed on WSL2/Linux 6.6.87.2, CPython 3.13.12; three original terminal-location native tests passed first attempt, 0 failures/errors/skips, 15.273s. Actual AF_UNIX OwnerEventLoop was used; model calls: zero.
 - Browser evidence remains scoped: earlier ordinary six-stage/nine-image flow and later terminal HTTP/DOM flow belong to their respective source windows. The final installed wheel reopened an existing run and Registry pages successfully, but this is not a repeat of every browser flow. Human visual acceptance remains unconfirmed.
 
-## npm and release work still separate
+## Source template and published package
 
-`packaging/npm-bootstrap` remains `private: true`, version `0.0.0-private`. This repository directory is the source transport template, not the generated rc6 release attachment. Historical template instructions describe a local controller wheel, persistent Python and uv; the generated attachment embeds the matching rc6 controller and selects Python automatically. No new supported public npm install command is claimed.
-
-rc6 supplies the fixed version, matching controller/application wheels and real release metadata/assets. The formal rc6 tgz A4 installation and activation has passed; npm registry publication and registry-path verification remain pending. RC8 is a separate local candidate, with final formal GitHub installation acceptance A awaiting separate authorization. Existing local tarball activation is not public-registry transport or cross-release upgrade evidence. Do not replace existing rc3 assets or fabricate asset identities.
+`packaging/npm-bootstrap` is a private source template (`0.0.0-private`), not the published npm package. The official RC8 GitHub attachment and npm tarball matched byte-for-byte in verification. Keep old artifacts unchanged. This clean-install evidence does not cover in-place upgrade or rollback.
 
 This publication scope is Linux/WSL2. macOS is not a prerequisite for this source update and is not claimed supported by these results. Production account-provider wiring, full frontend/API certification and old-release migration remain separately scoped.
 

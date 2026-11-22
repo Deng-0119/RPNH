@@ -6,9 +6,9 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: getting-started_ZH.md
-  revision: "2026-11-09.1"
+  revision: "2026-11-22.1"
   status: source-reviewed
-  basis: "workflow commands retain public source b16ecce83ba603b3c15f1c770bce172d4f44f88e; version and navigation checked at public 637be28a6ed0eb86e27f88eba8245778488a7bcd; no new runtime validation"
+  basis: "workflow commands retain public source b16ecce83ba603b3c15f1c770bce172d4f44f88e; release version and navigation checked for public v0.1.0rc8; no new runtime validation"
 ---
 
 [English](getting-started.md) | [中文](getting-started_ZH.md)
@@ -29,14 +29,12 @@ record a new installation, runtime test or provider test.
 Use **Linux or WSL2 and Python 3.11+**. Follow [installation](installation.md)
 to install one approved checkout or a wheel built from it in a dedicated
 virtual environment. Basic needs no Codex or Node. Native macOS and Windows
-are not supported by this source candidate.
+are not supported by RC8.
 
 The distribution is `rpnh-harness`, Python imports use `cpn`, and the user
-command is `rpnh`. This source tree declares `0.1.0rc3`; identify the source
-commit or the release wheel you actually selected. A source checkout, an uploaded
-release asset and an existing installation can contain different changes even
-when their version labels match. See the [installation and version notes](installation.md#goal-and-prerequisites)
-before choosing an artifact.
+command is `rpnh`. RC8 source declares `0.1.0rc8`. For the separately published
+npm Bootstrap path and its tested limits, see [RC8 Linux/WSL2 installation](linux-npm-candidate.md).
+Record the exact source or release artifact you install.
 
 From that environment:
 

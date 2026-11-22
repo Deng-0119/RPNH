@@ -16,11 +16,11 @@ metadata:
 
 ## 当前发行状态
 
-本地 RC8 候选（Python `0.1.0rc8`、npm `0.1.0-rc.8`）尚未发布；见[限定发行范围](releases_ZH.md)。下方 rc6 状态保留此前公开基线的记录，不代表 RC8 已通过发行或安装验收。
+[RPNH v0.1.0rc8](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc8) 是 GitHub 预发行；[`rpnh-bootstrap@0.1.0-rc.8`](https://www.npmjs.com/package/rpnh-bootstrap/v/0.1.0-rc.8) 已发布到 npm。在 WSL2 x86_64／CPython 3.13.12 的 Basic 范围内，GitHub 和 npm 两条匿名路径均通过安装、激活和版本回读。使用 Node.js 20+（含 npm）、PATH 中的 `uv` 和支持 `venv` 的持久 CPython。请固定使用 `npm install -g rpnh-bootstrap@0.1.0-rc.8`，然后运行 `rpnh-bootstrap`。npm 首发时的 `next` 与 `latest` 均指向此预发行，标签不代表稳定版。
 
-[rc6 已在 GitHub 预发布](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc6)，包含匹配的 Linux x86_64 Basic 应用 wheel、CPython 3.12/3.13 依赖 wheel、两份 v3 清单，以及 npm 格式的 GitHub 附件。该候选已通过限定的离线 CLI 检查。首次匿名发行元数据已回读，但该次下载在 GitHub 重定向后超时，原始失败继续保留。正式 rc6 npm 格式 tgz 后续已在 WSL2／CPython 3.13.12 Basic 通过 A4 安装与激活验收。npm registry 发布仍待完成。本结果不证明升级、回滚、可选前端或 macOS 支持。
+[rc6 已在 GitHub 预发布](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc6)，包含匹配的 Linux x86_64 Basic 应用 wheel、CPython 3.12/3.13 依赖 wheel、两份 v3 清单，以及 npm 格式的 GitHub 附件。该候选已通过限定的离线 CLI 检查。首次匿名发行元数据已回读，但该次下载在 GitHub 重定向后超时，原始失败继续保留。正式 rc6 npm 格式 tgz 后续已在 WSL2／CPython 3.13.12 Basic 通过 A4 安装与激活验收。这是历史 RC6 证据，不代表 RC6 已发布到 npm registry。本结果不证明升级、回滚、可选前端或 macOS 支持。
 
-Linux/npm运行闭包已经进入公开main，基线为 `3d61bcf17b22deee28c5db7a427cda0e81a7f6bd`。2026-11-17的Viewer/查询更新仅整合已审核候选的13个产品文件和13个测试/夹具文件。这是源码更新，不是新的稳定wheel或公网npm发行。已有Release资产保持不变，不能用开发构建覆盖rc3资产。
+Linux/npm运行闭包已经进入公开main，基线为 `3d61bcf17b22deee28c5db7a427cda0e81a7f6bd`。2026-11-17的Viewer/查询更新仅整合已审核候选的13个产品文件和13个测试/夹具文件。这条 11 月 17 日记录仅指历史源码更新，公网 npm 发行状态见上文。已有Release资产保持不变，不能用开发构建覆盖rc3资产。
 
 ## 本次内容
 
@@ -36,11 +36,9 @@ Viewer更新覆盖Registry导航、资料可用性/正文策略、受管资料�
 - 准确私有wheel `0.1.0rc4.dev2026111702`在WSL2/Linux6.6.87.2、CPython3.13.12独立安装后，原三项终态位置原生测试首次全部通过，0失败/错误/跳过，15.273秒；使用真实AF_UNIX OwnerEventLoop，模型调用0。
 - 浏览器证据按版本分别保留：早期普通六阶段/九图与后续终态HTTP/DOM流程不是同一源码窗口。最终安装包成功重开已有run及Registry页面，不等同重新验收所有浏览器流程。用户人工视觉签收尚未确认。
 
-## npm与正式发行仍单独收尾
+## 源码模板与已发布安装包
 
-`packaging/npm-bootstrap`仍为`private: true`、`0.0.0-private`。该目录是源码传输模板，不是生成后的 rc6 发行附件。模板历史说明要求本地controller wheel、持久Python和uv；生成后的附件内嵌匹配的 rc6 controller并自动选择Python。目前不声明新的可用公网npm安装命令。
-
-rc6 已提供固定版本、匹配controller/application wheel与真实发行元数据/资产。正式 rc6 tgz 的 A4 安装与激活已通过；npm registry 发布及 registry 路径验证仍待完成。RC8 是独立本地候选，最终正式 GitHub 安装验收 A 仍待后续单独授权。已有本地tarball激活不等于registry下载或跨发行升级。不得覆盖已有rc3或虚构资产身份。
+`packaging/npm-bootstrap` 是私有源码模板（`0.0.0-private`），不是已发布的 npm 包。验收时 RC8 正式 GitHub 附件与 npm tarball 逐字节一致。已有发行资产保持不变；全新安装证据不覆盖原地升级或回滚。
 
 本轮公开范围是Linux/WSL2；macOS不是本次源码更新的前置，也不由上述结果证明。生产账户提供方接线、完整前端/API认证和旧发行迁移仍应按各自范围处理。
 
