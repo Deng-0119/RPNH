@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: dsh.md
-  revision: "2026-10-19.3"
+  revision: "2026-11-22.1"
   status: source-reviewed-pre-release
 ---
 
@@ -73,14 +73,43 @@ MainSession；不支持原生文件上传、任意创建会话、workspace 编�
 
 ## 准备固定版本源码
 
-使用 `integrations/dsh/UPSTREAM.json` 固定的独立可写 checkout：上游
-`687f282e8625c6b8d11ff58211a90524be2e4317`（2026-10-17），root 为
-`@deepseek-ai/dsh-root@0.2.1-rc.2`，CLI 为 `@deepseek-ai/dsh@0.2.1-rc.2`。
-要求 Node `^22.19.0 || >=24.0.0`（此前宿主检查使用 `22.22.1`）与 pnpm `11.28.5`。
-启动前先在 checkout 中执行 `pnpm install --frozen-lockfile --ignore-scripts` 安装依赖。
+使用 `integrations/dsh/UPSTREAM.json` 固定的独立可写 checkout：默认 Web 版本为
+`0.2.2-alpha.2`，上游 `f3803c96974ad4a94195fb97e5c637e9c2a3afe3`。
+显式 Web 候选为 `0.2.2-rc.1`（`UPSTREAM_CANDIDATE.json`）和
+`0.2.2-rc.5`（`UPSTREAM_RC5_CANDIDATE.json`）。各 profile 必须使用其精确 checkout
+和 Web 资源。Web 要求 Node `>=24.9.0` 与 pnpm `11.28.5`；启动前先在 checkout 中
+执行 `pnpm install --frozen-lockfile --ignore-scripts` 安装依赖。
 
-首次启动从 npm 下载精确 `0.2.1-rc.2` 的 31 个官方包，缓存到
-`SOURCE/rpnh-frontend/node_modules`。完整缓存可无网络复用；缺失或不完整的包需要下载。
+显式准备并保存 rc.5 候选：
+
+```bash
+rpnh frontend setup dsh --install --dsh-compatibility-profile 0.2.2-rc.5
+```
+
+选择 rc.1 时将上述版本替换为 `0.2.2-rc.1`，选择默认 profile 时替换为
+`0.2.2-alpha.2`。Setup 保存后续启动使用的选择；候选验收应使用独立的配置和安装路径。
+rc.1 是既有 opt-in。
+
+以下结果属于此前前端验收源码，不是本次 RC8 的重跑或安装验收。
+2026-11-22，rc.5 使用 Node `24.22.1` 与 pnpm `11.28.5` 在 WSL2 完成 frozen 安装
+及全部 33 个 Web 包。原生 BFF／投影回归 17/17 通过、零 skip，含三个使用脚本化后端的
+真实 Chrome 浏览器用例。另有真实 Python Owner + Web 同根空会话冷重开通过。
+这些检查均无模型调用，不能证明真实业务结果。
+
+首次已授权真实提交中，驱动误把 `running` 加 `reconciliation_required` 当作终态，
+主动关闭 Owner。结果为 `stopped_by_owner`、零次 Registry 已结算调用、
+`submission_unknown`，没有已登记答案；该首次未知提交单独保留为历史证据。
+
+修复后，另行授权、使用新输入集的独立真实任务在源码 `b65f6682` 通过真实浏览器完成，
+模型为 `gpt-5.6-terra`／`high`：一次输入、两次 Registry 已结算调用，本次用时
+81.464 秒，数量／总和／均值／最小／最大正确为 `3/45/15/10/21`，语义 verifier
+退出码为 0。同根只读重开在 4.486 秒通过，零次原生提交；浏览器会话、Registry 引用及
+计数均未改变，实际 DOM 原回答可读。这仅记录该次已授权真实任务与重开；此前 17/17
+脚本化后端测试和首次 stopped／unknown 提交仍分别保留各自范围。
+
+首次启动从 npm 下载精确 `0.2.2-alpha.2` 的 32 个官方 Web 包，两个 rc 候选各使用
+33 个，缓存到 `SOURCE/rpnh-frontend/node_modules`。完整缓存可无网络复用；缺失或
+不完整的包需要下载。
 准备和资源预检均在获取 MainSession 写入权之前完成，因此下载或预检失败不会取得
 会话 owner。
 
@@ -89,9 +118,11 @@ Setup 生成 `rpnh-frontend/official.json`、`tsconfig.json`、typed Remote desc
 旧版 AgentLoop factory，也不启动模型调用。后续启动需继续保留可写 checkout 和缓存。
 RPNH wheel 不包含准备后的 checkout 或下载的官方包。
 
-2026-10-19 核对的[官方 npm 元数据](https://registry.npmjs.org/@deepseek-ai%2fdsh)为
+以下是 `integrations/dsh/LEGACY_UPSTREAM.json` 固定的独立 `0.2.1-rc.2` host 的
+历史元数据，不是当前 Web 默认。该旧版 host 仍要求 Node `^22.19.0 || >=24.0.0`
+与 pnpm `11.28.5`。2026-10-19 核对的[官方 npm 元数据](https://registry.npmjs.org/@deepseek-ai%2fdsh)为
 `latest=0.2.0-rc.2`、`next=0.2.1-rc.2`、`alpha=0.2.1-alpha.5`，当时默认 npm 安装与
-最新已发布预发布版本不同。这里使用精确的
+最新已发布预发布版本不同。该旧版接入使用精确的
 [源码提交](https://github.com/deepseek-ai/deepseek-harness/commit/687f282e8625c6b8d11ff58211a90524be2e4317)
 和固定 Web 包，不使用默认 CLI 安装；该次核对时 GitHub 无 latest release。
 

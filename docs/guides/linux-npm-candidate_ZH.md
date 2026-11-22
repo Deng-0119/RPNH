@@ -1,8 +1,24 @@
+---
+name: rpnh-linux-npm-candidate
+description: "Linux、Viewer 与 npm 源码整合的发布范围、证据与限制。"
+metadata:
+  document-kind: guide
+  audience: operator-and-developer
+  language: zh-CN
+  counterpart: linux-npm-candidate.md
+  revision: "2026-11-22.1"
+  status: source-reviewed
+---
+
+[English](linux-npm-candidate.md) | [中文](linux-npm-candidate_ZH.md)
+
 # Linux、Viewer 与 npm 源码整合
 
 ## 当前发行状态
 
-[rc6 已在 GitHub 预发布](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc6)，包含匹配的 Linux x86_64 Basic 应用 wheel、CPython 3.12/3.13 依赖 wheel、两份 v3 清单，以及 npm 格式的 GitHub 附件。该候选已通过限定的离线 CLI 检查。匿名发行元数据已回读，但下载在 GitHub 重定向后超时；尚未验证公网安装和激活。npm registry 发布仍待完成。本结果不证明升级、回滚、可选前端或 macOS 支持。
+本地 RC8 候选（Python `0.1.0rc8`、npm `0.1.0-rc.8`）尚未发布；见[限定发行范围](releases_ZH.md)。下方 rc6 状态保留此前公开基线的记录，不代表 RC8 已通过发行或安装验收。
+
+[rc6 已在 GitHub 预发布](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc6)，包含匹配的 Linux x86_64 Basic 应用 wheel、CPython 3.12/3.13 依赖 wheel、两份 v3 清单，以及 npm 格式的 GitHub 附件。该候选已通过限定的离线 CLI 检查。首次匿名发行元数据已回读，但该次下载在 GitHub 重定向后超时，原始失败继续保留。正式 rc6 npm 格式 tgz 后续已在 WSL2／CPython 3.13.12 Basic 通过 A4 安装与激活验收。npm registry 发布仍待完成。本结果不证明升级、回滚、可选前端或 macOS 支持。
 
 Linux/npm运行闭包已经进入公开main，基线为 `3d61bcf17b22deee28c5db7a427cda0e81a7f6bd`。2026-11-17的Viewer/查询更新仅整合已审核候选的13个产品文件和13个测试/夹具文件。这是源码更新，不是新的稳定wheel或公网npm发行。已有Release资产保持不变，不能用开发构建覆盖rc3资产。
 
@@ -24,7 +40,7 @@ Viewer更新覆盖Registry导航、资料可用性/正文策略、受管资料�
 
 `packaging/npm-bootstrap`仍为`private: true`、`0.0.0-private`。该目录是源码传输模板，不是生成后的 rc6 发行附件。模板历史说明要求本地controller wheel、持久Python和uv；生成后的附件内嵌匹配的 rc6 controller并自动选择Python。目前不声明新的可用公网npm安装命令。
 
-rc6 已提供固定版本、匹配controller/application wheel与真实发行元数据/资产。剩余事项是实际公网获取与安装后应用启动验收，再完成npm registry发布及registry路径验证。已有本地tarball激活不等于registry下载或跨发行升级。不得覆盖已有rc3或虚构资产身份。
+rc6 已提供固定版本、匹配controller/application wheel与真实发行元数据/资产。正式 rc6 tgz 的 A4 安装与激活已通过；npm registry 发布及 registry 路径验证仍待完成。RC8 是独立本地候选，最终正式 GitHub 安装验收 A 仍待后续单独授权。已有本地tarball激活不等于registry下载或跨发行升级。不得覆盖已有rc3或虚构资产身份。
 
 本轮公开范围是Linux/WSL2；macOS不是本次源码更新的前置，也不由上述结果证明。生产账户提供方接线、完整前端/API认证和旧发行迁移仍应按各自范围处理。
 

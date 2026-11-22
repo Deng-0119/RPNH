@@ -28,6 +28,9 @@ def official_web_profile(compatibility_profile: str | None = None) -> tuple[dict
         upstream, packages_name = default, "web-packages.json"
     elif selected == candidate["version"]:
         upstream, packages_name = candidate, "web-packages.rc1.json"
+    elif selected == "0.2.2-rc.5":
+        upstream = json.loads(source.joinpath("UPSTREAM_RC5_CANDIDATE.json").read_text(encoding="utf-8"))
+        packages_name = "web-packages.rc5.json"
     else:
         raise RuntimeError(f"Unsupported DSH frontend profile: {selected}")
     manifest = json.loads(source.joinpath("frontend", packages_name).read_text(encoding="utf-8"))

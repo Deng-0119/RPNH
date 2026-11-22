@@ -19,7 +19,7 @@ from cpn.rpnh.agent_tasks import agent_task_catalog, run_agent_task
 from cpn.rpnh.frontend_application import FrontendError, RegistryFrontendApplication
 from cpn.rpnh.inspection import project_registry_net
 from cpn.rpnh.main_session import MainSession
-from cpn.rpnh.session_access import stable_frontend_session_id
+from cpn.rpnh.session_access import MainSessionOwnerLease, stable_frontend_session_id
 from cpn.rpnh.task_control import TaskControl
 from cpn.frontend.opencode_protocol import OpenCodeProtocol
 from cpn.frontend.codex_app_server import CodexAppServer
@@ -108,10 +108,11 @@ def test_basic_direct_session_projects_and_continues_without_resume_effects(
     port = CountingTerminalPort({"reply": "basic answer", "task": None})
     monkeypatch.setattr(
         "cpn.rpnh.agent_tasks.build_llm_input_port", lambda *_a, **_kw: port)
-    basic = MainSession(root, execution)
-    basic_spec = basic.prepare_turn("created by Basic")
-    run_agent_task(basic_spec)
-    basic.reconcile_active_turn()
+    with MainSessionOwnerLease.reserve_for_creation(root) as lease:
+        basic = MainSession(root, execution, owner_root_reserved=True, owner_lease=lease)
+        basic_spec = basic.prepare_turn("created by Basic")
+        run_agent_task(basic_spec)
+        basic.reconcile_active_turn()
     assert port.calls == 1
 
     codex_sidecar = root / ".frontends" / "codex.json"
@@ -187,13 +188,14 @@ def test_basic_direct_session_projects_and_continues_without_resume_effects(
     finally:
         reopened.close()
 
-    basic_again = MainSession.resume(root)
-    assert basic_again.history == [
-        ("user", "created by Basic"),
-        ("assistant", "basic answer"),
-        ("user", "continued by OpenCode"),
-        ("assistant", "basic answer"),
-    ]
+    with MainSessionOwnerLease.acquire(root) as lease:
+        basic_again = MainSession.resume(root, owner_lease=lease)
+        assert basic_again.history == [
+            ("user", "created by Basic"),
+            ("assistant", "basic answer"),
+            ("user", "continued by OpenCode"),
+            ("assistant", "basic answer"),
+        ]
     assert port.calls == 2
 
 
@@ -205,11 +207,12 @@ def test_foreign_terminal_turn_waits_for_explicit_opencode_reconciliation(
     port = CountingTerminalPort({"reply": "terminal answer", "task": None})
     monkeypatch.setattr(
         "cpn.rpnh.agent_tasks.build_llm_input_port", lambda *_a, **_kw: port)
-    basic = MainSession(root, execution)
-    spec = basic.prepare_turn("finish before frontend attach")
-    run_agent_task(spec)
-    assert basic.active_turn_snapshot().state == "terminal"
-    assert basic._main_thread.recover_thread()["committed_history"] == []
+    with MainSessionOwnerLease.reserve_for_creation(root) as lease:
+        basic = MainSession(root, execution, owner_root_reserved=True, owner_lease=lease)
+        spec = basic.prepare_turn("finish before frontend attach")
+        run_agent_task(spec)
+        assert basic.active_turn_snapshot().state == "terminal"
+        assert basic._main_thread.recover_thread()["committed_history"] == []
 
     app = RegistryFrontendApplication(root, execution, resume=True)
     sid = stable_frontend_session_id(root)
@@ -229,7 +232,7 @@ def test_foreign_terminal_turn_waits_for_explicit_opencode_reconciliation(
         app.close()
 
 
-def test_snapshot_retains_owner_during_transient_unreadable_child(real_app):
+def test_snapshot_retains_owner_during_transient_unreadable_child(real_app, monkeypatch):
     app, sid, control, _execution = real_app
     app.submit(sid, "request", "explicit:transient-child")
     registry = control.spec.run_dir / ".registry_v1"
@@ -244,7 +247,25 @@ def test_snapshot_retains_owner_during_transient_unreadable_child(real_app):
     assert control.starts == 1
 
     shutil.rmtree(control.spec.run_dir)
+    port = _TerminalPort({"reply": "registered answer", "task": None})
+    original_request = port.request_once
+    healthy = []
+    def observe_running(attempt):
+        session = app._sessions[sid].session
+        assert session.active_turn_snapshot().state == "running"
+        before = session._main_thread.recover_thread()
+        app.tick()
+        running = app.snapshot()[0]
+        assert running["turns"][0]["state"] == "running"
+        assert running["error"] is None
+        assert session._main_thread.recover_thread() == before
+        assert control.starts == 1
+        healthy.append(True)
+        return original_request(attempt)
+    monkeypatch.setattr(port, "request_once", observe_running)
+    monkeypatch.setattr("cpn.rpnh.agent_tasks.build_llm_input_port", lambda *_a, **_kw: port)
     run_agent_task(control.spec)
+    assert healthy == [True]
     app.tick()
     settled = app.snapshot()[0]
     assert settled["error"] is None

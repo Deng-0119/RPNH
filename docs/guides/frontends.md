@@ -36,14 +36,16 @@ rpnh frontend setup basic
 or calling a model. Compatible installed clients are reused. Missing clients
 are installed into `frontends/` beside the RPNH preferences, leaving global
 client installations unchanged. Codex and OpenCode installation requires Node
-and npm. DSH needs Git and Node `^22.19.0 || >=24.0.0`; setup prepares its pinned
+and npm. DSH Web needs Git and Node `>=24.9.0`; setup prepares its pinned
 source, pnpm dependencies and official Web assets. Missing prerequisites are
 reported with instructions; a failed setup does not save an unusable choice.
 
-OpenCode setup and launch require exactly **1.19.4**. Managed installation uses
-`opencode-ai@1.19.4` from the official npm registry; a saved 1.19.3 client must be
-updated or reconnected through setup. Launch rejects other versions before
-acquiring a Registry owner. See the [OpenCode guide](opencode.md) for the limited
+OpenCode setup and launch default to exactly **1.19.4**. Managed installation
+uses `opencode-ai@1.19.4` from the official npm registry by default; the existing
+**2.2.6** bound-text candidate requires explicit `--opencode-compatibility-profile 2.2.6`
+selection and a matching client. A saved 1.19.3 client must be updated or
+reconnected through setup. Launch rejects a version that does not match the
+selected profile before acquiring a Registry owner. See the [OpenCode guide](opencode.md) for the limited
 offline checks and historical validation boundary.
 
 To connect an existing installation explicitly:

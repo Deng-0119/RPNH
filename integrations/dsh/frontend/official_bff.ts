@@ -11,6 +11,7 @@ import type { SessionEvent } from '@deepseek-ai/dsh-session'
 // Upstream pure protocol helpers; this does not install a DSH execution owner.
 import { DEFAULT_MAX_MESSAGES, paginate, pageRecords, validateHistoryWindow } from '../packages/api/session-controller/src/history.ts'
 import { FRONTEND_DIR, DESCRIPTOR_PACKAGES, COMPATIBILITY } from './setup.ts'
+import { projectionFrames } from './projection_frames.ts'
 
 declare module '@deepseek-ai/dsh-typert-protocol' {
   interface RemoteErrorDetailsMap {
@@ -97,20 +98,9 @@ export class OfficialView {
     this.sourceCount = records.length
   }
   private publish() {
-    const entries = Object.entries(this.values())
-    if (COMPATIBILITY.version === '0.2.2-rc.1') {
-      const changes = entries.map(([key, val]) => ({ key, val }))
-      const frame = { type: 'projection', seq: this.cursor, changes }
+    for (const frame of projectionFrames(COMPATIBILITY.version, this.cursor, this.values())) {
       for (const observer of this.projectionObservers) observer.push(frame)
       for (const controller of this.controllers) controller.push({ ...frame, sessionId: this.id })
-    } else if (COMPATIBILITY.version === '0.2.2-alpha.2') {
-      for (const [key, value] of entries) {
-        const frame = { type: 'projection', key, value, seq: this.cursor }
-        for (const observer of this.projectionObservers) observer.push(frame)
-        for (const controller of this.controllers) controller.push({ ...frame, sessionId: this.id })
-      }
-    } else {
-      throw new Error('Unsupported official DSH projection protocol')
     }
     this.ctx.emit('api-session/added', this.summary() as any)
     this.ctx.emit('api-session/status', this.id as any, isActive(this.row))

@@ -33,6 +33,7 @@ ROOT_PROJECT_DOCUMENTS = (
 # Public source references and input fixtures linked by the maintained guides.
 # Keep this explicit: internal files are not admitted by directory or suffix.
 PUBLIC_DOWNLOADS = {
+    'docs/assets/viewer-materials/20261117/provenance.json',
     # Upstream task statements contain literal placeholders, not runnable examples.
     'examples/project_collaboration/materials/upstream/multi-source-data-merger/instruction.md',
     'examples/tool_pipeline/multi_source/upstream/multi-source-data-merger/instruction.md',
@@ -69,10 +70,37 @@ PUBLIC_DOWNLOADS = {
     'examples/tool_pipeline/tools.py',
     'examples/tool_pipeline/tests/pipe_transport.py',
 }
+# Exact already-published Viewer guide capture set, validated as local PNGs.
+VIEWER_CAPTURE_ROOT = 'docs/assets/viewer-materials/20261117'
+VIEWER_CAPTURE_PNGS = {
+    'S01-resources.annotated.png',
+    'S01-resources.raw.png',
+    'S02-exact-record.annotated.png',
+    'S02-exact-record.raw.png',
+    'S03-position-history.annotated.png',
+    'S03-position-history.raw.png',
+    'S04-complete-read.annotated.png',
+    'S04-complete-read.raw.png',
+    'S05-draft-and-result.annotated.png',
+    'S05-draft-and-result.raw.png',
+    'S06-disable.annotated.png',
+    'S06-disable.raw.png',
+    'S07-carriers.annotated.png',
+    'S07-carriers.raw.png',
+    'S08-cleanup.annotated.png',
+    'S08-cleanup.raw.png',
+    'S09-narrow-navigation.annotated.png',
+    'S09-narrow-navigation.raw.png',
+}
+VIEWER_CAPTURE_ASSETS = {
+    f'{VIEWER_CAPTURE_ROOT}/{filename}' for filename in VIEWER_CAPTURE_PNGS
+}
 # Frozen upstream task READMEs are supporting source material, not bilingual
 # RPNH-maintained topics. Keep this exact list; do not exempt arbitrary examples.
 PUBLIC_SUPPORT_DOCUMENTS = {
     'tests/fixtures/codex/0.166.0/README.md',
+    f'{VIEWER_CAPTURE_ROOT}/README.md',
+    f'{VIEWER_CAPTURE_ROOT}/README_ZH.md',
 }
 FROZEN_SUPPORT_DOCUMENTS = {
     'examples/project_collaboration/materials/upstream/multi-source-data-merger/README.md',
@@ -185,7 +213,7 @@ def reviewed_assets(root: Path) -> list[Path]:
             for path in (root / base).rglob('*.png')
             if {'assets', 'figures', 'visuals'} & set(path.relative_to(root).parts)]
     return sorted({*pngs, *(root / name for name in
-        set(REVIEWED_REPORT_SVGS) | ADDITIONAL_REPORT_SVGS | EXAMPLE_SVGS
+        set(REVIEWED_REPORT_SVGS) | ADDITIONAL_REPORT_SVGS | EXAMPLE_SVGS | VIEWER_CAPTURE_ASSETS
         if (root / name).is_file())})
 
 
@@ -357,6 +385,7 @@ def reviewed_image_target(page: Path, source: str, root: Path) -> Path:
         and (relative.parts[0] == 'examples'
              or relative.parts[:2] in {('cpn', 'examples'), ('docs', 'results')})
     )
+    allowed = allowed or relative.as_posix() in VIEWER_CAPTURE_ASSETS
     report_svg = relative.as_posix() in ADDITIONAL_REPORT_SVGS
     example_svg = relative.as_posix() in EXAMPLE_SVGS
     if (not allowed and reviewed_svg_digest is None and not report_svg and not example_svg) or anchor:

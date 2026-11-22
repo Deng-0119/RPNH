@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: index.md
-  revision: "2026-11-09.1"
+  revision: "2026-11-22.1"
   status: source-reviewed
 ---
 
@@ -21,6 +21,15 @@ metadata:
 RPNH 使用 Registry 与 PetriNet 声明、执行、查看和复用 agent 工作。
 先完成安装与小示例，再按任务选择指南。精确客户端版本见[兼容性](guides/compatibility_ZH.md)，
 当前源码与已发布包的区别见[版本说明](guides/releases_ZH.md)。
+
+## 按任务查找
+
+| 我想做什么 | 先看这里 |
+|---|---|
+| 安装并验证第一次运行 | [安装与发行范围](guides/installation_ZH.md) → [无模型首次运行](guides/getting-started_ZH.md) |
+| 选择客户端或核对版本 | [适配器入口](guides/adapters_ZH.md) · [兼容性与证据范围](guides/compatibility_ZH.md) · [发行说明](guides/releases_ZH.md) |
+| 查看结果、续跑或排查故障 | [Viewer](guides/viewer_ZH.md) · [检查点恢复](guides/checkpoint-recovery_ZH.md) · [故障排查](guides/troubleshooting_ZH.md) |
+| 修改源码或提交 PR | [仓库目录图](guides/repository-layout_ZH.md) · [开发与检查](guides/development_ZH.md) · [贡献指南](../CONTRIBUTING_ZH.md) |
 
 ## 第一次使用 RPNH？
 

@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: dsh_ZH.md
-  revision: "2026-10-19.3"
+  revision: "2026-11-22.1"
   status: source-reviewed-pre-release
 ---
 
@@ -89,15 +89,53 @@ Supported versions and operational limits are listed in [compatibility](compatib
 ## Prepare the pinned source
 
 Use the dedicated writable checkout pinned by `integrations/dsh/UPSTREAM.json`:
-upstream `687f282e8625c6b8d11ff58211a90524be2e4317` (2026-10-17), root
-`@deepseek-ai/dsh-root@0.2.1-rc.2` and CLI `@deepseek-ai/dsh@0.2.1-rc.2`.
-It requires Node `^22.19.0 || >=24.0.0` (the earlier host checks used `22.22.1`)
-and pnpm `11.28.5`. Install the checkout's dependencies with
-`pnpm install --frozen-lockfile --ignore-scripts` before launching.
+default Web version `0.2.2-alpha.2`, upstream
+`f3803c96974ad4a94195fb97e5c637e9c2a3afe3`. The opt-in Web candidates are
+`0.2.2-rc.1` (`UPSTREAM_CANDIDATE.json`) and `0.2.2-rc.5`
+(`UPSTREAM_RC5_CANDIDATE.json`). Each profile requires its exact checkout and
+Web assets. Web requires Node `>=24.9.0` and pnpm `11.28.5`. Install the
+checkout's dependencies with `pnpm install --frozen-lockfile --ignore-scripts`
+before launching.
 
-The first launch downloads 31 official npm packages at exact version
-`0.2.1-rc.2` into `SOURCE/rpnh-frontend/node_modules`. A complete cache is reused
-without network access; missing or incomplete packages require a download.
+To prepare and save the rc.5 candidate explicitly:
+
+```bash
+rpnh frontend setup dsh --install --dsh-compatibility-profile 0.2.2-rc.5
+```
+
+Use `0.2.2-rc.1` in that command for rc.1, or `0.2.2-alpha.2` for the default
+profile. Setup saves the selection for subsequent launches; use separate
+configuration and installation paths for candidate acceptance. The rc.1 profile
+is an existing opt-in.
+
+The following results belong to the earlier frontend acceptance source, not
+a rerun or installed RC8 acceptance. On 2026-11-22, rc.5 passed WSL2 frozen installation using Node `24.22.1` and
+pnpm `11.28.5`, with all 33 Web packages. The native BFF/projection suite passed
+17/17 with zero skips, including three actual Chrome browser cases backed by a
+scripted backend. A separate actual Python Owner + Web check passed empty-session
+cold reopening at the same root. These checks made no model calls and do not
+establish a real business outcome.
+
+In the first authorized live submission, the driver misread `running` plus
+`reconciliation_required` as terminal and actively closed the Owner. The result
+was `stopped_by_owner`, zero Registry-settled calls, `submission_unknown` and no
+registered answer. This first unknown submission remains separate historical
+evidence.
+
+After repair, a separately approved independent task with a new input set
+passed through the genuine browser on source `b65f6682`, with `gpt-5.6-terra` /
+`high`: one input, two Registry-settled calls, observed completion in 81.464
+seconds, correct count/total/mean/min/max `3/45/15/10/21`, and semantic verifier
+exit 0. Same-root read-only reopening passed in 4.486 seconds with zero native
+submissions. The same browser session, Registry references and counters were
+retained, and the original answer was readable in the actual DOM. This records
+the exact approved live task and reopening; the earlier 17/17 scripted-backend
+suite and the first stopped/unknown submission retain their separate scopes.
+
+The first launch downloads 32 official npm Web packages for exact
+`0.2.2-alpha.2`, or 33 for either rc candidate, into
+`SOURCE/rpnh-frontend/node_modules`. A complete cache is reused without network
+access; missing or incomplete packages require a download.
 Preparation and asset checks finish before MainSession ownership is acquired.
 A download or preflight failure therefore does not acquire the session owner.
 
@@ -108,10 +146,13 @@ the legacy AgentLoop factory, or start a model call. The checkout and its cache
 must remain writable and available for subsequent launches. The prepared
 checkout and downloaded packages are not bundled in the RPNH wheel.
 
+The following is historical metadata for the separate `0.2.1-rc.2` host
+pinned by `integrations/dsh/LEGACY_UPSTREAM.json`, not the current Web default.
+That legacy host retains Node `^22.19.0 || >=24.0.0` and pnpm `11.28.5`.
 On 2026-10-19, [official npm metadata](https://registry.npmjs.org/@deepseek-ai%2fdsh)
 reported `latest=0.2.0-rc.2`, `next=0.2.1-rc.2` and `alpha=0.2.1-alpha.5`.
 Default npm install and the newest published prerelease therefore selected
-different versions. This integration uses the exact
+different versions. That legacy integration uses the exact
 [source commit](https://github.com/deepseek-ai/deepseek-harness/commit/687f282e8625c6b8d11ff58211a90524be2e4317)
 and pinned Web packages, not a default CLI installation. GitHub had no latest
 release in that check.

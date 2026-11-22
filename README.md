@@ -1,4 +1,4 @@
-> Release status: [v0.1.0rc6](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc6) is the latest GitHub prerelease, scoped to Basic Linux x86_64. The GitHub attachment is not an npm registry release; public installation and activation are still awaiting verification. [Scope and evidence](docs/guides/linux-npm-candidate.md).
+> Release status: [v0.1.0rc6](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc6) is the latest GitHub prerelease, scoped to Basic Linux x86_64. The formal rc6 npm-format tgz passed A4 installation and activation on WSL2 / CPython 3.13.12 Basic. npm registry publication remains pending; RC8 is a separate local candidate. [Scope and evidence](docs/guides/linux-npm-candidate.md).
 
 # RPNH Harness
 
@@ -14,7 +14,8 @@ resource versions, execution records and checkpoints.
 
 [First run](docs/guides/getting-started.md) ·
 [Technical report](docs/technical-report.md) · [Examples](examples/README.md) ·
-[Documentation](docs/index.md)
+[Documentation](docs/index.md) ·
+[Repository map](docs/guides/repository-layout.md)
 
 ## What you can do
 
@@ -101,16 +102,23 @@ provenance and validation scope.
 
 ## Compatibility and releases
 
-The `main` checkout carries `0.1.0rc5` source metadata. Use the release tag for the rc6 build. The October 30
+This local candidate targets `0.1.0rc8` (npm `0.1.0-rc.8`) and is not yet published; see [release scope](docs/guides/releases.md). The public baseline still carries `0.1.0rc5` source metadata. Use the release tag for the rc6 build. The October 30
 [v0.1.0rc3 wheel and DSH plugin](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc3)
 do **not** include the November 1 source fixes; see the
 [source/release boundary](docs/guides/compatibility.md).
 
-- **Codex:** default 0.163.0; 0.166.0 is an explicitly selected candidate.
+- **Codex:** default 0.163.0; 0.166.0 and 0.171.0 are explicitly selected candidates.
+  The 0.171.0 WSL2 live `batch-summary-v1` task and nonempty same-root reopen
+  passed; see [the exact model and validation scope](docs/guides/compatibility.md).
 - **OpenCode:** default 1.19.4; 2.2.5 is only an opt-in REST/authentication/non-durable events
-  subset, not a complete native frontend.
-- **DSH Web frontend:** pinned 0.2.1-rc.2 official Web UI bound to one RPNH
-  MainSession. Follow the [Web guide](docs/guides/dsh.md).
+  subset, not a complete native frontend. The existing 2.2.6 opt-in supports one
+  bound ordinary-text session; it does not grant native tool execution or full-client certification.
+- **DSH Web frontend:** default 0.2.2-alpha.2 official Web UI bound to one RPNH
+  MainSession; 0.2.2-rc.1 is an existing opt-in. The 0.2.2-rc.5 candidate passed
+  scoped WSL2 checks without model calls. A separately approved live task with a
+  new input set and same-root read-only reopening passed; the earlier driver-stopped
+  unknown submission remains separate historical evidence.
+  Follow the [Web guide](docs/guides/dsh.md).
 - **Stock DSH operator plugin:** manual pairing with DSH 0.2.2-alpha.2 to
   inspect existing RPNH tasks, with optional controls; not a qualified managed
   upgrade. Follow the [operator guide](integrations/dsh/operator/README.md).

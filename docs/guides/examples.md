@@ -6,7 +6,7 @@ metadata:
   audience: user-and-developer
   language: en
   counterpart: examples_ZH.md
-  revision: "2026-11-09.1"
+  revision: "2026-11-22.1"
   status: current-instructions-with-dated-evidence
   basis: "source candidate commands; deterministic runs and dated authorized live evidence explicitly separated"
 ---
@@ -358,6 +358,31 @@ turn was pending and later displayed the committed answer plus its normal
 no-child-decision annotation. Registry terminal/final-result evidence and the
 semantic verifier both passed. Raw Registries, identifiers, paths and transcripts
 remain private and are not represented by these summaries.
+
+The following records describe the earlier frontend acceptance source, not a
+new RC8 candidate run. On 2026-11-22, the separate Codex 0.171.0 live `batch-summary-v1` task passed on
+WSL2 with `gpt-5.6-terra` / `high` via the RPNH official Codex subscription CLI
+route: one native input, two Registry-settled calls, and correct count/total/mean/
+min/max `3/36/12/9/15`. Same-root nonempty reopening read the original answer
+without new calls. This does not replace the dated September evidence above.
+DSH Web rc.1 remains an existing
+opt-in. The rc.5 checks passed frozen installation, 17/17 native BFF/projection
+cases including three scripted-backend Chrome cases, and actual Python Owner +
+Web same-root empty-session cold reopening, without model calls. Its first
+authorized live submission was actively closed by the driver after it misread
+`running` plus `reconciliation_required` as terminal: `stopped_by_owner`, zero
+settled calls, `submission_unknown`, no registered answer. That first unknown
+submission remains separate. After repair, a separately approved independent
+task with a new input set passed in the genuine browser on source `b65f6682`
+with `gpt-5.6-terra` / `high`: one input, two settled calls, observed completion
+in 81.464 seconds, correct count/total/mean/min/max `3/45/15/10/21`, verifier
+exit 0. Same-root read-only reopening passed in 4.486 seconds with zero native
+submissions; the same browser session and Registry references/counters were
+retained and the actual DOM displayed the original answer. This live outcome
+is separate from the scripted-backend checks. Current
+integrated DSH Web shares the MainSession; the registered DSH HOST turn above
+belongs to the dated legacy example. See the exact versions
+and scope in [compatibility](compatibility.md) and [DSH setup](dsh.md).
 
 ## Example 6: JB clinical steering packet
 

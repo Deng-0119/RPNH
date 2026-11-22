@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: adapters.md
-  revision: "2026-11-09.1"
+  revision: "2026-11-22.1"
   status: source-reviewed
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -77,8 +77,13 @@ RPNH catalog、Registry 历史及唯一可写 owner 继续共享。重开历史�
 请从原生 slash 菜单选择 `/rpnh-resume` 或 `/rpnh-rollback`。`Ctrl+C` 退出宿主，仅对其
 持有的 main turn 请求 checkpoint stop。
 
-首次启动下载精确 `0.2.1-rc.2` 的 31 个官方包到 `SOURCE/rpnh-frontend/node_modules`；
-完整缓存可离线复用。Setup 生成 loader 配置与绑定会话桥，不修改官方 UI；资源预检在
+首次启动下载默认 `0.2.2-alpha.2` 的 32 个官方 Web 包；既有 opt-in `0.2.2-rc.1`
+与候选 `0.2.2-rc.5` 各为 33 个，缓存到 `SOURCE/rpnh-frontend/node_modules`，可离线复用。
+rc.5 已通过限定 WSL2 零模型检查；首次已授权真实提交被驱动主动关闭，未登记答案，
+该首次提交单独保留为历史证据。修复后，另行授权、使用新输入集的独立真实任务已通过
+真实浏览器完成，同根只读重开也通过且无新增提交。精确模型、结果与调用范围见
+[DSH 指南](dsh_ZH.md)。
+这不扩大 stock operator 支持范围。Setup 生成 loader 配置与绑定会话桥，不修改官方 UI；资源预检在
 取得 MainSession 前完成。源码与 Node／pnpm 前提见 [DSH 指南](dsh_ZH.md)。
 支持能力与限制见[兼容性](compatibility_ZH.md)。
 
@@ -87,9 +92,9 @@ RPNH catalog、Registry 历史及唯一可写 owner 继续共享。重开历史�
 `rpnh-dsh` 保留独立 `--root`／`--session-id` 语义。以下 launcher、68 MiB frame、
 48 次 attempt 预算与恢复细节适用于该高级旧版宿主，不适用于统一 MainSession 前端。
 
-本节仅适用于包含 `cpn/dsh`、`integrations/dsh` 的源码树或安装发行包。清单固定 `deepseek-ai/deepseek-harness` 上游 `687f282e8625c6b8d11ff58211a90524be2e4317`（`0.2.1-rc.2`），于 2026-10-19 核对。该源码宿主实际使用 Node 22.22.1 与 pnpm 11.28.5 测试，engine 为 `^22.19.0 || >=24.0.0`。[DSH 指南](dsh_ZH.md)区分 npm `latest`、`next` 与此精确源码集成。
+本节仅适用于包含 `cpn/dsh`、`integrations/dsh` 的源码树或安装发行包。旧版清单 `integrations/dsh/LEGACY_UPSTREAM.json` 固定 `deepseek-ai/deepseek-harness` 上游 `687f282e8625c6b8d11ff58211a90524be2e4317`（`0.2.1-rc.2`），于 2026-10-19 核对。该源码宿主实际使用 Node 22.22.1 与 pnpm 11.28.5 测试，engine 为 `^22.19.0 || >=24.0.0`。[DSH 指南](dsh_ZH.md)区分 npm `latest`、`next` 与此精确源码集成。
 
-取得精确上游 checkout，用固定包管理器和 frozen lockfile 安装依赖。使用独立可丢弃 checkout：prepare 会有意修补受检 factory，并复制 TypeScript 集成文件。分发集成时保留 `UPSTREAM.json`、`UPSTREAM_LICENSE`。
+取得精确上游 checkout，用固定包管理器和 frozen lockfile 安装依赖。使用独立可丢弃 checkout：prepare 会有意修补受检 factory，并复制 TypeScript 集成文件。分发集成时保留 `LEGACY_UPSTREAM.json`、`UPSTREAM_LICENSE`。
 
 安装包含 DSH 的包后，把 `DSH_SOURCE` 指向固定上游：
 

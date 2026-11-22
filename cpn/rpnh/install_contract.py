@@ -478,8 +478,16 @@ def load_profile_catalog(*, package_root: Path | None = None, wheel: Path | None
             if existing is not None and existing != spec:
                 raise ValueError("conflicting OpenCode profile declarations")
             profiles["opencode"][profile] = spec
-        for pin_name, manifest_name, default in (("UPSTREAM.json", "web-packages.json", True),
-                                                  ("UPSTREAM_CANDIDATE.json", "web-packages.rc1.json", False)):
+        dsh_profiles = [("UPSTREAM.json", "web-packages.json", True),
+                        ("UPSTREAM_CANDIDATE.json", "web-packages.rc1.json", False)]
+        # Historical wheels don't declare rc.5. In a new target payload both
+        # records are required if either is present; read() still rejects duplicates.
+        rc5_pin = "integrations/dsh/UPSTREAM_RC5_CANDIDATE.json"
+        rc5_web = "integrations/dsh/frontend/web-packages.rc5.json"
+        if (any(name in archive.namelist() for name in (rc5_pin, rc5_web)) if archive is not None
+                else any((root / name).is_file() for name in (rc5_pin, rc5_web))):
+            dsh_profiles.append(("UPSTREAM_RC5_CANDIDATE.json", "web-packages.rc5.json", False))
+        for pin_name, manifest_name, default in dsh_profiles:
             pin = read("integrations/dsh/" + pin_name)
             manifest = read("integrations/dsh/frontend/" + manifest_name)
             profile = pin["version"]

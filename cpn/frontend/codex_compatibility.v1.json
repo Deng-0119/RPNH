@@ -170,6 +170,13 @@
         "object_item_cursor": true,
         "explicit_history_defaults": true,
         "status": "CANDIDATE_NATIVE_CERTIFICATION_PENDING"
+      },
+      "candidate-0.171.0": {
+        "version": "0.171.0",
+        "reported_cli_version": "codex-cli 0.171.0",
+        "object_item_cursor": true,
+        "explicit_history_defaults": true,
+        "status": "CANDIDATE_NATIVE_CERTIFICATION_PENDING"
       }
     }
   }

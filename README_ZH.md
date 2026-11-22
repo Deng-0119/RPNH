@@ -1,4 +1,4 @@
-> 发行状态：[v0.1.0rc6](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc6) 是最新 GitHub 预发布，范围为 Linux x86_64 Basic。GitHub 附件不等于 npm registry 发布；公网安装与激活尚待验证。[范围与证据](docs/guides/linux-npm-candidate_ZH.md)。
+> 发行状态：[v0.1.0rc6](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc6) 是最新 GitHub 预发布，范围为 Linux x86_64 Basic。正式 rc6 npm 格式 tgz 已在 WSL2／CPython 3.13.12 Basic 通过 A4 安装与激活验收。npm registry 尚未发布；RC8 是独立本地候选。[范围与证据](docs/guides/linux-npm-candidate_ZH.md)。
 
 # RPNH Harness
 
@@ -12,7 +12,8 @@ RPNH 是不绑定特定模型服务商的 Agent 执行框架，用于**构建、
 
 [第一次运行](docs/guides/getting-started_ZH.md) ·
 [技术报告](docs/technical-report_ZH.md) · [案例](examples/README_ZH.md) ·
-[文档](docs/index_ZH.md)
+[文档导航](docs/index_ZH.md) ·
+[仓库目录图](docs/guides/repository-layout_ZH.md)
 
 ## 可以做什么
 
@@ -86,13 +87,18 @@ rpnh net --run "$RUN_DIR" --view --no-open
 
 ## 兼容与发布边界
 
-`main` 的源码版本元数据仍为 `0.1.0rc5`；rc6 构建请使用对应发行标签。10 月 30 日发布的
+本地候选目标为 `0.1.0rc8`（npm `0.1.0-rc.8`），尚未发布；见[发行范围](docs/guides/releases_ZH.md)。公开基线的源码版本元数据仍为 `0.1.0rc5`；rc6 构建请使用对应发行标签。10 月 30 日发布的
 [v0.1.0rc3 wheel 与 DSH 插件](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc3)
 **不包含** 11 月 1 日的源码修复；详见[源码与发布包边界](docs/guides/compatibility_ZH.md)。
 
-- **Codex：**默认 0.163.0；0.166.0 是需要显式选择的候选版本。
+- **Codex：**默认 0.163.0；0.166.0 和 0.171.0 是需要显式选择的候选版本。
+  0.171.0 已通过 WSL2 真实 `batch-summary-v1` 任务及同根非空重开；
+  见[精确模型与验收范围](docs/guides/compatibility_ZH.md)。
 - **OpenCode：**默认 1.19.4；2.2.5 仅为显式启用的 REST／认证／非持久化事件子集，不是完整原生前端。
-- **DSH Web 前端：**固定 0.2.1-rc.2 官方 Web UI，绑定一个 RPNH MainSession；
+  既有 2.2.6 opt-in 支持绑定单一普通文本会话，不授予原生工具执行能力或完整客户端认证。
+- **DSH Web 前端：**默认 0.2.2-alpha.2 官方 Web UI，绑定一个 RPNH MainSession；
+  0.2.2-rc.1 是既有 opt-in；0.2.2-rc.5 候选已通过限定 WSL2 零模型检查，
+  另行授权的新输入集真实任务及同根只读重开已通过；此前被驱动关闭、结果未知的首次提交单独保留。
   见 [Web 指南](docs/guides/dsh_ZH.md)。
 - **Stock DSH operator 插件：**与 DSH 0.2.2-alpha.2 手动配对，查看既有 RPNH 任务并
   可选启用控制；不代表通过托管升级验收。见 [operator 指南](integrations/dsh/operator/README_ZH.md)。

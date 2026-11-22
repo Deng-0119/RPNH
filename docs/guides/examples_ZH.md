@@ -6,7 +6,7 @@ metadata:
   audience: user-and-developer
   language: zh-CN
   counterpart: examples.md
-  revision: "2026-11-09.1"
+  revision: "2026-11-22.1"
   status: current-instructions-with-dated-evidence
   basis: "source candidate commands; deterministic runs and dated authorized live evidence explicitly separated"
 ---
@@ -319,6 +319,24 @@ turn 可以包含多次物理 generation；DSH 的登记宿主 turn 使用了一
 turn 尚未结算时显示了保守的 reconciliation 提示，随后显示已提交答案及正常的“无子任务
 decision”注释；Registry terminal/final-result 证据和语义验证均通过。原始 Registry、标识、
 路径与 transcript 保持私有，脱敏摘要不代表这些原始资料。
+
+以下记录属于此前前端验收源码，不是本次 RC8 候选的新运行。
+2026-11-22，Codex 0.171.0 在 WSL2 使用 `gpt-5.6-terra`／`high`，经 RPNH
+official Codex subscription CLI 路线完成真实 `batch-summary-v1`：一次原生输入、
+两次 Registry 已结算调用，数量／总和／均值／最小／最大正确为 `3/36/12/9/15`。
+同根非空重开回读原答，无新增调用；这不替换上方九月历史证据。
+DSH Web rc.1 仍是既有 opt-in；rc.5 已通过 frozen 安装、17/17 原生 BFF／投影用例
+（含三个脚本化后端的真实 Chrome 用例）及真实 Python Owner + Web 同根空会话冷重开，
+无模型调用。首次已授权真实提交中，驱动误将 `running` 加 `reconciliation_required`
+当作终态而主动关闭，留下 `stopped_by_owner`、零次已结算调用、`submission_unknown`，
+没有已登记答案；该首次未知提交单独保留。修复后，另行授权、使用新输入集的独立真实任务
+在源码 `b65f6682` 通过真实浏览器完成，模型为 `gpt-5.6-terra`／`high`：一次输入、
+两次已结算调用，本次用时 81.464 秒，数量／总和／均值／最小／最大正确为
+`3/45/15/10/21`，verifier 退出码为 0。同根只读重开在 4.486 秒通过，零次原生提交；
+浏览器会话、Registry 引用和计数未变，实际 DOM 原回答可读。该真实业务结果与脚本化测试分开记录。
+当前集成 DSH Web 共用 MainSession；
+上文登记的 DSH HOST turn 属于该历史旧版案例。精确版本与范围见[兼容性](compatibility_ZH.md)及
+[DSH 配置](dsh_ZH.md)。
 
 ## 案例 6：JB 临床 steering packet
 

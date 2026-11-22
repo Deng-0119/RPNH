@@ -36,7 +36,7 @@ def package(*, version=VERSION, name=NAME, extra=None):
 def install(monkeypatch):
     calls = []
     responses = [package()]
-    monkeypatch.setattr(dsh_assets, "official_web_packages", lambda: (VERSION, (NAME,)))
+    monkeypatch.setattr(dsh_assets, "official_web_packages", lambda _compatibility_profile=None: (VERSION, (NAME,)))
     def fetch(url, *, timeout):
         calls.append(url)
         return io.BytesIO(responses[-1])
@@ -66,7 +66,7 @@ def test_incomplete_package_is_reinstalled(tmp_path, install):
 def test_missing_official_startup_script_is_reinstalled(tmp_path, install, monkeypatch):
     calls, responses = install
     name = "@deepseek-ai/dsh-web-frontend"
-    monkeypatch.setattr(dsh_assets, "official_web_packages", lambda: (VERSION, (name,)))
+    monkeypatch.setattr(dsh_assets, "official_web_packages", lambda _compatibility_profile=None: (VERSION, (name,)))
     responses.append(package(name=name, extra={
         "package/dist/index.html": b'<script type="module" src="/assets/main.js"></script><link rel="stylesheet" href="/assets/main.css">',
         "package/dist/assets/main.js": b"/* native startup */",

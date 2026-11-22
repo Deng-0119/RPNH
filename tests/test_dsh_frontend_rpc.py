@@ -320,7 +320,7 @@ def test_real_main_session_history_owner_and_close_reopen(tmp_path, monkeypatch)
     from cpn.rpnh.agent_tasks import run_agent_task
     from cpn.rpnh.frontend_application import RegistryFrontendApplication
     from cpn.rpnh.main_session import MainSession
-    from cpn.rpnh.session_access import stable_frontend_session_id
+    from cpn.rpnh.session_access import MainSessionOwnerLease, stable_frontend_session_id
     from cpn.rpnh.task_control import TaskControl
     from test_main_session_registry import _write_execution_profile
     from test_opencode_registry_integration import CaptureDispatch, CountingTerminalPort
@@ -334,9 +334,10 @@ def test_real_main_session_history_owner_and_close_reopen(tmp_path, monkeypatch)
         pytest.fail("RPC history/reopen must not launch workers")
 
     monkeypatch.setattr(TaskControl, "_spawn", unexpected_spawn)
-    basic = MainSession(root, execution)
-    run_agent_task(basic.prepare_turn("from Basic"))
-    basic.reconcile_active_turn()
+    with MainSessionOwnerLease.reserve_for_creation(root) as lease:
+        basic = MainSession(root, execution, owner_root_reserved=True, owner_lease=lease)
+        run_agent_task(basic.prepare_turn("from Basic"))
+        basic.reconcile_active_turn()
     sid = stable_frontend_session_id(root)
     app = RegistryFrontendApplication(root, execution, resume=True)
     request = frame("submit", {"text": "from DSH", "requestId": "dsh-one"})
@@ -373,16 +374,17 @@ def test_real_main_session_history_owner_and_close_reopen(tmp_path, monkeypatch)
         assert port.calls == 2
     finally:
         reopened.close()
-    assert MainSession.resume(root).history == [
-        ("user", "from Basic"), ("assistant", "registered offline answer"),
-        ("user", "from DSH"), ("assistant", "registered offline answer")]
+    with MainSessionOwnerLease.acquire(root) as lease:
+        assert MainSession.resume(root, owner_lease=lease).history == [
+            ("user", "from Basic"), ("assistant", "registered offline answer"),
+            ("user", "from DSH"), ("assistant", "registered offline answer")]
 
 
 def test_real_foreign_terminal_requires_explicit_command(tmp_path, monkeypatch):
     from cpn.rpnh.agent_tasks import run_agent_task
     from cpn.rpnh.frontend_application import RegistryFrontendApplication
     from cpn.rpnh.main_session import MainSession
-    from cpn.rpnh.session_access import stable_frontend_session_id
+    from cpn.rpnh.session_access import MainSessionOwnerLease, stable_frontend_session_id
     from test_main_session_registry import _write_execution_profile
     from test_opencode_registry_integration import CountingTerminalPort
 
@@ -390,8 +392,9 @@ def test_real_foreign_terminal_requires_explicit_command(tmp_path, monkeypatch):
     root = tmp_path / "foreign-terminal"
     port = CountingTerminalPort({"reply": "terminal offline answer", "task": None})
     monkeypatch.setattr("cpn.rpnh.agent_tasks.build_llm_input_port", lambda *_a, **_kw: port)
-    basic = MainSession(root, execution)
-    run_agent_task(basic.prepare_turn("foreign turn"))
+    with MainSessionOwnerLease.reserve_for_creation(root) as lease:
+        basic = MainSession(root, execution, owner_root_reserved=True, owner_lease=lease)
+        run_agent_task(basic.prepare_turn("foreign turn"))
     app = RegistryFrontendApplication(root, execution, resume=True)
     try:
         rpc = DshFrontendRPC(RecordingGateway(app), stable_frontend_session_id(root))

@@ -1,0 +1,18 @@
+{
+  "repository": "deepseek-ai/deepseek-harness",
+  "revision": "9c2670d3bce5275e0d1610272958121af87787bb",
+  "version": "0.2.2-rc.5",
+  "license": "MIT",
+  "pnpm": "11.28.5",
+  "profile": "rpnh-bound-main-session-web",
+  "package_manager": "pnpm@11.28.5",
+  "node_engines": ">=24.9.0",
+  "protocol": "rpnh/dsh_frontend/v1",
+  "npm_package": "@deepseek-ai/dsh",
+  "checked_date": "2026-11-22",
+  "channel": "rc",
+  "release_tag": "dsh-v0.2.2-rc.5",
+  "release_published_at": "2026-11-18T12:51:39Z",
+  "adaptation_version": "0.2.0-rc.5-candidate",
+  "legacy_pin": "LEGACY_UPSTREAM.json"
+}

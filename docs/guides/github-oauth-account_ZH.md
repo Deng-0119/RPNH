@@ -4,7 +4,7 @@ description: 通过可选交互式HOST使用明确选择的已有GitHub OAuth账
 metadata:
   document-kind: how-to
   audience: operator-and-developer
-  language: zh
+  language: zh-CN
   counterpart: github-oauth-account.md
   revision: "2026-11-18.1"
   status: source-candidate-not-published

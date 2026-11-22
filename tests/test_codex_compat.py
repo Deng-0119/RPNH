@@ -124,13 +124,19 @@ class _FakeWebSocket:
         self.sent.append(json.loads(value))
 
 
+def _seed_main_session(root: Path, execution: Path) -> None:
+    with MainSessionOwnerLease.reserve_for_creation(root) as owner_lease:
+        MainSession(
+            root, execution, owner_lease=owner_lease, owner_root_reserved=True)
+
+
 def _write_thread_projection(
         root: Path, *, thread_id: str = "thread-1", turns: object = None,
         execution: Path | None = None,
 ) -> Path:
     if execution is None:
         raise ValueError("direct-root test fixture requires an execution profile")
-    MainSession(root, execution)
+    _seed_main_session(root, execution)
     sidecar = root / ".frontends" / "codex.json"
     sidecar.parent.mkdir(parents=True)
     sidecar.write_text(json.dumps({
@@ -553,7 +559,7 @@ def test_codex_frontend_attachment_crud_cannot_fake_registered_inputs(
 def test_codex_projects_one_direct_basic_main_session(tmp_path: Path) -> None:
     execution = _local_profile(tmp_path / "profiles")
     root = tmp_path / "session"
-    MainSession(root, execution)
+    _seed_main_session(root, execution)
 
     server = CodexAppServer(root, execution)
     thread_id = codex_thread_id(stable_frontend_session_id(root))
@@ -585,7 +591,7 @@ def test_codex_fresh_thread_is_direct_and_rejects_a_second_thread(
 def test_codex_rejects_frontend_container_root(tmp_path: Path) -> None:
     execution = _local_profile(tmp_path / "profiles")
     container = tmp_path / "container"
-    MainSession(container / "threads" / "legacy", execution)
+    _seed_main_session(container / "threads" / "legacy", execution)
 
     with pytest.raises(ValueError, match="container roots"):
         CodexAppServer(container, execution)
@@ -640,7 +646,7 @@ def test_codex_releases_lease_on_close_and_constructor_failure(
 ) -> None:
     execution = _local_profile(tmp_path / "profiles")
     root = tmp_path / "session"
-    MainSession(root, execution)
+    _seed_main_session(root, execution)
     server = CodexAppServer(root, execution)
     with pytest.raises(RuntimeError, match="owner lease"):
         MainSessionOwnerLease(root)
@@ -664,7 +670,7 @@ def test_codex_resume_projection_starts_no_worker_or_reconciliation(
 ) -> None:
     execution = _local_profile(tmp_path / "profiles")
     root = tmp_path / "session"
-    MainSession(root, execution)
+    _seed_main_session(root, execution)
 
     def forbidden(*_args, **_kwargs):
         raise AssertionError("resume projection must not start or reconcile")
@@ -1122,6 +1128,7 @@ def test_codex_process_exit_without_registry_terminal_fails_only_main_turn(
             return MainTurnReconciliation("failed", snapshot)
 
     session = _RunningSession()
+    socket = _FakeWebSocket([])
 
     active = ActiveTurn(
         turn_id="turn-running",
@@ -1133,6 +1140,7 @@ def test_codex_process_exit_without_registry_terminal_fails_only_main_turn(
         task_handle=SimpleNamespace(
             task_id="task-main", process=SimpleNamespace(poll=lambda: 7)),
         tracking=True,
+        notification_websocket=socket,
     )
     state = ThreadState(
         thread_id="thread-running",
@@ -1143,7 +1151,6 @@ def test_codex_process_exit_without_registry_terminal_fails_only_main_turn(
         created_at=100,
         active=active,
     )
-    socket = _FakeWebSocket([])
 
     asyncio.run(server._finish_turn(socket, state, active))
 
@@ -1446,3 +1453,49 @@ def test_codex_default_rejects_older_schema_candidate(tmp_path: Path) -> None:
     assert not socket.sent
     assert not server._threads
     server.close()
+
+
+def test_codex_0171_candidate_requires_explicit_exact_selection_and_keeps_backend_authority(
+        tmp_path: Path) -> None:
+    execution = _local_profile(tmp_path)
+    server = CodexAppServer(
+        tmp_path / "candidate-session", execution,
+        compatibility_profile="candidate-0.171.0",
+    )
+    default_server = CodexAppServer(tmp_path / "default-session", execution)
+
+    def initialized(version: str) -> list[dict[str, object]]:
+        return [
+            {"id": 1, "method": "initialize", "params": {
+                "clientInfo": {"name": "codex-tui", "version": version}}},
+            {"method": "initialized"},
+            {"id": 2, "method": "account/read"},
+            {"id": 3, "method": "config/read"},
+            {"id": 4, "method": "modelProvider/default/set",
+             "params": {"providerId": "openai"}},
+            {"id": 5, "method": "fs/readFile",
+             "params": {"path": str(execution)}},
+            {"id": 6, "method": "config/read"},
+        ]
+
+    try:
+        good = _FakeWebSocket(initialized("0.171.0"))
+        asyncio.run(server.handle(good))
+        sent = {message["id"]: message for message in good.sent}
+        assert sent[1]["result"]["userAgent"] == "rpnh/codex-compat-0.171.0"
+        assert sent[2]["result"] == {"account": None, "requiresOpenaiAuth": False}
+        assert sent[3]["result"]["config"]["model_provider"] == "rpnh"
+        assert sent[4]["error"]["code"] == -32601
+        assert sent[5]["error"]["code"] == -32601
+        assert sent[6]["result"] == sent[3]["result"]
+
+        for target, version in ((server, "0.173.0-alpha.4"),
+                                (default_server, "0.171.0")):
+            bad = _FakeWebSocket(initialized(version)[:3])
+            asyncio.run(target.handle(bad))
+            responses = {message["id"]: message for message in bad.sent}
+            assert "error" in responses[1]
+            assert "error" in responses[2]
+    finally:
+        default_server.close()
+        server.close()

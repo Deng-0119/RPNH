@@ -32,13 +32,14 @@ rpnh frontend setup basic
 
 `rpnh frontend` 和 `setup` 只配置选择，不打开对话、不调用模型。兼容的已安装客户端
 会直接复用；缺失的客户端安装到 RPNH 偏好文件旁的 `frontends/`，不替换全局客户端。
-Codex／OpenCode 安装需要 Node 和 npm；DSH 需要 Git、Node `^22.19.0 || >=24.0.0`，
+Codex／OpenCode 安装需要 Node 和 npm；DSH Web 需要 Git、Node `>=24.9.0`，
 setup 会准备固定源码、pnpm 依赖和官方 Web 资源。缺少前置工具时会给出安装指引；
 配置失败不会保存为可用选择，菜单允许改选其他界面。
 
-OpenCode 配置与启动精确要求 **1.19.4**；管理安装使用官方 npm registry 的
-`opencode-ai@1.19.4`。已保存的 1.19.3 客户端须通过 setup 更新或重新连接；启动器在
-取得 Registry owner 前拒绝其他版本。有限离线检查与历史验证边界见
+OpenCode 配置与启动默认精确要求 **1.19.4**；管理安装默认使用官方 npm registry 的
+`opencode-ai@1.19.4`。既有 **2.2.6** 绑定文本候选须显式选择
+`--opencode-compatibility-profile 2.2.6` 并使用匹配客户端。已保存的 1.19.3 客户端须通过
+setup 更新或重新连接；启动器在取得 Registry owner 前拒绝与所选 profile 不符的版本。有限离线检查与历史验证边界见
 [OpenCode 指南](opencode_ZH.md)。
 
 也可以明确连接已有安装：

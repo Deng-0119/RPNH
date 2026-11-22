@@ -6,7 +6,7 @@ metadata:
   audience: user-and-developer
   language: en
   counterpart: compatibility_ZH.md
-  revision: "2026-11-02.1"
+  revision: "2026-11-22.1"
   status: maintained
 ---
 
@@ -24,10 +24,41 @@ macOS are not supported. Optional clients have exact version requirements.
 | Basic | Included with RPNH | Terminal conversation and task controls; no external UI client |
 | Codex | 0.163.0 by default | Text, model selection and committed session history over the RPNH app-server adapter |
 | Codex candidate | 0.166.0, explicit Python selection | Version-specific protocol candidate; see [selection and limits](codex-candidate-0166.md) |
+| Codex candidate | 0.171.0, explicit `candidate-0.171.0` selection | 2026-11-22 WSL2 live batch-summary-v1 and nonempty same-root reopen passed; exact model and call scope below |
 | OpenCode | 1.19.4 by default | Attach client over RPNH's HTTP/SSE adapter; see [OpenCode setup](opencode.md) |
 | OpenCode candidate | 2.2.5, explicit protocol selection | REST/authentication and non-durable connection/status events only; no complete native frontend or durable message stream |
-| Integrated DSH Web | Pinned 0.2.1-rc.2 source | `rpnh --frontend dsh`; one bound MainSession, text, model/effort selection and RPNH controls |
+| OpenCode candidate | 2.2.6, existing explicit selection | One bound ordinary-text session, profile selection, history and checkpoint controls; no native tool execution or full-client certification |
+| Integrated DSH Web | Default 0.2.2-alpha.2; opt-in 0.2.2-rc.1 / 0.2.2-rc.5 | `rpnh --frontend dsh`; one bound MainSession, text, model/effort selection and RPNH controls |
 | Stock DSH operator plugin | DSH 0.2.2-alpha.2 | Separately installed operator plugin and matching Python companion; manual installation |
+
+Select Codex 0.171.0 with `rpnh frontend setup codex --codex-bin /absolute/path/to/stock/codex --codex-compatibility-profile candidate-0.171.0`.
+The following 2026-11-22 results belong to the earlier frontend acceptance
+source; they are not a rerun or installation acceptance of this RC8 candidate.
+The earlier no-model native fresh/reopen check passed, and an independent wheel
+reported `available=true` through actual `frontend setup` and `frontend list`.
+The separate 2026-11-22 live `batch-summary-v1` task passed on WSL2 with
+`gpt-5.6-terra` / `high` via the RPNH official Codex subscription CLI route:
+one native input, two Registry-settled calls, and correct count/total/mean/min/max
+of `3/36/12/9/15`. Nonempty same-root reopening read the original answer without
+new calls. This is evidence for that exact route and task.
+DSH Web alpha.2 uses 32 official Web packages; each rc candidate uses 33.
+The rc.1 profile is an existing opt-in. On 2026-11-22, rc.5 passed WSL2 frozen
+installation, 17/17 native BFF/projection tests with zero skips (including three
+Chrome browser cases with a scripted backend), and empty same-root cold reopening
+with the actual Python Owner and Web. These scripted/no-model checks are separate
+from the first authorized live submission: the driver misread `running` plus
+`reconciliation_required` as terminal and actively closed the Owner. The result
+was `stopped_by_owner`, zero settled calls, `submission_unknown` and no registered
+answer. That first unknown submission remains separate historical evidence.
+After repair, a separately approved independent task with a new input set passed
+through the genuine browser on source `b65f6682`, with `gpt-5.6-terra` / `high`:
+one input, two settled calls, observed completion in 81.464 seconds, correct
+count/total/mean/min/max `3/45/15/10/21`, and semantic verifier exit 0. Same-root
+read-only reopening passed in 4.486 seconds with zero native submissions; the
+same browser session, Registry references and counters were retained, and the
+original answer was readable in the actual DOM. This exact live outcome is
+separate from the scripted-backend suite. Exact tools, selection and the
+independent legacy 0.2.1-rc.2 host are described in the [DSH guide](dsh.md).
 
 The two DSH integrations use different installation paths. Follow the
 [integrated Web guide](dsh.md) or [stock operator guide](../../integrations/dsh/operator/README.md)
@@ -42,7 +73,7 @@ attachments or arbitrary process execution. Unsupported operations are rejected.
 
 ## Source and release packages
 
-The `main` checkout carries `0.1.0rc5` source metadata. The [rc6 prerelease](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc6) is a separate Basic Linux x86_64 release, not a new stock DSH plugin or an npm registry release. The published October 30
+The local `0.1.0rc8` candidate (npm `0.1.0-rc.8`) is not yet published; see [release scope](releases.md). The public baseline carries `0.1.0rc5` source metadata. The [rc6 prerelease](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc6) is a separate Basic Linux x86_64 release, not a new stock DSH plugin or an npm registry release. The published October 30
 [v0.1.0rc3 release](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc3)
 contains the Python wheel and stock DSH operator tarball built from
 `bc7755d0a0111a0045c86ed4508b11e1cb4a38bc`. Later changes on `main` are not in
@@ -63,7 +94,8 @@ no qualified automatic upgrade or cross-version rollback path. See
   distinct states. Reopening a checkpoint does not undo external effects.
 - Integrated DSH Web supports only its bound session. Native uploads, arbitrary
   sessions, workspace editing and stock DSH tool execution are unavailable.
-- Codex 0.166.0 and OpenCode 2.2.5 remain opt-in candidates, not complete client
+- Codex 0.166.0 / 0.171.0 and OpenCode 2.2.5 / 2.2.6 remain opt-in
+  candidates, not complete client
   compatibility guarantees. The [OpenCode candidate reference](../reference/opencode-v2-candidate.md)
   lists the supported subset.
 - Provider availability depends on user configuration. Offline tests and example

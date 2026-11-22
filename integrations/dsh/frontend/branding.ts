@@ -7,7 +7,7 @@ const escape = (value: string): string => value.replaceAll('&', '&amp;').replace
 export function brandingRows() {
   const upstream = escape(COMPATIBILITY.version)
   const adaptation = escape(COMPATIBILITY.adaptation_version)
-  const channel = COMPATIBILITY.version === '0.2.2-rc.1' ? 'release candidate' : 'alpha preview'
+  const channel = COMPATIBILITY.version.includes('-rc.') ? 'release candidate' : 'alpha preview'
   return [
     { kind: 'style' as const, text: `
       #root { height: calc(100% - 40px) !important; margin-top: 40px !important; }

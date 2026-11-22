@@ -583,6 +583,11 @@ class RegistryFrontendApplication:
                 elif snap.state in {"accepted", "pending_start", "running"} and (
                         not owned or handle.process.poll() is not None):
                     state.failure = "reconciliation_required"
+                elif (snap.state == "running" and owned
+                        and state.failure == "reconciliation_required"):
+                    # The preceding branches reject missing/foreign or exited
+                    # handles; this exact locally owned worker is still live.
+                    state.failure = None
                 elif snap.state == "stopped_by_owner" and owned:
                     state.failure = None
             except Exception:

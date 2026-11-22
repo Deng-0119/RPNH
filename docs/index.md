@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: index_ZH.md
-  revision: "2026-11-09.1"
+  revision: "2026-11-22.1"
   status: source-reviewed
 ---
 
@@ -23,6 +23,15 @@ Start with installation and a small example, then choose a guide for your task.
 See [compatibility](guides/compatibility.md) for exact client versions and
 [releases](guides/releases.md) for the difference between current source and
 published packages.
+
+## Find the right entry point
+
+| I want to | Start with |
+|---|---|
+| Install and verify my first run | [Installation and distribution scope](guides/installation.md) → [No-model first run](guides/getting-started.md) |
+| Choose a client or check its version | [Adapter entry points](guides/adapters.md) · [Compatibility and evidence scope](guides/compatibility.md) · [Releases](guides/releases.md) |
+| Inspect a result, resume or troubleshoot | [Viewer](guides/viewer.md) · [Checkpoint recovery](guides/checkpoint-recovery.md) · [Troubleshooting](guides/troubleshooting.md) |
+| Change source or submit a PR | [Repository map](guides/repository-layout.md) · [Development and checks](guides/development.md) · [Contributing](../CONTRIBUTING.md) |
 
 ## New to RPNH?
 

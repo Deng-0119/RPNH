@@ -494,3 +494,79 @@ def test_status_redacts_paths_and_private_errors():
     value = RegistryFrontendApplication._status({"task_id": "task-1", "run_dir": "/private", "log_path": "/private/log",
         "control_error": "secret", "registry": {"execution_status": "terminal", "api_key": "secret"}})
     assert value == {"task_id": "task-1", "registry": {"execution_status": "terminal"}}
+
+
+@pytest.mark.parametrize("observation", ["snapshot", "tick"])
+def test_healthy_owned_running_turn_clears_only_stale_reconciliation(
+        boundary, monkeypatch, observation):
+    from cpn.rpnh.registry.main_thread import MainThreadAuthorityError
+    app, main, control, _ = boundary
+    app.submit(SID, "request", "explicit:one")
+    state = app._sessions[SID]
+    original = main.active_turn_snapshot
+    def unavailable():
+        raise MainThreadAuthorityError("child startup has no complete authority yet")
+    monkeypatch.setattr(main, "active_turn_snapshot", unavailable)
+    getattr(app, observation)()
+    assert state.failure == "reconciliation_required"
+    monkeypatch.setattr(main, "active_turn_snapshot", original)
+    before = copy.deepcopy(main.records)
+    def unexpected(*_args, **_kwargs):
+        pytest.fail("healthy observation must not execute or mutate authority")
+    for name in ("reconcile_active_turn", "fail_active_turn", "prepare_turn"):
+        monkeypatch.setattr(main, name, unexpected)
+    for name in ("start", "stop", "resume"):
+        monkeypatch.setattr(control, name, unexpected)
+
+    # Snapshot alone remains observational; periodic owner tick clears the old
+    # presentation error only after the exact launched worker is healthy.
+    assert app.snapshot()[0]["error"] == "reconciliation_required"
+    app.tick()
+    view = app.snapshot()[0]
+    assert view["turns"][0]["state"] == "running"
+    assert view["error"] is None
+    assert main.records == before
+    assert state.owned_main_turn_task_ids == {"task-1"}
+    assert (control.starts, control.stops, control.resumes) == (1, 0, 0)
+
+
+@pytest.mark.parametrize("condition", [
+    "no_snapshot", "missing_handle", "foreign_handle", "unowned",
+    "unknown_owner", "authority_error", "poll_error", "genuine_error",
+])
+def test_running_tick_preserves_unresolved_or_genuine_failure(
+        boundary, monkeypatch, condition):
+    from cpn.rpnh.registry.main_thread import MainThreadAuthorityError
+    app, main, control, _ = boundary
+    app.submit(SID, "request", "explicit:one")
+    state = app._sessions[SID]
+    state.failure = "genuine_error" if condition == "genuine_error" else "reconciliation_required"
+    if condition == "no_snapshot":
+        monkeypatch.setattr(main, "active_turn_snapshot", lambda: None)
+    elif condition == "missing_handle":
+        control.handles.clear()
+    elif condition == "foreign_handle":
+        control.handles["task-1"].run_dir = main.root / "another-attempt"
+    elif condition == "unowned":
+        state.owned_main_turn_task_ids.clear()
+    elif condition == "unknown_owner":
+        state.owned_main_turn_task_ids = {"other-task"}
+    elif condition == "authority_error":
+        def unavailable():
+            raise MainThreadAuthorityError("incomplete current authority")
+        monkeypatch.setattr(main, "active_turn_snapshot", unavailable)
+    elif condition == "poll_error":
+        def unknown_liveness():
+            raise OSError("worker liveness is unavailable")
+        control.handles["task-1"].process.poll = unknown_liveness
+    before = copy.deepcopy(main.records)
+    def unexpected(*_args, **_kwargs):
+        pytest.fail("unresolved observation must not execute or mutate authority")
+    for name in ("reconcile_active_turn", "fail_active_turn", "prepare_turn"):
+        monkeypatch.setattr(main, name, unexpected)
+    for name in ("start", "stop", "resume"):
+        monkeypatch.setattr(control, name, unexpected)
+    app.tick()
+    assert state.failure == ("genuine_error" if condition == "genuine_error" else "reconciliation_required")
+    assert main.records == before
+    assert (control.starts, control.stops, control.resumes) == (1, 0, 0)

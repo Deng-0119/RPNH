@@ -3,6 +3,7 @@ import { access, copyFile, mkdir, readFile, writeFile } from 'node:fs/promises'
 import { constants } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
+import { projectionStyle } from './projection_frames.ts'
 
 export const FRONTEND_DIR = dirname(fileURLToPath(import.meta.url))
 export const DESCRIPTOR_PACKAGES = ['dsh-api-session-controller', 'dsh-api-workspace-controller',
@@ -17,7 +18,7 @@ export async function officialPackages() {
   }))
 }
 export async function checkOfficialAssets(): Promise<void> {
-  if (!['0.2.2-alpha.2', '0.2.2-rc.1'].includes(COMPATIBILITY.version)) throw new Error('Unsupported official DSH frontend version')
+  if (projectionStyle(COMPATIBILITY.version) === undefined) throw new Error('Unsupported official DSH frontend version')
   const packages = await officialPackages()
   const names = new Set(packages.map(pkg => pkg.name))
   for (const pkg of packages) {

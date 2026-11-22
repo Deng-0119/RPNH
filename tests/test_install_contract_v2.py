@@ -345,6 +345,19 @@ class ProfileAndPlanTests(unittest.TestCase):
             catalog = contract.load_profile_catalog(wheel=wheel)
             self.assertEqual(catalog.rpnh_version, "2.0.0")
             self.assertTrue(self._plan(source=source_document("2.0.0"), catalog=catalog).selection_resolved)
+            self.assertNotIn("0.2.2-rc.5", catalog.profiles["dsh-web"])
+            rc5_pin = "integrations/dsh/UPSTREAM_RC5_CANDIDATE.json"
+            with ZipFile(wheel, "a") as archive:
+                archive.write(root / rc5_pin, rc5_pin)
+            with self.assertRaises(ValueError):
+                contract.load_profile_catalog(wheel=wheel)
+            rc5_web = "integrations/dsh/frontend/web-packages.rc5.json"
+            with ZipFile(wheel, "a") as archive:
+                archive.write(root / rc5_web, rc5_web)
+            catalog = contract.load_profile_catalog(wheel=wheel)
+            self.assertEqual(catalog.defaults["dsh-web"], "0.2.2-alpha.2")
+            self.assertEqual(contract.get_profile("dsh-web", "0.2.2-rc.5", catalog=catalog).web_packages,
+                             tuple(json.loads((root / rc5_web).read_text())["packages"]))
 
     def test_duplicate_record_fields_are_not_last_writer_wins(self):
         plan = self._plan()

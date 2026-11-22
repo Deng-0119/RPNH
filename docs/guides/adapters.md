@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: adapters_ZH.md
-  revision: "2026-11-09.1"
+  revision: "2026-11-22.1"
   status: source-reviewed
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -88,8 +88,16 @@ Viewing reopened history never continues work automatically; choose
 `/rpnh-resume` or `/rpnh-rollback` from the native slash menu. `Ctrl+C` exits the
 host and checkpoint-stops its owned main turn only.
 
-First launch downloads 31 exact `0.2.1-rc.2` official packages into
+First launch downloads 32 official Web packages for default `0.2.2-alpha.2`,
+or 33 for existing opt-in `0.2.2-rc.1` or candidate `0.2.2-rc.5`, into
 `SOURCE/rpnh-frontend/node_modules`; complete cached packages are reused offline.
+The rc.5 scoped WSL2 checks passed without model calls. Its first authorized
+live submission was actively closed by the driver without a registered answer
+and remains separate historical evidence. After repair, a separately approved
+independent task with a new input set passed in the genuine browser, as did
+same-root read-only reopening without new submissions. Exact model, result and
+call scope are recorded in the [DSH guide](dsh.md). This does not expand stock
+operator support.
 Setup generates the loader configuration and bound-session bridge without
 changing official UI. Asset preflight finishes before acquiring MainSession.
 See the [DSH guide](dsh.md) for source and Node/pnpm requirements, and the
@@ -101,9 +109,9 @@ See the [DSH guide](dsh.md) for source and Node/pnpm requirements, and the
 launcher, 68 MiB frame, 48-attempt budget and recovery details describe that
 advanced legacy host, not the unified MainSession frontend.
 
-This section applies only to a source tree or installed distribution containing `cpn/dsh` and `integrations/dsh`. The integration manifest pins upstream `deepseek-ai/deepseek-harness` revision `687f282e8625c6b8d11ff58211a90524be2e4317` (`0.2.1-rc.2`), checked on 2026-10-19. This source host was tested with Node 22.22.1 and pnpm 11.28.5; its engine range is `^22.19.0 || >=24.0.0`. The [DSH guide](dsh.md) distinguishes npm `latest` from `next` and this exact source integration.
+This section applies only to a source tree or installed distribution containing `cpn/dsh` and `integrations/dsh`. The legacy manifest `integrations/dsh/LEGACY_UPSTREAM.json` pins upstream `deepseek-ai/deepseek-harness` revision `687f282e8625c6b8d11ff58211a90524be2e4317` (`0.2.1-rc.2`), checked on 2026-10-19. This source host was tested with Node 22.22.1 and pnpm 11.28.5; its engine range is `^22.19.0 || >=24.0.0`. The [DSH guide](dsh.md) distinguishes npm `latest` from `next` and this exact source integration.
 
-Obtain that exact upstream checkout and install its dependencies with the pinned package manager and frozen lockfile. Use a disposable dedicated checkout: preparation intentionally patches a checked upstream factory and copies the integration TypeScript files. Retain `UPSTREAM.json` and `UPSTREAM_LICENSE` when distributing the integration.
+Obtain that exact upstream checkout and install its dependencies with the pinned package manager and frozen lockfile. Use a disposable dedicated checkout: preparation intentionally patches a checked upstream factory and copies the integration TypeScript files. Retain `LEGACY_UPSTREAM.json` and `UPSTREAM_LICENSE` when distributing the integration.
 
 After installing the DSH-capable package, set `DSH_SOURCE` to that checkout:
 
