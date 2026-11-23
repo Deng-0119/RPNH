@@ -15,6 +15,23 @@ metadata:
 
 # Installation and distribution scope
 
+## Install from npm (recommended)
+
+For the public RC8 prerelease use **Node.js 20+ with npm**, `uv` on PATH, and a persistent CPython with `venv`. The one-command path was verified anonymously for Basic on **WSL2 Linux x86_64 / CPython 3.13.12**.
+
+```bash
+npx rpnh-bootstrap@0.1.0-rc.8
+```
+
+In a terminal, confirm npm's first-time download if prompted, then type `UPDATE` to install and activate Basic. Use the managed `rpnh` launcher path printed after activation. This does not run `rpnh init`, sign in or call a model.
+
+To install the bootstrap command globally instead:
+
+```bash
+npm install -g rpnh-bootstrap@0.1.0-rc.8
+rpnh-bootstrap
+```
+
 ## Goal and prerequisites
 Install an explicitly selected RPNH source tree or wheel without calling a model. Runtime support remains **Linux, including WSL2**; native Windows and macOS are not supported by this candidate. Python is declared as `>=3.11`; this is not a claim that every Python/platform combination was tested. The runtime uses Unix sockets, POSIX process control and Linux-specific process inspection. A basic terminal does not require Codex or Node.
 

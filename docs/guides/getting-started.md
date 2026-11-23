@@ -26,6 +26,25 @@ record a new installation, runtime test or provider test.
 
 ## 1. Choose and install one source
 
+### Published npm quick install
+
+For the public RC8 prerelease use **Node.js 20+ with npm**, `uv` on PATH, and a persistent CPython with `venv`. The one-command path was verified anonymously for Basic on **WSL2 Linux x86_64 / CPython 3.13.12**.
+
+```bash
+npx rpnh-bootstrap@0.1.0-rc.8
+```
+
+In a terminal, confirm npm's first-time download if prompted, then type `UPDATE` to install and activate Basic. Use the managed `rpnh` launcher path printed after activation. This does not run `rpnh init`, sign in or call a model.
+
+To install the bootstrap command globally instead:
+
+```bash
+npm install -g rpnh-bootstrap@0.1.0-rc.8
+rpnh-bootstrap
+```
+
+### Source or wheel installation for the native plugin walkthrough
+
 Use **Linux or WSL2 and Python 3.11+**. Follow [installation](installation.md)
 to install one approved checkout or a wheel built from it in a dedicated
 virtual environment. Basic needs no Codex or Node. Native macOS and Windows

@@ -16,7 +16,20 @@ metadata:
 
 ## Current distribution status
 
-[RPNH v0.1.0rc8](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc8) is a GitHub prerelease. [`rpnh-bootstrap@0.1.0-rc.8`](https://www.npmjs.com/package/rpnh-bootstrap/v/0.1.0-rc.8) is published on npm. Anonymous GitHub and npm installation, activation and version readback passed on WSL2 x86_64 / CPython 3.13.12 (Basic). Use Node.js 20+ with npm, `uv` on PATH, and a persistent CPython with `venv`. Pin `npm install -g rpnh-bootstrap@0.1.0-rc.8`, then run `rpnh-bootstrap`. At first publication, both `next` and `latest` pointed to RC8; this is not a stable release.
+[RPNH v0.1.0rc8](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc8) is a GitHub prerelease. [`rpnh-bootstrap@0.1.0-rc.8`](https://www.npmjs.com/package/rpnh-bootstrap/v/0.1.0-rc.8) is published on npm. Anonymous GitHub and npm installation, activation and version readback passed on WSL2 x86_64 / CPython 3.13.12 (Basic). Use Node.js 20+ with npm, `uv` on PATH, and a persistent CPython with `venv`. At first publication, both `next` and `latest` pointed to RC8; this is not a stable release.
+
+```bash
+npx rpnh-bootstrap@0.1.0-rc.8
+```
+
+In a terminal, confirm npm's first-time download if prompted, then type `UPDATE` to install and activate Basic. Use the managed `rpnh` launcher path printed after activation. This does not run `rpnh init`, sign in or call a model.
+
+Global bootstrap alternative:
+
+```bash
+npm install -g rpnh-bootstrap@0.1.0-rc.8
+rpnh-bootstrap
+```
 
 The [rc6 GitHub prerelease](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc6) contains the matching Basic Linux x86_64 application wheel, CPython 3.12/3.13 dependency wheels, two v3 sidecars, and an npm-format GitHub attachment. The exact candidate passed scoped offline CLI checks. The first anonymous release metadata readback succeeded, but its download attempt timed out after the GitHub redirect; that original failure is retained. The formal rc6 npm-format tgz subsequently passed A4 installation and activation on WSL2 / CPython 3.13.12 Basic. This is historical RC6 evidence, not a registry publication for RC6. This does not qualify upgrade, rollback, optional frontends, or macOS.
 

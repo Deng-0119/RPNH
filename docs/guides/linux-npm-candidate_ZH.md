@@ -16,7 +16,20 @@ metadata:
 
 ## 当前发行状态
 
-[RPNH v0.1.0rc8](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc8) 是 GitHub 预发行；[`rpnh-bootstrap@0.1.0-rc.8`](https://www.npmjs.com/package/rpnh-bootstrap/v/0.1.0-rc.8) 已发布到 npm。在 WSL2 x86_64／CPython 3.13.12 的 Basic 范围内，GitHub 和 npm 两条匿名路径均通过安装、激活和版本回读。使用 Node.js 20+（含 npm）、PATH 中的 `uv` 和支持 `venv` 的持久 CPython。请固定使用 `npm install -g rpnh-bootstrap@0.1.0-rc.8`，然后运行 `rpnh-bootstrap`。npm 首发时的 `next` 与 `latest` 均指向此预发行，标签不代表稳定版。
+[RPNH v0.1.0rc8](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc8) 是 GitHub 预发行；[`rpnh-bootstrap@0.1.0-rc.8`](https://www.npmjs.com/package/rpnh-bootstrap/v/0.1.0-rc.8) 已发布到 npm。在 WSL2 x86_64／CPython 3.13.12 的 Basic 范围内，GitHub 和 npm 两条匿名路径均通过安装、激活和版本回读。使用 Node.js 20+（含 npm）、PATH 中的 `uv` 和支持 `venv` 的持久 CPython。npm 首发时的 `next` 与 `latest` 均指向此预发行，标签不代表稳定版。
+
+```bash
+npx rpnh-bootstrap@0.1.0-rc.8
+```
+
+在终端中按提示确认 npm 首次下载，再输入 `UPDATE` 安装并激活 Basic。激活后使用程序打印的受管 `rpnh` 启动器路径。此流程不运行 `rpnh init`，不登录或调用模型。
+
+全局引导器备选：
+
+```bash
+npm install -g rpnh-bootstrap@0.1.0-rc.8
+rpnh-bootstrap
+```
 
 [rc6 已在 GitHub 预发布](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc6)，包含匹配的 Linux x86_64 Basic 应用 wheel、CPython 3.12/3.13 依赖 wheel、两份 v3 清单，以及 npm 格式的 GitHub 附件。该候选已通过限定的离线 CLI 检查。首次匿名发行元数据已回读，但该次下载在 GitHub 重定向后超时，原始失败继续保留。正式 rc6 npm 格式 tgz 后续已在 WSL2／CPython 3.13.12 Basic 通过 A4 安装与激活验收。这是历史 RC6 证据，不代表 RC6 已发布到 npm registry。本结果不证明升级、回滚、可选前端或 macOS 支持。
 

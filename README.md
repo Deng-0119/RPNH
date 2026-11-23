@@ -19,20 +19,22 @@ resource versions, execution records and checkpoints.
 
 ## Quick start: install from npm
 
-Use **Node.js 20+ with npm**, `uv` on PATH, and a persistent CPython with
-`venv`. Anonymous installation and activation were verified for Basic on
-**WSL2 Linux x86_64 with CPython 3.13.12**.
+For the public RC8 prerelease use **Node.js 20+ with npm**, `uv` on PATH, and a persistent CPython with `venv`. The one-command path was verified anonymously for Basic on **WSL2 Linux x86_64 / CPython 3.13.12**.
+
+```bash
+npx rpnh-bootstrap@0.1.0-rc.8
+```
+
+In a terminal, confirm npm's first-time download if prompted, then type `UPDATE` to install and activate Basic. Use the managed `rpnh` launcher path printed after activation. This does not run `rpnh init`, sign in or call a model.
+
+To install the bootstrap command globally instead:
 
 ```bash
 npm install -g rpnh-bootstrap@0.1.0-rc.8
 rpnh-bootstrap
 ```
 
-The npm command installs the bootstrap only. Run the second command, review
-the proposed RPNH version and installation materials, then confirm in the
-terminal. Installation needs network access and makes no model calls.
-Optional frontends and account providers are not enabled by this Basic
-install. [Release notes and install scope](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc8).
+[Release notes and install scope](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc8).
 
 ## What you can do
 
@@ -161,4 +163,3 @@ Selecting a policy does not grant additional business authority.
 
 [MIT](LICENSE). Third-party components retain their own licenses; see
 [third-party notices](THIRD_PARTY_NOTICES.md).
-

@@ -17,18 +17,22 @@ RPNH 是不绑定特定模型服务商的 Agent 执行框架，用于**构建、
 
 ## 快速开始：通过 npm 安装
 
-需要 **Node.js 20+（含 npm）**、PATH 中可用的 `uv` 和支持 `venv` 的持久
-CPython。匿名安装与激活已在 **WSL2 Linux x86_64／CPython 3.13.12** 的 Basic
-配置下通过验证。
+公开 RC8 为预发行版，需要 **Node.js 20+（含 npm）**、PATH 中的 `uv` 和支持 `venv` 的持久 CPython。单命令路径已在 **WSL2 Linux x86_64／CPython 3.13.12** 的 Basic 配置通过匿名验收。
+
+```bash
+npx rpnh-bootstrap@0.1.0-rc.8
+```
+
+在终端中按提示确认 npm 首次下载，再输入 `UPDATE` 安装并激活 Basic。激活后使用程序打印的受管 `rpnh` 启动器路径。此流程不运行 `rpnh init`，不登录或调用模型。
+
+如需全局安装引导器，也可分两步：
 
 ```bash
 npm install -g rpnh-bootstrap@0.1.0-rc.8
 rpnh-bootstrap
 ```
 
-第一条命令只安装引导器。运行第二条命令，核对提示中的 RPNH 版本和安装材料，
-再在终端确认。安装需要联网，不调用模型；Basic 不会自动启用可选前端或账户
-提供方。[发行说明与安装范围](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc8)。
+[发行说明与安装范围](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc8).
 
 ## 可以做什么
 
@@ -136,4 +140,3 @@ rpnh net --run "$RUN_DIR" --view --no-open
 ## 许可证
 
 [MIT](LICENSE)。第三方组件保留各自许可证，见[第三方声明](THIRD_PARTY_NOTICES.md)。
-

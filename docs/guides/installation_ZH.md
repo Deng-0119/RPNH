@@ -15,6 +15,23 @@ metadata:
 
 # 安装与分发范围
 
+## 通过 npm 安装（推荐）
+
+公开 RC8 为预发行版，需要 **Node.js 20+（含 npm）**、PATH 中的 `uv` 和支持 `venv` 的持久 CPython。单命令路径已在 **WSL2 Linux x86_64／CPython 3.13.12** 的 Basic 配置通过匿名验收。
+
+```bash
+npx rpnh-bootstrap@0.1.0-rc.8
+```
+
+在终端中按提示确认 npm 首次下载，再输入 `UPDATE` 安装并激活 Basic。激活后使用程序打印的受管 `rpnh` 启动器路径。此流程不运行 `rpnh init`，不登录或调用模型。
+
+如需全局安装引导器，也可分两步：
+
+```bash
+npm install -g rpnh-bootstrap@0.1.0-rc.8
+rpnh-bootstrap
+```
+
 ## 目标与前提
 从明确指定的 RPNH 源码或 wheel 安装，不调用模型。当前运行支持范围仍是 **Linux（包括 WSL2）**，不支持原生 Windows 和 macOS。`pyproject.toml` 声明 Python `>=3.11`，不等于每个 Python/平台组合均已测试；运行时涉及 Unix socket、POSIX 进程控制和 Linux 进程检查。basic 文本前端不需要 Codex 或 Node。
 
