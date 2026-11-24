@@ -32,7 +32,7 @@ RPNH 支持 Linux 和 WSL2，要求 Python 3.11 或更新版本。暂不支持�
 | Stock DSH operator 插件 | DSH 0.2.2-alpha.2 | 单独安装 operator 插件及配套 Python 包，采用手动安装 |
 
 Codex 0.171.0 可通过 `rpnh frontend setup codex --codex-bin /absolute/path/to/stock/codex --codex-compatibility-profile candidate-0.171.0` 显式选择。
-以下 2026-11-22 结果属于此前前端验收源码，不是对本次 RC8 候选的重跑或安装验收。
+以下 2026-11-22 结果属于此前前端验收源码，不是对历史 RC8 候选的重跑或安装验收。
 此前原生 fresh／reopen 零模型检查已通过；独立 wheel 的实际 `frontend setup`
 与 `frontend list` 也读到 `available=true`。另于 2026-11-22 在 WSL2 使用
 `gpt-5.6-terra`／`high`，经 RPNH official Codex subscription CLI 路线完成真实
@@ -62,7 +62,9 @@ profile，均不是当前默认值。客户端发现响应不表示已安装插�
 
 ## 源码与发布包
 
-[RPNH v0.1.0rc8](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc8) 是 GitHub 预发行；[`rpnh-bootstrap@0.1.0-rc.8`](https://www.npmjs.com/package/rpnh-bootstrap/v/0.1.0-rc.8) 已发布到 npm。在 WSL2 x86_64／CPython 3.13.12 的 Basic 范围内，GitHub 和 npm 两条匿名路径均通过安装、激活和版本回读。见[发行范围](releases_ZH.md)。10 月 30 日发布的
+[RPNH v0.1.0rc9](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc9) 是当前 GitHub 预发行。已发布的 npm 包是 [`rpnh-bootstrap@0.1.0-rc.9`](https://www.npmjs.com/package/rpnh-bootstrap/v/0.1.0-rc.9)；发布后 `latest` 与 `next` 均指向 RC9。在 WSL2 Linux x86_64／持久 CPython 3.12.13 的 Basic 范围内，`npm exec --package=rpnh-bootstrap -- rpnh` 已通过匿名全新安装、激活、首次配置与离线 doctor 检查。验收不涵盖升级、回滚、其他平台或可选前端。 既有前端证据仍以各自版本和原验收范围为准。
+
+作为历史对照，[RPNH v0.1.0rc8](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc8) 是 GitHub 预发行；[`rpnh-bootstrap@0.1.0-rc.8`](https://www.npmjs.com/package/rpnh-bootstrap/v/0.1.0-rc.8) 已发布到 npm。在 WSL2 x86_64／CPython 3.13.12 的 Basic 范围内，GitHub 和 npm 两条匿名路径均通过安装、激活和版本回读。见[发行范围](releases_ZH.md)。10 月 30 日发布的
 [v0.1.0rc3](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc3)
 提供由 `bc7755d0a0111a0045c86ed4508b11e1cb4a38bc` 构建的 Python wheel 和
 stock DSH operator tarball。`main` 后续修改不包含在这些已上传文件中。

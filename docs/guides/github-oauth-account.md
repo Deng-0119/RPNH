@@ -10,7 +10,7 @@ metadata:
   status: source-candidate-not-published
 ---
 
-This release candidate preserves existing Linux/Viewer fixes: core `0.1.0rc5`, optional HOST `0.0.8`, unchanged implementation revision `oauth-candidate-2`. Build the HOST separately from `packaging/github-oauth-host`. Historical limited live-account evidence for 0.0.1 and offline/PTY evidence for 0.0.2 below is not a new real-account acceptance of 0.0.8. Check the matching GitHub Release for current artifact availability.
+This historical optional pair is separate from RC9 Basic, which does not install the HOST. The RC5 pair preserves its existing Linux/Viewer fixes: core `0.1.0rc5`, optional HOST `0.0.8`, unchanged implementation revision `oauth-candidate-2`. Build the HOST separately from `packaging/github-oauth-host`. Historical limited live-account evidence for 0.0.1 and offline/PTY evidence for 0.0.2 below is not a new real-account acceptance of 0.0.8. Check the matching GitHub Release for current artifact availability.
 
 [English](github-oauth-account.md) | [中文](github-oauth-account_ZH.md)
 

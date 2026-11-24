@@ -24,7 +24,9 @@ RPNH 当前处于预发布阶段。Release tag 标识固定源码快照；`main`
 | 指定源码版本 | 使用发布后的修复；记录所选 commit，在隔离环境构建 |
 | 当前 `main` | 跟进当前开发，内容可能不同于最新已上传 wheel |
 
-[RPNH v0.1.0rc8](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc8) 是 GitHub 预发行；[`rpnh-bootstrap@0.1.0-rc.8`](https://www.npmjs.com/package/rpnh-bootstrap/v/0.1.0-rc.8) 已发布到 npm。在 WSL2 x86_64／CPython 3.13.12 的 Basic 范围内，GitHub 和 npm 两条匿名路径均通过安装、激活和版本回读。使用 Node.js 20+（含 npm）、PATH 中的 `uv` 和支持 `venv` 的持久 CPython。请固定使用 `npm install -g rpnh-bootstrap@0.1.0-rc.8`，然后运行 `rpnh-bootstrap`。npm 首发时的 `next` 与 `latest` 均指向此预发行，标签不代表稳定版。
+[RPNH v0.1.0rc9](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc9) 是当前 GitHub 预发行。已发布的 npm 包是 [`rpnh-bootstrap@0.1.0-rc.9`](https://www.npmjs.com/package/rpnh-bootstrap/v/0.1.0-rc.9)；发布后 `latest` 与 `next` 均指向 RC9。在 WSL2 Linux x86_64／持久 CPython 3.12.13 的 Basic 范围内，`npm exec --package=rpnh-bootstrap -- rpnh` 已通过匿名全新安装、激活、首次配置与离线 doctor 检查。验收不涵盖升级、回滚、其他平台或可选前端。 前置条件和安装选项见 [RC9 npm 安装指南](linux-npm-candidate_ZH.md)。
+
+作为历史对照，[RPNH v0.1.0rc8](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc8) 是 GitHub 预发行；[`rpnh-bootstrap@0.1.0-rc.8`](https://www.npmjs.com/package/rpnh-bootstrap/v/0.1.0-rc.8) 已发布到 npm。在 WSL2 x86_64／CPython 3.13.12 的 Basic 范围内，GitHub 和 npm 两条匿名路径均通过安装、激活和版本回读。使用 Node.js 20+（含 npm）、PATH 中的 `uv` 和支持 `venv` 的持久 CPython。请固定使用 `npm install -g rpnh-bootstrap@0.1.0-rc.8`，然后运行 `rpnh-bootstrap`。npm 首发时的 `next` 与 `latest` 均指向此预发行，标签不代表稳定版。
 
 历史 RC6 保留为 GitHub 验收记录；其 A4 回执不用于证明 RC8 或跨版本升级。
 
@@ -44,7 +46,7 @@ Codex `0.163.0`、OpenCode `1.19.4` 和 DSH Web `0.2.2-alpha.2`；既有 opt-in
 
 RC8 同时包含共用 Owner reconciliation 修复，以及限定的文档导航、元数据和 Viewer
 资源验证更新。此前前端任务结果在[兼容性](compatibility_ZH.md)中保留精确源码、
-模型、输入与重开范围。上文的独立匿名安装不证明原地升级、回滚、其他操作系统或所有可选前端均已验收。
+模型、输入与重开范围。独立的 RC8 匿名安装验收不证明原地升级、回滚、其他操作系统或所有可选前端均已验收。
 
 ## 仓库内容
 

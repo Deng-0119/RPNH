@@ -25,7 +25,9 @@ RPNH is currently a prerelease. Release tags identify fixed source snapshots;
 | Selected source revision | Use fixes after a release; record the chosen commit and build in an isolated environment |
 | Current `main` | Follow current development; it may differ from the latest uploaded wheel |
 
-[RPNH v0.1.0rc8](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc8) is a GitHub prerelease. [`rpnh-bootstrap@0.1.0-rc.8`](https://www.npmjs.com/package/rpnh-bootstrap/v/0.1.0-rc.8) is published on npm. Anonymous GitHub and npm installation, activation and version readback passed on WSL2 x86_64 / CPython 3.13.12 (Basic). Use Node.js 20+ with npm, `uv` on PATH, and a persistent CPython with `venv`. Pin `npm install -g rpnh-bootstrap@0.1.0-rc.8`, then run `rpnh-bootstrap`. At first publication, both `next` and `latest` pointed to RC8; this is not a stable release.
+[RPNH v0.1.0rc9](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc9) is the current GitHub prerelease. Its published npm package is [`rpnh-bootstrap@0.1.0-rc.9`](https://www.npmjs.com/package/rpnh-bootstrap/v/0.1.0-rc.9); `latest` and `next` both pointed to RC9 after release. Anonymous fresh installation with `npm exec --package=rpnh-bootstrap -- rpnh` passed on WSL2 Linux x86_64 with persistent CPython 3.12.13 (Basic), including activation, first setup, and offline doctor. This does not qualify upgrades, rollback, other platforms, or optional frontends. See the [RC9 npm installation guide](linux-npm-candidate.md) for prerequisites and installation options.
+
+For historical comparison, [RPNH v0.1.0rc8](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc8) is a GitHub prerelease. [`rpnh-bootstrap@0.1.0-rc.8`](https://www.npmjs.com/package/rpnh-bootstrap/v/0.1.0-rc.8) is published on npm. Anonymous GitHub and npm installation, activation and version readback passed on WSL2 x86_64 / CPython 3.13.12 (Basic). Use Node.js 20+ with npm, `uv` on PATH, and a persistent CPython with `venv`. Pin `npm install -g rpnh-bootstrap@0.1.0-rc.8`, then run `rpnh-bootstrap`. At first publication, both `next` and `latest` pointed to RC8; this is not a stable release.
 
 Historical RC6 remains a GitHub-only verification baseline; its A4 receipt does not certify RC8 or cross-release upgrades.
 
@@ -47,7 +49,7 @@ support is included in RC8.
 RC8 also carries the shared Owner reconciliation fix and bounded
 documentation navigation, metadata and Viewer-asset validation updates. Earlier
 frontend task results retain their exact source, model, inputs and reopening
-scope in [compatibility](compatibility.md). The separate anonymous installation checks above do not qualify in-place upgrade, rollback, other operating systems or every optional frontend.
+scope in [compatibility](compatibility.md). The separate RC8 anonymous installation checks do not qualify in-place upgrade, rollback, other operating systems or every optional frontend.
 
 ## What the repository contains
 

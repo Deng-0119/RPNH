@@ -1,14 +1,10 @@
 # RPNH bootstrap transport
 
-## Linux distribution direction (pending release)
+## Published RC9 and this source template
 
-Future Linux RPNH releases use an official npm package and its commands as the installation and update entry. That entry must invoke the original RPNH install/update flow, provide the corresponding release materials and advance the actual application version. Updating this transport package alone is not an RPNH application upgrade. The original Python core, lifecycle confirmation and user-data handling remain in charge.
+[RPNH v0.1.0rc9](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc9) is the current GitHub prerelease. Its published npm package is [`rpnh-bootstrap@0.1.0-rc.9`](https://www.npmjs.com/package/rpnh-bootstrap/v/0.1.0-rc.9); `latest` and `next` both pointed to RC9 after release. Anonymous fresh installation with `npm exec --package=rpnh-bootstrap -- rpnh` passed on WSL2 Linux x86_64 with persistent CPython 3.12.13 (Basic), including activation, first setup, and offline doctor. This does not qualify upgrades, rollback, other platforms, or optional frontends. See the [installation guide](../../docs/guides/linux-npm-candidate.md) for prerequisites. Updating the npm wrapper alone does not upgrade the RPNH application; the original installer and lifecycle confirmation apply.
 
-The release work must establish and validate the public package name, version mapping, prerequisites and complete user commands. The private tarball and explicit-wheel examples below validate the current candidate. Public registry installation and actual cross-release RPNH updates remain uncompleted release work.
-
-This source package launches the bootstrap module from an explicitly selected RPNH wheel. It does not contain a second copy of the Python installer or manage application versions. The wheel also provides `rpnh-bootstrap` as a Python console command; the installed application remains `rpnh`.
-
-This package is currently private and unpublished. Use a locally built npm tarball; no registry package name or public release is promised. Node 20+, an installed `uv`, a persistent controller Python and a matching RPNH wheel containing `cpn.rpnh.bootstrap_entry` are required. Old wheels without that module cannot use this entry.
+The checked-in npm source template is private. The commands below exercise a locally built template tarball, not the registry package. They require Node.js 20+, `uv`, persistent controller Python, and a matching RPNH wheel containing `cpn.rpnh.bootstrap_entry`. Older wheels without that module cannot use this entry. The template invokes the chosen wheel; it does not ship a second installer or manage application versions. The wheel also provides `rpnh-bootstrap` as a Python console command; the installed application command is `rpnh`.
 
 ```sh
 npm pack --ignore-scripts
@@ -48,6 +44,6 @@ Python runs with `-I -m`: the controller ignores caller cwd and PYTHONPATH when 
 
 Use `prepare_first_run_candidate.py` with the matching core wheel, launcher sources, license, npm version and a new output directory. An application version such as `0.1.0rc9` corresponds to npm version `0.1.0-rc.9`.
 
-Pass `--public-cli` to build the public `rpnh` package. It exposes the `rpnh` command and uses the `latest` tag. The existing `--public-preview` option produces the two-command `rpnh-bootstrap` package for `next`. The default output is a private candidate. Both public packages use the original installer and the matching GitHub Release assets.
+`--public-cli` assembles an `rpnh` tarball with the `rpnh` command and npm publication metadata targeting `latest`; assembly does not publish it. The attempted RC9 publication under the short package name `rpnh` was rejected. The published package is `rpnh-bootstrap`. The `--public-preview` option assembles that package with the `rpnh` and `rpnh-bootstrap` commands and publication metadata targeting `next`. The default output is a private candidate. Both assembly modes use the original installer and matching GitHub Release assets.
 
 Run the offline assembly checks with `python packaging/npm-bootstrap/test-prepare-first-run.py`.

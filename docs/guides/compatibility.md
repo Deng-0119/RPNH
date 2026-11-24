@@ -33,7 +33,7 @@ macOS are not supported. Optional clients have exact version requirements.
 
 Select Codex 0.171.0 with `rpnh frontend setup codex --codex-bin /absolute/path/to/stock/codex --codex-compatibility-profile candidate-0.171.0`.
 The following 2026-11-22 results belong to the earlier frontend acceptance
-source; they are not a rerun or installation acceptance of this RC8 candidate.
+source; they are not a rerun or installation acceptance of the historical RC8 candidate.
 The earlier no-model native fresh/reopen check passed, and an independent wheel
 reported `available=true` through actual `frontend setup` and `frontend list`.
 The separate 2026-11-22 live `batch-summary-v1` task passed on WSL2 with
@@ -73,7 +73,9 @@ attachments or arbitrary process execution. Unsupported operations are rejected.
 
 ## Source and release packages
 
-[RPNH v0.1.0rc8](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc8) is a GitHub prerelease. [`rpnh-bootstrap@0.1.0-rc.8`](https://www.npmjs.com/package/rpnh-bootstrap/v/0.1.0-rc.8) is published on npm. Anonymous GitHub and npm installation, activation and version readback passed on WSL2 x86_64 / CPython 3.13.12 (Basic). See [release scope](releases.md). The October 30
+[RPNH v0.1.0rc9](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc9) is the current GitHub prerelease. Its published npm package is [`rpnh-bootstrap@0.1.0-rc.9`](https://www.npmjs.com/package/rpnh-bootstrap/v/0.1.0-rc.9); `latest` and `next` both pointed to RC9 after release. Anonymous fresh installation with `npm exec --package=rpnh-bootstrap -- rpnh` passed on WSL2 Linux x86_64 with persistent CPython 3.12.13 (Basic), including activation, first setup, and offline doctor. This does not qualify upgrades, rollback, other platforms, or optional frontends. Earlier frontend evidence in this guide retains its original version and scope.
+
+For historical comparison, [RPNH v0.1.0rc8](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc8) is a GitHub prerelease. [`rpnh-bootstrap@0.1.0-rc.8`](https://www.npmjs.com/package/rpnh-bootstrap/v/0.1.0-rc.8) is published on npm. Anonymous GitHub and npm installation, activation and version readback passed on WSL2 x86_64 / CPython 3.13.12 (Basic). See [release scope](releases.md). The October 30
 [v0.1.0rc3 release](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc3)
 contains the Python wheel and stock DSH operator tarball built from
 `bc7755d0a0111a0045c86ed4508b11e1cb4a38bc`. Later changes on `main` are not in

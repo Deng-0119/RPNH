@@ -1,14 +1,10 @@
 # RPNH bootstrap 薄入口
 
-## Linux 正式分发方向（待发布）
+## 已发布的 RC9 与本目录源码模板
 
-后续 Linux 版 RPNH 以官方 npm 包及其命令作为安装和更新入口。该入口应调用原 RPNH 安装／更新流程，提供对应发行材料并让实际应用版本完成切换；只更新本薄入口包不等于升级 RPNH。原 Python 内核、生命周期确认与用户数据保护继续由原机制负责。
+[RPNH v0.1.0rc9](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc9) 是当前 GitHub 预发行。已发布的 npm 包是 [`rpnh-bootstrap@0.1.0-rc.9`](https://www.npmjs.com/package/rpnh-bootstrap/v/0.1.0-rc.9)；发布后 `latest` 与 `next` 均指向 RC9。在 WSL2 Linux x86_64／持久 CPython 3.12.13 的 Basic 范围内，`npm exec --package=rpnh-bootstrap -- rpnh` 已通过匿名全新安装、激活、首次配置与离线 doctor 检查。验收不涵盖升级、回滚、其他平台或可选前端。 前置条件见[安装指南](../../docs/guides/linux-npm-candidate_ZH.md)。仅更新 npm 引导包不会升级 RPNH 应用；原安装器与生命周期确认仍负责实际安装更新。
 
-正式包名、版本映射、前置依赖和面向用户的完整命令由发行阶段确定并验证。下面的 private tarball / 显式 wheel 示例用于当前候选验证；公网安装与真正的 RPNH 跨发行版本更新尚未完成，不能据此写成已发布能力。
-
-此源码包只启动显式选定 RPNH wheel 中的 bootstrap 模块，不再捆绑第二份 Python 安装代码，也不管理应用版本。wheel 同时提供 Python 命令 `rpnh-bootstrap`；正式应用命令仍是 `rpnh`。
-
-当前包 private、未发布。使用本地 npm tarball；不承诺公网包名或正式发行。需要 Node 20+、已安装 uv、固定持久控制器 Python，以及包含 `cpn.rpnh.bootstrap_entry` 的准确 RPNH wheel。缺该模块的旧 wheel 不能使用新入口。
+仓库内的 npm 源码模板是私有包。下列是本地模板 tarball 的验证方式，不是 npm 公网包的安装命令。需要 Node.js 20+、`uv`、持久控制器 Python，以及包含 `cpn.rpnh.bootstrap_entry` 的匹配 RPNH wheel。缺该模块的旧 wheel 不能使用此入口。模板仅调用指定 wheel，不捆绑第二份安装器，也不管理应用版本。wheel 同时提供 Python 命令 `rpnh-bootstrap`，安装后的应用命令为 `rpnh`。
 
 构建和调用示例见[英文说明](README.md)。示例 wheel 文件名只作占位，必须替换为实际构建文件。`--release` 必须对应原 published 安装器支持的 metadata/assets；本包不会生成或虚构发行源，本地控制器 wheel 也不替代发行资产。分隔符前 `--offline` 仅禁止 uv 网络，不会把原发行读取变成离线；离线测试的 metadata 传输替代须明确披露。
 
@@ -37,6 +33,6 @@ Python使用 `-I -m`，定位wheel模块时忽略调用目录和PYTHONPATH，避
 
 运行 `prepare_first_run_candidate.py`，传入同版本的核心 wheel、启动器源码、许可证、npm 版本及新的输出目录。应用版本 `0.1.0rc9` 对应 npm 版本 `0.1.0-rc.9`。
 
-使用 `--public-cli` 组装公开包 `rpnh`，它提供 `rpnh` 命令并使用 `latest` 标签。已有的 `--public-preview` 选项组装包含两个命令的 `rpnh-bootstrap` 包，目标标签为 `next`。默认输出为私有候选包。两个公开包均使用原安装器和相应版本的 GitHub Release 附件。
+`--public-cli` 只组装 `rpnh` tarball，其中的命令为 `rpnh`，npm 发布元数据目标为 `latest`；组装不等于发布。以 `rpnh` 为包名的 RC9 发布尝试被拒绝。已发布的包是 `rpnh-bootstrap`。`--public-preview` 组装该包，包含 `rpnh` 和 `rpnh-bootstrap` 两个命令，发布元数据目标为 `next`。默认输出为私有候选包。两种组装方式都使用原安装器与匹配的 GitHub Release 附件。
 
 运行 `python packaging/npm-bootstrap/test-prepare-first-run.py` 可检查离线组装行为。

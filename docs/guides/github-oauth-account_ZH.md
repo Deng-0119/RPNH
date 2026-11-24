@@ -10,7 +10,7 @@ metadata:
   status: source-candidate-not-published
 ---
 
-本次发行候选保留既有Linux/Viewer修复，核心候选为 `0.1.0rc5`，可选HOST为 `0.0.8`，实现revision仍为 `oauth-candidate-2`。从 `packaging/github-oauth-host` 可独立构建HOST。下方0.0.1为限定真实账户调用证据，0.0.2仅为离线/PTY证据，不代表0.0.8已完成新的真实账户测试；配套制品是否已提供请查对应GitHub Release。
+本文记录历史可选组合，与不安装 HOST 的 RC9 Basic 分开。RC5 配套保留既有 Linux／Viewer 修复，核心候选为 `0.1.0rc5`，可选HOST为 `0.0.8`，实现revision仍为 `oauth-candidate-2`。从 `packaging/github-oauth-host` 可独立构建HOST。下方0.0.1为限定真实账户调用证据，0.0.2仅为离线/PTY证据，不代表0.0.8已完成新的真实账户测试；配套制品是否已提供请查对应GitHub Release。
 
 [English](github-oauth-account.md) | [中文](github-oauth-account_ZH.md)
 
