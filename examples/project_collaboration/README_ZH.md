@@ -8,6 +8,38 @@
 
 在已记录旅程中，两端独立项目都由 stock AgentLoop agent 完成原任务；仅字面量适配输出路径后，各通过三个原断言。原验收器可见，未运行上游容器／test.sh。17 张原始 Viewer 图呈现两端完成态、业务执行前的协作历史与两层 PN。
 
+## 在 WSL2 上运行 RC9 数据合并案例
+
+1. 用公开 npm 包安装 RC9。[npm 安装说明](../../README_ZH.md)列出了 Node.js、npm、uv 和 CPython 的要求。11 月 24 日实测时，默认命令取得 `rpnh-bootstrap@0.1.0-rc.9`，激活 RPNH `0.1.0rc9`。
+2. 从同一 Git 标签获取案例，其中包含项目种子、JSON／CSV／Parquet 输入和原验收器。受管 Basic 环境可以打开驱动帮助。项目预检还要求 pandas 和 PyArrow。从源码树以外的全新工作目录开始，用 CPython 3.12.13 创建独立的案例环境，装入同一个发行 wheel。
+
+```sh
+git clone --depth 1 --branch v0.1.0rc9 https://github.com/Deng-0119/RPNH.git rc9-src
+EXAMPLE_SOURCE="$(cd rc9-src && pwd)"
+python3 -m venv --copies .rc9-case
+PYTHON="$PWD/.rc9-case/bin/python"
+uv pip install --python "$PYTHON" \
+  'https://github.com/Deng-0119/RPNH/releases/download/v0.1.0rc9/rpnh_harness-0.1.0rc9-py3-none-any.whl' \
+  'pandas==3.0.3' 'pyarrow==24.0.0'
+SCENARIO="$EXAMPLE_SOURCE/examples/project_collaboration/scenario"
+env -u PYTHONPATH "$PYTHON" "$SCENARIO/operate_project.py" --help
+```
+
+运行前，将 `PROJECT_RUN_ROOT` 设为尚未创建的短绝对路径，将 `APPROVED_PROFILE` 设为已获准用于这两次运行的本地模型配置。驱动在同一台机器上创建两个项目。第二个项目在第一个项目产出答案前导入合并后的定义，然后两个项目分别使用自己的实现者和审阅者完成原题。
+
+```sh
+env -u PYTHONPATH "$PYTHON" "$SCENARIO/operate_project.py" \
+  --root "$PROJECT_RUN_ROOT" --package "$SCENARIO/generated/seed-project.zip" \
+  --definitions "$SCENARIO/generated" --existing-profile "$APPROVED_PROFILE" \
+  --conflict-choice local --authorized-model-run
+```
+
+两个项目均交付了 `merged_users.parquet`、`conflicts.json`、实现代码和审阅报告。两边各通过三条原始 Python 断言，仅适配了输出路径。上游容器和 `test.sh` 未运行。[RC9 结果和 Viewer 证据](verification/rc9-wsl2/result.json)分别记录了 npm 安装和同版发行 wheel 的真实业务结果。
+
+[第一个项目的业务网](verification/rc9-wsl2/source/business-pn.png) · [实现者的执行记录](verification/rc9-wsl2/source/implementer-firing.png) · [第二个项目的业务网](verification/rc9-wsl2/receiver/business-pn.png) · [审阅者的执行记录](verification/rc9-wsl2/receiver/reviewer-firing.png)
+
+[第一个项目的合并检查点](verification/rc9-wsl2/source/merge-checkpoint.png)显示了第 583 个事件位置的采用状态。本次在该检查点未能打开贡献者明细。[结果记录](verification/rc9-wsl2/result.json)保留了该检查点与原合并版本、两个父版本及采用回执的对应关系。
+
 ## 实际 Viewer：项目与两层 PN
 
 2026-10-13 原生检查窗口的实际官方 Viewer 图。 [捕获来源](figures/provenance.json)记录原图字节与观察。

@@ -1,0 +1,179 @@
+{
+  "date": "2026-11-24",
+  "platform": "WSL2 Linux x86_64",
+  "release": "v0.1.0rc9",
+  "release_commit": "5e3fce8eeca6241a3113d7bb76511bdf08dca713",
+  "case": "Terminal-Bench 2 / multi-source-data-merger",
+  "npm": {
+    "entry": "npm exec --package=rpnh-bootstrap -- rpnh",
+    "package": "rpnh-bootstrap@0.1.0-rc.9",
+    "installed_application": "0.1.0rc9",
+    "frontend": "basic",
+    "install_seconds": 91.67,
+    "driver_help_exit": 0,
+    "case_preflight_missing": [
+      "pandas",
+      "pyarrow"
+    ]
+  },
+  "business_environment": {
+    "kind": "separate environment, same published release wheel",
+    "python": "3.12.13",
+    "rpnh-harness": "0.1.0rc9",
+    "pandas": "3.0.3",
+    "pyarrow": "24.0.0",
+    "model": "gpt-5.6-terra",
+    "reasoning_effort": "high",
+    "driver_and_both_project_hosts_imported_release_from_site_packages": true
+  },
+  "collaboration": {
+    "first_conflicts": 2,
+    "merge_revision": "resource_version:31c3093f54385c6d9f4086f02ebbb780",
+    "parent_revisions": [
+      "resource_version:ce0c3d7ca61f5cb3ba70995578019cc0",
+      "resource_version:1d6c6e14e180507583d2c8004b977a8d"
+    ],
+    "branch_acceptance_receipt": "resource_version:bdebbf70701f5b9b86a7caef53b9d047",
+    "runtime_adoption_receipt": "resource_version:58420a0af7e05a099b30cc39ce18a6a6",
+    "receiver_source_revision": "resource_version:31c3093f54385c6d9f4086f02ebbb780",
+    "receiver_definition_equal": true,
+    "receiver_has_disjoint_element_ids": true,
+    "receiver_imported_before_first_business_run": true
+  },
+  "verification": {
+    "original_test_sh_executed": false,
+    "grader_visibility": "visible",
+    "path_relocation": "Four output path literals in the original Python assertions",
+    "independent_fixture_review": {
+      "input_rows": 6,
+      "unique_users": 4,
+      "output_columns": 5,
+      "field_conflicts": 3
+    }
+  },
+  "projects": {
+    "source": {
+      "terminal": "terminal",
+      "provider_dispatches": 8,
+      "registered_responses": 8,
+      "settled_calls": 8,
+      "post_limit_excess_calls": 0,
+      "exported_files": 21,
+      "assertions": [
+        {
+          "test": "test_output_files_exist",
+          "status": "passed"
+        },
+        {
+          "test": "test_merged_data_exact_values",
+          "status": "passed"
+        },
+        {
+          "test": "test_conflict_report_values",
+          "status": "passed"
+        }
+      ],
+      "reviewer": "accepted",
+      "outputs": [
+        "source/merged_users.parquet",
+        "source/conflicts.json"
+      ]
+    },
+    "receiver": {
+      "terminal": "terminal",
+      "provider_dispatches": 10,
+      "registered_responses": 10,
+      "settled_calls": 10,
+      "post_limit_excess_calls": 0,
+      "exported_files": 19,
+      "assertions": [
+        {
+          "test": "test_output_files_exist",
+          "status": "passed"
+        },
+        {
+          "test": "test_merged_data_exact_values",
+          "status": "passed"
+        },
+        {
+          "test": "test_conflict_report_values",
+          "status": "passed"
+        }
+      ],
+      "reviewer": "accepted",
+      "outputs": [
+        "receiver/merged_users.parquet",
+        "receiver/conflicts.json"
+      ]
+    }
+  },
+  "viewer": {
+    "source": {
+      "nodes": 5,
+      "arcs": 6,
+      "settled_business_firings": 2,
+      "native_screenshots": [
+        "source/business-pn.png",
+        "source/implementer-firing.png",
+        "source/merge-checkpoint.png"
+      ]
+    },
+    "receiver": {
+      "nodes": 5,
+      "arcs": 6,
+      "settled_business_firings": 2,
+      "native_screenshots": [
+        "receiver/business-pn.png",
+        "receiver/reviewer-firing.png"
+      ],
+      "imported_project_contributions": "No exact local adoption receipt at this cut; no source contributors attributed to the receiver."
+    },
+    "execution_nets_seen_for_each_role": [
+      "file-materialization-v1",
+      "workspace-finalization-v1"
+    ],
+    "source_merge_checkpoint": {
+      "selector": {
+        "net_ref": {
+          "entity_type": "net_instance/v1",
+          "logical_id": "net_instance:54f4009ed93652798aff6711beb5b023",
+          "version_id": "net_instance_version:4a4eebaa7b445821a4e655c5cafd37b4"
+        },
+        "checkpoint_ref": {
+          "entity_type": "marking_checkpoint/v1",
+          "logical_id": "marking_checkpoint:d4c47b370e20466bb6e4bdb3546dcfd5",
+          "version_id": "marking_checkpoint_version:6dbae023fa754982a1a816fe35073dab"
+        },
+        "cut": 583
+      },
+      "adoption": {
+        "status": "current_at_cut",
+        "coverage": "complete",
+        "cut": 583,
+        "scope": "task_canonical_adoption_events_through_cut",
+        "current_net_ref": {
+          "entity_type": "net_instance/v1",
+          "logical_id": "net_instance:54f4009ed93652798aff6711beb5b023",
+          "version_id": "net_instance_version:4a4eebaa7b445821a4e655c5cafd37b4"
+        },
+        "records": [
+          {
+            "event_id": "event:98f2c193b8ee449185948324b7e5e697",
+            "recorded_ordinal": 572,
+            "visible_at_commit": 583,
+            "net_ref": {
+              "entity_type": "net_instance/v1",
+              "logical_id": "net_instance:54f4009ed93652798aff6711beb5b023",
+              "version_id": "net_instance_version:4a4eebaa7b445821a4e655c5cafd37b4"
+            }
+          }
+        ]
+      }
+    },
+    "source_contributions_panel": "Unavailable for the merge checkpoint in this release run. The exact HTTP request disconnected after 5.05 s with no status. RC9 closes sockets that exceed its default 5 s request deadline. The native checkpoint frame itself returned HTTP 200."
+  },
+  "observed_issues": [
+    "npm Basic preflight reported missing pandas and pyarrow; the managed installation was preserved.",
+    "One receiver reviewer workspace inspection exited 1 with KeyError(user_id). Its subsequent inspection succeeded before the reviewer accepted the result."
+  ]
+}

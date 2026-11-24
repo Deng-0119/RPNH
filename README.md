@@ -107,6 +107,8 @@ No provider is preselected.
 
 ## See RPNH in a complete project
 
+Install RPNH with the npm command above, then get the [RC9 project example and its data](examples/project_collaboration/README.md#run-the-rc9-data-merger-on-wsl2). Two local projects independently ran the data merger and passed 3/3 assertions each. The business run used a separate environment with the RC9 release wheel, pandas and PyArrow.
+
 | Goal | Example | What to expect |
 |---|---|---|
 | Combine agents with existing code | [Hybrid summary](examples/hybrid_summary/README.md) | Agent → native calculation → Agent; scripted by default, with an explicitly selected live-model route |

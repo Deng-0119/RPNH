@@ -8,6 +8,38 @@ The business PN has two stock `rpnh/default-agent/v1` agents: **implementer** wr
 
 In the recorded journey, both independent projects completed the original task with stock AgentLoop agents; each passed all three original assertions after literal output-path adaptation. The original verifier was visible and the upstream container/test.sh was not run. The 17 original Viewer captures show both completed projects, pre-execution collaboration history and the two PN layers.
 
+## Run the RC9 data merger on WSL2
+
+1. Install the public RC9 application. The [npm installation guide](../../README.md#quick-start-install-from-npm) lists the Node.js, npm, uv and CPython prerequisites. The default npm command installed `rpnh-bootstrap@0.1.0-rc.9` and activated RPNH `0.1.0rc9` in the November 24 run.
+2. Get the example from the matching Git tag. It contains the project seed, JSON/CSV/Parquet inputs, and the original verifier. The managed Basic environment passed the driver help check. The project preflight also requires pandas and PyArrow. From an empty working directory outside the checkout, use CPython 3.12.13 to prepare a separate case environment with the same release wheel.
+
+```sh
+git clone --depth 1 --branch v0.1.0rc9 https://github.com/Deng-0119/RPNH.git rc9-src
+EXAMPLE_SOURCE="$(cd rc9-src && pwd)"
+python3 -m venv --copies .rc9-case
+PYTHON="$PWD/.rc9-case/bin/python"
+uv pip install --python "$PYTHON" \
+  'https://github.com/Deng-0119/RPNH/releases/download/v0.1.0rc9/rpnh_harness-0.1.0rc9-py3-none-any.whl' \
+  'pandas==3.0.3' 'pyarrow==24.0.0'
+SCENARIO="$EXAMPLE_SOURCE/examples/project_collaboration/scenario"
+env -u PYTHONPATH "$PYTHON" "$SCENARIO/operate_project.py" --help
+```
+
+For the business run, set `PROJECT_RUN_ROOT` to a fresh, short absolute path and `APPROVED_PROFILE` to your authorized local execution profile. The model and account must be approved for both runs. The driver starts two local projects on this machine. The second imports the merged project definition before the first produces any answers. Each project runs its own implementer and reviewer.
+
+```sh
+env -u PYTHONPATH "$PYTHON" "$SCENARIO/operate_project.py" \
+  --root "$PROJECT_RUN_ROOT" --package "$SCENARIO/generated/seed-project.zip" \
+  --definitions "$SCENARIO/generated" --existing-profile "$APPROVED_PROFILE" \
+  --conflict-choice local --authorized-model-run
+```
+
+Both projects produced `merged_users.parquet`, `conflicts.json`, an implementation and a review. Each passed the three original Python assertions with only the output paths adapted. The full upstream container and `test.sh` were outside this run. The [RC9 results and Viewer evidence](verification/rc9-wsl2/result.json) record the release-wheel business run separately from the npm installation check.
+
+[Source business net](verification/rc9-wsl2/source/business-pn.png) · [Source implementer firing](verification/rc9-wsl2/source/implementer-firing.png) · [Receiver business net](verification/rc9-wsl2/receiver/business-pn.png) · [Receiver reviewer firing](verification/rc9-wsl2/receiver/reviewer-firing.png)
+
+The [source merge checkpoint](verification/rc9-wsl2/source/merge-checkpoint.png) shows adoption at cut 583. Its detailed contribution panel was unavailable in this run. The [result record](verification/rc9-wsl2/result.json) ties that checkpoint to the original two-parent merge and its adoption receipt.
+
 ## Actual Viewer: project and two PN layers
 
 Actual official Viewer images from the 2026-10-13 native inspection window. [Capture provenance](figures/provenance.json) records the original image bytes and observations.

@@ -94,6 +94,8 @@ rpnh net --run "$RUN_DIR" --view --no-open
 
 ## 看一个完整项目
 
+先按上面的 npm 命令安装 RPNH，再获取 [RC9 项目案例和数据](examples/project_collaboration/README_ZH.md#在-wsl2-上运行-rc9-数据合并案例)。两个本地项目分别完成了数据合并，各通过 3/3 条断言。业务运行使用装有 RC9 发行 wheel、pandas 和 PyArrow 的独立环境。
+
 | 目标 | 案例 | 可以看到什么 |
 |---|---|---|
 | 将 Agent 与已有代码组合 | [混合汇总](examples/hybrid_summary/README_ZH.md) | Agent → 原生计算 → Agent；默认脚本化，真实模型路线需显式选择 |
