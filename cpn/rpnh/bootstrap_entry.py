@@ -25,7 +25,25 @@ def default_root():
     return base / "rpnh"
 
 
-def main(argv=None, *, observe=None, update_main=None, base_python=None, register_command=None, platform_observe=None):
+def first_run_setup(root, *, run=subprocess.run):
+    """After activation, hand off to the installed CLI's existing setup."""
+    from .command_registration import original_installation
+
+    root = root.expanduser().absolute()
+    target = root / "bin" / "rpnh"
+    if root != root.resolve() or target.parent.is_symlink():
+        raise ValueError("Select the real managed root and bin directory")
+    with original_installation(root):
+        if target.is_symlink() or not target.is_file() or not os.access(target, os.X_OK):
+            raise ValueError("Original managed dispatcher is not an executable regular file")
+    # Do not retain the short validation lease during interactive setup.
+    # As for other CLI invocations, the dispatcher resolves current at launch.
+    code = run([str(target), "init"], check=False).returncode
+    return code if code >= 0 else 128 - code
+
+
+def main(argv=None, *, observe=None, update_main=None, base_python=None, register_command=None,
+         platform_observe=None, setup=None):
     p = argparse.ArgumentParser(description=__doc__)
     runtime_choice = p.add_mutually_exclusive_group()
     runtime_choice.add_argument("--python", help="explicit persistent base Python; Basic convenience path")
@@ -44,9 +62,30 @@ def main(argv=None, *, observe=None, update_main=None, base_python=None, registe
     p.add_argument("--combination")
     p.add_argument("--inspect-only", action="store_true")
     p.add_argument("--json", action="store_true")
+    p.add_argument("--first-run", action="store_true",
+                   help="after a fresh interactive Basic installation, start the built-in setup")
     o = p.parse_args(argv)
     if o.root is None:
         o.root = default_root()
+    if o.first_run:
+        if (o.inspect_only or o.json or o.candidate_wheel is not None or o.bin_dir is not None
+                or o.runtime_bindings is not None or o.components is not None or o.extra
+                or o.combination is not None or o.select not in (None, "basic")):
+            p.error("--first-run is only for a fresh interactive Basic installation")
+        if not sys.platform.startswith("linux") or not sys.stdin.isatty() or not sys.stdout.isatty():
+            p.error("--first-run requires a Linux terminal; no installation was attempted")
+        try:
+            o.root = o.root.expanduser().absolute()
+            if o.root != o.root.resolve():
+                p.error("--first-run requires a real installation root without symbolic links")
+            o.root.lstat()
+        except FileNotFoundError:
+            pass
+        except (OSError, RuntimeError) as error:
+            p.error(f"could not check installation root: {error}")
+        else:
+            p.error("installation root already exists; use the existing managed command")
+        o.select = "basic"
     if o.release is None and o.candidate_wheel is None:
         from cpn import __version__
         o.release = "v" + __version__
@@ -100,8 +139,23 @@ def main(argv=None, *, observe=None, update_main=None, base_python=None, registe
         if o.json:
             args.append("--json")
         code = update_main(args)
-        if code != 0 or o.bin_dir is None:
+        if code != 0:
             return code
+        if o.first_run:
+            try:
+                result = (setup or first_run_setup)(o.root)
+            except KeyboardInterrupt:
+                result = 130
+            except (OSError, ValueError, RuntimeError) as error:
+                print("RPNH installation remains in place; could not start setup: " + str(error),
+                      file=sys.stderr)
+                return 4
+            if result:
+                print("RPNH installation remains in place; rerun init to finish setup.",
+                      file=sys.stderr)
+            return result
+        if o.bin_dir is None:
+            return 0
         registration = register_command
         if registration is None:
             from .command_registration import register as registration
