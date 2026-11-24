@@ -11,6 +11,8 @@ In the recorded journey, both independent projects completed the original task w
 ## Run the RC9 data merger on WSL2
 
 1. Install the public RC9 application. The [npm installation guide](../../README.md#quick-start-install-from-npm) lists the Node.js, npm, uv and CPython prerequisites. The default npm command installed `rpnh-bootstrap@0.1.0-rc.9` and activated RPNH `0.1.0rc9` in the November 24 run.
+
+   To reproduce this run, pin the bootstrap with `npm exec --package=rpnh-bootstrap@0.1.0-rc.9 -- rpnh`. Before continuing, check that the managed `rpnh --version` reports `0.1.0rc9`. If it does not, do not record the run as RC9.
 2. Get the example from the matching Git tag. It contains the project seed, JSON/CSV/Parquet inputs, and the original verifier. The managed Basic environment passed the driver help check. The project preflight also requires pandas and PyArrow. From an empty working directory outside the checkout, use CPython 3.12.13 to prepare a separate case environment with the same release wheel.
 
 ```sh
