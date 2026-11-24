@@ -129,8 +129,8 @@ cd "$TEST_ROOT"
 
 For the RC9 source, the printed version is `0.1.0rc9`. Verify the selected source revision as well. The printed package path must be in this environment's `site-packages`, not the checkout. Use `scripts/check_installed_docs.py` from the source bundle for the guarded configuration smoke described in [development](development.md). That smoke does not validate a model or an interactive terminal.
 
-A wheel built from RC8 contains named reusable example exports
-plus the default provider-neutral cross-host task. Exporting is a zero-model
+The RC9 wheel lists the default provider-neutral cross-host task and named reusable exports. Run
+`rpnh examples list` and select an entry marked `exportable: true`. Exporting is a zero-model
 file operation and does not require the source checkout. The older rc1 wheel
 has only the adapter task. For current named exports, use
 `--example native_plugin`, `hybrid_summary`, `compose_serial` or `package_reuse`;

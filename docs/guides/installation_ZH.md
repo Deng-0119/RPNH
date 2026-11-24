@@ -122,7 +122,7 @@ cd "$TEST_ROOT"
 
 RC9 源码输出版本应为 `0.1.0rc9`。还须核对实际选定的源码版本。包路径应来自新环境的 `site-packages`，不能来自源码目录。[开发维护](development_ZH.md)介绍源码包内 `scripts/check_installed_docs.py` 的受限零模型配置检查。它不验证模型和交互式终端。
 
-从本源码候选版构建的 wheel 包含命名可复用案例以及默认的 provider-neutral 跨宿主任务。
+RC9 wheel 的案例目录包含默认的 provider-neutral 跨宿主任务以及命名可复用案例。运行 `rpnh examples list`，选择标记为 `exportable: true` 的条目。
 导出只是零模型文件操作，不需要源码 checkout。旧 rc1 wheel 只包含 adapter 任务。当前命名
 导出可使用 `--example native_plugin`、`hybrid_summary`、`compose_serial` 或 `package_reuse`；
 详见[导出与修改](examples_ZH.md#导出案例并改成自己的应用)与
