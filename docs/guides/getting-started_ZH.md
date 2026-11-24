@@ -28,17 +28,17 @@ metadata:
 公开 RC9 为预发行版，需要 **Node.js 20+（含 npm）**、PATH 中的 `uv` 和**持久 CPython 3.12.13（含 `venv`）**，并让 PATH 中的 `python3` 指向该解释器。此安装路径覆盖 **WSL2 Linux x86_64／Basic**。
 
 ```bash
-npm exec --package=rpnh-bootstrap@0.1.0-rc.9 -- rpnh
+npm exec --package=rpnh-bootstrap -- rpnh
 ```
 
 在终端中运行，按提示确认 npm 首次下载，再输入 `UPDATE` 安装并激活 Basic。随后自动进入原有 `rpnh init`，填写自己的 provider 和精确模型配置，再选择 `basic`。初始化只保存配置，不登录或调用模型。后续命令使用激活后打印的受管 `rpnh` 启动器路径。
 
-RC9 已发布到 npm 的 `next` 通道。上方命令固定安装已通过匿名冷安装验收的 RC9 预发行版。
+在新环境中，上方命令通过 npm 的 `latest` 标签取得最新公开版本。本次发布后，`latest` 和 `next` 均指向 `0.1.0-rc.9`。
 
 如需全局安装命令：
 
 ```bash
-npm install -g rpnh-bootstrap@0.1.0-rc.9
+npm install -g rpnh-bootstrap
 rpnh
 ```
 

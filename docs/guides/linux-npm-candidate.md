@@ -21,17 +21,17 @@ metadata:
 For the public RC9 prerelease, use **Node.js 20+ with npm**, `uv` on PATH, and **persistent CPython 3.12.13 with `venv`** available as `python3` on PATH. This installation path covers **WSL2 Linux x86_64 / Basic**.
 
 ```bash
-npm exec --package=rpnh-bootstrap@0.1.0-rc.9 -- rpnh
+npm exec --package=rpnh-bootstrap -- rpnh
 ```
 
 Run in a terminal. Confirm npm's first download if prompted, then type `UPDATE` to install and activate Basic. The original `rpnh init` starts automatically. Enter your provider and exact model configuration, then choose `basic`. Initialization saves configuration without signing in or calling a model. Use the managed `rpnh` launcher path printed after activation for later commands.
 
-RC9 is published on the npm `next` channel. The command above pins the prerelease verified in a fresh anonymous installation.
+In a fresh environment this command selects the newest public version through the npm `latest` tag. For this release both `latest` and `next` point to `0.1.0-rc.9`.
 
 To install the command globally:
 
 ```bash
-npm install -g rpnh-bootstrap@0.1.0-rc.9
+npm install -g rpnh-bootstrap
 rpnh
 ```
 
