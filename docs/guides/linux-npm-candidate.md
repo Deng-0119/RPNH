@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: linux-npm-candidate_ZH.md
-  revision: "2026-11-22.1"
+  revision: "2026-11-24.1"
   status: source-reviewed
 ---
 
@@ -16,20 +16,28 @@ metadata:
 
 ## Current distribution status
 
-[RPNH v0.1.0rc8](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc8) is a GitHub prerelease. [`rpnh-bootstrap@0.1.0-rc.8`](https://www.npmjs.com/package/rpnh-bootstrap/v/0.1.0-rc.8) is published on npm. Anonymous GitHub and npm installation, activation and version readback passed on WSL2 x86_64 / CPython 3.13.12 (Basic). Use Node.js 20+ with npm, `uv` on PATH, and a persistent CPython with `venv`. At first publication, both `next` and `latest` pointed to RC8; this is not a stable release.
+[RPNH v0.1.0rc9](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc9) is a GitHub prerelease with [`rpnh-bootstrap@0.1.0-rc.9`](https://www.npmjs.com/package/rpnh-bootstrap/v/0.1.0-rc.9) on npm.
+
+For the public RC9 prerelease, use **Node.js 20+ with npm**, `uv` on PATH, and **persistent CPython 3.12.13 with `venv`** available as `python3` on PATH. This installation path covers **WSL2 Linux x86_64 / Basic**.
 
 ```bash
-npx rpnh-bootstrap@0.1.0-rc.8
+npm exec --package=rpnh-bootstrap@0.1.0-rc.9 -- rpnh
 ```
 
-In a terminal, confirm npm's first-time download if prompted, then type `UPDATE` to install and activate Basic. Use the managed `rpnh` launcher path printed after activation. This does not run `rpnh init`, sign in or call a model.
+Run in a terminal. Confirm npm's first download if prompted, then type `UPDATE` to install and activate Basic. The original `rpnh init` starts automatically. Enter your provider and exact model configuration, then choose `basic`. Initialization saves configuration without signing in or calling a model. Use the managed `rpnh` launcher path printed after activation for later commands.
 
-Global bootstrap alternative:
+RC9 is published on the npm `next` channel. The command above pins the prerelease verified in a fresh anonymous installation.
+
+To install the command globally:
 
 ```bash
-npm install -g rpnh-bootstrap@0.1.0-rc.8
-rpnh-bootstrap
+npm install -g rpnh-bootstrap@0.1.0-rc.9
+rpnh
 ```
+
+## Earlier release evidence
+
+[RC8](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc8) passed anonymous GitHub and npm installation, activation and version readback on WSL2 x86_64 / CPython 3.13.12 (Basic). At RC8 first publication, both npm `next` and `latest` pointed to `0.1.0-rc.8`. These results remain specific to RC8.
 
 The [rc6 GitHub prerelease](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc6) contains the matching Basic Linux x86_64 application wheel, CPython 3.12/3.13 dependency wheels, two v3 sidecars, and an npm-format GitHub attachment. The exact candidate passed scoped offline CLI checks. The first anonymous release metadata readback succeeded, but its download attempt timed out after the GitHub redirect; that original failure is retained. The formal rc6 npm-format tgz subsequently passed A4 installation and activation on WSL2 / CPython 3.13.12 Basic. This is historical RC6 evidence, not a registry publication for RC6. This does not qualify upgrade, rollback, optional frontends, or macOS.
 

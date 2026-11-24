@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: installation.md
-  revision: "2026-11-22.1"
+  revision: "2026-11-24.1"
   status: source-installation
   basis: "unified main; host differences explicitly labelled"
 ---
@@ -17,26 +17,28 @@ metadata:
 
 ## 通过 npm 安装（推荐）
 
-公开 RC8 为预发行版，需要 **Node.js 20+（含 npm）**、PATH 中的 `uv` 和支持 `venv` 的持久 CPython。单命令路径已在 **WSL2 Linux x86_64／CPython 3.13.12** 的 Basic 配置通过匿名验收。
+公开 RC9 为预发行版，需要 **Node.js 20+（含 npm）**、PATH 中的 `uv` 和**持久 CPython 3.12.13（含 `venv`）**，并让 PATH 中的 `python3` 指向该解释器。此安装路径覆盖 **WSL2 Linux x86_64／Basic**。
 
 ```bash
-npx rpnh-bootstrap@0.1.0-rc.8
+npm exec --package=rpnh-bootstrap@0.1.0-rc.9 -- rpnh
 ```
 
-在终端中按提示确认 npm 首次下载，再输入 `UPDATE` 安装并激活 Basic。激活后使用程序打印的受管 `rpnh` 启动器路径。此流程不运行 `rpnh init`，不登录或调用模型。
+在终端中运行，按提示确认 npm 首次下载，再输入 `UPDATE` 安装并激活 Basic。随后自动进入原有 `rpnh init`，填写自己的 provider 和精确模型配置，再选择 `basic`。初始化只保存配置，不登录或调用模型。后续命令使用激活后打印的受管 `rpnh` 启动器路径。
 
-如需全局安装引导器，也可分两步：
+RC9 已发布到 npm 的 `next` 通道。上方命令固定安装已通过匿名冷安装验收的 RC9 预发行版。
+
+如需全局安装命令：
 
 ```bash
-npm install -g rpnh-bootstrap@0.1.0-rc.8
-rpnh-bootstrap
+npm install -g rpnh-bootstrap@0.1.0-rc.9
+rpnh
 ```
 
 ## 目标与前提
 从明确指定的 RPNH 源码或 wheel 安装，不调用模型。当前运行支持范围仍是 **Linux（包括 WSL2）**，不支持原生 Windows 和 macOS。`pyproject.toml` 声明 Python `>=3.11`，不等于每个 Python/平台组合均已测试；运行时涉及 Unix socket、POSIX 进程控制和 Linux 进程检查。basic 文本前端不需要 Codex 或 Node。
 
 发行包为 `rpnh-harness`，导入包为 `cpn`，命令为 `rpnh`。
-RC8 源码声明版本为 `0.1.0rc8`。已发布的 Linux／WSL2 Basic 安装方式、固定 npm 版本和实测环境见 [RC8 安装及支持范围](linux-npm-candidate_ZH.md)。源码、GitHub wheel 和 npm 引导包不是同一类产物；请记录实际安装的来源。
+RC9 源码声明版本为 `0.1.0rc9`。已发布的 Linux／WSL2 Basic 安装方式、固定 npm 版本和实测环境见 [RC9 安装及支持范围](linux-npm-candidate_ZH.md)。请记录实际安装的源码、GitHub wheel 或 npm 引导包来源。
 
 历史 [v0.1.0rc3 发行](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc3)包含 Python wheel 和 stock DSH operator tarball，不含 11 月 1 日的后续源码修正。使用历史适配器前请看[兼容性说明](compatibility_ZH.md)。
 
@@ -118,7 +120,7 @@ cd "$TEST_ROOT"
 "$TEST_ROOT/venv/bin/python" -c 'import cpn; from importlib.metadata import version; print(version("rpnh-harness")); print(cpn.__file__)'
 ```
 
-RC8 源码输出版本应为 `0.1.0rc8`；还须核对实际选定的源码版本，而不是只看版本字符串。包路径应来自新环境的 `site-packages`，不能来自源码目录。[开发维护](development_ZH.md)介绍源码包内 `scripts/check_installed_docs.py` 的受限零模型配置检查；它不验证模型和交互式终端。
+RC9 源码输出版本应为 `0.1.0rc9`。还须核对实际选定的源码版本。包路径应来自新环境的 `site-packages`，不能来自源码目录。[开发维护](development_ZH.md)介绍源码包内 `scripts/check_installed_docs.py` 的受限零模型配置检查。它不验证模型和交互式终端。
 
 从本源码候选版构建的 wheel 包含命名可复用案例以及默认的 provider-neutral 跨宿主任务。
 导出只是零模型文件操作，不需要源码 checkout。旧 rc1 wheel 只包含 adapter 任务。当前命名

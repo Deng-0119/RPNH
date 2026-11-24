@@ -6,9 +6,9 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: getting-started_ZH.md
-  revision: "2026-11-22.1"
+  revision: "2026-11-24.1"
   status: source-reviewed
-  basis: "workflow commands retain public source b16ecce83ba603b3c15f1c770bce172d4f44f88e; release version and navigation checked for public v0.1.0rc8; no new runtime validation"
+  basis: "workflow commands retain public source b16ecce83ba603b3c15f1c770bce172d4f44f88e. Release version and navigation updated for public v0.1.0rc9. No new runtime validation"
 ---
 
 [English](getting-started.md) | [中文](getting-started_ZH.md)
@@ -28,31 +28,32 @@ record a new installation, runtime test or provider test.
 
 ### Published npm quick install
 
-For the public RC8 prerelease use **Node.js 20+ with npm**, `uv` on PATH, and a persistent CPython with `venv`. The one-command path was verified anonymously for Basic on **WSL2 Linux x86_64 / CPython 3.13.12**.
+For the public RC9 prerelease, use **Node.js 20+ with npm**, `uv` on PATH, and **persistent CPython 3.12.13 with `venv`** available as `python3` on PATH. This installation path covers **WSL2 Linux x86_64 / Basic**.
 
 ```bash
-npx rpnh-bootstrap@0.1.0-rc.8
+npm exec --package=rpnh-bootstrap@0.1.0-rc.9 -- rpnh
 ```
 
-In a terminal, confirm npm's first-time download if prompted, then type `UPDATE` to install and activate Basic. Use the managed `rpnh` launcher path printed after activation. This does not run `rpnh init`, sign in or call a model.
+Run in a terminal. Confirm npm's first download if prompted, then type `UPDATE` to install and activate Basic. The original `rpnh init` starts automatically. Enter your provider and exact model configuration, then choose `basic`. Initialization saves configuration without signing in or calling a model. Use the managed `rpnh` launcher path printed after activation for later commands.
 
-To install the bootstrap command globally instead:
+RC9 is published on the npm `next` channel. The command above pins the prerelease verified in a fresh anonymous installation.
+
+To install the command globally:
 
 ```bash
-npm install -g rpnh-bootstrap@0.1.0-rc.8
-rpnh-bootstrap
+npm install -g rpnh-bootstrap@0.1.0-rc.9
+rpnh
 ```
 
 ### Source or wheel installation for the native plugin walkthrough
 
 Use **Linux or WSL2 and Python 3.11+**. Follow [installation](installation.md)
 to install one approved checkout or a wheel built from it in a dedicated
-virtual environment. Basic needs no Codex or Node. Native macOS and Windows
-are not supported by RC8.
+virtual environment. Basic needs no Codex or Node. This source installation path covers Linux/WSL2.
 
 The distribution is `rpnh-harness`, Python imports use `cpn`, and the user
-command is `rpnh`. RC8 source declares `0.1.0rc8`. For the separately published
-npm Bootstrap path and its tested limits, see [RC8 Linux/WSL2 installation](linux-npm-candidate.md).
+command is `rpnh`. RC9 source declares `0.1.0rc9`. For the separately published
+npm Bootstrap path and its tested limits, see [RC9 Linux/WSL2 installation](linux-npm-candidate.md).
 Record the exact source or release artifact you install.
 
 From that environment:

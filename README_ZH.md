@@ -1,4 +1,4 @@
-> [RPNH v0.1.0rc8](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc8) 是 GitHub 预发行；[`rpnh-bootstrap@0.1.0-rc.8`](https://www.npmjs.com/package/rpnh-bootstrap/v/0.1.0-rc.8) 已发布到 npm。在 WSL2 x86_64／CPython 3.13.12 的 Basic 范围内，GitHub 和 npm 两条匿名路径均通过安装、激活和版本回读。请使用下方的固定 npm 版本；RC8 不是稳定版。
+> [RPNH v0.1.0rc9](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc9) 是 GitHub 预发行。[`rpnh-bootstrap@0.1.0-rc.9`](https://www.npmjs.com/package/rpnh-bootstrap/v/0.1.0-rc.9) 为 WSL2 x86_64／Basic 提供下方首次安装并自动配置的入口。
 
 # RPNH Harness
 
@@ -17,22 +17,24 @@ RPNH 是不绑定特定模型服务商的 Agent 执行框架，用于**构建、
 
 ## 快速开始：通过 npm 安装
 
-公开 RC8 为预发行版，需要 **Node.js 20+（含 npm）**、PATH 中的 `uv` 和支持 `venv` 的持久 CPython。单命令路径已在 **WSL2 Linux x86_64／CPython 3.13.12** 的 Basic 配置通过匿名验收。
+公开 RC9 为预发行版，需要 **Node.js 20+（含 npm）**、PATH 中的 `uv` 和**持久 CPython 3.12.13（含 `venv`）**，并让 PATH 中的 `python3` 指向该解释器。此安装路径覆盖 **WSL2 Linux x86_64／Basic**。
 
 ```bash
-npx rpnh-bootstrap@0.1.0-rc.8
+npm exec --package=rpnh-bootstrap@0.1.0-rc.9 -- rpnh
 ```
 
-在终端中按提示确认 npm 首次下载，再输入 `UPDATE` 安装并激活 Basic。激活后使用程序打印的受管 `rpnh` 启动器路径。此流程不运行 `rpnh init`，不登录或调用模型。
+在终端中运行，按提示确认 npm 首次下载，再输入 `UPDATE` 安装并激活 Basic。随后自动进入原有 `rpnh init`，填写自己的 provider 和精确模型配置，再选择 `basic`。初始化只保存配置，不登录或调用模型。后续命令使用激活后打印的受管 `rpnh` 启动器路径。
 
-如需全局安装引导器，也可分两步：
+RC9 已发布到 npm 的 `next` 通道。上方命令固定安装已通过匿名冷安装验收的 RC9 预发行版。
+
+如需全局安装命令：
 
 ```bash
-npm install -g rpnh-bootstrap@0.1.0-rc.8
-rpnh-bootstrap
+npm install -g rpnh-bootstrap@0.1.0-rc.9
+rpnh
 ```
 
-[发行说明与安装范围](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc8).
+[发行说明与安装范围](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc9).
 
 ## 可以做什么
 
@@ -106,7 +108,7 @@ rpnh net --run "$RUN_DIR" --view --no-open
 
 ## 兼容与发布边界
 
-当前发行范围以 [RC8 发行说明](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc8) 为准。10 月 30 日发布的
+WSL2 x86_64／Basic 安装范围见 [RC9 发行说明](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc9)。10 月 30 日发布的
 [v0.1.0rc3 wheel 与 DSH 插件](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc3)
 **不包含** 11 月 1 日的源码修复；详见[源码与发布包边界](docs/guides/compatibility_ZH.md)。
 

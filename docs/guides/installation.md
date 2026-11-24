@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: installation_ZH.md
-  revision: "2026-11-22.1"
+  revision: "2026-11-24.1"
   status: source-installation
   basis: "unified main; host differences explicitly labelled"
 ---
@@ -17,26 +17,28 @@ metadata:
 
 ## Install from npm (recommended)
 
-For the public RC8 prerelease use **Node.js 20+ with npm**, `uv` on PATH, and a persistent CPython with `venv`. The one-command path was verified anonymously for Basic on **WSL2 Linux x86_64 / CPython 3.13.12**.
+For the public RC9 prerelease, use **Node.js 20+ with npm**, `uv` on PATH, and **persistent CPython 3.12.13 with `venv`** available as `python3` on PATH. This installation path covers **WSL2 Linux x86_64 / Basic**.
 
 ```bash
-npx rpnh-bootstrap@0.1.0-rc.8
+npm exec --package=rpnh-bootstrap@0.1.0-rc.9 -- rpnh
 ```
 
-In a terminal, confirm npm's first-time download if prompted, then type `UPDATE` to install and activate Basic. Use the managed `rpnh` launcher path printed after activation. This does not run `rpnh init`, sign in or call a model.
+Run in a terminal. Confirm npm's first download if prompted, then type `UPDATE` to install and activate Basic. The original `rpnh init` starts automatically. Enter your provider and exact model configuration, then choose `basic`. Initialization saves configuration without signing in or calling a model. Use the managed `rpnh` launcher path printed after activation for later commands.
 
-To install the bootstrap command globally instead:
+RC9 is published on the npm `next` channel. The command above pins the prerelease verified in a fresh anonymous installation.
+
+To install the command globally:
 
 ```bash
-npm install -g rpnh-bootstrap@0.1.0-rc.8
-rpnh-bootstrap
+npm install -g rpnh-bootstrap@0.1.0-rc.9
+rpnh
 ```
 
 ## Goal and prerequisites
 Install an explicitly selected RPNH source tree or wheel without calling a model. Runtime support remains **Linux, including WSL2**; native Windows and macOS are not supported by this candidate. Python is declared as `>=3.11`; this is not a claim that every Python/platform combination was tested. The runtime uses Unix sockets, POSIX process control and Linux-specific process inspection. A basic terminal does not require Codex or Node.
 
 The distribution is `rpnh-harness`, with imports under `cpn` and command `rpnh`.
-The RC8 source declares `0.1.0rc8`. For the published Basic Linux/WSL2 path, see the [RC8 installation and support limits](linux-npm-candidate.md), including the exact npm version and the tested environment. Source, the GitHub wheel, and the npm bootstrap are distinct artifacts; record the one you actually installed.
+The RC9 source declares `0.1.0rc9`. For the published Basic Linux/WSL2 path, see the [RC9 installation and support limits](linux-npm-candidate.md), including the exact npm version and the tested environment. Record whether you installed source, the GitHub wheel or the npm bootstrap.
 
 The earlier [v0.1.0rc3 release](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc3) included a Python wheel and stock DSH operator tarball; it predates the November 1 source fixes. See [compatibility](compatibility.md) before using that historical adapter.
 
@@ -125,7 +127,7 @@ cd "$TEST_ROOT"
 "$TEST_ROOT/venv/bin/python" -c 'import cpn; from importlib.metadata import version; print(version("rpnh-harness")); print(cpn.__file__)'
 ```
 
-For the RC8 source, the printed version is `0.1.0rc8`; verify the selected source revision, not just the version label. The printed package path must be in this environment's `site-packages`, not the checkout. Use `scripts/check_installed_docs.py` from the source bundle for the guarded configuration smoke described in [development](development.md). That smoke does not validate a model or an interactive terminal.
+For the RC9 source, the printed version is `0.1.0rc9`. Verify the selected source revision as well. The printed package path must be in this environment's `site-packages`, not the checkout. Use `scripts/check_installed_docs.py` from the source bundle for the guarded configuration smoke described in [development](development.md). That smoke does not validate a model or an interactive terminal.
 
 A wheel built from RC8 contains named reusable example exports
 plus the default provider-neutral cross-host task. Exporting is a zero-model

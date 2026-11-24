@@ -6,9 +6,9 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: getting-started.md
-  revision: "2026-11-22.1"
+  revision: "2026-11-24.1"
   status: source-reviewed
-  basis: "workflow commands retain public source b16ecce83ba603b3c15f1c770bce172d4f44f88e; release version and navigation checked for public v0.1.0rc8; no new runtime validation"
+  basis: "workflow commands retain public source b16ecce83ba603b3c15f1c770bce172d4f44f88e. Release version and navigation updated for public v0.1.0rc9. No new runtime validation"
 ---
 
 [English](getting-started.md) | [中文](getting-started_ZH.md)
@@ -25,26 +25,28 @@ metadata:
 
 ### 已发布的 npm 快速安装
 
-公开 RC8 为预发行版，需要 **Node.js 20+（含 npm）**、PATH 中的 `uv` 和支持 `venv` 的持久 CPython。单命令路径已在 **WSL2 Linux x86_64／CPython 3.13.12** 的 Basic 配置通过匿名验收。
+公开 RC9 为预发行版，需要 **Node.js 20+（含 npm）**、PATH 中的 `uv` 和**持久 CPython 3.12.13（含 `venv`）**，并让 PATH 中的 `python3` 指向该解释器。此安装路径覆盖 **WSL2 Linux x86_64／Basic**。
 
 ```bash
-npx rpnh-bootstrap@0.1.0-rc.8
+npm exec --package=rpnh-bootstrap@0.1.0-rc.9 -- rpnh
 ```
 
-在终端中按提示确认 npm 首次下载，再输入 `UPDATE` 安装并激活 Basic。激活后使用程序打印的受管 `rpnh` 启动器路径。此流程不运行 `rpnh init`，不登录或调用模型。
+在终端中运行，按提示确认 npm 首次下载，再输入 `UPDATE` 安装并激活 Basic。随后自动进入原有 `rpnh init`，填写自己的 provider 和精确模型配置，再选择 `basic`。初始化只保存配置，不登录或调用模型。后续命令使用激活后打印的受管 `rpnh` 启动器路径。
 
-如需全局安装引导器，也可分两步：
+RC9 已发布到 npm 的 `next` 通道。上方命令固定安装已通过匿名冷安装验收的 RC9 预发行版。
+
+如需全局安装命令：
 
 ```bash
-npm install -g rpnh-bootstrap@0.1.0-rc.8
-rpnh-bootstrap
+npm install -g rpnh-bootstrap@0.1.0-rc.9
+rpnh
 ```
 
 ### 原生插件教程：从源码或 wheel 安装
 
-使用 **Linux 或 WSL2，Python 3.11+**。按[安装指南](installation_ZH.md)在独立虚拟环境中安装选定且已认可的 checkout，或由它构建的 wheel。Basic 不需要 Codex 或 Node。RC8不支持原生 macOS、Windows。
+使用 **Linux 或 WSL2，Python 3.11+**。按[安装指南](installation_ZH.md)在独立虚拟环境中安装选定且已认可的 checkout，或由它构建的 wheel。Basic 不需要 Codex 或 Node。该源码安装范围为 Linux／WSL2。
 
-发行包名是 `rpnh-harness`，Python 导入名是 `cpn`，用户命令是 `rpnh`。RC8 源码声明版本为 `0.1.0rc8`。[RC8 Linux／WSL2 安装](linux-npm-candidate_ZH.md)另列 npm 引导包和实测支持范围。请记录实际安装的源码或发行产物。
+发行包名是 `rpnh-harness`，Python 导入名是 `cpn`，用户命令是 `rpnh`。RC9 源码声明版本为 `0.1.0rc9`。[RC9 Linux／WSL2 安装](linux-npm-candidate_ZH.md)另列 npm 引导包和实测支持范围。请记录实际安装的源码或发行产物。
 
 在该环境执行：
 

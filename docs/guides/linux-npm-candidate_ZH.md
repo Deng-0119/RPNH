@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: linux-npm-candidate.md
-  revision: "2026-11-22.1"
+  revision: "2026-11-24.1"
   status: source-reviewed
 ---
 
@@ -16,20 +16,28 @@ metadata:
 
 ## 当前发行状态
 
-[RPNH v0.1.0rc8](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc8) 是 GitHub 预发行；[`rpnh-bootstrap@0.1.0-rc.8`](https://www.npmjs.com/package/rpnh-bootstrap/v/0.1.0-rc.8) 已发布到 npm。在 WSL2 x86_64／CPython 3.13.12 的 Basic 范围内，GitHub 和 npm 两条匿名路径均通过安装、激活和版本回读。使用 Node.js 20+（含 npm）、PATH 中的 `uv` 和支持 `venv` 的持久 CPython。npm 首发时的 `next` 与 `latest` 均指向此预发行，标签不代表稳定版。
+[RPNH v0.1.0rc9](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc9) 是 GitHub 预发行，npm 包为 [`rpnh-bootstrap@0.1.0-rc.9`](https://www.npmjs.com/package/rpnh-bootstrap/v/0.1.0-rc.9)。
+
+公开 RC9 为预发行版，需要 **Node.js 20+（含 npm）**、PATH 中的 `uv` 和**持久 CPython 3.12.13（含 `venv`）**，并让 PATH 中的 `python3` 指向该解释器。此安装路径覆盖 **WSL2 Linux x86_64／Basic**。
 
 ```bash
-npx rpnh-bootstrap@0.1.0-rc.8
+npm exec --package=rpnh-bootstrap@0.1.0-rc.9 -- rpnh
 ```
 
-在终端中按提示确认 npm 首次下载，再输入 `UPDATE` 安装并激活 Basic。激活后使用程序打印的受管 `rpnh` 启动器路径。此流程不运行 `rpnh init`，不登录或调用模型。
+在终端中运行，按提示确认 npm 首次下载，再输入 `UPDATE` 安装并激活 Basic。随后自动进入原有 `rpnh init`，填写自己的 provider 和精确模型配置，再选择 `basic`。初始化只保存配置，不登录或调用模型。后续命令使用激活后打印的受管 `rpnh` 启动器路径。
 
-全局引导器备选：
+RC9 已发布到 npm 的 `next` 通道。上方命令固定安装已通过匿名冷安装验收的 RC9 预发行版。
+
+如需全局安装命令：
 
 ```bash
-npm install -g rpnh-bootstrap@0.1.0-rc.8
-rpnh-bootstrap
+npm install -g rpnh-bootstrap@0.1.0-rc.9
+rpnh
 ```
+
+## 历史发行证据
+
+[RC8](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc8) 已在 WSL2 x86_64／CPython 3.13.12 的 Basic 范围通过 GitHub 和 npm 两条匿名路径的安装、激活和版本回读。RC8 首发时 npm 的 `next` 与 `latest` 均指向 `0.1.0-rc.8`。这些结果仍归属于 RC8。
 
 [rc6 已在 GitHub 预发布](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc6)，包含匹配的 Linux x86_64 Basic 应用 wheel、CPython 3.12/3.13 依赖 wheel、两份 v3 清单，以及 npm 格式的 GitHub 附件。该候选已通过限定的离线 CLI 检查。首次匿名发行元数据已回读，但该次下载在 GitHub 重定向后超时，原始失败继续保留。正式 rc6 npm 格式 tgz 后续已在 WSL2／CPython 3.13.12 Basic 通过 A4 安装与激活验收。这是历史 RC6 证据，不代表 RC6 已发布到 npm registry。本结果不证明升级、回滚、可选前端或 macOS 支持。
 

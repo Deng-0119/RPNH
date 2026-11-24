@@ -1,4 +1,4 @@
-> [RPNH v0.1.0rc8](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc8) is a GitHub prerelease. [`rpnh-bootstrap@0.1.0-rc.8`](https://www.npmjs.com/package/rpnh-bootstrap/v/0.1.0-rc.8) is published on npm. Anonymous GitHub and npm installation, activation and version readback passed on WSL2 x86_64 / CPython 3.13.12 (Basic). Pin the npm version below; RC8 is not a stable release.
+> [RPNH v0.1.0rc9](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc9) is a GitHub prerelease. [`rpnh-bootstrap@0.1.0-rc.9`](https://www.npmjs.com/package/rpnh-bootstrap/v/0.1.0-rc.9) provides the command below to install and automatically begin setup for WSL2 x86_64 / Basic.
 
 # RPNH Harness
 
@@ -19,22 +19,24 @@ resource versions, execution records and checkpoints.
 
 ## Quick start: install from npm
 
-For the public RC8 prerelease use **Node.js 20+ with npm**, `uv` on PATH, and a persistent CPython with `venv`. The one-command path was verified anonymously for Basic on **WSL2 Linux x86_64 / CPython 3.13.12**.
+For the public RC9 prerelease, use **Node.js 20+ with npm**, `uv` on PATH, and **persistent CPython 3.12.13 with `venv`** available as `python3` on PATH. This installation path covers **WSL2 Linux x86_64 / Basic**.
 
 ```bash
-npx rpnh-bootstrap@0.1.0-rc.8
+npm exec --package=rpnh-bootstrap@0.1.0-rc.9 -- rpnh
 ```
 
-In a terminal, confirm npm's first-time download if prompted, then type `UPDATE` to install and activate Basic. Use the managed `rpnh` launcher path printed after activation. This does not run `rpnh init`, sign in or call a model.
+Run in a terminal. Confirm npm's first download if prompted, then type `UPDATE` to install and activate Basic. The original `rpnh init` starts automatically. Enter your provider and exact model configuration, then choose `basic`. Initialization saves configuration without signing in or calling a model. Use the managed `rpnh` launcher path printed after activation for later commands.
 
-To install the bootstrap command globally instead:
+RC9 is published on the npm `next` channel. The command above pins the prerelease verified in a fresh anonymous installation.
+
+To install the command globally:
 
 ```bash
-npm install -g rpnh-bootstrap@0.1.0-rc.8
-rpnh-bootstrap
+npm install -g rpnh-bootstrap@0.1.0-rc.9
+rpnh
 ```
 
-[Release notes and install scope](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc8).
+[Release notes and install scope](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc9).
 
 ## What you can do
 
@@ -121,7 +123,7 @@ provenance and validation scope.
 
 ## Compatibility and releases
 
-See [RC8 release notes](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc8) for current release scope. The October 30
+See [RC9 release notes](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc9) for the WSL2 x86_64 / Basic installation scope. The October 30
 [v0.1.0rc3 wheel and DSH plugin](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc3)
 do **not** include the November 1 source fixes; see the
 [source/release boundary](docs/guides/compatibility.md).
