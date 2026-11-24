@@ -32,3 +32,11 @@
 可选 `--bin-dir DIRECTORY` 在安装完成后把原受管 `rpnh` dispatcher链接到已有真实目录，不修改PATH、不覆盖其它命令。注册失败退出3，已成功安装的应用保留，可重试注册或使用root/bin/rpnh。当前链接注册证据仅Linux，不是原生Windows支持。private标记用于避免误发布，不是另一套产品权限。
 
 Python使用 `-I -m`，定位wheel模块时忽略调用目录和PYTHONPATH，避免旧checkout替代指定wheel。
+
+## 组装发行包
+
+运行 `prepare_first_run_candidate.py`，传入同版本的核心 wheel、启动器源码、许可证、npm 版本及新的输出目录。应用版本 `0.1.0rc9` 对应 npm 版本 `0.1.0-rc.9`。
+
+使用 `--public-cli` 组装公开包 `rpnh`，它提供 `rpnh` 命令并使用 `latest` 标签。已有的 `--public-preview` 选项组装包含两个命令的 `rpnh-bootstrap` 包，目标标签为 `next`。默认输出为私有候选包。两个公开包均使用原安装器和相应版本的 GitHub Release 附件。
+
+运行 `python packaging/npm-bootstrap/test-prepare-first-run.py` 可检查离线组装行为。

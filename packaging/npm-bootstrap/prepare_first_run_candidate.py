@@ -1,10 +1,13 @@
-"""Build an unpublished transport package from one actual wheel; never publish."""
+"""Assemble an npm package from one actual wheel; never publish."""
 import argparse,json,re,shutil,zipfile
 from email.parser import Parser
 from pathlib import Path
 p=argparse.ArgumentParser();p.add_argument('--convenience-source',type=Path,required=True);p.add_argument('--launcher-source',type=Path,required=True,help='Repository packaging/npm-bootstrap directory');p.add_argument('--wheel',type=Path,required=True);p.add_argument('--npm-version',required=True);p.add_argument('--output',type=Path,required=True);p.add_argument('--license',type=Path,required=True)
-p.add_argument('--public-preview', action='store_true',
-               help='assemble for the public next tag, without publishing')
+public=p.add_mutually_exclusive_group()
+public.add_argument('--public-preview', action='store_true',
+                    help='assemble rpnh-bootstrap for the public next tag, without publishing')
+public.add_argument('--public-cli', action='store_true',
+                    help='assemble the official rpnh CLI for public latest, without publishing')
 a=p.parse_args()
 if not re.fullmatch(r'\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?',a.npm_version):p.error('use a concrete npm semantic version')
 if a.output.exists() or a.output.is_symlink():p.error('output must be new; do not overwrite another candidate')
@@ -35,9 +38,13 @@ if first.count('./release-bootstrap.mjs')!=1:raise ValueError('expected one expl
 (a.output/'first-run.mjs').write_text(first.replace('./release-bootstrap.mjs','./entry.mjs'),encoding='utf-8')
 (a.output/'first-run.mjs').chmod(0o755)
 package={'name':'rpnh-bootstrap','version':a.npm_version,'private':True,'description':'RPNH bootstrap transport with exact bundled controller','type':'module','license':'MIT','repository':{'type':'git','url':'git+https://github.com/Deng-0119/RPNH.git','directory':'packaging/npm-bootstrap'},'engines':{'node':'>=20'},'bin':{'rpnh-bootstrap':'entry.mjs','rpnh':'first-run.mjs'},'files':['entry.mjs','first-run.mjs','launch.mjs','convenience.mjs','controller/','README.md','LICENSE']}
-if a.public_preview:
+if a.public_preview or a.public_cli:
  package.pop('private')
- package['publishConfig']={'access':'public','tag':'next'}
+ package['publishConfig']={'access':'public','tag':'latest' if a.public_cli else 'next'}
+if a.public_cli:
+ package['name']='rpnh'
+ package['description']='RPNH CLI with its exact bundled installation controller'
+ package['bin']={'rpnh':'first-run.mjs'}
 (a.output/'package.json').write_text(json.dumps(package,indent=2)+'\n')
 (a.output/'entry.mjs').write_text('''#!/usr/bin/env node
 import {fileURLToPath} from 'node:url';
@@ -78,4 +85,29 @@ This public command requires both the published npm version and the matching Git
 
 See the [RPNH repository](https://github.com/Deng-0119/RPNH) for support scope, installation, and application examples.
 """,encoding='utf-8')
-print(json.dumps({'output':str(a.output),'core_version':version,'npm_version':a.npm_version,'published':False,'private':not a.public_preview}))
+if a.public_cli:
+ (a.output/'README.md').write_text(f"""# RPNH CLI
+
+Install locally and run from a terminal.
+
+```sh
+npm install rpnh
+npm exec -- rpnh
+```
+
+Or install the command globally.
+
+```sh
+npm install -g rpnh
+rpnh
+```
+
+Requires Node.js 20+, uv, and persistent CPython 3.12.13. Verified on WSL2 Linux x86_64 with the Basic installation.
+
+On first use, run `rpnh` without arguments in an interactive terminal. RPNH asks for installation confirmation, then opens setup after successful installation. Setup guides you through account and model configuration.
+
+Later invocations pass application arguments to your managed installation. Application data lives under `$XDG_DATA_HOME/rpnh`, or `~/.local/share/rpnh` by default. Use `rpnh --help` for launcher help.
+
+See the [RPNH repository](https://github.com/Deng-0119/RPNH) for installation, updates and application examples.
+""",encoding='utf-8')
+print(json.dumps({'output':str(a.output),'core_version':version,'npm_version':a.npm_version,'published':False,'private':not (a.public_preview or a.public_cli)}))

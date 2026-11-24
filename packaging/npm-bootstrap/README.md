@@ -43,3 +43,11 @@ All parameters after `--` go to the wheel's bootstrap module. For published requ
 Optional `--bin-dir DIRECTORY` links the original managed `rpnh` dispatcher in an existing real directory after installation. It never edits PATH or replaces another command. If registration fails, exit 3 means installation is retained; retry registration or use the original root/bin/rpnh. Current symlink registration evidence is Linux-only, not native Windows support. Private package status is a release guard, not a new product permissions model.
 
 Python runs with `-I -m`: the controller ignores caller cwd and PYTHONPATH when locating the wheel module.
+
+## Assembling release packages
+
+Use `prepare_first_run_candidate.py` with the matching core wheel, launcher sources, license, npm version and a new output directory. An application version such as `0.1.0rc9` corresponds to npm version `0.1.0-rc.9`.
+
+Pass `--public-cli` to build the public `rpnh` package. It exposes the `rpnh` command and uses the `latest` tag. The existing `--public-preview` option produces the two-command `rpnh-bootstrap` package for `next`. The default output is a private candidate. Both public packages use the original installer and the matching GitHub Release assets.
+
+Run the offline assembly checks with `python packaging/npm-bootstrap/test-prepare-first-run.py`.
