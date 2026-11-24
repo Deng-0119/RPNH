@@ -12,7 +12,7 @@
 
 1. 用公开 npm 包安装 RC9。[npm 安装说明](../../README_ZH.md)列出了 Node.js、npm、uv 和 CPython 的要求。11 月 24 日实测时，默认命令取得 `rpnh-bootstrap@0.1.0-rc.9`，激活 RPNH `0.1.0rc9`。
 
-   复现这一轮时，用 `npm exec --package=rpnh-bootstrap@0.1.0-rc.9 -- rpnh` 固定引导包。继续前，核对受管 `rpnh --version` 读回 `0.1.0rc9`；如果未取得这个版本，不把本次运行记为 RC9。
+   复现这一轮请使用全新的受管安装根目录，否则引导器会沿用已有安装。先在同一终端执行 `export XDG_DATA_HOME="$(mktemp -d)"`，再用 `npm exec --package=rpnh-bootstrap@0.1.0-rc.9 -- rpnh` 固定引导包。继续前，核对受管 `rpnh --version` 读回 `0.1.0rc9`；如果未取得这个版本，不把本次运行记为 RC9。
 2. 从同一 Git 标签获取案例，其中包含项目种子、JSON／CSV／Parquet 输入和原验收器。受管 Basic 环境可以打开驱动帮助。项目预检还要求 pandas 和 PyArrow。从源码树以外的全新工作目录开始，用 CPython 3.12.13 创建独立的案例环境，装入同一个发行 wheel。
 
 ```sh
