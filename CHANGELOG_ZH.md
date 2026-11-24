@@ -15,6 +15,8 @@ metadata:
 - [RPNH v0.1.0rc9](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc9) 是当前 GitHub 预发行。已发布的 npm 包是 [`rpnh-bootstrap@0.1.0-rc.9`](https://www.npmjs.com/package/rpnh-bootstrap/v/0.1.0-rc.9)；发布后 `latest` 与 `next` 均指向 RC9。在 WSL2 Linux x86_64／持久 CPython 3.12.13 的 Basic 范围内，`npm exec --package=rpnh-bootstrap -- rpnh` 已通过匿名全新安装、激活、首次配置与离线 doctor 检查。验收不涵盖升级、回滚、其他平台或可选前端。
 - `rpnh` 命令在首次安装后打开原有交互式配置；只安装不进入配置时仍可使用 `rpnh-bootstrap`。
 
+- 发行后实测：[RC9 数据合并案例](examples/project_collaboration/verification/rc9-wsl2/result.json)在 WSL2 的独立环境中使用同一公开 wheel，两端各通过 3/3 条仅调整输出路径的原断言。该证据不替代 npm 安装验收，也不代表完整上游基准通过。
+
 ## v0.1.0rc5 元数据读取容错
 
 - 原官方元数据单次 socket 超时由 2 秒增至 15 秒，调度预算由 6 秒增至 45 秒；不新增重试，不改来源、重定向、大小及内容校验。这不是严格总墙钟期限。

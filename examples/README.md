@@ -24,11 +24,13 @@ Choose by modeled object: agent workflows describe task responsibilities and han
 
 ## Project preview: copy, co-create and reuse
 
+The [2026-11-24 public RC9 replay](project_collaboration/verification/rc9-wsl2/result.json) passed all three path-adapted original assertions in each of two projects on WSL2, using the published wheel in a separate environment. The original `test.sh` was not run. [Run instructions](project_collaboration/README.md#run-the-rc9-data-merger-on-wsl2).
+
 Start with [copy, co-create and reuse one agent project](project_collaboration/README.md)
 for the complete project journey: resolve two contributors' conflicts into original
 two-parent M, perform three pre-business content adoptions, then download exact M
 for an independent receiver. Both ends run stock implementer/reviewer agents.
-The dated result records 43 registered requests/42 responses and both original
+The historical 2026-10-13 run recorded 43 registered requests/42 responses and both original
 path-adapted assertion sets passing 3/3; the grader was visible and original
 `test.sh` was not run. See the [full business PN](project_collaboration/figures/source-petri.png),
 real attached execution nets and [capture provenance](project_collaboration/figures/provenance.json).

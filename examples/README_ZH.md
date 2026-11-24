@@ -24,9 +24,11 @@
 
 ## 项目预览：复制、共创与复用
 
+在 WSL2 上，[2026 年 11 月 24 日公开 RC9 实测](project_collaboration/verification/rc9-wsl2/result.json)使用独立环境中的正式发行 wheel，两端各通过 3 条仅调整输出路径的原断言；未运行原 `test.sh`。[复现步骤](project_collaboration/README_ZH.md#在-wsl2-上运行-rc9-数据合并案例)。
+
 完整项目旅程从[复制、共创并复用同一 Agent 项目](project_collaboration/README_ZH.md)开始：
 解决两方贡献冲突形成原双 parent M，业务前三次采用内容后，下载精确 M 给独立 receiver。
-两端均运行 stock implementer/reviewer agent。注明日期的结果为 43 次登记请求／42 次响应，
+两端均运行 stock implementer/reviewer agent。2026 年 10 月 13 日的历史运行记录了 43 次登记请求／42 次响应，
 两端原路径适配断言均 3/3 PASS；grader 已可见，原 `test.sh` 未运行。
 查看[完整业务 PN](project_collaboration/figures/source-petri.png)、真实下级执行网及
 [图像来源](project_collaboration/figures/provenance.json)。

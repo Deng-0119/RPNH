@@ -15,6 +15,8 @@ metadata:
 - [RPNH v0.1.0rc9](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc9) is the current GitHub prerelease. Its published npm package is [`rpnh-bootstrap@0.1.0-rc.9`](https://www.npmjs.com/package/rpnh-bootstrap/v/0.1.0-rc.9); `latest` and `next` both pointed to RC9 after release. Anonymous fresh installation with `npm exec --package=rpnh-bootstrap -- rpnh` passed on WSL2 Linux x86_64 with persistent CPython 3.12.13 (Basic), including activation, first setup, and offline doctor. This does not qualify upgrades, rollback, other platforms, or optional frontends.
 - The `rpnh` command opens existing interactive setup after a first installation; `rpnh-bootstrap` remains available for installation without setup.
 
+- Post-release verification: the [RC9 data-merger case](examples/project_collaboration/verification/rc9-wsl2/result.json) passed 3/3 path-adapted original assertions in each of two projects using the official wheel in a separate WSL2 environment. This evidence does not replace the npm install check or certify the full upstream benchmark.
+
 ## v0.1.0rc5 metadata tolerance
 
 - Increases the existing official metadata socket timeout from 2 to 15 seconds and scheduling budget from 6 to 45 seconds, without adding retries or changing source, redirect, size, or content validation. These are not strict total wall-clock deadlines.

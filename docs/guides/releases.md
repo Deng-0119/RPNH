@@ -17,6 +17,12 @@ metadata:
 RPNH is currently a prerelease. Release tags identify fixed source snapshots;
 `main` and a release tag can point to different source versions.
 
+## Versioning for future releases
+
+Starting with releases after RC9, use [Semantic Versioning](https://semver.org/) for formal releases. The Git tags in both the private development and public repositories are `vX.Y.Z`; the matching Python wheel and npm package use `X.Y.Z` without the `v`. A release record ties the two approved source revisions to the exact artifacts and their verification; the repositories need not have identical Git history. On the same compatibility line, increment the patch for fixes, the minor for compatible new features, and use a major version for a breaking public release. During `0.y.z` development, disclose compatibility breaks explicitly instead of silently shipping them as fixes.
+
+Keep candidates and archive references separate from formal releases. A preview must use the matching coordinates accepted by the chosen Python and npm tooling, and must not be tagged as a final release. Existing RC9 names and package channels are not changed by this policy. Publish or move a distribution tag only after approval and verification of the matching artifacts. The first final release on the current series would be `v0.1.0`; it is not published by this documentation update.
+
 ## Choose an installation
 
 | Choice | Use |
